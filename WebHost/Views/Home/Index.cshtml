@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Home</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>@Html.ActionLink("Logout", "Index", "Logout", new { area="UserAccount" })</p>
+    <h3>Your Claims</h3>
+    <dl>
+        @foreach (var claim in System.Security.Claims.ClaimsPrincipal.Current.Claims)
+        {
+            <dt>@claim.Type</dt>
+            <dd>@claim.Value</dd>
+            <dd>@claim.Issuer</dd>
+        }
+    </dl>
+}
+else
+{
+    <p>@Html.ActionLink("Login", "Index", "Login", new { area="UserAccount" })</p>
+}

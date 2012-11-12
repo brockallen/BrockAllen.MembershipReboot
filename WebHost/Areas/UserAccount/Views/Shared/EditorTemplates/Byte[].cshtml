@@ -1,0 +1,9 @@
+﻿@model byte[]
+@using Thinktecture.IdentityServer.Web.Utility
+
+@{
+    var value = Model != null ? Convert.ToBase64String(Model) : String.Empty;
+    var id = this.ViewData.TemplateInfo.GetFullHtmlFieldId("");
+}
+@Html.TextBox("", value, new { @class="base64" })
+<button type="button" data-base64target="@id" class="base64">Generate</button>

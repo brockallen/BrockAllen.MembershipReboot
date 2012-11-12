@@ -1,0 +1,29 @@
+﻿@{
+    var val = Model as System.Security.Cryptography.X509Certificates.X509Certificate2;
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(null);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(null);
+}
+<div class="inline-editor">
+    @if (val == null)
+    {
+        <span>No Certificate</span>
+    }
+    else
+    {
+        <span>@val.SubjectName.Name</span>
+    }
+    @if (val != null)
+    {
+        <div>
+            @{
+        var removeID = "RemoveCert";
+            }
+            <label for="@removeID">Remove</label>
+            <input type="checkbox" id="@removeID" name="@removeID" value="true" />
+        </div>
+    }
+    <div>
+        <label for="@id">Upload</label>
+        <input type="file" id="@id" name="@name" />
+    </div>
+</div>

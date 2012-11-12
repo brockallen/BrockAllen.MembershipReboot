@@ -1,0 +1,11 @@
+﻿@{
+    var id = ViewData.ModelMetadata.PropertyName+"file";
+    var name = id;
+}
+<div class="inline-editor">
+    @Html.TextBox("", Model as string)
+    <div>
+        <label for="@id">Upload</label>
+        <input type="file" id="@id" name="@name" />
+    </div>
+</div>

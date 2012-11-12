@@ -1,0 +1,19 @@
+﻿@{
+    var enumType = ViewData.ModelMetadata.ModelType;
+    if (enumType.IsGenericType && typeof(Nullable<>) == enumType.GetGenericTypeDefinition())
+    {
+        enumType = enumType.GetGenericArguments().First();
+    }
+    var list = new List<SelectListItem>();
+    foreach(var name in Enum.GetNames(enumType))
+    {
+        var val = ((int)Enum.Parse(enumType, name));
+        list.Add(new SelectListItem { Text = name, Value = val.ToString(), Selected=(val==(int?)Model) });
+    }
+    if (ViewData.ModelMetadata.IsNullableValueType)
+    {
+        list.Insert(0, new SelectListItem { Text = "-none selected-", Value = "" });
+    }
+    
+}
+@Html.DropDownList("", list)
