@@ -32,6 +32,19 @@ namespace BrockAllen.MembershipReboot
             return s;
         }
 
+        /// <summary>
+        /// Useful in scenarios where user interface allows user to specify username and immediately tells them whether it is available.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public virtual bool CheckUsernameExists(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
+
+            var account = this.userRepository.GetByUsername(username);
+            return account != null;
+        }
+
         public virtual void CreateAccount(string username, string password, string email)
         {
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
