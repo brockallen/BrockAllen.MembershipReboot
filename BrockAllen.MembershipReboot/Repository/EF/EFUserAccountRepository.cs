@@ -5,17 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BrockAllen.MembershipReboot.EF
+namespace BrockAllen.MembershipReboot
 {
-    public class UserAccountRepository : IUserAccountRepository, IDisposable
+    public class EFUserAccountRepository : IUserAccountRepository, IDisposable
     {
         EFMembershipRebootDatabase db;
 
-        public UserAccountRepository()
+        public EFUserAccountRepository()
         {
             db = new EFMembershipRebootDatabase();
         }
-        public UserAccountRepository(string nameOrConnectionString)
+        public EFUserAccountRepository(string nameOrConnectionString)
         {
             db = new EFMembershipRebootDatabase(nameOrConnectionString);
         }

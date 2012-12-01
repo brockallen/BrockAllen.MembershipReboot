@@ -11,11 +11,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
         [Required]
         public string Username { get; set; }
         [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
-        [Required]
-        [Compare("Password")]
-        public string PasswordConfirm { get; set; }
-
+        [ScaffoldColumn(false)]
         public string ReturnUrl { get; set; }
     }
 }

@@ -50,6 +50,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
@@ -77,23 +78,28 @@
     <Compile Include="Repository\EF\EFMembershipRebootDatabaseInitializer.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
     <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
-    <Compile Include="Services\ApplicationInformation.cs" />
-    <Compile Include="Services\ClaimsBasedAuthenticationService.cs" />
-    <Compile Include="Services\IPasswordPolicy.cs" />
-    <Compile Include="Services\Message.cs" />
-    <Compile Include="Services\IMessageDelivery.cs" />
-    <Compile Include="Services\NopPasswordPolicy.cs" />
-    <Compile Include="Services\NotificationService.cs" />
+    <Compile Include="Services\Accounts\BasicPasswordPolicy.cs" />
+    <Compile Include="Services\Notification\ApplicationInformation.cs" />
+    <Compile Include="Services\Authentication\ClaimsBasedAuthenticationService.cs" />
+    <Compile Include="Services\Accounts\IPasswordPolicy.cs" />
+    <Compile Include="Services\Notification\Message.cs" />
+    <Compile Include="Services\Notification\IMessageDelivery.cs" />
+    <Compile Include="Services\Notification\NopMessageDelivery.cs" />
+    <Compile Include="Services\Accounts\NopPasswordPolicy.cs" />
+    <Compile Include="Services\Notification\NotificationService.cs" />
     <Compile Include="Repository\IUserAccountRepository.cs" />
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\SecuritySettings.cs" />
-    <Compile Include="Services\SmtpMessageDelivery.cs" />
-    <Compile Include="Services\UserAccountService.cs" />
+    <Compile Include="Services\Accounts\SecuritySettings.cs" />
+    <Compile Include="Services\Notification\SmtpMessageDelivery.cs" />
+    <Compile Include="Services\Accounts\UserAccountService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utility\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

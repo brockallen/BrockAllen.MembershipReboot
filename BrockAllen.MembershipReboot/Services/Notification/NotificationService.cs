@@ -39,11 +39,8 @@ namespace BrockAllen.MembershipReboot
                 appInfo.ApplicationName,
                 subject);
 
-            var from = this.appInfo.FromEmail;
-
             var msg = new Message
             {
-                From = from,
                 To = user.Email, 
                 Subject = subject,
                 Body = body

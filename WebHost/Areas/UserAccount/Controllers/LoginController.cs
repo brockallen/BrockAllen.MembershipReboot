@@ -12,7 +12,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         UserAccountService userService;
         ClaimsBasedAuthenticationService authSvc;
 
-        public LoginController(UserAccountService userService, ClaimsBasedAuthenticationService authSvc)
+        public LoginController(
+            UserAccountService userService, 
+            ClaimsBasedAuthenticationService authSvc)
         {
             this.userService = userService;
             this.authSvc = authSvc;

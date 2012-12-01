@@ -39,9 +39,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\WebGrease.1.1.0\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Ninject">
+      <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Common">
+      <HintPath>..\packages\Ninject.Web.Common.3.0.0.7\lib\net45-full\Ninject.Web.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Mvc">
+      <HintPath>..\packages\Ninject.MVC3.3.0.0.6\lib\net45-full\Ninject.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -49,6 +66,9 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.0.0\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -102,13 +122,25 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.5.2\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <HintPath>..\packages\WebGrease.1.1.0\lib\WebGrease.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\NinjectWebCommon.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LoginController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LogoutController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\PasswordResetController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ProfileController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\RegisterController.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangePasswordFromResetKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\LoginInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\PasswordResetInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\RegisterInputModel.cs" />
     <Compile Include="Areas\UserAccount\UserAccountAreaRegistration.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -120,16 +152,27 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Areas\UserAccount\Views\PasswordReset\Confirm.cshtml" />
+    <Content Include="Areas\UserAccount\Views\PasswordReset\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\PasswordReset\ResetSuccess.cshtml" />
+    <Content Include="Areas\UserAccount\Views\PasswordReset\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\Cancel.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\Confirm.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\RegisterInputModel.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Home\Index.cshtml" />
+    <None Include="Content\Site.less" />
+    <Content Include="Content\Site.css">
+      <DependentUpon>Site.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Site.min.css">
+      <DependentUpon>Site.less</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="Areas\UserAccount\Views\Login\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\Logout\Index.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\Byte[].cshtml" />
-    <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\Enum.cshtml" />
     <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\Object.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\SymmetricKey.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\Thumbprint.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\X509Certificate2.cshtml" />
     <Content Include="Areas\UserAccount\Views\Web.config" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
@@ -156,10 +199,11 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="_ViewStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -14,7 +14,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             this.authSvc = authSvc;
         }
 
-
         public ActionResult Index()
         {
             if (User.Identity.IsAuthenticated)

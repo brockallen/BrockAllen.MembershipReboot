@@ -189,15 +189,14 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
-        public virtual bool ResetPassword(string username, string email)
+        public virtual bool ResetPassword(string email)
         {
-            if (String.IsNullOrWhiteSpace(username) ||
-                String.IsNullOrWhiteSpace(email))
+            if (String.IsNullOrWhiteSpace(email))
             {
                 return false;
             }
 
-            var account = this.userRepository.GetByUsername(username);
+            var account = this.userRepository.GetByEmail(email);
             if (account == null) return false;
 
             var result = account.ResetPassword(email);

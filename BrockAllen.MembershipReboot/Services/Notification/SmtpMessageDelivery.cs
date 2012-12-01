@@ -5,15 +5,15 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BrockAllen.MembershipReboot.Services
+namespace BrockAllen.MembershipReboot
 {
-    class SmtpMessageDelivery : IMessageDelivery
+    public class SmtpMessageDelivery : IMessageDelivery
     {
         public void Send(Message msg)
         {
             using (SmtpClient smtp = new SmtpClient())
             {
-                smtp.Send(msg.From, msg.To, msg.Subject, msg.Body);
+                smtp.Send(null, msg.To, msg.Subject, msg.Body);
             }
         }
     }

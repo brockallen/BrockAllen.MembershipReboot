@@ -4,13 +4,16 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace WebHost.Controllers
+namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class HomeController : Controller
     {
+        //
+        // GET: /UserAccount/Home/
+
         public ActionResult Index()
         {
-            return RedirectToAction("Index", "Home", new { area = "UserAccount" });
+            return View();
         }
 
     }

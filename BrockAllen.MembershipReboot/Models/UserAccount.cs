@@ -67,6 +67,7 @@ namespace BrockAllen.MembershipReboot
             if (IsAccountVerified) return false;
             if (this.VerificationKey != key) return false;
 
+            this.IsAccountVerified = true;
             this.VerificationKey = null;
             this.VerificationKeySent = null;
 
