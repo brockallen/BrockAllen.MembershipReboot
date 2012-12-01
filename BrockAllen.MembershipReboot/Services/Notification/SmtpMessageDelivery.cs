@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -13,7 +14,7 @@ namespace BrockAllen.MembershipReboot
         {
             using (SmtpClient smtp = new SmtpClient())
             {
-                smtp.Send(null, msg.To, msg.Subject, msg.Body);
+                smtp.Send(msg.From, msg.To, msg.Subject, msg.Body);
             }
         }
     }

@@ -6,13 +6,17 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <p>@Html.ActionLink("Logout", "Index", "Logout")</p>
+    <ul>
+        <li>@Html.ActionLink("Logout", "Index", "Logout")</li>
+        <li>@Html.ActionLink("Change Password", "Index", "Logout")</li>
+    </ul>
 }
 else
 {
     <ul>
         <li>@Html.ActionLink("Login", "Index", "Login")</li>
         <li>@Html.ActionLink("Register", "Index", "Register")</li>
+        <li>@Html.ActionLink("Reset Password", "Index", "PasswordReset")</li>
     </ul>
 }
 

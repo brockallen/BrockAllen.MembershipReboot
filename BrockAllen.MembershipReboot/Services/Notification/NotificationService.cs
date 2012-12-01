@@ -18,19 +18,18 @@ namespace BrockAllen.MembershipReboot
 
         protected virtual string DoTokenReplacement(string msg, UserAccount user)
         {
-            var sb = new StringBuilder();
-            sb.Append(msg.Replace("{username}", user.Username));
-            sb.Append(msg.Replace("{email}", user.Email));
-            
-            sb.Append(msg.Replace("{applicationName}", appInfo.ApplicationName));
-            sb.Append(msg.Replace("{loginUrl}", appInfo.LoginUrl));
-            
-            sb.Append(msg.Replace("{confirmAccountCreateUrl}", appInfo.VerifyAccountUrl));
-            sb.Append(msg.Replace("{cancelNewAccountUrl}", appInfo.CancelNewAccountUrl));
-            
-            sb.Append(msg.Replace("{confirmPasswordResetUrl}", appInfo.ConfirmPasswordResetUrl));
+            msg = msg.Replace("{username}", user.Username);
+            msg = msg.Replace("{email}", user.Email);
 
-            return sb.ToString();
+            msg = msg.Replace("{applicationName}", appInfo.ApplicationName);
+            msg = msg.Replace("{loginUrl}", appInfo.LoginUrl);
+
+            msg = msg.Replace("{confirmAccountCreateUrl}", appInfo.VerifyAccountUrl + user.VerificationKey);
+            msg = msg.Replace("{cancelNewAccountUrl}", appInfo.CancelNewAccountUrl + user.VerificationKey);
+
+            msg = msg.Replace("{confirmPasswordResetUrl}", appInfo.ConfirmPasswordResetUrl + user.VerificationKey);
+
+            return msg; 
         }
         
         protected virtual void DeliverMessage(UserAccount user, string subject, string body)
@@ -110,7 +109,7 @@ You (or someone else) has requested a password reset for {applicationName}.
 
 Username: {username}
 
-Please click here to confirm your request so you can login: 
+Please click here to confirm your request so you can reset your password: 
 
 {confirmPasswordResetUrl}
 
@@ -164,6 +163,18 @@ Thanks!
 
         public void SendAccountDelete(UserAccount account)
         {
+            var msg = GetAccountAccountDeleteFormat();
+            var body = DoTokenReplacement(msg, account);
+            DeliverMessage(account, "Account Closed", body);
+        }
+
+        protected virtual string GetAccountAccountDeleteFormat()
+        {
+            return @"
+This email is to confirm that your account has been closed for {applicationName}.
+
+Thanks!
+";
         }
     }
 }

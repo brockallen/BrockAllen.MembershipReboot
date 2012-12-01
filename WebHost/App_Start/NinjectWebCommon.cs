@@ -59,6 +59,10 @@ namespace WebHost.App_Start
             
             //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
             kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
+            kernel.Bind<ApplicationInformation>()
+                .ToConstant(new ApplicationInformation { 
+                    ApplicationName="Test" 
+                });
 
             //kernel.Bind<IPasswordPolicy>().To<NopPasswordPolicy>();
             kernel.Bind<IPasswordPolicy>().ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });
