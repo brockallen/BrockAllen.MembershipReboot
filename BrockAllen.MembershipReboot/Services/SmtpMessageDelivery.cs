@@ -11,8 +11,10 @@ namespace BrockAllen.MembershipReboot.Services
     {
         public void Send(Message msg)
         {
-            SmtpClient smtp = new SmtpClient();
-            smtp.Send(msg.From, msg.To, msg.Subject, msg.Body);
+            using (SmtpClient smtp = new SmtpClient())
+            {
+                smtp.Send(msg.From, msg.To, msg.Subject, msg.Body);
+            }
         }
     }
 }

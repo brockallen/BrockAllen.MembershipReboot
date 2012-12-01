@@ -11,9 +11,9 @@ namespace BrockAllen.MembershipReboot
         public string ApplicationName { get; set; }
         public string FromEmail { get; set; }
         public string LoginUrl { get; set; }
-        public string ConfirmAccountCreateUrl { get; set; }
-        public string CancelAccountCreateUrl { get; set; }
+        public string VerifyAccountUrl { get; set; }
+        public string CancelNewAccountUrl { get; set; }
         public string ConfirmPasswordResetUrl { get; set; }
-        public string CancelPasswordResetUrl { get; set; }
+        //public string CancelPasswordResetUrl { get; set; }
     }
 }

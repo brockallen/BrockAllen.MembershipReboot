@@ -25,11 +25,10 @@ namespace BrockAllen.MembershipReboot
             sb.Append(msg.Replace("{applicationName}", appInfo.ApplicationName));
             sb.Append(msg.Replace("{loginUrl}", appInfo.LoginUrl));
             
-            sb.Append(msg.Replace("{confirmAccountCreateUrl}", appInfo.ConfirmAccountCreateUrl));
-            sb.Append(msg.Replace("{cancelAccountCreateUrl}", appInfo.CancelAccountCreateUrl));
+            sb.Append(msg.Replace("{confirmAccountCreateUrl}", appInfo.VerifyAccountUrl));
+            sb.Append(msg.Replace("{cancelNewAccountUrl}", appInfo.CancelNewAccountUrl));
             
             sb.Append(msg.Replace("{confirmPasswordResetUrl}", appInfo.ConfirmPasswordResetUrl));
-            sb.Append(msg.Replace("{cancelPasswordResetUrl}", appInfo.CancelPasswordResetUrl));
 
             return sb.ToString();
         }
@@ -72,7 +71,7 @@ Please click here to confirm your request so you can login:
 
 If you did not create this account click here to cancel this request:
 
-{cancelAccountCreateUrl}
+{cancelNewAccountUrl}
 
 Thanks!
 ";
@@ -117,10 +116,6 @@ Username: {username}
 Please click here to confirm your request so you can login: 
 
 {confirmPasswordResetUrl}
-
-If you did not create this account click here to cancel this request:
-
-{cancelPasswordResetUrl}
 
 Thanks!
 ";
@@ -168,6 +163,10 @@ You can click here to login:
 
 Thanks!
 ";
+        }
+
+        public void SendAccountDelete(UserAccount account)
+        {
         }
     }
 }

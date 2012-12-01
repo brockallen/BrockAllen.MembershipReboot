@@ -9,7 +9,20 @@ namespace BrockAllen.MembershipReboot.EF
 {
     class EFMembershipRebootDatabase : DbContext
     {
-        public DbSet<UserAccount> UserAcounts { get; set; }
-        public DbSet<UserClaim> UserClaims { get; set; }
+        static EFMembershipRebootDatabase()
+        {
+            Database.SetInitializer<EFMembershipRebootDatabase>(new EFMembershipRebootDatabaseInitializer());
+        }
+
+        public EFMembershipRebootDatabase()
+        {
+        }
+
+        public EFMembershipRebootDatabase(string nameOrConnectionString)
+            : base(nameOrConnectionString)
+        {
+        }
+        
+        public DbSet<UserAccount> Users { get; set; }
     }
 }

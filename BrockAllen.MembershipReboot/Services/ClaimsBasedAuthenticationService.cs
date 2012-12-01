@@ -9,50 +9,57 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class ClaimsBasedAuthenticationService
+    public class ClaimsBasedAuthenticationService : IDisposable
     {
-        IUserAccountRepository userAccountRepo;
-        IUserClaimRepository userClaimRepo;
-        
+        const int DefaultTokenLifetime_InHours = 10;
+
+        IUserAccountRepository userRepository;
+
         public ClaimsBasedAuthenticationService(
-            IUserAccountRepository userAccountRepo,
-            IUserClaimRepository userClaimRepo)
+            IUserAccountRepository userRepository)
         {
-            this.userAccountRepo = userAccountRepo;
-            this.userClaimRepo = userClaimRepo;
+            this.userRepository = userRepository;
         }
 
-        public void SignIn(string username)
+        public void Dispose()
         {
-            var account = this.userAccountRepo.GetByUsername(username);
-            if (account == null) throw new ArgumentException("Invalid username: " + username);
+            this.userRepository.Dispose();
+        }
 
-            var userClaims = this.userClaimRepo.Get(username);
-            
+        public virtual void SignIn(string username)
+        {
+            // find user
+            var account = this.userRepository.GetByUsername(username);
+            if (account == null) throw new ArgumentException("Invalid username");
+
+            // gather claims
             var claims =
-                (from uc in userClaims
+                (from uc in account.Claims
                  select new Claim(uc.Type, uc.Value)).ToList();
-
+            claims.Insert(0, new Claim(ClaimTypes.Email, account.Email));
             claims.Insert(0, new Claim(ClaimTypes.AuthenticationMethod, "password"));
             claims.Insert(0, new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
             claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, account.Username));
 
+            // create principal/identity
             var id = new ClaimsIdentity(claims, "Forms");
             var cp = new ClaimsPrincipal(id);
+
+            // claims transform
             cp = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager.Authenticate(String.Empty, cp);
-            
+
+            // issue cookie
             var sam = FederatedAuthentication.SessionAuthenticationModule;
             if (sam == null) throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
-
-            var token = new SessionSecurityToken(cp, TimeSpan.FromHours(10));
+            var token = new SessionSecurityToken(cp, TimeSpan.FromHours(DefaultTokenLifetime_InHours));
             sam.WriteSessionTokenToCookie(token);
         }
 
-        public void SignOut()
+        public virtual void SignOut()
         {
+            // clear cookie
             var sam = FederatedAuthentication.SessionAuthenticationModule;
             if (sam == null) throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
-
             sam.SignOut();
         }
     }

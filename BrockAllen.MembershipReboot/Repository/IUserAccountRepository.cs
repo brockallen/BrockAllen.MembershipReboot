@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface IUserAccountRepository
+    public interface IUserAccountRepository : IDisposable
     {
+        IQueryable<UserAccount> GetAll();
         UserAccount GetByUsername(string username);
         UserAccount GetByEmail(string email);
-        UserAccount GetByResetKey(string key);
-        void Create(UserAccount account);
-        void Update(UserAccount account);
-        void Delete(UserAccount account);
+        UserAccount GetByVerificationKey(string key);
+        void Add(UserAccount item);
+        void Remove(UserAccount item);
+        void SaveChanges();
     }
 }
