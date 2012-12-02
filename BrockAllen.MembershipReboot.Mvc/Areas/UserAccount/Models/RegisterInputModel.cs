@@ -17,10 +17,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
         public string Email { get; set; }
         
         [Required]
-        [Display(Name="Display Name")]
-        public string DisplayName { get; set; }
-
-        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
         
@@ -28,9 +24,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
         [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage="Password confirmation must match password.")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
-
-        [HiddenInput]
-        public string ReturnUrl { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

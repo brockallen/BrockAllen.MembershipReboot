@@ -19,29 +19,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             this.userAccountService = userAccountService;
         }
         
-        public ActionResult Index(string returnUrl)
+        public ActionResult Index()
         {
-            try
-            {
-                if (returnUrl != null)
-                {
-                    if (!Url.IsLocalUrl(returnUrl))
-                    {
-                        var url = new Uri(returnUrl, UriKind.Absolute);
-                    }
-                }
-            }
-            catch
-            {
-                returnUrl = null;
-                ModelState.AddModelError("", "ReturnUrl is not a valid URL. It was ignored.");
-            }
-
-            var vm = new RegisterInputModel()
-            {
-                ReturnUrl = returnUrl
-            };
-            return View(vm);
+            return View(new RegisterInputModel());
         }
         
         [ValidateAntiForgeryToken]
@@ -53,7 +33,14 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     this.userAccountService.CreateAccount(model.Username, model.Password, model.Email);
-                    return View("Success", model);
+                    if (SecuritySettings.Instance.RequireAccountVerification)
+                    {
+                        return View("Success", model);
+                    }
+                    else
+                    {
+                        return View("Confirm", true);
+                    }
                 }
                 catch (ValidationException ex)
                 {
@@ -64,7 +51,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     ModelState.AddModelError("", "Error creating account.");
                 }
             }
-            return View();
+            return View(model);
         }
 
         public ActionResult Confirm(string id)

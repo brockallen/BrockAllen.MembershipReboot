@@ -60,9 +60,28 @@ namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
             //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
             kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
             kernel.Bind<ApplicationInformation>()
-                .ToConstant(new ApplicationInformation { 
-                    ApplicationName="Test" 
-                });
+                .ToMethod(x=>
+                    {
+                        // build URL
+                        var ctx = HttpContext.Current;
+                        var baseUrl =
+                            ctx.Request.Url.Scheme + 
+                            "://" + 
+                            ctx.Request.Url.Host + (ctx.Request.Url.Port == 80 ? "" : ":" + ctx.Request.Url.Port) + 
+                            ctx.Request.ApplicationPath;
+                        if (!baseUrl.EndsWith("/")) baseUrl += "/";
+                        
+                        // area name
+                        baseUrl += "UserAccount/";
+                        
+                        return new ApplicationInformation { 
+                            ApplicationName="Test",
+                            LoginUrl = baseUrl + "Login",
+                            VerifyAccountUrl = baseUrl + "Register/Confirm/",
+                            CancelNewAccountUrl = baseUrl + "Register/Cancel/",
+                            ConfirmPasswordResetUrl = baseUrl + "PasswordReset/Confirm/",
+                        };
+                    });
 
             //kernel.Bind<IPasswordPolicy>().To<NopPasswordPolicy>();
             kernel.Bind<IPasswordPolicy>().ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });

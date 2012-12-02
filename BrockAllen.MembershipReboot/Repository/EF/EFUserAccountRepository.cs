@@ -41,6 +41,10 @@ namespace BrockAllen.MembershipReboot
 
         public void Remove(UserAccount item)
         {
+            foreach (var claim in item.Claims.ToArray())
+            {
+                item.Claims.Remove(claim);
+            }
             db.Users.Remove(item);
         }
 

@@ -132,6 +132,7 @@
   <ItemGroup>
     <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangePasswordController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\CloseAccountController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LoginController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LogoutController.cs" />
@@ -167,6 +168,7 @@
     <Content Include="Areas\UserAccount\Views\Home\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangePassword\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangePassword\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\CloseAccount\Index.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>

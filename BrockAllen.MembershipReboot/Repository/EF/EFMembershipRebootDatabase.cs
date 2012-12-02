@@ -22,6 +22,13 @@ namespace BrockAllen.MembershipReboot
             : base(nameOrConnectionString)
         {
         }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            
+            base.OnModelCreating(modelBuilder);
+
+        }
         
         public DbSet<UserAccount> Users { get; set; }
     }

@@ -42,7 +42,12 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void CreateAccount(string username, string password, string email)
         {
-            if (!SecuritySettings.Instance.EmailIsUsername && String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
+            if (SecuritySettings.Instance.EmailIsUsername)
+            {
+                username = email;
+            }
+
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
             if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
 
@@ -66,7 +71,14 @@ namespace BrockAllen.MembershipReboot
                 this.userRepository.Add(account);
                 if (this.notificationService != null)
                 {
-                    this.notificationService.SendAccountCreate(account);
+                    if (SecuritySettings.Instance.RequireAccountVerification)
+                    {
+                        this.notificationService.SendAccountCreate(account);
+                    }
+                    else
+                    {
+                        this.notificationService.SendAccountVerified(account);
+                    }
                 }
                 this.userRepository.SaveChanges();
                 tx.Complete();

@@ -50,7 +50,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 }
             }
 
-            return View();
+            return View(model);
         }
     }
 }

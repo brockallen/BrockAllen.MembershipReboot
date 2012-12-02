@@ -171,7 +171,7 @@ Thanks!
         protected virtual string GetAccountAccountDeleteFormat()
         {
             return @"
-This email is to confirm that your account has been closed for {applicationName}.
+This email is to confirm that the account '{username}' has been closed for {applicationName}.
 
 Thanks!
 ";
