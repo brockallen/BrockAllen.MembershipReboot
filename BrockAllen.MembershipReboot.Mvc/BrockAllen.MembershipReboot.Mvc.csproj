@@ -139,12 +139,14 @@
     <Compile Include="Areas\UserAccount\Controllers\PasswordResetController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangeEmailController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\RegisterController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\SendUsernameReminderController.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeEmailInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordFromResetKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\LoginInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\PasswordResetInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\RegisterInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\SendUsernameReminderInputModel.cs" />
     <Compile Include="Areas\UserAccount\UserAccountAreaRegistration.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -169,6 +171,7 @@
     <Content Include="Areas\UserAccount\Views\ChangePassword\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangePassword\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\CloseAccount\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\SendUsernameReminder\Index.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>
