@@ -55,10 +55,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     ModelState.AddModelError("", ex.Message);
                 }
-                catch (Exception)
-                {
-                    ModelState.AddModelError("", "Error creating account.");
-                }
             }
             return View(model);
         }

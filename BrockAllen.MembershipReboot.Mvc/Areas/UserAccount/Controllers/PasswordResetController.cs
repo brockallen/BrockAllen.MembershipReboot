@@ -52,10 +52,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     ModelState.AddModelError("", ex.Message);
                 }
-                catch (Exception)
-                {
-                    ModelState.AddModelError("", "Error resetting password.");
-                }
             }
             return View();
         }
@@ -89,10 +85,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 catch (ValidationException ex)
                 {
                     ModelState.AddModelError("", ex.Message);
-                }
-                catch (Exception)
-                {
-                    ModelState.AddModelError("", "Error resetting password.");
                 }
             }
             return View();

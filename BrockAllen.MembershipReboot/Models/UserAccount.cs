@@ -89,7 +89,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (String.IsNullOrWhiteSpace(password))
             {
-                throw new ArgumentException("Invalid password");
+                throw new ValidationException("Invalid password");
             }
             
             HashedPassword = Crypto.HashPassword(password);
