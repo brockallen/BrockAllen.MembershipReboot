@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -28,18 +29,29 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             return View();
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Index(string button)
         {
             if (button == "yes")
             {
-                if (this.userAccountService.DeleteAccount(User.Identity.Name))
+                try
                 {
-                    return RedirectToAction("Index", "Logout");
+                    if (this.userAccountService.DeleteAccount(User.Identity.Name))
+                    {
+                        return RedirectToAction("Index", "Logout");
+                    }
+                    ModelState.AddModelError("", "Error closing your account");
                 }
-                ModelState.AddModelError("", "Error closing your account");
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Error closing your account");
+                }
             }
 
             return View();

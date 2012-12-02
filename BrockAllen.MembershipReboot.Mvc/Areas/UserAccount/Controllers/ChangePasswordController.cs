@@ -2,6 +2,7 @@
 using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -37,12 +38,25 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (this.userAccountService.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword))
+                try
                 {
-                    return View("Success");
+                    if (this.userAccountService.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword))
+                    {
+                        return View("Success");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error changing password");
+                    }
                 }
-
-                ModelState.AddModelError("", "Error changing password");
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Error changing password");
+                }
             }
             return View(model);
         }
