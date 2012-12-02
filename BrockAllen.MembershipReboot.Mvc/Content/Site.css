@@ -33,7 +33,7 @@ textarea {
 fieldset label {
   font-weight: bold;
   display: inline-block;
-  width: 120px;
+  width: 150px;
 }
 fieldset label:after {
   content: ':';

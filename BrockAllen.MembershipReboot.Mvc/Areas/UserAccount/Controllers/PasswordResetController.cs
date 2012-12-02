@@ -8,6 +8,7 @@ using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
+    [AllowAnonymous]
     public class PasswordResetController : Controller
     {
         UserAccountService userAccountService;

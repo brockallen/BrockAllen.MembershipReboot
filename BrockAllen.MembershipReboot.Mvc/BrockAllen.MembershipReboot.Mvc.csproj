@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BrockAllen</RootNamespace>
-    <AssemblyName>WebHost</AssemblyName>
+    <RootNamespace>BrockAllen.MembershipReboot.Mvc</RootNamespace>
+    <AssemblyName>BrockAllen.MembershipReboot.Mvc</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -131,13 +131,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\NinjectWebCommon.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\ChangePasswordController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LoginController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LogoutController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\PasswordResetController.cs" />
-    <Compile Include="Areas\UserAccount\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\ChangeEmailController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\RegisterController.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangeEmailInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordFromResetKeyInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangePasswordInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\LoginInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\PasswordResetInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\RegisterInputModel.cs" />
@@ -162,6 +165,8 @@
     <Content Include="Areas\UserAccount\Views\Register\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\RegisterInputModel.cshtml" />
     <Content Include="Areas\UserAccount\Views\Home\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangePassword\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangePassword\Success.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>

@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="BrockAllen.MvcApplication" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="BrockAllen.MembershipReboot.Mvc.MvcApplication" Language="C#" %>

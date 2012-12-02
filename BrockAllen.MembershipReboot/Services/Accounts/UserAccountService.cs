@@ -86,6 +86,7 @@ namespace BrockAllen.MembershipReboot
                     this.notificationService.SendAccountVerified(account);
                 }
                 this.userRepository.SaveChanges();
+                tx.Complete();
             }
             return result;
         }
@@ -185,6 +186,7 @@ namespace BrockAllen.MembershipReboot
                     this.notificationService.SendPasswordChangeNotice(account);
                 }
                 this.userRepository.SaveChanges();
+                tx.Complete();
             }
             return result;
         }

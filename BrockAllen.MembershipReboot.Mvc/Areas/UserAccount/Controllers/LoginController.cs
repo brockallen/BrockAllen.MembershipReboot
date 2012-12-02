@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
+    [AllowAnonymous]
     public class LoginController : Controller
     {
         UserAccountService userService;
@@ -26,6 +27,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         }
         
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Index(LoginInputModel model)
         {
             if (ModelState.IsValid)

@@ -60,12 +60,18 @@ namespace BrockAllen.MembershipReboot
         {
             if (String.IsNullOrWhiteSpace(password)) return false;
 
+            int length = password.Length;
+            int upper = GetUpperAlphas(password);
+            int lower = GetLowerAlphas(password);
+            int numerics = GetNumerics(password);
+            int non = GetNonAlphaNumerics(password);
+
             return
-                password.Length >= MinLength &&
-                GetUpperAlphas(password) >= UpperAlphas &&
-                GetLowerAlphas(password) >= LowerAlphas &&
-                GetNumerics(password) >= Numerics &&
-                GetNonAlphaNumerics(password) >= NonAlphaNumerics;
+                length >= MinLength &&
+                upper >= UpperAlphas &&
+                lower >= LowerAlphas &&
+                numerics >= Numerics &&
+                non >= NonAlphaNumerics;
         }
 
         int GetUpperAlphas(string password)
