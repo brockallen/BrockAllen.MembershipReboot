@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot", "BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj", "{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHost", "WebHost\WebHost.csproj", "{AA6283A3-9A1D-488D-979E-49D8E7813152}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Mvc", "BrockAllen.MembershipReboot.Mvc\BrockAllen.MembershipReboot.Mvc.csproj", "{AA6283A3-9A1D-488D-979E-49D8E7813152}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,7 +1,7 @@
-[assembly: WebActivator.PreApplicationStartMethod(typeof(WebHost.App_Start.NinjectWebCommon), "Start")]
-[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(WebHost.App_Start.NinjectWebCommon), "Stop")]
+[assembly: WebActivator.PreApplicationStartMethod(typeof(BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start.NinjectWebCommon), "Start")]
+[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start.NinjectWebCommon), "Stop")]
 
-namespace WebHost.App_Start
+namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
 {
     using System;
     using System.Web;

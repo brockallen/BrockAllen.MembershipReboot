@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace WebHost
+namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
 {
     public class FilterConfig
     {

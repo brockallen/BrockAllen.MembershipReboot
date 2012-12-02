@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace WebHost.Controllers
+namespace BrockAllenBrockAllen.MembershipReboot.Mvc.Controllers
 {
     public class HomeController : Controller
     {
