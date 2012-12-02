@@ -10,15 +10,25 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [AllowAnonymous]
     public class LoginController : Controller
     {
-        UserAccountService userService;
+        UserAccountService userAccountService;
         ClaimsBasedAuthenticationService authSvc;
 
         public LoginController(
             UserAccountService userService, 
             ClaimsBasedAuthenticationService authSvc)
         {
-            this.userService = userService;
+            this.userAccountService = userService;
             this.authSvc = authSvc;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.userAccountService.Dispose();
+                this.authSvc.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         public ActionResult Index()
@@ -32,7 +42,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (this.userService.Authenticate(model.Username, model.Password))
+                if (this.userAccountService.Authenticate(model.Username, model.Password))
                 {
                     authSvc.SignIn(model.Username);
                     if (Url.IsLocalUrl(model.ReturnUrl))
