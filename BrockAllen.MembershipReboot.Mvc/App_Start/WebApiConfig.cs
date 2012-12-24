@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 
-namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
+namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     public static class WebApiConfig
     {

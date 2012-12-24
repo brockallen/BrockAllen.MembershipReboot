@@ -11,6 +11,8 @@ namespace BrockAllen.MembershipReboot
     {
         public static SecuritySettings Instance { get; set; }
 
+        public bool MultiTenant { get; set; }
+        public string DefaultTenant { get; set; }
         public bool EmailIsUsername { get; set; }
         public bool RequireAccountVerification { get; set; }
         public bool AllowLoginAfterAccountCreation { get; set; }
@@ -25,6 +27,8 @@ namespace BrockAllen.MembershipReboot
         
         public SecuritySettings()
         {
+            MultiTenant = GetAppSettings("MultiTenant", false);
+            DefaultTenant = GetAppSettings("DefaultTenant", "default");
             EmailIsUsername = GetAppSettings("EmailIsUsername", false);
             RequireAccountVerification = GetAppSettings("RequireAccountVerification", true);
             AllowLoginAfterAccountCreation = GetAppSettings("AllowLoginAfterAccountCreation", true);

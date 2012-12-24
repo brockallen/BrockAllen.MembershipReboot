@@ -10,12 +10,12 @@ namespace BrockAllen.MembershipReboot
     {
         public string PolicyMessage
         {
-            get { throw new NotImplementedException(); }
+            get { return "There is no password policy."; }
         }
 
         public bool ValidatePassword(string password)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

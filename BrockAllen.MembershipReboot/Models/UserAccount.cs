@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,15 +11,11 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserAccount
     {
-        public static UserAccount Create(string username, string password, string email)
+        internal static UserAccount Create(string tenant, string username, string password, string email)
         {
-            if (SecuritySettings.Instance.EmailIsUsername && username != email)
-            {
-                throw new ValidationException("Username must be the same as the Email");
-            }
-
             UserAccount account = new UserAccount
             {
+                Tenant = tenant,
                 Username = username,
                 Email = email,
                 Created = DateTime.UtcNow,
@@ -38,6 +35,10 @@ namespace BrockAllen.MembershipReboot
         }
 
         [Key]
+        [Column(Order=1)]
+        public virtual string Tenant { get; set; }
+        [Key]
+        [Column(Order = 2)]
         public virtual string Username { get; private set; }
         [EmailAddress]
         public virtual string Email { get; private set; }
@@ -96,13 +97,11 @@ namespace BrockAllen.MembershipReboot
             PasswordChanged = DateTime.UtcNow;
         }
 
-        public virtual bool ResetPassword(string email)
+        public virtual void ResetPassword()
         {
-            if (!Email.Equals(email, StringComparison.InvariantCultureIgnoreCase)) return false;
-            
             // if they've not yet verified, then just use the current
             // verification key
-            if (!this.IsAccountVerified) return true;
+            if (!this.IsAccountVerified) return;
 
             // if there's no current key, or if there is a key but 
             // it's older than one day, create a new reset key
@@ -112,8 +111,6 @@ namespace BrockAllen.MembershipReboot
                 this.VerificationKey = StripUglyBase64(Crypto.GenerateSalt());
                 this.VerificationKeySent = DateTime.UtcNow;
             }
-
-            return true;
         }
 
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
@@ -184,7 +181,7 @@ namespace BrockAllen.MembershipReboot
                 });
         }
 
-        public void RemoveClaim(string username, string type)
+        public void RemoveClaim(string type)
         {
             var claimsToRemove =
                 from claim in this.Claims
@@ -196,7 +193,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public void RemoveClaim(string username, string type, string value)
+        public void RemoveClaim(string type, string value)
         {
             var claimsToRemove =
                 from claim in this.Claims

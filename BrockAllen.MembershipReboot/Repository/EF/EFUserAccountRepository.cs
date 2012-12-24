@@ -53,14 +53,14 @@ namespace BrockAllen.MembershipReboot
             db.SaveChanges();
         }
 
-        public UserAccount GetByUsername(string username)
+        public UserAccount GetByUsername(string tenant, string username)
         {
-            return GetAll().Where(x => x.Username == username).SingleOrDefault();
+            return GetAll().Where(x => x.Tenant == tenant && x.Username == username).SingleOrDefault();
         }
 
-        public UserAccount GetByEmail(string email)
+        public UserAccount GetByEmail(string tenant, string email)
         {
-            return GetAll().Where(x => x.Email == email).SingleOrDefault();
+            return GetAll().Where(x => x.Tenant == tenant && x.Email == email).SingleOrDefault();
         }
 
         public UserAccount GetByVerificationKey(string key)

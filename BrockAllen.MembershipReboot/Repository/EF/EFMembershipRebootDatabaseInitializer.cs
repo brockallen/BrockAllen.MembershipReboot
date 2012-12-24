@@ -12,11 +12,10 @@ namespace BrockAllen.MembershipReboot
     {
         protected override void Seed(EFMembershipRebootDatabase context)
         {
-            UserAccount admin =
-                UserAccount.Create("admin", "admin123", "brockallen@gmail.com");
-            admin.VerifyAccount(admin.VerificationKey);
-            admin.AddClaim(ClaimTypes.Role, "Administrator");
-            context.Users.Add(admin);
+            var adminAccount = UserAccount.Create("default", "admin", "admin123", "brockallen@gmail.com");
+            adminAccount.VerifyAccount(adminAccount.VerificationKey);
+            adminAccount.AddClaim(ClaimTypes.Role, "Administrator");
+            context.Users.Add(adminAccount);
 
             base.Seed(context);
         }

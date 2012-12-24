@@ -32,25 +32,62 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool UsernameExists(string username)
         {
-            return this.userRepository.GetAll().Where(x => x.Username == username).Any();
+            return UsernameExists(null, username);
+        }
+
+        public virtual bool UsernameExists(string tenant, string username)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+
+            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).Any();
         }
 
         public virtual bool EmailExists(string email)
         {
-            return this.userRepository.GetAll().Where(x => x.Email == email).Any();
+            return EmailExists(null, email);
+        }
+
+        public virtual bool EmailExists(string tenant, string email)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(email)) return false;
+
+            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).Any();
         }
 
         public virtual void CreateAccount(string username, string password, string email)
+        {
+            CreateAccount(null, username, password, email);
+        }
+
+        public virtual void CreateAccount(string tenant, string username, string password, string email)
         {
             if (SecuritySettings.Instance.EmailIsUsername)
             {
                 username = email;
             }
 
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
             if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
-
+            
             ValidatePassword(password);
 
             EmailAddressAttribute validator = new EmailAddressAttribute();
@@ -59,15 +96,15 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Email is invalid.");
             }
 
-            if ((!SecuritySettings.Instance.EmailIsUsername && UsernameExists(username)) 
-                || EmailExists(email))
+            if ((!SecuritySettings.Instance.EmailIsUsername && UsernameExists(tenant, username))
+                || EmailExists(tenant, email))
             {
                 throw new ValidationException("Username/Email already in use.");
             }
             
             using (var tx = new TransactionScope())
             {
-                var account = UserAccount.Create(username, password, email);
+                var account = UserAccount.Create(tenant, username, password, email);
                 this.userRepository.Add(account);
                 if (this.notificationService != null)
                 {
@@ -118,7 +155,20 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool DeleteAccount(string username)
         {
-            var account = this.userRepository.GetByUsername(username);
+            return DeleteAccount(null, username);
+        }
+
+        public virtual bool DeleteAccount(string tenant, string username)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+
+            var account = this.userRepository.GetByUsername(tenant, username);
             if (account == null) return false;
 
             DeleteAccount(account);
@@ -151,19 +201,38 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool Authenticate(string username, string password)
         {
+            return Authenticate(null, username, password);
+        }
+
+        public virtual bool Authenticate(string tenant, string username, string password)
+        {
             return Authenticate(
-                username, password, 
+                tenant, username, password,
                 SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, 
                 SecuritySettings.Instance.AccountLockoutDuration);
         }
 
         public virtual bool Authenticate(
-            string username, string password, 
+            string username, string password,
             int failedLoginCount, TimeSpan lockoutDuration)
         {
-            if (String.IsNullOrWhiteSpace(username)) return false;
+            return Authenticate(null, username, password, failedLoginCount, lockoutDuration);
+        }
 
-            var account = this.userRepository.GetByUsername(username);
+        public virtual bool Authenticate(
+            string tenant, string username, string password, 
+            int failedLoginCount, TimeSpan lockoutDuration)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+            if (String.IsNullOrWhiteSpace(password)) return false;
+
+            var account = this.userRepository.GetByUsername(tenant, username);
             if (account == null) return false;
 
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
@@ -171,23 +240,49 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
-        public virtual bool ChangePassword(string username, string oldPassword, string newPassword)
+        public virtual bool ChangePassword(
+            string username, string oldPassword, string newPassword)
+        {
+            return ChangePassword(null, username, oldPassword, newPassword);
+        }
+
+        public virtual bool ChangePassword(
+            string tenant, string username, 
+            string oldPassword, string newPassword)
         {
             return ChangePassword(
-                username, oldPassword, newPassword,
+                tenant, username, 
+                oldPassword, newPassword,
                 SecuritySettings.Instance.AccountLockoutFailedLoginAttempts,
                 SecuritySettings.Instance.AccountLockoutDuration);
         }
 
         public virtual bool ChangePassword(
-            string username, string oldPassword, string newPassword, 
+            string username,
+            string oldPassword, string newPassword,
             int failedLoginCount, TimeSpan lockoutDuration)
         {
+            return ChangePassword(null, username, oldPassword, newPassword, failedLoginCount, lockoutDuration);
+        }
+
+        public virtual bool ChangePassword(
+            string tenant, string username, 
+            string oldPassword, string newPassword,
+            int failedLoginCount, TimeSpan lockoutDuration)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(username)) return false;
+            if (String.IsNullOrWhiteSpace(oldPassword)) return false;
+            if (String.IsNullOrWhiteSpace(newPassword)) return false;
 
             ValidatePassword(newPassword);
 
-            var account = this.userRepository.GetByUsername(username);
+            var account = this.userRepository.GetByUsername(tenant, username);
             if (account == null) return false;
 
             var result = account.ChangePassword(oldPassword, newPassword, failedLoginCount, lockoutDuration);
@@ -205,18 +300,26 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool ResetPassword(string email)
         {
-            if (String.IsNullOrWhiteSpace(email))
+            return ResetPassword(null, email);
+        }
+
+        public virtual bool ResetPassword(string tenant, string email)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
             {
-                return false;
+                tenant = SecuritySettings.Instance.DefaultTenant;
             }
 
-            var account = this.userRepository.GetByEmail(email);
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(email)) return false;
+
+            var account = this.userRepository.GetByEmail(tenant, email);
             if (account == null) return false;
 
-            var result = account.ResetPassword(email);
+            account.ResetPassword();
             using (var tx = new TransactionScope())
             {
-                if (result && this.notificationService != null)
+                if (this.notificationService != null)
                 {
                     this.notificationService.SendResetPassword(account);
                 }
@@ -224,7 +327,7 @@ namespace BrockAllen.MembershipReboot
                 tx.Complete();
             }
 
-            return result;
+            return true;
         }
         
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
@@ -254,9 +357,20 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SendUsernameReminder(string email)
         {
+            SendUsernameReminder(null, email);
+        }
+
+        public virtual void SendUsernameReminder(string tenant, string email)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return;
             if (String.IsNullOrWhiteSpace(email)) return;
 
-            var user = this.userRepository.GetByEmail(email);
+            var user = this.userRepository.GetByEmail(tenant, email);
             if (user != null)
             {
                 this.notificationService.SendAccountNameReminder(user);

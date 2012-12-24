@@ -12,7 +12,7 @@ namespace BrockAllen.MembershipReboot
     {
         [Key]
         public virtual int ID { get; set; }
-        public virtual UserAccount User { get; set; }
+        //public virtual UserAccount User { get; set; }
         public virtual string Type { get; set; }
         public virtual string Value { get; set; }
     }

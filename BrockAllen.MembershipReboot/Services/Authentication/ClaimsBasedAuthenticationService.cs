@@ -28,8 +28,21 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignIn(string username)
         {
+            SignIn(null, username);
+        }
+
+        public virtual void SignIn(string tenant, string username)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
+
             // find user
-            var account = this.userRepository.GetByUsername(username);
+            var account = this.userRepository.GetByUsername(tenant, username);
             if (account == null) throw new ArgumentException("Invalid username");
 
             // gather claims
@@ -41,6 +54,7 @@ namespace BrockAllen.MembershipReboot
             claims.Insert(0, new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
             claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, account.Username));
             claims.Insert(0, new Claim(ClaimTypes.Name, account.Username));
+            claims.Insert(0, new Claim(ClaimTypes.System, account.Tenant));
 
             // create principal/identity
             var id = new ClaimsIdentity(claims, "Forms");

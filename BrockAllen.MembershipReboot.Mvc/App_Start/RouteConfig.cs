@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
+namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     public class RouteConfig
     {
@@ -17,7 +17,7 @@ namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-                namespaces: new string[] { "BrockAllenBrockAllen.MembershipReboot.Mvc.Controllers" }
+                namespaces: new string[] { "BrockAllen.MembershipReboot.Mvc.Controllers" }
             );
         }
     }

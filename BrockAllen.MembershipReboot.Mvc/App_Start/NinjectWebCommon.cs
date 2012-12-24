@@ -1,7 +1,7 @@
-[assembly: WebActivator.PreApplicationStartMethod(typeof(BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start.NinjectWebCommon), "Start")]
-[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start.NinjectWebCommon), "Stop")]
+[assembly: WebActivator.PreApplicationStartMethod(typeof(BrockAllen.MembershipReboot.Mvc.App_Start.NinjectWebCommon), "Start")]
+[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(BrockAllen.MembershipReboot.Mvc.App_Start.NinjectWebCommon), "Stop")]
 
-namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
+namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     using System;
     using System.Web;
@@ -57,8 +57,8 @@ namespace BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start
             //kernel.Bind<IUserAccountRepository>().To<EFUserAccountRepository>();
             kernel.Bind<IUserAccountRepository>().ToMethod(x => new EFUserAccountRepository("name=MembershipReboot"));
             
-            //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
-            kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
+            kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
+            //kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
             kernel.Bind<ApplicationInformation>()
                 .ToMethod(x=>
                     {

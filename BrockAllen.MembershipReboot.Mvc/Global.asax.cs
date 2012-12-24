@@ -1,4 +1,4 @@
-﻿using BrockAllenBrockAllen.MembershipReboot.Mvc.App_Start;
+﻿using BrockAllen.MembershipReboot.Mvc.App_Start;
 using System;
 using System.Collections.Generic;
 using System.Linq;
