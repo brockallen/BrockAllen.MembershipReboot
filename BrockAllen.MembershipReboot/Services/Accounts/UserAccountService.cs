@@ -30,6 +30,16 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Dispose();
         }
 
+        public void SaveChanges()
+        {
+            this.userRepository.SaveChanges();
+        }
+
+        public virtual IQueryable<UserAccount> GetAll()
+        {
+            return this.userRepository.GetAll().Where(x => x.IsAccountClosed == false);
+        }
+
         public virtual UserAccount GetByUsername(string username)
         {
             return GetByUsername(null, username);

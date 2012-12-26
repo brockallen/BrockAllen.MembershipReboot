@@ -31,7 +31,7 @@ namespace BrockAllen.MembershipReboot
 
         public IQueryable<UserAccount> GetAll()
         {
-            return db.Users.Where(x=>x.IsAccountClosed == false);
+            return db.Users;
         }
 
         public void Add(UserAccount item)
@@ -41,10 +41,6 @@ namespace BrockAllen.MembershipReboot
 
         public void Remove(UserAccount item)
         {
-            foreach (var claim in item.Claims.ToArray())
-            {
-                item.Claims.Remove(claim);
-            }
             db.Users.Remove(item);
         }
 
