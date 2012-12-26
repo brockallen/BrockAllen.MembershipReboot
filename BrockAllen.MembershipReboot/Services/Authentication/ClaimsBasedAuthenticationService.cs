@@ -13,17 +13,16 @@ namespace BrockAllen.MembershipReboot
     {
         const int DefaultTokenLifetime_InHours = 10;
 
-        IUserAccountRepository userRepository;
+        UserAccountService userService;
 
-        public ClaimsBasedAuthenticationService(
-            IUserAccountRepository userRepository)
+        public ClaimsBasedAuthenticationService(UserAccountService userService)
         {
-            this.userRepository = userRepository;
+            this.userService = userService;
         }
 
         public void Dispose()
         {
-            this.userRepository.Dispose();
+            this.userService.Dispose();
         }
 
         public virtual void SignIn(string username)
@@ -42,7 +41,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
 
             // find user
-            var account = this.userRepository.GetByUsername(tenant, username);
+            var account = this.userService.GetByUsername(tenant, username);
             if (account == null) throw new ArgumentException("Invalid username");
 
             // gather claims

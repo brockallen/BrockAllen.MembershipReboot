@@ -30,6 +30,49 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Dispose();
         }
 
+        public virtual UserAccount GetByUsername(string username)
+        {
+            return GetByUsername(null, username);
+        }
+
+        public virtual UserAccount GetByUsername(string tenant, string username)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (String.IsNullOrWhiteSpace(username)) return null;
+
+            return userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).SingleOrDefault();
+        }
+
+        public virtual UserAccount GetByEmail(string email)
+        {
+            return GetByEmail(null, email);
+        }
+
+        public virtual UserAccount GetByEmail(string tenant, string email)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (String.IsNullOrWhiteSpace(email)) return null;
+
+            return userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).SingleOrDefault();
+        }
+
+        public virtual UserAccount GetByVerificationKey(string key)
+        {
+            if (String.IsNullOrWhiteSpace(key)) return null;
+
+            return userRepository.GetAll().Where(x => x.VerificationKey == key).SingleOrDefault();
+        }
+
         public virtual bool UsernameExists(string username)
         {
             return UsernameExists(null, username);
@@ -124,7 +167,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool VerifyAccount(string key)
         {
-            var account = this.userRepository.GetByVerificationKey(key);
+            var account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
             var result = account.VerifyAccount(key);
@@ -142,7 +185,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool CancelNewAccount(string key)
         {
-            var account = this.userRepository.GetByVerificationKey(key);
+            var account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
             if (account.IsAccountVerified) return false;
@@ -168,7 +211,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(username)) return false;
 
-            var account = this.userRepository.GetByUsername(tenant, username);
+            var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
             DeleteAccount(account);
@@ -232,7 +275,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(password)) return false;
 
-            var account = this.userRepository.GetByUsername(tenant, username);
+            var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
@@ -282,7 +325,7 @@ namespace BrockAllen.MembershipReboot
 
             ValidatePassword(newPassword);
 
-            var account = this.userRepository.GetByUsername(tenant, username);
+            var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
             var result = account.ChangePassword(oldPassword, newPassword, failedLoginCount, lockoutDuration);
@@ -313,7 +356,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(email)) return false;
 
-            var account = this.userRepository.GetByEmail(tenant, email);
+            var account = this.GetByEmail(tenant, email);
             if (account == null) return false;
 
             account.ResetPassword();
@@ -337,7 +380,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            var account = this.userRepository.GetByVerificationKey(key);
+            var account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
             ValidatePassword(newPassword);
@@ -370,7 +413,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return;
             if (String.IsNullOrWhiteSpace(email)) return;
 
-            var user = this.userRepository.GetByEmail(tenant, email);
+            var user = this.GetByEmail(tenant, email);
             if (user != null)
             {
                 this.notificationService.SendAccountNameReminder(user);
