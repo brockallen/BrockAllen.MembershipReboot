@@ -22,6 +22,7 @@ namespace BrockAllen.MembershipReboot
             msg = msg.Replace("{email}", user.Email);
 
             msg = msg.Replace("{applicationName}", appInfo.ApplicationName);
+            msg = msg.Replace("{emailSignature}", appInfo.EmailSignature);
             msg = msg.Replace("{loginUrl}", appInfo.LoginUrl);
 
             msg = msg.Replace("{confirmAccountCreateUrl}", appInfo.VerifyAccountUrl + user.VerificationKey);
@@ -70,6 +71,8 @@ If you did not create this account click here to cancel this request:
 {cancelNewAccountUrl}
 
 Thanks!
+
+{emailSignature}
 ";
         }
 
@@ -92,6 +95,8 @@ You can now login at this address:
 {loginUrl}
 
 Thanks!
+
+{emailSignature}
 ";
         }
 
@@ -114,6 +119,8 @@ Please click here to confirm your request so you can reset your password:
 {confirmPasswordResetUrl}
 
 Thanks!
+
+{emailSignature}
 ";
         }
 
@@ -136,6 +143,8 @@ Click here to login:
 {loginUrl}
 
 Thanks!
+
+{emailSignature}
 ";
         }
 
@@ -158,6 +167,8 @@ You can click here to login:
 {loginUrl}
 
 Thanks!
+
+{emailSignature}
 ";
         }
 
@@ -174,6 +185,8 @@ Thanks!
 This email is to confirm that the account '{username}' has been closed for {applicationName}.
 
 Thanks!
+
+{emailSignature}
 ";
         }
     }
