@@ -169,16 +169,45 @@ namespace BrockAllen.MembershipReboot
             return valid;
         }
 
+        public bool HasClaim(string type)
+        {
+            return this.Claims.Any(x => x.Type == type);
+        }
+
+        public bool HasClaim(string type, string value)
+        {
+            return this.Claims.Any(x => x.Type == type && x.Value == value);
+        }
+
+        public IEnumerable<string> GetClaimValues(string type)
+        {
+            var query =
+                from claim in this.Claims
+                where claim.Type == type
+                select claim.Value;
+            return query.ToArray();
+        }
+        
+        public string GetClaimValue(string type)
+        {
+            var query =
+                from claim in this.Claims
+                where claim.Type == type
+                select claim.Value;
+            return query.SingleOrDefault();
+        }
+
         public void AddClaim(string type, string value)
         {
-            RemoveClaim(type, value);
-
-            this.Claims.Add(
-                new UserClaim
-                {
-                    Type = type,
-                    Value = value
-                });
+            if (!this.HasClaim(type, value))
+            {
+                this.Claims.Add(
+                    new UserClaim
+                    {
+                        Type = type,
+                        Value = value
+                    });
+            }
         }
 
         public void RemoveClaim(string type)
