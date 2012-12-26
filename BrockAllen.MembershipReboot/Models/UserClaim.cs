@@ -12,6 +12,8 @@ namespace BrockAllen.MembershipReboot
     {
         [Key]
         public virtual int ID { get; set; }
+        [Required]
+        public UserAccount User { get; set; }
         public virtual string Type { get; set; }
         public virtual string Value { get; set; }
     }
