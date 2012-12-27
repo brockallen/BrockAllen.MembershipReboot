@@ -54,8 +54,8 @@ namespace BrockAllen.MembershipReboot
         public virtual DateTime? LastFailedLogin { get; private set; }
         public virtual int FailedLoginCount { get; private set; }
 
-        public string VerificationKey { get; private set; }
-        public DateTime? VerificationKeySent { get; private set; }
+        public virtual string VerificationKey { get; private set; }
+        public virtual DateTime? VerificationKeySent { get; private set; }
 
         [Required]
         public virtual string HashedPassword { get; private set; }
@@ -216,7 +216,7 @@ namespace BrockAllen.MembershipReboot
                 from claim in this.Claims
                 where claim.Type == type
                 select claim;
-            foreach (var claim in claimsToRemove)
+            foreach (var claim in claimsToRemove.ToArray())
             {
                 this.Claims.Remove(claim);
             }
@@ -228,7 +228,7 @@ namespace BrockAllen.MembershipReboot
                 from claim in this.Claims
                 where claim.Type == type && claim.Value == value
                 select claim;
-            foreach (var claim in claimsToRemove)
+            foreach (var claim in claimsToRemove.ToArray())
             {
                 this.Claims.Remove(claim);
             }
