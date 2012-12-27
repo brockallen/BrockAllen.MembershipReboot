@@ -11,10 +11,20 @@ namespace BrockAllen.MembershipReboot
     public class UserClaim
     {
         [Key]
-        public virtual int ID { get; set; }
-        [Required]
-        public UserAccount User { get; set; }
+        [Column(Order=1)]
+        public virtual string Tenant { get; set; }
+        [Key]
+        [Column(Order = 2)]
+        public virtual string Username { get; set; }
+        [Key]
+        [Column(Order = 3)]
         public virtual string Type { get; set; }
+        [Key]
+        [Column(Order = 4)]
         public virtual string Value { get; set; }
+        
+        [Required]
+        [ForeignKey("Tenant, Username")]
+        public virtual UserAccount User { get; set; }
     }
 }
