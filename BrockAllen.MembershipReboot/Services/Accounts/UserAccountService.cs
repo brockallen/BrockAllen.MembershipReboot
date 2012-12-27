@@ -119,12 +119,12 @@ namespace BrockAllen.MembershipReboot
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).Any();
         }
 
-        public virtual void CreateAccount(string username, string password, string email)
+        public virtual UserAccount CreateAccount(string username, string password, string email)
         {
-            CreateAccount(null, username, password, email);
+            return CreateAccount(null, username, password, email);
         }
 
-        public virtual void CreateAccount(string tenant, string username, string password, string email)
+        public virtual UserAccount CreateAccount(string tenant, string username, string password, string email)
         {
             if (SecuritySettings.Instance.EmailIsUsername)
             {
@@ -172,6 +172,8 @@ namespace BrockAllen.MembershipReboot
                 }
                 this.userRepository.SaveChanges();
                 tx.Complete();
+
+                return account;
             }
         }
 
