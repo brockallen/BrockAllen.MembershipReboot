@@ -39,6 +39,11 @@ namespace BrockAllen.MembershipReboot
         {
             return this.userRepository.GetAll().Where(x => x.IsAccountClosed == false);
         }
+        
+        public virtual IQueryable<UserAccount> GetAll(string tenant)
+        {
+            return this.GetAll().Where(x => x.Tenant == tenant);
+        }
 
         public virtual UserAccount GetByUsername(string username)
         {
