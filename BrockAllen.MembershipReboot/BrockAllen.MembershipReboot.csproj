@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MembershipRebootConstants.cs" />
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabaseInitializer.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
