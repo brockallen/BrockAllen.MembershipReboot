@@ -10,13 +10,19 @@ namespace BrockAllen.MembershipReboot
 {
     class EFMembershipRebootDatabaseInitializer : CreateDatabaseIfNotExists<EFMembershipRebootDatabase>
     {
-        protected override void Seed(EFMembershipRebootDatabase context)
+        public static void SeedContext(EFMembershipRebootDatabase context)
         {
+#if DEBUG
             var adminAccount = UserAccount.Create("default", "admin", "admin123", "brockallen@gmail.com");
             adminAccount.VerifyAccount(adminAccount.VerificationKey);
             adminAccount.AddClaim(ClaimTypes.Role, "Administrator");
             context.Users.Add(adminAccount);
+#endif 
+        }
 
+        protected override void Seed(EFMembershipRebootDatabase context)
+        {
+            SeedContext(context);
             base.Seed(context);
         }
     }
