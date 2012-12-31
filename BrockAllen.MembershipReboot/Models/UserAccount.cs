@@ -100,11 +100,11 @@ namespace BrockAllen.MembershipReboot
             PasswordChanged = DateTime.UtcNow;
         }
 
-        public virtual void ResetPassword()
+        public virtual bool ResetPassword()
         {
             // if they've not yet verified, then just use the current
             // verification key
-            if (!this.IsAccountVerified) return;
+            if (!this.IsAccountVerified) return false;
 
             // if there's no current key, or if there is a key but 
             // it's older than one day, create a new reset key
@@ -114,6 +114,8 @@ namespace BrockAllen.MembershipReboot
                 this.VerificationKey = StripUglyBase64(Crypto.GenerateSalt());
                 this.VerificationKeySent = DateTime.UtcNow;
             }
+
+            return true;
         }
 
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)

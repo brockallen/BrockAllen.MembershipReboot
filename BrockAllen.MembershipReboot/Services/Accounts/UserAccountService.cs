@@ -383,18 +383,31 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByEmail(tenant, email);
             if (account == null) return false;
 
-            account.ResetPassword();
-            using (var tx = new TransactionScope())
+            if (!account.IsAccountVerified)
             {
-                if (this.notificationService != null)
+                if (SecuritySettings.Instance.RequireAccountVerification && this.notificationService != null)
                 {
-                    this.notificationService.SendResetPassword(account);
+                    this.notificationService.SendAccountCreate(account);
+                    return true;
                 }
-                this.userRepository.SaveChanges();
-                tx.Complete();
+
+                return false;
             }
 
-            return true;
+            var result = account.ResetPassword();
+            if (result)
+            {
+                using (var tx = new TransactionScope())
+                {
+                    if (this.notificationService != null)
+                    {
+                        this.notificationService.SendResetPassword(account);
+                    }
+                    this.userRepository.SaveChanges();
+                    tx.Complete();
+                }
+            }
+            return result;
         }
         
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
@@ -410,14 +423,17 @@ namespace BrockAllen.MembershipReboot
             ValidatePassword(newPassword);
 
             var result = account.ChangePasswordFromResetKey(key, newPassword);
-            using (var tx = new TransactionScope())
+            if (result)
             {
-                if (result && this.notificationService != null)
+                using (var tx = new TransactionScope())
                 {
-                    this.notificationService.SendPasswordChangeNotice(account);
+                    if (this.notificationService != null)
+                    {
+                        this.notificationService.SendPasswordChangeNotice(account);
+                    }
+                    this.userRepository.SaveChanges();
+                    tx.Complete();
                 }
-                this.userRepository.SaveChanges();
-                tx.Complete();
             }
             return result;
         }
