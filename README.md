@@ -63,7 +63,7 @@ Here is an example configuration for email to use the www.sendgrid.com service:
   </system.net>
 ```
 
-> TIP: If you are using Google mail, it is to create many email addresses. If your real email address
+> TIP: If you are using Google mail, it is very easy to create multiple email addresses for testing. If your real email address
 >      is foo@gmail.com then you can also use foo+abc@gmail.com or foo+123@gmail.com and Google mail
 >      sends them all to foo@gmail.com. 
 
