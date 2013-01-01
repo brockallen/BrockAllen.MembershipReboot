@@ -88,7 +88,6 @@
       <DependentUpon>201212302209064_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\UserClaim.cs" />
-    <Compile Include="Repository\EF\EFMembershipRebootDatabaseInitializer.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
     <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
     <Compile Include="Services\Accounts\BasicPasswordPolicy.cs" />

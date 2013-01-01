@@ -7,13 +7,8 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    class EFMembershipRebootDatabase : DbContext
+    public class EFMembershipRebootDatabase : DbContext
     {
-        static EFMembershipRebootDatabase()
-        {
-            Database.SetInitializer<EFMembershipRebootDatabase>(new EFMembershipRebootDatabaseInitializer());
-        }
-
         public EFMembershipRebootDatabase()
         {
         }
@@ -23,13 +18,6 @@ namespace BrockAllen.MembershipReboot
         {
         }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            
-            base.OnModelCreating(modelBuilder);
-
-        }
-        
         public DbSet<UserAccount> Users { get; set; }
     }
 }

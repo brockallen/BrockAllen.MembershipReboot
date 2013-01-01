@@ -55,7 +55,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         private static void RegisterServices(IKernel kernel)
         {
             //kernel.Bind<IUserAccountRepository>().To<EFUserAccountRepository>();
-            kernel.Bind<IUserAccountRepository>().ToMethod(x => new EFUserAccountRepository("name=MembershipReboot"));
+            kernel.Bind<IUserAccountRepository>().ToMethod(x => new EFUserAccountRepository(Constants.ConnectionName));
             
             //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
             kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
