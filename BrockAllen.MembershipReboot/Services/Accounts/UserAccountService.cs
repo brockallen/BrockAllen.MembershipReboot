@@ -27,7 +27,11 @@ namespace BrockAllen.MembershipReboot
 
         public void Dispose()
         {
-            this.userRepository.Dispose();
+            if (this.userRepository != null)
+            {
+                this.userRepository.Dispose();
+                this.userRepository = null;
+            }
         }
 
         public void SaveChanges()

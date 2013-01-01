@@ -18,7 +18,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (disposing)
             {
-                this.authSvc.Dispose();
+                if (this.authSvc != null)
+                {
+                    this.authSvc.Dispose();
+                    this.authSvc = null;
+                }
             }
             base.Dispose(disposing);
         }

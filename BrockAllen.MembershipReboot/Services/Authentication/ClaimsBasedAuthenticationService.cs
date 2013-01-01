@@ -22,7 +22,11 @@ namespace BrockAllen.MembershipReboot
 
         public void Dispose()
         {
-            this.userService.Dispose();
+            if (this.userService != null)
+            {
+                this.userService.Dispose();
+                this.userService = null;
+            }
         }
 
         public virtual void SignIn(string username)

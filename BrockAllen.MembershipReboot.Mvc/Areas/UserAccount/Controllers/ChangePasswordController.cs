@@ -22,7 +22,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (disposing)
             {
-                this.userAccountService.Dispose();
+                if (this.userAccountService != null)
+                {
+                    this.userAccountService.Dispose();
+                    this.userAccountService = null;
+                }
             }
             base.Dispose(disposing);
         }
