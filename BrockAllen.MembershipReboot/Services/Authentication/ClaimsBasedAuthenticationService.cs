@@ -48,12 +48,16 @@ namespace BrockAllen.MembershipReboot
             var claims =
                 (from uc in account.Claims
                  select new Claim(uc.Type, uc.Value)).ToList();
-            claims.Insert(0, new Claim(ClaimTypes.Email, account.Email));
-            claims.Insert(0, new Claim(ClaimTypes.AuthenticationMethod, "password"));
+
+            if (!String.IsNullOrWhiteSpace(account.Email))
+            {
+                claims.Insert(0, new Claim(ClaimTypes.Email, account.Email));
+            }
+            claims.Insert(0, new Claim(ClaimTypes.AuthenticationMethod, AuthenticationMethods.Password));
             claims.Insert(0, new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
-            claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, String.Format("{0}:{1}", account.Tenant, account.Username)));
             claims.Insert(0, new Claim(ClaimTypes.Name, account.Username));
             claims.Insert(0, new Claim(MembershipRebootConstants.ClaimTypes.Tenant, account.Tenant));
+            claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, String.Format("{0}:{1}", account.Tenant, account.Username)));
 
             // create principal/identity
             var id = new ClaimsIdentity(claims, "Forms");
