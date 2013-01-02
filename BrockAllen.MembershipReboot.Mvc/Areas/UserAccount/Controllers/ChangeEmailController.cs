@@ -37,13 +37,33 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Index(ChangeEmailInputModel model)
+        public ActionResult Index(ChangeEmailRequestInputModel model)
         {
             if (ModelState.IsValid)
             {
+                this.userAccountService.ChangeEmailRequest(User.Identity.Name, model.NewEmail);
+                return View("ChangeRequestSuccess", (object)model.NewEmail);
             }
             return View();
         }
 
+        public ActionResult Confirm(string id)
+        {
+            var vm = new ChangeEmailFromKeyInputModel();
+            vm.Key = id;
+            return View("Confirm", vm);
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Confirm(ChangeEmailFromKeyInputModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                this.userAccountService.ChangeEmailFromKey(model.Password, model.Key, model.NewEmail);
+                return View("Success");
+            }
+            return View("Confirm", model);
+        }
     }
 }

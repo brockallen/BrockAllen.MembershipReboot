@@ -306,6 +306,11 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
+            return Authenticate(account, password, failedLoginCount, lockoutDuration);
+        }
+
+        private bool Authenticate(UserAccount account, string password, int failedLoginCount, TimeSpan lockoutDuration)
+        {
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
             this.userRepository.SaveChanges();
             return result;
@@ -389,12 +394,15 @@ namespace BrockAllen.MembershipReboot
 
             if (!account.IsAccountVerified)
             {
-                if (SecuritySettings.Instance.RequireAccountVerification && this.notificationService != null)
+                // if they're not verified, resend the new account email
+                if (SecuritySettings.Instance.RequireAccountVerification && 
+                    this.notificationService != null)
                 {
                     this.notificationService.SendAccountCreate(account);
                     return true;
                 }
 
+                // if we don't have a notification system then not much we can do
                 return false;
             }
 
@@ -463,7 +471,97 @@ namespace BrockAllen.MembershipReboot
                 this.notificationService.SendAccountNameReminder(user);
             }
         }
+
+        public virtual bool ChangeEmailRequest(string username, string newEmail)
+        {
+            return ChangeEmailRequest(null, username, newEmail);
+        }
+
+        public virtual bool ChangeEmailRequest(string tenant, string username, string newEmail)
+        {
+            if (SecuritySettings.Instance.EmailIsUsername)
+            {
+                // if username is email, then this is same as 
+                // changing the primary key, so we don't allow it
+                return false;
+            }
+
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+            if (String.IsNullOrWhiteSpace(newEmail)) return false;
+
+            EmailAddressAttribute validator = new EmailAddressAttribute();
+            if (!validator.IsValid(newEmail))
+            {
+                throw new ValidationException("Email is invalid.");
+            }
+
+            var account = this.GetByUsername(tenant, username);
+            if (account == null) return false;
+
+            var result = account.ChangeEmailRequest(newEmail);
+            if (result)
+            {
+                using (var tx = new TransactionScope())
+                {
+                    if (this.notificationService != null)
+                    {
+                        this.notificationService.SendChangeEmailRequestNotice(account, newEmail);
+                    }
+                    this.userRepository.SaveChanges();
+                    tx.Complete();
+                }
+            }
+
+            return result;
+        }
+
+        public virtual bool ChangeEmailFromKey(string password, string key, string newEmail)
+        {
+            return ChangeEmailFromKey(
+                password, key, newEmail, 
+                SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, 
+                SecuritySettings.Instance.AccountLockoutDuration);
+        }
         
+        public virtual bool ChangeEmailFromKey(
+            string password, string key, string newEmail, 
+            int failedLoginCount, TimeSpan lockoutDuration)
+        {
+            if (String.IsNullOrWhiteSpace(password)) return false;
+            if (String.IsNullOrWhiteSpace(key)) return false;
+            if (String.IsNullOrWhiteSpace(newEmail)) return false;
+
+            var account = this.GetByVerificationKey(key);
+            if (account == null) return false;
+
+            if (!Authenticate(account, password, failedLoginCount, lockoutDuration))
+            {
+                return false;
+            }
+
+            var oldEmail = account.Email;
+            var result = account.ChangeEmailFromKey(key, newEmail);
+            if (result)
+            {
+                using (var tx = new TransactionScope())
+                {
+                    if (this.notificationService != null)
+                    {
+                        this.notificationService.SendEmailChangedNotice(account, oldEmail);
+                    }
+                    this.userRepository.SaveChanges();
+                    tx.Complete();
+                }
+            }
+            return result;
+        }
+
         private void ValidatePassword(string password)
         {
             if (passwordPolicy != null &&

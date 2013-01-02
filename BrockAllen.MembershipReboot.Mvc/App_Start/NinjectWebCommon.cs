@@ -54,7 +54,6 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            //kernel.Bind<IUserAccountRepository>().To<EFUserAccountRepository>();
             kernel.Bind<IUserAccountRepository>().ToMethod(x => new EFUserAccountRepository(Constants.ConnectionName));
             
             //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
@@ -81,6 +80,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                             VerifyAccountUrl = baseUrl + "Register/Confirm/",
                             CancelNewAccountUrl = baseUrl + "Register/Cancel/",
                             ConfirmPasswordResetUrl = baseUrl + "PasswordReset/Confirm/",
+                            ConfirmChangeEmailUrl = baseUrl + "ChangeEmail/Confirm/"
                         };
                     });
 

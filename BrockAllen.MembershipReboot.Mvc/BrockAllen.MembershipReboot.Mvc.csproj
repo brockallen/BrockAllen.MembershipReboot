@@ -142,7 +142,8 @@
     <Compile Include="Areas\UserAccount\Controllers\ChangeEmailController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\RegisterController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\SendUsernameReminderController.cs" />
-    <Compile Include="Areas\UserAccount\Models\ChangeEmailInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangeEmailRequestInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangeEmailFromKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordFromResetKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\LoginInputModel.cs" />
@@ -175,6 +176,10 @@
     <Content Include="Areas\UserAccount\Views\ChangePassword\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\CloseAccount\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\SendUsernameReminder\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeEmail\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeEmail\ChangeRequestSuccess.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeEmail\Confirm.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeEmail\Success.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>

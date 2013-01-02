@@ -11,6 +11,8 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserAccount
     {
+        const string ChangeEmailVerificationPrefix = "changeEmail";
+        
         internal static UserAccount Create(string tenant, string username, string password, string email)
         {
             UserAccount account = new UserAccount
@@ -65,7 +67,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual ICollection<UserClaim> Claims { get; private set; }
 
-        public bool VerifyAccount(string key)
+        internal bool VerifyAccount(string key)
         {
             if (String.IsNullOrWhiteSpace(key)) return false;
             if (IsAccountVerified) return false;
@@ -78,7 +80,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        public bool ChangePassword(string oldPassword, string newPassword, int failedLoginCount, TimeSpan lockoutDuration)
+        internal bool ChangePassword(string oldPassword, string newPassword, int failedLoginCount, TimeSpan lockoutDuration)
         {
             if (Authenticate(oldPassword, failedLoginCount, lockoutDuration))
             {
@@ -89,7 +91,7 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        public void SetPassword(string password)
+        internal void SetPassword(string password)
         {
             if (String.IsNullOrWhiteSpace(password))
             {
@@ -100,16 +102,19 @@ namespace BrockAllen.MembershipReboot
             PasswordChanged = DateTime.UtcNow;
         }
 
-        public virtual bool ResetPassword()
+        bool IsVerificationKeyStale()
         {
-            // if they've not yet verified, then just use the current
-            // verification key
+            return this.VerificationKeySent < DateTime.UtcNow.AddDays(-1);
+        }
+
+        internal virtual bool ResetPassword()
+        {
+            // if they've not yet verified then don't allow changes
             if (!this.IsAccountVerified) return false;
 
             // if there's no current key, or if there is a key but 
             // it's older than one day, create a new reset key
-            if (this.VerificationKeySent == null ||
-                this.VerificationKeySent < DateTime.UtcNow.AddDays(1))
+            if (this.VerificationKey == null || IsVerificationKeyStale())
             {
                 this.VerificationKey = StripUglyBase64(Crypto.GenerateSalt());
                 this.VerificationKeySent = DateTime.UtcNow;
@@ -118,13 +123,13 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
+        internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
             if (String.IsNullOrWhiteSpace(key)) return false;
             if (!this.IsAccountVerified) return false;
 
-            // if the key was sent more than a day, don't honor it
-            if (TimeSpan.FromDays(1) < DateTime.UtcNow.Subtract(this.VerificationKeySent.Value))
+            // if the key is too old don't honor it
+            if (IsVerificationKeyStale())
             {
                 return false;
             }
@@ -139,7 +144,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        public bool Authenticate(string password, int failedLoginCount, TimeSpan lockoutDuration)
+        internal bool Authenticate(string password, int failedLoginCount, TimeSpan lockoutDuration)
         {
             if (failedLoginCount <= 0) throw new ArgumentException("failedLoginCount");
 
@@ -172,6 +177,43 @@ namespace BrockAllen.MembershipReboot
             }
 
             return valid;
+        }
+
+        internal bool ChangeEmailRequest(string newEmail)
+        {
+            // if they've not yet verified then fail
+            if (!this.IsAccountVerified) return false;
+
+            var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + newEmail));
+
+            // if there's no current key, or it's not a change email key
+            // or if there is a key but it's older than one day, then create 
+            // a new reset key
+            if (this.VerificationKey == null ||
+                !this.VerificationKey.StartsWith(emailHash) ||
+                IsVerificationKeyStale())
+            {
+                var random = StripUglyBase64(Crypto.GenerateSalt());
+                this.VerificationKey = emailHash + random;
+                this.VerificationKeySent = DateTime.UtcNow;
+            }
+
+            return true;
+        }
+
+        internal bool ChangeEmailFromKey(string key, string newEmail)
+        {
+            // only honor resets within the past day
+            if (!IsVerificationKeyStale())
+            {
+                if (key == this.VerificationKey)
+                {
+                    this.Email = newEmail;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool HasClaim(string type)

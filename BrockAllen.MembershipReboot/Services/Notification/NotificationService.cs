@@ -29,11 +29,18 @@ namespace BrockAllen.MembershipReboot
             msg = msg.Replace("{cancelNewAccountUrl}", appInfo.CancelNewAccountUrl + user.VerificationKey);
 
             msg = msg.Replace("{confirmPasswordResetUrl}", appInfo.ConfirmPasswordResetUrl + user.VerificationKey);
+            msg = msg.Replace("{confirmChangeEmailUrl}", appInfo.ConfirmChangeEmailUrl + user.VerificationKey);
 
+            
             return msg; 
         }
-        
+
         protected virtual void DeliverMessage(UserAccount user, string subject, string body)
+        {
+            DeliverMessage(user.Email, subject, body);
+        }
+        
+        protected virtual void DeliverMessage(string email, string subject, string body)
         {
             subject = String.Format("[{0}] {1}",
                 appInfo.ApplicationName,
@@ -41,7 +48,7 @@ namespace BrockAllen.MembershipReboot
 
             var msg = new Message
             {
-                To = user.Email, 
+                To = email,
                 Subject = subject,
                 Body = body
             };
@@ -183,6 +190,57 @@ Thanks!
         {
             return @"
 This email is to confirm that the account '{username}' has been closed for {applicationName}.
+
+Thanks!
+
+{emailSignature}
+";
+        }
+
+        public void SendChangeEmailRequestNotice(UserAccount account, string newEmail)
+        {
+            var msg = GetChangeEmailRequestNoticeFormat();
+            var body = DoTokenReplacement(msg, account);
+            body = body.Replace("{newEmail}", newEmail);
+            body = body.Replace("{oldEmail}", account.Email);
+            DeliverMessage(newEmail, "Change Email Request", body);
+        }
+
+        protected virtual string GetChangeEmailRequestNoticeFormat()
+        {
+            return @"
+This email is to confirm an email change for your account with {applicationName}.
+
+Username: {username}
+Old Email: {oldEmail}
+New Email: {newEmail}
+
+Please click here to confirm your email change request:
+
+{confirmChangeEmailUrl}
+
+Thanks!
+
+{emailSignature}
+";
+        }
+
+        public void SendEmailChangedNotice(UserAccount account, string oldEmail)
+        {
+            var msg = GetEmailChangedNoticeFormat();
+            var body = DoTokenReplacement(msg, account);
+            body = body.Replace("{newEmail}", account.Email);
+            body = body.Replace("{oldEmail}", oldEmail);
+            DeliverMessage(account, "Email Changed", body);
+        }
+
+        protected virtual string GetEmailChangedNoticeFormat()
+        {
+            return @"
+This email is to confirm that your email has been changed for your account with {applicationName}.
+
+Username: {username}
+New Email: {newEmail}
 
 Thanks!
 
