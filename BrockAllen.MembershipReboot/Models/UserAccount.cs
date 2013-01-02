@@ -208,8 +208,12 @@ namespace BrockAllen.MembershipReboot
             {
                 if (key == this.VerificationKey)
                 {
-                    this.Email = newEmail;
-                    return true;
+                    var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + newEmail));
+                    if (this.VerificationKey.StartsWith(emailHash))
+                    {
+                        this.Email = newEmail;
+                        return true;
+                    }
                 }
             }
 
