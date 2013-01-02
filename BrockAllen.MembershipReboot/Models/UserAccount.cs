@@ -37,7 +37,7 @@ namespace BrockAllen.MembershipReboot
         [Key]
         [Column(Order=1)]
         [StringLength(50)]
-        public virtual string Tenant { get; set; }
+        public virtual string Tenant { get; private set; }
         [Key]
         [Column(Order = 2)]
         [StringLength(100)]
@@ -51,7 +51,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool IsAccountVerified { get; private set; }
         public virtual bool IsLoginAllowed { get; set; }
-        public virtual bool IsAccountClosed { get; set; }
+        public virtual bool IsAccountClosed { get; internal set; }
 
         public virtual DateTime? LastLogin { get; private set; }
         public virtual DateTime? LastFailedLogin { get; private set; }
