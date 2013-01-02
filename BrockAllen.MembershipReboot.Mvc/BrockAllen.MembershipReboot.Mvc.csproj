@@ -180,6 +180,8 @@
     <Content Include="Areas\UserAccount\Views\ChangeEmail\ChangeRequestSuccess.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeEmail\Confirm.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeEmail\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\UserAccount\Views\_ViewStart.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>

@@ -6,26 +6,6 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <ul>
-        <li>@Html.ActionLink("Logout", "Index", "Logout")</li>
-        <li>@Html.ActionLink("Change Password", "Index", "ChangePassword")</li>
-        <li>@Html.ActionLink("Change Email", "Index", "ChangeEmail")</li>
-        <li>@Html.ActionLink("Close Account", "Index", "CloseAccount")</li>
-    </ul>
-}
-else
-{
-    <ul>
-        <li>@Html.ActionLink("Login", "Index", "Login")</li>
-        <li>@Html.ActionLink("Email Username", "Index", "SendUsernameReminder")</li>
-        <li>@Html.ActionLink("Register", "Index", "Register")</li>
-        <li>@Html.ActionLink("Reset Password", "Index", "PasswordReset")</li>
-    </ul>
-}
-
-
-@if (User.Identity.IsAuthenticated)
-{
     using (Html.BeginForm())
     {
         <fieldset>
