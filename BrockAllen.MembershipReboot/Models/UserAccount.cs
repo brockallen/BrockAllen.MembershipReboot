@@ -181,10 +181,13 @@ namespace BrockAllen.MembershipReboot
 
         internal bool ChangeEmailRequest(string newEmail)
         {
+            if (String.IsNullOrWhiteSpace(newEmail)) return false;
+
             // if they've not yet verified then fail
             if (!this.IsAccountVerified) return false;
 
-            var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + newEmail));
+            var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
+            var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + lowerEmail));
 
             // if there's no current key, or it's not a change email key
             // or if there is a key but it's older than one day, then create 
@@ -203,15 +206,22 @@ namespace BrockAllen.MembershipReboot
 
         internal bool ChangeEmailFromKey(string key, string newEmail)
         {
+            if (String.IsNullOrWhiteSpace(key)) return false;
+            if (String.IsNullOrWhiteSpace(newEmail)) return false;
+
             // only honor resets within the past day
             if (!IsVerificationKeyStale())
             {
                 if (key == this.VerificationKey)
                 {
-                    var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + newEmail));
+                    var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
+                    var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + lowerEmail));
                     if (this.VerificationKey.StartsWith(emailHash))
                     {
                         this.Email = newEmail;
+                        this.VerificationKey = null;
+                        this.VerificationKeySent = null;
+
                         return true;
                     }
                 }
