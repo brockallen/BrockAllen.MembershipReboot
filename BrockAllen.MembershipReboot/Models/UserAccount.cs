@@ -126,6 +126,7 @@ namespace BrockAllen.MembershipReboot
         internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
             if (String.IsNullOrWhiteSpace(key)) return false;
+            
             if (!this.IsAccountVerified) return false;
 
             // if the key is too old don't honor it
@@ -181,7 +182,7 @@ namespace BrockAllen.MembershipReboot
 
         internal bool ChangeEmailRequest(string newEmail)
         {
-            if (String.IsNullOrWhiteSpace(newEmail)) return false;
+            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
             // if they've not yet verified then fail
             if (!this.IsAccountVerified) return false;
@@ -207,7 +208,7 @@ namespace BrockAllen.MembershipReboot
         internal bool ChangeEmailFromKey(string key, string newEmail)
         {
             if (String.IsNullOrWhiteSpace(key)) return false;
-            if (String.IsNullOrWhiteSpace(newEmail)) return false;
+            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
             // only honor resets within the past day
             if (!IsVerificationKeyStale())
@@ -232,16 +233,23 @@ namespace BrockAllen.MembershipReboot
 
         public bool HasClaim(string type)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+
             return this.Claims.Any(x => x.Type == type);
         }
 
         public bool HasClaim(string type, string value)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
+
             return this.Claims.Any(x => x.Type == type && x.Value == value);
         }
 
         public IEnumerable<string> GetClaimValues(string type)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+
             var query =
                 from claim in this.Claims
                 where claim.Type == type
@@ -251,6 +259,8 @@ namespace BrockAllen.MembershipReboot
         
         public string GetClaimValue(string type)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+
             var query =
                 from claim in this.Claims
                 where claim.Type == type
@@ -260,6 +270,9 @@ namespace BrockAllen.MembershipReboot
 
         public void AddClaim(string type, string value)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
+
             if (!this.HasClaim(type, value))
             {
                 this.Claims.Add(
@@ -273,6 +286,8 @@ namespace BrockAllen.MembershipReboot
 
         public void RemoveClaim(string type)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+
             var claimsToRemove =
                 from claim in this.Claims
                 where claim.Type == type
@@ -285,6 +300,9 @@ namespace BrockAllen.MembershipReboot
 
         public void RemoveClaim(string type, string value)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
+
             var claimsToRemove =
                 from claim in this.Claims
                 where claim.Type == type && claim.Value == value
