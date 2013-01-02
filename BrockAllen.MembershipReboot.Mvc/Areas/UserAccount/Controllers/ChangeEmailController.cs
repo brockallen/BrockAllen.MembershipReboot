@@ -1,6 +1,7 @@
 ﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -32,7 +33,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            return View("Index");
         }
 
         [HttpPost]
@@ -41,10 +42,22 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (ModelState.IsValid)
             {
-                this.userAccountService.ChangeEmailRequest(User.Identity.Name, model.NewEmail);
-                return View("ChangeRequestSuccess", (object)model.NewEmail);
+                try
+                {
+                    if (this.userAccountService.ChangeEmailRequest(User.Identity.Name, model.NewEmail))
+                    {
+                        return View("ChangeRequestSuccess", (object)model.NewEmail);
+                    }
+
+                    ModelState.AddModelError("", "Error requesting email change.");
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
             }
-            return View();
+
+            return View("Index", model);
         }
 
         public ActionResult Confirm(string id)
@@ -53,16 +66,28 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             vm.Key = id;
             return View("Confirm", vm);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Confirm(ChangeEmailFromKeyInputModel model)
         {
             if (ModelState.IsValid)
             {
-                this.userAccountService.ChangeEmailFromKey(model.Password, model.Key, model.NewEmail);
-                return View("Success");
+                try
+                {
+                    if (this.userAccountService.ChangeEmailFromKey(model.Password, model.Key, model.NewEmail))
+                    {
+                        return View("Success");
+                    }
+
+                    ModelState.AddModelError("", "Error changing email.");
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
             }
+            
             return View("Confirm", model);
         }
     }
