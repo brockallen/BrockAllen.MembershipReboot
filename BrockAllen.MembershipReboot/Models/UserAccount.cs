@@ -61,10 +61,12 @@ namespace BrockAllen.MembershipReboot
         public virtual DateTime? LastFailedLogin { get; private set; }
         public virtual int FailedLoginCount { get; private set; }
 
+        [StringLength(50)]
         public virtual string VerificationKey { get; private set; }
         public virtual DateTime? VerificationKeySent { get; private set; }
 
         [Required]
+        [StringLength(200)]
         public virtual string HashedPassword { get; private set; }
 
         public virtual ICollection<UserClaim> Claims { get; private set; }
