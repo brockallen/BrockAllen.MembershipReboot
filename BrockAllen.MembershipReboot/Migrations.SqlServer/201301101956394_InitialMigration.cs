@@ -1,4 +1,4 @@
-namespace BrockAllen.MembershipReboot.Migrations.SqlCe
+namespace BrockAllen.MembershipReboot.Migrations.SqlServer
 {
     using System;
     using System.Data.Entity.Migrations;
@@ -11,9 +11,10 @@ namespace BrockAllen.MembershipReboot.Migrations.SqlCe
                 "dbo.UserAccounts",
                 c => new
                     {
+                        ID = c.Int(nullable: false, identity: true),
                         Tenant = c.String(nullable: false, maxLength: 50),
                         Username = c.String(nullable: false, maxLength: 100),
-                        Email = c.String(maxLength: 100),
+                        Email = c.String(nullable: false, maxLength: 100),
                         Created = c.DateTime(nullable: false),
                         PasswordChanged = c.DateTime(nullable: false),
                         IsAccountVerified = c.Boolean(nullable: false),
@@ -22,31 +23,32 @@ namespace BrockAllen.MembershipReboot.Migrations.SqlCe
                         LastLogin = c.DateTime(),
                         LastFailedLogin = c.DateTime(),
                         FailedLoginCount = c.Int(nullable: false),
-                        VerificationKey = c.String(maxLength: 4000),
+                        VerificationKey = c.String(maxLength: 50),
                         VerificationKeySent = c.DateTime(),
-                        HashedPassword = c.String(nullable: false, maxLength: 4000),
+                        HashedPassword = c.String(nullable: false, maxLength: 200),
                     })
-                .PrimaryKey(t => new { t.Tenant, t.Username });
+                .PrimaryKey(t => t.ID)
+                .Index(t => new { t.Tenant, t.Username }, unique: true)
+                .Index(t => t.VerificationKey, unique: true);
             
             CreateTable(
                 "dbo.UserClaims",
                 c => new
                     {
-                        Tenant = c.String(nullable: false, maxLength: 50),
-                        Username = c.String(nullable: false, maxLength: 100),
+                        UserAccountID = c.Int(nullable: false),
                         Type = c.String(nullable: false, maxLength: 150),
                         Value = c.String(nullable: false, maxLength: 150),
                     })
-                .PrimaryKey(t => new { t.Tenant, t.Username, t.Type, t.Value })
-                .ForeignKey("dbo.UserAccounts", t => new { t.Tenant, t.Username }, cascadeDelete: true)
-                .Index(t => new { t.Tenant, t.Username });
+                .PrimaryKey(t => new { t.UserAccountID, t.Type, t.Value })
+                .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
+                .Index(t => t.UserAccountID);
             
         }
         
         public override void Down()
         {
-            DropIndex("dbo.UserClaims", new[] { "Tenant", "Username" });
-            DropForeignKey("dbo.UserClaims", new[] { "Tenant", "Username" }, "dbo.UserAccounts");
+            DropIndex("dbo.UserClaims", new[] { "UserAccountID" });
+            DropForeignKey("dbo.UserClaims", "UserAccountID", "dbo.UserAccounts");
             DropTable("dbo.UserClaims");
             DropTable("dbo.UserAccounts");
         }

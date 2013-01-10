@@ -11,7 +11,7 @@ namespace BrockAllen.MembershipReboot.Migrations.SqlServer
         
         string IMigrationMetadata.Id
         {
-            get { return "201212302209064_InitialMigration"; }
+            get { return "201301101956394_InitialMigration"; }
         }
         
         string IMigrationMetadata.Source

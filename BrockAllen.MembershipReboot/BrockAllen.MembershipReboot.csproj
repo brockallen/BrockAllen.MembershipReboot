@@ -79,13 +79,13 @@
     <Compile Include="MembershipRebootConstants.cs" />
     <Compile Include="Migrations.SqlServer\SqlServerConfig.cs" />
     <Compile Include="Migrations.SqlCe\SqlCeConfig.cs" />
-    <Compile Include="Migrations.SqlCe\201212302205241_InitialMigration.cs" />
-    <Compile Include="Migrations.SqlCe\201212302205241_InitialMigration.Designer.cs">
-      <DependentUpon>201212302205241_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations.SqlServer\201301101956394_InitialMigration.cs" />
+    <Compile Include="Migrations.SqlServer\201301101956394_InitialMigration.Designer.cs">
+      <DependentUpon>201301101956394_InitialMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations.SqlServer\201212302209064_InitialMigration.cs" />
-    <Compile Include="Migrations.SqlServer\201212302209064_InitialMigration.Designer.cs">
-      <DependentUpon>201212302209064_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations.SqlCe\201301101958249_InitialMigration.cs" />
+    <Compile Include="Migrations.SqlCe\201301101958249_InitialMigration.Designer.cs">
+      <DependentUpon>201301101958249_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
@@ -110,18 +110,20 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Migrations.SqlCe\201212302205241_InitialMigration.resx">
-      <DependentUpon>201212302205241_InitialMigration.cs</DependentUpon>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations.SqlServer\201301101956394_InitialMigration.resx">
+      <DependentUpon>201301101956394_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlServer\201212302209064_InitialMigration.resx">
-      <DependentUpon>201212302209064_InitialMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations.SqlCe\201301101958249_InitialMigration.resx">
+      <DependentUpon>201301101958249_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Migrations.SqlCe\Sql\201212302205241_InitialMigration.sql" />
-    <Content Include="Migrations.SqlServer\Sql\201212302209064_InitialMigration.sql" />
+    <Content Include="Migrations.SqlCe\Sql\201301101958249_InitialMigration.sql" />
+    <Content Include="Migrations.SqlServer\Sql\201301101956394_InitialMigration.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
