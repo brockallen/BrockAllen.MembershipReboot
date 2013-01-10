@@ -47,6 +47,7 @@ namespace BrockAllen.MembershipReboot
         public virtual string Username { get; private set; }
         [EmailAddress]
         [StringLength(100)]
+        [Required]
         public virtual string Email { get; private set; }
 
         public virtual DateTime Created { get; private set; }
