@@ -120,6 +120,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="license.txt" />
     <Content Include="Migrations.SqlCe\Sql\201301101958249_InitialMigration.sql" />
     <Content Include="Migrations.SqlServer\Sql\201301101956394_InitialMigration.sql" />
   </ItemGroup>
