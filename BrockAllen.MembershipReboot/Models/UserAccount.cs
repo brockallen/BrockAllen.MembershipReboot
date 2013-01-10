@@ -37,12 +37,13 @@ namespace BrockAllen.MembershipReboot
         }
 
         [Key]
-        [Column(Order=1)]
+        public int ID { get; set; }
+
         [StringLength(50)]
+        [Required]
         public virtual string Tenant { get; private set; }
-        [Key]
-        [Column(Order = 2)]
         [StringLength(100)]
+        [Required]
         public virtual string Username { get; private set; }
         [EmailAddress]
         [StringLength(100)]
