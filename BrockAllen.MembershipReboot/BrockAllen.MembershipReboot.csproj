@@ -110,9 +110,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Migrations.SqlServer\201301101956394_InitialMigration.resx">
       <DependentUpon>201301101956394_InitialMigration.cs</DependentUpon>
