@@ -14,6 +14,7 @@ namespace BrockAllen.MembershipReboot
         public bool MultiTenant { get; set; }
         public string DefaultTenant { get; set; }
         public bool EmailIsUsername { get; set; }
+        public bool UsernamesUniqueAcrossTenants { get; set; }
         public bool RequireAccountVerification { get; set; }
         public bool AllowLoginAfterAccountCreation { get; set; }
         public int AccountLockoutFailedLoginAttempts { get; set; }
@@ -30,6 +31,7 @@ namespace BrockAllen.MembershipReboot
             MultiTenant = GetAppSettings("MultiTenant", false);
             DefaultTenant = GetAppSettings("DefaultTenant", "default");
             EmailIsUsername = GetAppSettings("EmailIsUsername", false);
+            UsernamesUniqueAcrossTenants = GetAppSettings("UsernamesUniqueAcrossTenants", false);
             RequireAccountVerification = GetAppSettings("RequireAccountVerification", true);
             AllowLoginAfterAccountCreation = GetAppSettings("AllowLoginAfterAccountCreation", true);
             AccountLockoutFailedLoginAttempts = GetAppSettings("AccountLockoutFailedLoginAttempts", 10);
@@ -45,6 +47,5 @@ namespace BrockAllen.MembershipReboot
             if (val != null) return (T)Convert.ChangeType(val, typeof(T));
             return defaultValue;
         }
-
     }
 }

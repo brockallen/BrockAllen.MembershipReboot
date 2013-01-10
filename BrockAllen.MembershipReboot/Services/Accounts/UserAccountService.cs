@@ -114,7 +114,14 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(username)) return false;
 
-            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).Any();
+            if (SecuritySettings.Instance.UsernamesUniqueAcrossTenants)
+            {
+                return this.userRepository.GetAll().Where(x => x.Username == username).Any();
+            }
+            else
+            {
+                return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).Any();
+            }
         }
 
         public virtual bool EmailExists(string email)
@@ -165,16 +172,22 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Email is invalid.");
             }
 
-            if ((!SecuritySettings.Instance.EmailIsUsername && UsernameExists(tenant, username))
-                || EmailExists(tenant, email))
+            if (UsernameExists(tenant, username))
             {
-                throw new ValidationException("Username/Email already in use.");
+                var msg = SecuritySettings.Instance.EmailIsUsername ? "Email" : "Username";
+                throw new ValidationException(msg + " already in use.");
             }
+
+            if (EmailExists(tenant, username))
+            {
+                throw new ValidationException("Email already in use.");
+            } 
             
             using (var tx = new TransactionScope())
             {
                 var account = UserAccount.Create(tenant, username, password, email);
                 this.userRepository.Add(account);
+                
                 if (this.notificationService != null)
                 {
                     if (SecuritySettings.Instance.RequireAccountVerification)
@@ -186,6 +199,7 @@ namespace BrockAllen.MembershipReboot
                         this.notificationService.SendAccountVerified(account);
                     }
                 }
+                
                 this.userRepository.SaveChanges();
                 tx.Complete();
 
