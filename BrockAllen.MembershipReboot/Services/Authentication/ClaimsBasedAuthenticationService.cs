@@ -61,7 +61,7 @@ namespace BrockAllen.MembershipReboot
             claims.Insert(0, new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
             claims.Insert(0, new Claim(ClaimTypes.Name, account.Username));
             claims.Insert(0, new Claim(MembershipRebootConstants.ClaimTypes.Tenant, account.Tenant));
-            claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, String.Format("{0}:{1}:{2}", account.Tenant, account.Username, account.ID)));
+            claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, String.Format("{0}:{1}", account.Tenant, account.Username)));
 
             // create principal/identity
             var id = new ClaimsIdentity(claims, "Forms");
