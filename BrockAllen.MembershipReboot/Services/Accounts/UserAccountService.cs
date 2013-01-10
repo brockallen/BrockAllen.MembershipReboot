@@ -187,6 +187,7 @@ namespace BrockAllen.MembershipReboot
             {
                 var account = UserAccount.Create(tenant, username, password, email);
                 this.userRepository.Add(account);
+                this.userRepository.SaveChanges();
                 
                 if (this.notificationService != null)
                 {
@@ -200,7 +201,6 @@ namespace BrockAllen.MembershipReboot
                     }
                 }
                 
-                this.userRepository.SaveChanges();
                 tx.Complete();
 
                 return account;
@@ -215,11 +215,13 @@ namespace BrockAllen.MembershipReboot
             var result = account.VerifyAccount(key);
             using (var tx = new TransactionScope())
             {
+                this.userRepository.SaveChanges();
+                
                 if (result && this.notificationService != null)
                 {
                     this.notificationService.SendAccountVerified(account);
                 }
-                this.userRepository.SaveChanges();
+
                 tx.Complete();
             }
             return result;
@@ -275,11 +277,13 @@ namespace BrockAllen.MembershipReboot
 
             using (var tx = new TransactionScope())
             {
+                this.userRepository.SaveChanges();
+
                 if (this.notificationService != null)
                 {
                     this.notificationService.SendAccountDelete(account);
                 }
-                this.userRepository.SaveChanges();
+
                 tx.Complete();
             }
         }
@@ -378,11 +382,13 @@ namespace BrockAllen.MembershipReboot
             var result = account.ChangePassword(oldPassword, newPassword, failedLoginCount, lockoutDuration);
             using (var tx = new TransactionScope())
             {
+                this.userRepository.SaveChanges();
+
                 if (result && this.notificationService != null)
                 {
                     this.notificationService.SendPasswordChangeNotice(account);
                 }
-                this.userRepository.SaveChanges();
+                
                 tx.Complete();
             }
             return result;
@@ -425,11 +431,13 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
+                    this.userRepository.SaveChanges();
+ 
                     if (this.notificationService != null)
                     {
                         this.notificationService.SendResetPassword(account);
                     }
-                    this.userRepository.SaveChanges();
+ 
                     tx.Complete();
                 }
             }
@@ -453,11 +461,13 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
+                    this.userRepository.SaveChanges();
+
                     if (this.notificationService != null)
                     {
                         this.notificationService.SendPasswordChangeNotice(account);
                     }
-                    this.userRepository.SaveChanges();
+
                     tx.Complete();
                 }
             }
@@ -523,11 +533,13 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
+                    this.userRepository.SaveChanges();
+                    
                     if (this.notificationService != null)
                     {
                         this.notificationService.SendChangeEmailRequestNotice(account, newEmail);
                     }
-                    this.userRepository.SaveChanges();
+
                     tx.Complete();
                 }
             }
@@ -565,11 +577,13 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
+                    this.userRepository.SaveChanges();
+
                     if (this.notificationService != null)
                     {
                         this.notificationService.SendEmailChangedNotice(account, oldEmail);
                     }
-                    this.userRepository.SaveChanges();
+
                     tx.Complete();
                 }
             }
