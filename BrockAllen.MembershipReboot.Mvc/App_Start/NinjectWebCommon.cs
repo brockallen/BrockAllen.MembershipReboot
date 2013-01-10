@@ -54,12 +54,18 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<IUserAccountRepository>().ToMethod(x => new EFUserAccountRepository(Constants.ConnectionName));
+            kernel
+                .Bind<IUserAccountRepository>()
+                .ToMethod(x => new EFUserAccountRepository(Constants.ConnectionName))
+                .InRequestScope();
             
             //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
-            kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
+            kernel
+                .Bind<IMessageDelivery>()
+                .To<SmtpMessageDelivery>();
             
-            kernel.Bind<ApplicationInformation>()
+            kernel
+                .Bind<ApplicationInformation>()
                 .ToMethod(x=>
                     {
                         // build URL
@@ -85,7 +91,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                     });
 
             //kernel.Bind<IPasswordPolicy>().To<NopPasswordPolicy>();
-            kernel.Bind<IPasswordPolicy>().ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });
+            kernel
+                .Bind<IPasswordPolicy>()
+                .ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });
         }        
     }
 }
