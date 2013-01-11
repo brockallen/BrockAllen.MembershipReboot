@@ -29,7 +29,7 @@ namespace BrockAllen.MembershipReboot.Migrations.SqlCe
                     })
                 .PrimaryKey(t => t.ID)
                 .Index(t => new { t.Tenant, t.Username }, unique: true)
-                .Index(t => t.VerificationKey, unique: true);
+                .Index(t => t.VerificationKey);
             
             CreateTable(
                 "dbo.UserClaims",
