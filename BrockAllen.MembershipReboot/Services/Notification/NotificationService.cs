@@ -57,6 +57,8 @@ namespace BrockAllen.MembershipReboot
 
         public void SendAccountCreate(UserAccount user)
         {
+            Tracing.Information(String.Format("[NotificationService.SendAccountCreate] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
+
             var msg = GetAccountCreateFormat();
             var body = DoTokenReplacement(msg, user);
             DeliverMessage(user, "Account Created", body);
@@ -85,6 +87,8 @@ Thanks!
 
         public void SendAccountVerified(UserAccount user)
         {
+            Tracing.Information(String.Format("[NotificationService.SendAccountVerified] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
+
             var msg = GetAccountVerifiedFormat();
             var body = DoTokenReplacement(msg, user);
             DeliverMessage(user, "Account Verified", body);
@@ -109,6 +113,8 @@ Thanks!
 
         public void SendResetPassword(UserAccount user)
         {
+            Tracing.Information(String.Format("[NotificationService.SendResetPassword] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
+
             var msg = GetResetPasswordFormat();
             var body = DoTokenReplacement(msg, user);
             DeliverMessage(user, "Password Reset Request", body);
@@ -133,6 +139,8 @@ Thanks!
 
         public void SendPasswordChangeNotice(UserAccount user)
         {
+            Tracing.Information(String.Format("[NotificationService.SendPasswordChangeNotice] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
+
             var msg = GetPasswordChangeNoticeFormat();
             var body = DoTokenReplacement(msg, user);
             DeliverMessage(user, "Password Changed", body);
@@ -157,6 +165,8 @@ Thanks!
 
         public void SendAccountNameReminder(UserAccount user)
         {
+            Tracing.Information(String.Format("[NotificationService.SendAccountNameReminder] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
+
             var msg = GetAccountNameReminderFormat();
             var body = DoTokenReplacement(msg, user);
             DeliverMessage(user, "Username Reminder", body);
@@ -179,11 +189,13 @@ Thanks!
 ";
         }
 
-        public void SendAccountDelete(UserAccount account)
+        public void SendAccountDelete(UserAccount user)
         {
+            Tracing.Information(String.Format("[NotificationService.SendAccountDelete] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
+
             var msg = GetAccountAccountDeleteFormat();
-            var body = DoTokenReplacement(msg, account);
-            DeliverMessage(account, "Account Closed", body);
+            var body = DoTokenReplacement(msg, user);
+            DeliverMessage(user, "Account Closed", body);
         }
 
         protected virtual string GetAccountAccountDeleteFormat()
@@ -197,12 +209,14 @@ Thanks!
 ";
         }
 
-        public void SendChangeEmailRequestNotice(UserAccount account, string newEmail)
+        public void SendChangeEmailRequestNotice(UserAccount user, string newEmail)
         {
+            Tracing.Information(String.Format("[NotificationService.SendChangeEmailRequestNotice] {0}, {1}, {2}, {3}", user.Tenant, user.Username, user.Email, newEmail));
+
             var msg = GetChangeEmailRequestNoticeFormat();
-            var body = DoTokenReplacement(msg, account);
+            var body = DoTokenReplacement(msg, user);
             body = body.Replace("{newEmail}", newEmail);
-            body = body.Replace("{oldEmail}", account.Email);
+            body = body.Replace("{oldEmail}", user.Email);
             DeliverMessage(newEmail, "Change Email Request", body);
         }
 
@@ -225,13 +239,15 @@ Thanks!
 ";
         }
 
-        public void SendEmailChangedNotice(UserAccount account, string oldEmail)
+        public void SendEmailChangedNotice(UserAccount user, string oldEmail)
         {
+            Tracing.Information(String.Format("[NotificationService.SendEmailChangedNotice] {0}, {1}, {2}, {3}", user.Tenant, user.Username, user.Email, oldEmail));
+
             var msg = GetEmailChangedNoticeFormat();
-            var body = DoTokenReplacement(msg, account);
-            body = body.Replace("{newEmail}", account.Email);
+            var body = DoTokenReplacement(msg, user);
+            body = body.Replace("{newEmail}", user.Email);
             body = body.Replace("{oldEmail}", oldEmail);
-            DeliverMessage(account, "Email Changed", body);
+            DeliverMessage(user, "Email Changed", body);
         }
 
         protected virtual string GetEmailChangedNoticeFormat()

@@ -76,7 +76,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MembershipRebootConstants.cs" />
+    <Compile Include="Extensions\ClaimsExtensions.cs" />
+    <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
+    <Compile Include="Constants\MembershipRebootConstants.cs" />
     <Compile Include="Migrations.SqlServer\SqlServerConfig.cs" />
     <Compile Include="Migrations.SqlCe\SqlCeConfig.cs" />
     <Compile Include="Migrations.SqlServer\201301101956394_InitialMigration.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="Services\Accounts\SecuritySettings.cs" />
     <Compile Include="Services\Notification\SmtpMessageDelivery.cs" />
     <Compile Include="Services\Accounts\UserAccountService.cs" />
+    <Compile Include="Tracing\Tracing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

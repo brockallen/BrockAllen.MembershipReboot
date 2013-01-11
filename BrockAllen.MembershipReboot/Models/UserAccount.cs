@@ -73,9 +73,21 @@ namespace BrockAllen.MembershipReboot
 
         internal bool VerifyAccount(string key)
         {
-            if (String.IsNullOrWhiteSpace(key)) return false;
-            if (IsAccountVerified) return false;
-            if (this.VerificationKey != key) return false;
+            if (String.IsNullOrWhiteSpace(key))
+            {
+                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- no key");
+                return false;
+            }
+            if (IsAccountVerified)
+            {
+                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- account already verified");
+                return false;
+            }
+            if (this.VerificationKey != key)
+            {
+                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- verification key doesn't match");
+                return false;
+            }
 
             this.IsAccountVerified = true;
             this.VerificationKey = null;
@@ -92,6 +104,8 @@ namespace BrockAllen.MembershipReboot
                 return true;
             }
 
+            Tracing.Verbose("[UserAccount.ChangePassword] failed -- auth failed");
+
             return false;
         }
 
@@ -99,9 +113,13 @@ namespace BrockAllen.MembershipReboot
         {
             if (String.IsNullOrWhiteSpace(password))
             {
+                Tracing.Verbose("[UserAccount.SetPassword] failed -- no password provided");
+                
                 throw new ValidationException("Invalid password");
             }
-            
+
+            Tracing.Verbose("[UserAccount.SetPassword] setting new password hash");
+
             HashedPassword = Crypto.HashPassword(password);
             PasswordChanged = DateTime.UtcNow;
         }
@@ -114,14 +132,25 @@ namespace BrockAllen.MembershipReboot
         internal virtual bool ResetPassword()
         {
             // if they've not yet verified then don't allow changes
-            if (!this.IsAccountVerified) return false;
+            if (!this.IsAccountVerified)
+            {
+                Tracing.Verbose("[UserAccount.ResetPassword] failed -- account not verified");
+
+                return false;
+            }
 
             // if there's no current key, or if there is a key but 
             // it's older than one day, create a new reset key
             if (this.VerificationKey == null || IsVerificationKeyStale())
             {
+                Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
+
                 this.VerificationKey = StripUglyBase64(Crypto.GenerateSalt());
                 this.VerificationKeySent = DateTime.UtcNow;
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccount.ResetPassword] not creating new verification keys");
             }
 
             return true;
@@ -129,18 +158,31 @@ namespace BrockAllen.MembershipReboot
 
         internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
-            if (String.IsNullOrWhiteSpace(key)) return false;
-            
-            if (!this.IsAccountVerified) return false;
+            if (String.IsNullOrWhiteSpace(key))
+            {
+                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- no key");
+                return false;
+            }
+
+            if (!this.IsAccountVerified)
+            {
+                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- account not verified");
+                return false;
+            }
 
             // if the key is too old don't honor it
             if (IsVerificationKeyStale())
             {
+                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- verification key too old");
                 return false;
             }
 
             // check if key matches
-            if (this.VerificationKey != key) return false;
+            if (this.VerificationKey != key)
+            {
+                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- verification keys don't match");
+                return false;
+            }
 
             this.VerificationKey = null;
             this.VerificationKeySent = null;
@@ -155,15 +197,26 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(password))
             {
+                Tracing.Verbose("[UserAccount.Authenticate] failed -- no password");
                 return false;
             }
 
-            if (!IsAccountVerified) return false;
-            if (!IsLoginAllowed) return false;
+            if (!IsAccountVerified)
+            {
+                Tracing.Verbose("[UserAccount.Authenticate] failed -- account not verified");
+                return false;
+            }
+            if (!IsLoginAllowed)
+            {
+                Tracing.Verbose("[UserAccount.Authenticate] failed -- account not allowed to login");
+                return false;
+            }
 
             if (failedLoginCount <= FailedLoginCount &&
                 LastFailedLogin <= DateTime.UtcNow.Add(lockoutDuration))
             {
+                Tracing.Verbose("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
+                
                 FailedLoginCount++;
                 return false;
             }
@@ -171,11 +224,15 @@ namespace BrockAllen.MembershipReboot
             var valid = Crypto.VerifyHashedPassword(HashedPassword, password);
             if (valid)
             {
+                Tracing.Verbose("[UserAccount.Authenticate] authentication success");
+
                 LastLogin = DateTime.UtcNow;
                 FailedLoginCount = 0;
             }
             else
             {
+                Tracing.Verbose("[UserAccount.Authenticate] failed -- invalid password");
+
                 LastFailedLogin = DateTime.UtcNow;
                 if (FailedLoginCount > 0) FailedLoginCount++;
                 else FailedLoginCount = 1;
@@ -189,7 +246,11 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
             // if they've not yet verified then fail
-            if (!this.IsAccountVerified) return false;
+            if (!this.IsAccountVerified)
+            {
+                Tracing.Verbose("[UserAccount.ChangeEmailRequest] failed -- account not verified");
+                return false;
+            }
 
             var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
             var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + lowerEmail));
@@ -201,9 +262,15 @@ namespace BrockAllen.MembershipReboot
                 !this.VerificationKey.StartsWith(emailHash) ||
                 IsVerificationKeyStale())
             {
+                Tracing.Verbose("[UserAccount.ChangeEmailRequest] creating a new reset key");
+
                 var random = StripUglyBase64(Crypto.GenerateSalt());
                 this.VerificationKey = emailHash + random;
                 this.VerificationKeySent = DateTime.UtcNow;
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccount.ChangeEmailRequest] not creating a new reset key");
             }
 
             return true;
@@ -211,7 +278,11 @@ namespace BrockAllen.MembershipReboot
 
         internal bool ChangeEmailFromKey(string key, string newEmail)
         {
-            if (String.IsNullOrWhiteSpace(key)) return false;
+            if (String.IsNullOrWhiteSpace(key))
+            {
+                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- no key");
+                return false;
+            }
             if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
             // only honor resets within the past day
@@ -229,7 +300,19 @@ namespace BrockAllen.MembershipReboot
 
                         return true;
                     }
+                    else
+                    {
+                        Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification key is not marked as a email change verificaiton key");
+                    }
                 }
+                else
+                {
+                    Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification keys don't match");
+                }
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification key is stale");
             }
 
             return false;
@@ -279,6 +362,8 @@ namespace BrockAllen.MembershipReboot
 
             if (!this.HasClaim(type, value))
             {
+                Tracing.Verbose(String.Format("[UserAccount.AddClaim] {0}, {1}, {2}, {3}", Tenant, Username, type, value));
+
                 this.Claims.Add(
                     new UserClaim
                     {
@@ -298,6 +383,7 @@ namespace BrockAllen.MembershipReboot
                 select claim;
             foreach (var claim in claimsToRemove.ToArray())
             {
+                Tracing.Verbose(String.Format("[UserAccount.RemoveClaim] {0}, {1}, {2}, {3}", Tenant, Username, type, claim.Value));
                 this.Claims.Remove(claim);
             }
         }
@@ -313,6 +399,7 @@ namespace BrockAllen.MembershipReboot
                 select claim;
             foreach (var claim in claimsToRemove.ToArray())
             {
+                Tracing.Verbose(String.Format("[UserAccount.RemoveClaim] {0}, {1}, {2}, {3}", Tenant, Username, type, value));
                 this.Claims.Remove(claim);
             }
         }

@@ -36,6 +36,8 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignIn(string tenant, string username)
         {
+            Tracing.Information(String.Format("[ClaimsBasedAuthenticationService.Signin] called: {0}, {1}", tenant, username));
+
             if (!SecuritySettings.Instance.MultiTenant)
             {
                 tenant = SecuritySettings.Instance.DefaultTenant;
@@ -75,10 +77,14 @@ namespace BrockAllen.MembershipReboot
             if (sam == null) throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
             var token = new SessionSecurityToken(cp, TimeSpan.FromHours(DefaultTokenLifetime_InHours));
             sam.WriteSessionTokenToCookie(token);
+
+            Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.Signin] cookie issued: {0}", claims.GetValue(ClaimTypes.NameIdentifier)));
         }
 
         public virtual void SignOut()
         {
+            Tracing.Information(String.Format("[ClaimsBasedAuthenticationService.SignOut] called: {0}", ClaimsPrincipal.Current.Claims.GetValue(ClaimTypes.NameIdentifier)));
+
             // clear cookie
             var sam = FederatedAuthentication.SessionAuthenticationModule;
             if (sam == null) throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
