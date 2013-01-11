@@ -43,6 +43,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     this.userAccountService.SendUsernameReminder(model.Email);
+                    ViewData["Email"] = model.Email;
+                    return View("Success");
                 }
                 catch (ValidationException ex)
                 {
