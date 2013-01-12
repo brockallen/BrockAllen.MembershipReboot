@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface IUserAccountRepository : IDisposable
+    public interface IUserAccountRepository 
+        : IRepository<UserAccount, int>
     {
-        IQueryable<UserAccount> GetAll();
-        void Add(UserAccount item);
-        void Remove(UserAccount item);
-        void SaveChanges();
     }
 }

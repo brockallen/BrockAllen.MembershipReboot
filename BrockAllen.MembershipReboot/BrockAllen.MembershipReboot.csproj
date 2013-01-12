@@ -55,7 +55,7 @@
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20715.0\lib\net40\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -79,6 +79,7 @@
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Constants\MembershipRebootConstants.cs" />
+    <Compile Include="Extensions\DisposableExtensions.cs" />
     <Compile Include="Migrations.SqlServer\SqlServerConfig.cs" />
     <Compile Include="Migrations.SqlCe\SqlCeConfig.cs" />
     <Compile Include="Migrations.SqlServer\201301101956394_InitialMigration.cs" />
@@ -90,8 +91,11 @@
       <DependentUpon>201301101958249_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\UserClaim.cs" />
+    <Compile Include="Repository\EF\DbContextRepository`2.cs" />
+    <Compile Include="Repository\EF\DbContextRepository`3.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
     <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
+    <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Services\Accounts\BasicPasswordPolicy.cs" />
     <Compile Include="Services\Notification\ApplicationInformation.cs" />
     <Compile Include="Services\Authentication\ClaimsBasedAuthenticationService.cs" />

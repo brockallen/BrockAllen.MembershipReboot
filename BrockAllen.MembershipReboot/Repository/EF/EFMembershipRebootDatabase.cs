@@ -10,6 +10,7 @@ namespace BrockAllen.MembershipReboot
     public class EFMembershipRebootDatabase : DbContext
     {
         public EFMembershipRebootDatabase()
+            : base("name=MembershipReboot")
         {
         }
 

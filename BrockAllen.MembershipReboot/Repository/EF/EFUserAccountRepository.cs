@@ -8,54 +8,15 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class EFUserAccountRepository : IUserAccountRepository, IDisposable
+    public class EFUserAccountRepository 
+        : DbContextRepository<UserAccount, int, EFMembershipRebootDatabase>, IUserAccountRepository
     {
-        DbContext db;
-        DbSet<UserAccount> users;
-
         public EFUserAccountRepository()
-            : this(new EFMembershipRebootDatabase())
         {
         }
 
-        public EFUserAccountRepository(string nameOrConnectionString)
-            : this(new EFMembershipRebootDatabase(nameOrConnectionString))
+        public EFUserAccountRepository(string name) : base(new EFMembershipRebootDatabase(name))
         {
-        }
-        
-        public EFUserAccountRepository(DbContext db)
-        {
-            this.db = db;
-            this.users = db.Set<UserAccount>();
-        }
-
-        public void Dispose()
-        {
-            if (db != null)
-            {
-                db.Dispose();
-                db = null;
-            }
-        }
-
-        public IQueryable<UserAccount> GetAll()
-        {
-            return this.users;
-        }
-
-        public void Add(UserAccount item)
-        {
-            this.users.Add(item);
-        }
-
-        public void Remove(UserAccount item)
-        {
-            this.users.Remove(item);
-        }
-
-        public void SaveChanges()
-        {
-            db.SaveChanges();
         }
     }
 }

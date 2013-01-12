@@ -102,6 +102,16 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
+        public virtual UserAccount GetByID(int id)
+        {
+            var account = this.userRepository.Get(id);
+            if (account == null)
+            {
+                Tracing.Verbose(String.Format("[UserAccountService.GetByID] failed to locate account: {0}", id));
+            }
+            return account;
+        }
+
         public virtual UserAccount GetByVerificationKey(string key)
         {
             if (String.IsNullOrWhiteSpace(key)) return null;
