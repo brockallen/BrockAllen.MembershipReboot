@@ -37,7 +37,7 @@ namespace BrockAllen.MembershipReboot
         }
 
         [Key]
-        public int ID { get; set; }
+        public virtual int ID { get; set; }
 
         [StringLength(50)]
         [Required]
