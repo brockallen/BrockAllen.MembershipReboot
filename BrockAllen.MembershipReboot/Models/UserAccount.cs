@@ -70,9 +70,9 @@ namespace BrockAllen.MembershipReboot
         [StringLength(200)]
         public virtual string HashedPassword { get; internal set; }
 
-        public virtual ICollection<UserClaim> Claims { get; private set; }
+        public virtual ICollection<UserClaim> Claims { get; internal set; }
 
-        internal bool VerifyAccount(string key)
+        protected internal virtual bool VerifyAccount(string key)
         {
             if (String.IsNullOrWhiteSpace(key))
             {
@@ -97,7 +97,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        internal bool ChangePassword(string oldPassword, string newPassword, int failedLoginCount, TimeSpan lockoutDuration)
+        protected internal virtual bool ChangePassword(string oldPassword, string newPassword, int failedLoginCount, TimeSpan lockoutDuration)
         {
             if (Authenticate(oldPassword, failedLoginCount, lockoutDuration))
             {
@@ -110,7 +110,7 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        internal protected virtual void SetPassword(string password)
+        protected internal virtual void SetPassword(string password)
         {
             if (String.IsNullOrWhiteSpace(password))
             {
@@ -129,13 +129,21 @@ namespace BrockAllen.MembershipReboot
         {
             get
             {
-                return
-                    VerificationKeySent == null ||
-                    this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDuration);
+                if (VerificationKeySent == null)
+                {
+                    return true;
+                }
+                
+                if (this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDuration))
+                {
+                    return true;
+                }
+                
+                return false;
             }
         }
 
-        internal virtual bool ResetPassword()
+        protected internal virtual bool ResetPassword()
         {
             // if they've not yet verified then don't allow changes
             if (!this.IsAccountVerified)
@@ -161,9 +169,8 @@ namespace BrockAllen.MembershipReboot
 
             return true;
         }
-
-
-        internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
+        
+        protected internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
             if (String.IsNullOrWhiteSpace(key))
             {
@@ -198,7 +205,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        internal protected virtual bool Authenticate(string password, int failedLoginCount, TimeSpan lockoutDuration)
+        protected internal virtual bool Authenticate(string password, int failedLoginCount, TimeSpan lockoutDuration)
         {
             if (failedLoginCount <= 0) throw new ArgumentException("failedLoginCount");
 
@@ -249,11 +256,17 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool HasTooManyRecentPasswordFailures(int failedLoginCount, TimeSpan lockoutDuration)
         {
-            return failedLoginCount <= FailedLoginCount &&
-                            LastFailedLogin <= UtcNow.Add(lockoutDuration);
+            if (failedLoginCount <= 0) throw new ArgumentException("failedLoginCount");
+
+            if (failedLoginCount <= FailedLoginCount)
+            {
+                return LastFailedLogin >= UtcNow.Subtract(lockoutDuration);
+            }
+
+            return false;
         }
 
-        internal bool ChangeEmailRequest(string newEmail)
+        protected internal virtual bool ChangeEmailRequest(string newEmail)
         {
             if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
@@ -288,7 +301,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        internal bool ChangeEmailFromKey(string key, string newEmail)
+        protected internal virtual bool ChangeEmailFromKey(string key, string newEmail)
         {
             if (String.IsNullOrWhiteSpace(key))
             {
@@ -330,14 +343,14 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        public bool HasClaim(string type)
+        public virtual bool HasClaim(string type)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
 
             return this.Claims.Any(x => x.Type == type);
         }
 
-        public bool HasClaim(string type, string value)
+        public virtual bool HasClaim(string type, string value)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
             if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
@@ -345,7 +358,7 @@ namespace BrockAllen.MembershipReboot
             return this.Claims.Any(x => x.Type == type && x.Value == value);
         }
 
-        public IEnumerable<string> GetClaimValues(string type)
+        public virtual IEnumerable<string> GetClaimValues(string type)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
 
@@ -356,7 +369,7 @@ namespace BrockAllen.MembershipReboot
             return query.ToArray();
         }
         
-        public string GetClaimValue(string type)
+        public virtual string GetClaimValue(string type)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
 
@@ -367,7 +380,7 @@ namespace BrockAllen.MembershipReboot
             return query.SingleOrDefault();
         }
 
-        public void AddClaim(string type, string value)
+        public virtual void AddClaim(string type, string value)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
             if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
@@ -385,7 +398,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public void RemoveClaim(string type)
+        public virtual void RemoveClaim(string type)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
 
@@ -400,7 +413,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public void RemoveClaim(string type, string value)
+        public virtual void RemoveClaim(string type, string value)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
             if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
