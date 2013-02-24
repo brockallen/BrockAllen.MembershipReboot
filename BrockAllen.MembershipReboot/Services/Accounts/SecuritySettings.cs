@@ -44,7 +44,18 @@ namespace BrockAllen.MembershipReboot
         private T GetAppSettings<T>(string name, T defaultValue)
         {
             var val = ConfigurationManager.AppSettings[AppSettingsPrefix + name];
-            if (val != null) return (T)Convert.ChangeType(val, typeof(T));
+            if (val != null)
+            {
+                if (typeof(T) == typeof(TimeSpan))
+                {
+                    var obj = (object)TimeSpan.Parse(val);
+                    return (T)obj;
+                }
+                else
+                {
+                    return (T)Convert.ChangeType(val, typeof(T));
+                }
+            }
             return defaultValue;
         }
     }
