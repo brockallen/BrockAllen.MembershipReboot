@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class NotificationService
+    public class NotificationService : INotificationService
     {
         IMessageDelivery messageDelivery;
         ApplicationInformation appInfo;

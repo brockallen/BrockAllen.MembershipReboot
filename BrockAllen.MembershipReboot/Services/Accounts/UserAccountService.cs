@@ -12,14 +12,16 @@ namespace BrockAllen.MembershipReboot
     public class UserAccountService : IDisposable
     {
         IUserAccountRepository userRepository;
-        NotificationService notificationService;
+        INotificationService notificationService;
         IPasswordPolicy passwordPolicy;
 
         public UserAccountService(
             IUserAccountRepository userAccountRepository,
-            NotificationService notificationService,
+            INotificationService notificationService,
             IPasswordPolicy passwordPolicy)
         {
+            if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
+
             this.userRepository = userAccountRepository;
             this.notificationService = notificationService;
             this.passwordPolicy = passwordPolicy;

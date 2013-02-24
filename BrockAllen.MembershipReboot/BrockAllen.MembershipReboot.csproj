@@ -100,6 +100,7 @@
     <Compile Include="Services\Notification\ApplicationInformation.cs" />
     <Compile Include="Services\Authentication\ClaimsBasedAuthenticationService.cs" />
     <Compile Include="Services\Accounts\IPasswordPolicy.cs" />
+    <Compile Include="Services\Notification\INotificationService.cs" />
     <Compile Include="Services\Notification\Message.cs" />
     <Compile Include="Services\Notification\IMessageDelivery.cs" />
     <Compile Include="Services\Notification\NopMessageDelivery.cs" />
