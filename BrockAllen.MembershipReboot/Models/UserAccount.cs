@@ -11,7 +11,8 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserAccount
     {
-        const string ChangeEmailVerificationPrefix = "changeEmail";
+        internal const string ChangeEmailVerificationPrefix = "changeEmail";
+        internal const int VerificationKeyStaleDuration = 1;
         
         internal static UserAccount Create(string tenant, string username, string password, string email)
         {
@@ -20,17 +21,17 @@ namespace BrockAllen.MembershipReboot
                 Tenant = tenant,
                 Username = username,
                 Email = email,
-                Created = DateTime.UtcNow,
                 IsAccountVerified = !SecuritySettings.Instance.RequireAccountVerification,
                 IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation,
                 Claims = new List<UserClaim>()
             };
+            account.Created = account.UtcNow;
 
             account.SetPassword(password);
             if (SecuritySettings.Instance.RequireAccountVerification)
             {
-                account.VerificationKey = StripUglyBase64(Crypto.GenerateSalt());
-                account.VerificationKeySent = DateTime.UtcNow;
+                account.VerificationKey = StripUglyBase64(account.GenerateSalt());
+                account.VerificationKeySent = account.UtcNow;
             }
 
             return account;
@@ -41,33 +42,33 @@ namespace BrockAllen.MembershipReboot
 
         [StringLength(50)]
         [Required]
-        public virtual string Tenant { get; private set; }
+        public virtual string Tenant { get; internal set; }
         [StringLength(100)]
         [Required]
-        public virtual string Username { get; private set; }
+        public virtual string Username { get; internal set; }
         [EmailAddress]
         [StringLength(100)]
         [Required]
-        public virtual string Email { get; private set; }
+        public virtual string Email { get; internal set; }
 
-        public virtual DateTime Created { get; private set; }
-        public virtual DateTime PasswordChanged { get; private set; }
+        public virtual DateTime Created { get; internal set; }
+        public virtual DateTime PasswordChanged { get; internal set; }
 
-        public virtual bool IsAccountVerified { get; private set; }
+        public virtual bool IsAccountVerified { get; internal set; }
         public virtual bool IsLoginAllowed { get; set; }
         public virtual bool IsAccountClosed { get; internal set; }
 
-        public virtual DateTime? LastLogin { get; private set; }
-        public virtual DateTime? LastFailedLogin { get; private set; }
-        public virtual int FailedLoginCount { get; private set; }
+        public virtual DateTime? LastLogin { get; internal set; }
+        public virtual DateTime? LastFailedLogin { get; internal set; }
+        public virtual int FailedLoginCount { get; internal set; }
 
         [StringLength(50)]
-        public virtual string VerificationKey { get; private set; }
-        public virtual DateTime? VerificationKeySent { get; private set; }
+        public virtual string VerificationKey { get; internal set; }
+        public virtual DateTime? VerificationKeySent { get; internal set; }
 
         [Required]
         [StringLength(200)]
-        public virtual string HashedPassword { get; private set; }
+        public virtual string HashedPassword { get; internal set; }
 
         public virtual ICollection<UserClaim> Claims { get; private set; }
 
@@ -109,7 +110,7 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        internal void SetPassword(string password)
+        internal protected virtual void SetPassword(string password)
         {
             if (String.IsNullOrWhiteSpace(password))
             {
@@ -120,13 +121,18 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccount.SetPassword] setting new password hash");
 
-            HashedPassword = Crypto.HashPassword(password);
-            PasswordChanged = DateTime.UtcNow;
+            HashedPassword = HashPassword(password);
+            PasswordChanged = UtcNow;
         }
 
-        bool IsVerificationKeyStale()
+        protected internal virtual bool IsVerificationKeyStale
         {
-            return this.VerificationKeySent < DateTime.UtcNow.AddDays(-1);
+            get
+            {
+                return
+                    VerificationKeySent == null ||
+                    this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDuration);
+            }
         }
 
         internal virtual bool ResetPassword()
@@ -141,12 +147,12 @@ namespace BrockAllen.MembershipReboot
 
             // if there's no current key, or if there is a key but 
             // it's older than one day, create a new reset key
-            if (this.VerificationKey == null || IsVerificationKeyStale())
+            if (IsVerificationKeyStale)
             {
                 Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
 
-                this.VerificationKey = StripUglyBase64(Crypto.GenerateSalt());
-                this.VerificationKeySent = DateTime.UtcNow;
+                this.VerificationKey = StripUglyBase64(GenerateSalt());
+                this.VerificationKeySent = UtcNow;
             }
             else
             {
@@ -155,6 +161,7 @@ namespace BrockAllen.MembershipReboot
 
             return true;
         }
+
 
         internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
@@ -171,7 +178,7 @@ namespace BrockAllen.MembershipReboot
             }
 
             // if the key is too old don't honor it
-            if (IsVerificationKeyStale())
+            if (IsVerificationKeyStale)
             {
                 Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- verification key too old");
                 return false;
@@ -191,7 +198,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        internal bool Authenticate(string password, int failedLoginCount, TimeSpan lockoutDuration)
+        internal protected virtual bool Authenticate(string password, int failedLoginCount, TimeSpan lockoutDuration)
         {
             if (failedLoginCount <= 0) throw new ArgumentException("failedLoginCount");
 
@@ -212,8 +219,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (failedLoginCount <= FailedLoginCount &&
-                LastFailedLogin <= DateTime.UtcNow.Add(lockoutDuration))
+            if (HasTooManyRecentPasswordFailures(failedLoginCount, lockoutDuration))
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
                 
@@ -221,24 +227,30 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            var valid = Crypto.VerifyHashedPassword(HashedPassword, password);
+            var valid = VerifyHashedPassword(password);
             if (valid)
             {
                 Tracing.Verbose("[UserAccount.Authenticate] authentication success");
 
-                LastLogin = DateTime.UtcNow;
+                LastLogin = UtcNow;
                 FailedLoginCount = 0;
             }
             else
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- invalid password");
 
-                LastFailedLogin = DateTime.UtcNow;
+                LastFailedLogin = UtcNow;
                 if (FailedLoginCount > 0) FailedLoginCount++;
                 else FailedLoginCount = 1;
             }
 
             return valid;
+        }
+
+        protected internal virtual bool HasTooManyRecentPasswordFailures(int failedLoginCount, TimeSpan lockoutDuration)
+        {
+            return failedLoginCount <= FailedLoginCount &&
+                            LastFailedLogin <= UtcNow.Add(lockoutDuration);
         }
 
         internal bool ChangeEmailRequest(string newEmail)
@@ -253,20 +265,20 @@ namespace BrockAllen.MembershipReboot
             }
 
             var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
-            var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + lowerEmail));
+            var emailHash = StripUglyBase64(Hash(ChangeEmailVerificationPrefix + lowerEmail));
 
             // if there's no current key, or it's not a change email key
             // or if there is a key but it's older than one day, then create 
             // a new reset key
-            if (this.VerificationKey == null ||
-                !this.VerificationKey.StartsWith(emailHash) ||
-                IsVerificationKeyStale())
+            if (IsVerificationKeyStale ||
+                this.VerificationKey == null ||
+                !this.VerificationKey.StartsWith(emailHash))
             {
                 Tracing.Verbose("[UserAccount.ChangeEmailRequest] creating a new reset key");
 
-                var random = StripUglyBase64(Crypto.GenerateSalt());
+                var random = StripUglyBase64(GenerateSalt());
                 this.VerificationKey = emailHash + random;
-                this.VerificationKeySent = DateTime.UtcNow;
+                this.VerificationKeySent = UtcNow;
             }
             else
             {
@@ -286,12 +298,12 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
             // only honor resets within the past day
-            if (!IsVerificationKeyStale())
+            if (!IsVerificationKeyStale)
             {
                 if (key == this.VerificationKey)
                 {
                     var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
-                    var emailHash = StripUglyBase64(Crypto.Hash(ChangeEmailVerificationPrefix + lowerEmail));
+                    var emailHash = StripUglyBase64(Hash(ChangeEmailVerificationPrefix + lowerEmail));
                     if (this.VerificationKey.StartsWith(emailHash))
                     {
                         this.Email = newEmail;
@@ -413,6 +425,34 @@ namespace BrockAllen.MembershipReboot
                 s = s.Replace(ugly, "");
             }
             return s;
+        }
+
+        protected internal virtual string Hash(string value)
+        {
+            return Crypto.Hash(value);
+        }
+
+        protected internal virtual string HashPassword(string password)
+        {
+            return Crypto.HashPassword(password);
+        }
+
+        protected internal virtual string GenerateSalt()
+        {
+            return Crypto.GenerateSalt();
+        }
+
+        protected internal virtual bool VerifyHashedPassword(string password)
+        {
+            return Crypto.VerifyHashedPassword(HashedPassword, password);
+        }
+
+        protected internal virtual DateTime UtcNow
+        {
+            get
+            {
+                return DateTime.UtcNow;
+            }
         }
     }
 }
