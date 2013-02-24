@@ -56,6 +56,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Extensions\ClaimsExtensionsTests.cs" />
+    <Compile Include="Extensions\ClaimsPrincipalExtensionsTests.cs" />
+    <Compile Include="Extensions\DisposableExtensionsTests.cs" />
     <Compile Include="Models\UserAccountTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -68,6 +71,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
