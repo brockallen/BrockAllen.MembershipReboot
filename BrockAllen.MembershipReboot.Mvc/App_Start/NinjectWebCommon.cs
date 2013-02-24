@@ -94,6 +94,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             kernel
                 .Bind<IPasswordPolicy>()
                 .ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });
+            kernel
+                .Bind<INotificationService>()
+                .To<NotificationService>();
         }        
     }
 }
