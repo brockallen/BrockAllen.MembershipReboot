@@ -59,9 +59,11 @@
     <Compile Include="Extensions\ClaimsExtensionsTests.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensionsTests.cs" />
     <Compile Include="Extensions\DisposableExtensionsTests.cs" />
+    <Compile Include="Models\MockUserAccount.cs" />
     <Compile Include="Models\UserAccountTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Accounts\BasicPasswordPolicyTests.cs" />
+    <Compile Include="Services\Accounts\MockUserAccountService.cs" />
     <Compile Include="Services\Accounts\SecuritySettingsTests.cs" />
     <Compile Include="Services\Accounts\UserAccountServiceTests.cs" />
   </ItemGroup>

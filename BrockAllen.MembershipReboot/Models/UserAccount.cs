@@ -13,28 +13,32 @@ namespace BrockAllen.MembershipReboot
     {
         internal const string ChangeEmailVerificationPrefix = "changeEmail";
         internal const int VerificationKeyStaleDuration = 1;
-        
-        internal static UserAccount Create(string tenant, string username, string password, string email)
-        {
-            UserAccount account = new UserAccount
-            {
-                Tenant = tenant,
-                Username = username,
-                Email = email,
-                IsAccountVerified = !SecuritySettings.Instance.RequireAccountVerification,
-                IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation,
-                Claims = new List<UserClaim>()
-            };
-            account.Created = account.UtcNow;
 
-            account.SetPassword(password);
+        internal protected UserAccount()
+        {
+        }
+
+        internal protected UserAccount(string tenant, string username, string password, string email)
+        {
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
+            if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
+            if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
+
+            this.Tenant = tenant;
+            this.Username = username;
+            this.SetPassword(password);
+            this.Email = email;
+            this.Created = this.UtcNow;
+            this.IsAccountVerified = !SecuritySettings.Instance.RequireAccountVerification;
+            this.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
+            this.Claims = new List<UserClaim>();
+
             if (SecuritySettings.Instance.RequireAccountVerification)
             {
-                account.VerificationKey = StripUglyBase64(account.GenerateSalt());
-                account.VerificationKeySent = account.UtcNow;
+                this.VerificationKey = StripUglyBase64(this.GenerateSalt());
+                this.VerificationKeySent = this.UtcNow;
             }
-
-            return account;
         }
 
         [Key]
@@ -115,7 +119,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Verbose("[UserAccount.SetPassword] failed -- no password provided");
-                
+
                 throw new ValidationException("Invalid password");
             }
 
@@ -133,12 +137,12 @@ namespace BrockAllen.MembershipReboot
                 {
                     return true;
                 }
-                
+
                 if (this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDuration))
                 {
                     return true;
                 }
-                
+
                 return false;
             }
         }
@@ -169,7 +173,7 @@ namespace BrockAllen.MembershipReboot
 
             return true;
         }
-        
+
         protected internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
             if (String.IsNullOrWhiteSpace(key))
@@ -229,7 +233,7 @@ namespace BrockAllen.MembershipReboot
             if (HasTooManyRecentPasswordFailures(failedLoginCount, lockoutDuration))
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
-                
+
                 FailedLoginCount++;
                 return false;
             }
@@ -368,7 +372,7 @@ namespace BrockAllen.MembershipReboot
                 select claim.Value;
             return query.ToArray();
         }
-        
+
         public virtual string GetClaimValue(string type)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");

@@ -12,12 +12,117 @@ namespace BrockAllen.MembershipReboot.Test.Models
     [TestClass]
     public class UserAccountTests
     {
-        public class MockUserAccount : Mock<UserAccount>
+        [TestClass]
+        public class Ctor
         {
-            public MockUserAccount()
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void NullTenant_Throws()
             {
-                this.CallBase = true;
+                var sub = new UserAccount(null, "user", "pass", "email");
             }
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void NullUsername_Throws()
+            {
+                var sub = new UserAccount("ten", null, "pass", "email");
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void NullPass_Throws()
+            {
+                var sub = new UserAccount("ten", "user", null, "email");
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void NullEmail_Throws()
+            {
+                var sub = new UserAccount("ten", "user", "pass", null);
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void EmptyTenant_Throws()
+            {
+                var sub = new UserAccount("", "user", "pass", "email");
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void EmptyUsername_Throws()
+            {
+                var sub = new UserAccount("ten", "", "pass", "email");
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void EmptyPass_Throws()
+            {
+                var sub = new UserAccount("ten", "user", "", "email");
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentException))]
+            public void EmptyEmail_Throws()
+            {
+                var sub = new UserAccount("ten", "user", "pass", "");
+            }
+
+            [TestMethod]
+            public void BasicProperties_Assigned()
+            {
+                var sub = new MockUserAccount("ten", "user", "pass", "email");
+                var now = new DateTime(2000, 2, 3, 8, 30, 0);
+                sub.Setup(x => x.UtcNow).Returns(now);
+                Assert.AreEqual("ten", sub.Object.Tenant);
+                Assert.AreEqual("user", sub.Object.Username);
+                Assert.AreEqual("email", sub.Object.Email);
+                Assert.AreEqual(now, sub.Object.Created);
+                sub.Verify(x => x.SetPassword("pass"));
+            }
+
+            [TestMethod]
+            public void IsAccountVerified_SetProperly()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+                SecuritySettings.Instance.RequireAccountVerification = true;
+                var sub = new UserAccount("ten", "user", "pass", "email");
+                Assert.IsFalse(sub.IsAccountVerified);
+
+                SecuritySettings.Instance = new SecuritySettings();
+                SecuritySettings.Instance.RequireAccountVerification = false;
+                sub = new UserAccount("ten", "user", "pass", "email");
+                Assert.IsTrue(sub.IsAccountVerified);
+            }
+
+            [TestMethod]
+            public void IsLoginAllowed_SetProperly()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+                SecuritySettings.Instance.AllowLoginAfterAccountCreation = true;
+                var sub = new UserAccount("ten", "user", "pass", "email");
+                Assert.IsTrue(sub.IsLoginAllowed);
+
+                SecuritySettings.Instance = new SecuritySettings();
+                SecuritySettings.Instance.AllowLoginAfterAccountCreation = false;
+                sub = new UserAccount("ten", "user", "pass", "email");
+                Assert.IsFalse(sub.IsLoginAllowed);
+            }
+
+            [TestMethod]
+            public void Verification_SetProperly()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+                SecuritySettings.Instance.RequireAccountVerification = true;
+                var sub = new UserAccount("ten", "user", "pass", "email");
+                Assert.IsNotNull(sub.VerificationKey);
+                Assert.IsNotNull(sub.VerificationKeySent);
+
+                SecuritySettings.Instance = new SecuritySettings();
+                SecuritySettings.Instance.RequireAccountVerification = false;
+                sub = new UserAccount("ten", "user", "pass", "email");
+                Assert.IsNull(sub.VerificationKey);
+                Assert.IsNull(sub.VerificationKeySent);
+            }
+
+
+
         }
 
         [TestClass]
@@ -600,14 +705,14 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var sub = new UserAccount();
                 var result = sub.ChangeEmailRequest("");
             }
-            [Ignore]
-            [TestMethod]
-            [ExpectedException(typeof(ValidationException))]
-            public void MalFormedEmailIsNull_Throws()
-            {
-                var sub = new UserAccount();
-                var result = sub.ChangeEmailRequest("test");
-            }
+            //[Ignore]
+            //[TestMethod]
+            //[ExpectedException(typeof(ValidationException))]
+            //public void MalFormedEmailIsNull_Throws()
+            //{
+            //    var sub = new UserAccount();
+            //    var result = sub.ChangeEmailRequest("test");
+            //}
 
             [TestMethod]
             public void AccountNotVerified_ReturnsFail()
