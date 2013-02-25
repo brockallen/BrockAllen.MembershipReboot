@@ -66,6 +66,7 @@
     <Compile Include="Services\Accounts\MockUserAccountService.cs" />
     <Compile Include="Services\Accounts\SecuritySettingsTests.cs" />
     <Compile Include="Services\Accounts\UserAccountServiceTests.cs" />
+    <Compile Include="Services\Crypto\CryptoHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">

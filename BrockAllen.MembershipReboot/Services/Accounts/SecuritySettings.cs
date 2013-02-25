@@ -20,6 +20,7 @@ namespace BrockAllen.MembershipReboot
         public int AccountLockoutFailedLoginAttempts { get; set; }
         public TimeSpan AccountLockoutDuration { get; set; }
         public bool AllowAccountDeletion { get; set; }
+        public int PasswordHashingIterationCount { get; set; }
 
         static SecuritySettings()
         {
@@ -37,6 +38,7 @@ namespace BrockAllen.MembershipReboot
             AccountLockoutFailedLoginAttempts = GetAppSettings("AccountLockoutFailedLoginAttempts", 10);
             AccountLockoutDuration = GetAppSettings("AccountLockoutDuration", TimeSpan.FromMinutes(5));
             AllowAccountDeletion = GetAppSettings("AllowAccountDeletion", true);
+            PasswordHashingIterationCount = GetAppSettings("PasswordHashingIterationCount", 1000);
         }
 
         const string AppSettingsPrefix = "membershipReboot:";

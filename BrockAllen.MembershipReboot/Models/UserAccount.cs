@@ -12,10 +12,11 @@ namespace BrockAllen.MembershipReboot
     public class UserAccount
     {
         internal const string ChangeEmailVerificationPrefix = "changeEmail";
-        internal const int VerificationKeyStaleDuration = 1;
+        internal const int VerificationKeyStaleDurationDays = 1;
 
         internal protected UserAccount()
         {
+            this.Claims = new List<UserClaim>();
         }
 
         internal protected UserAccount(string tenant, string username, string password, string email)
@@ -139,7 +140,7 @@ namespace BrockAllen.MembershipReboot
                     return true;
                 }
 
-                if (this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDuration))
+                if (this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDurationDays))
                 {
                     return true;
                 }
@@ -454,22 +455,22 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual string Hash(string value)
         {
-            return Crypto.Hash(value);
-        }
-
-        protected internal virtual string HashPassword(string password)
-        {
-            return Crypto.HashPassword(password);
+            return CryptoHelper.Hash(value);
         }
 
         protected internal virtual string GenerateSalt()
         {
-            return Crypto.GenerateSalt();
+            return CryptoHelper.GenerateSalt();
+        }
+
+        protected internal virtual string HashPassword(string password)
+        {
+            return CryptoHelper.HashPassword(password);
         }
 
         protected internal virtual bool VerifyHashedPassword(string password)
         {
-            return Crypto.VerifyHashedPassword(HashedPassword, password);
+            return CryptoHelper.VerifyHashedPassword(HashedPassword, password);
         }
 
         protected internal virtual DateTime UtcNow

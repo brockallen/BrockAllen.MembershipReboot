@@ -293,7 +293,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var subject = new MockUserAccount();
                 var now = new DateTime(2000, 2, 3);
                 subject.Setup(x => x.UtcNow).Returns(now);
-                subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDuration).Add(TimeSpan.FromSeconds(1)));
+                subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDurationDays).Add(TimeSpan.FromSeconds(1)));
                 var result = subject.Object.IsVerificationKeyStale;
                 Assert.IsTrue(result);
             }
@@ -304,7 +304,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var subject = new MockUserAccount();
                 var now = new DateTime(2000, 2, 3);
                 subject.Setup(x => x.UtcNow).Returns(now);
-                subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDuration));
+                subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDurationDays));
                 var result = subject.Object.IsVerificationKeyStale;
                 Assert.IsFalse(result);
             }
