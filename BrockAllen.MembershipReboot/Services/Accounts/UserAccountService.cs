@@ -36,7 +36,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public void SaveChanges()
+        public virtual void SaveChanges()
         {
             this.userRepository.SaveChanges();
         }
@@ -392,7 +392,7 @@ namespace BrockAllen.MembershipReboot
             return Authenticate(account, password, failedLoginCount, lockoutDuration);
         }
 
-        private bool Authenticate(UserAccount account, string password, int failedLoginCount, TimeSpan lockoutDuration)
+        protected internal virtual bool Authenticate(UserAccount account, string password, int failedLoginCount, TimeSpan lockoutDuration)
         {
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
             this.userRepository.SaveChanges();
@@ -570,6 +570,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SendUsernameReminder(string tenant, string email)
         {
+            if (this.notificationService == null)
+            {
+                throw new InvalidOperationException("NotificationService not configured.");
+            }
+
             Tracing.Information(String.Format("[UserAccountService.SendUsernameReminder] called: {0}, {1}", tenant, email));
 
             if (!SecuritySettings.Instance.MultiTenant)
@@ -584,7 +589,7 @@ namespace BrockAllen.MembershipReboot
             if (account != null)
             {
                 Tracing.Verbose(String.Format("[UserAccountService.SendUsernameReminder] account located: {0}, {1}", account.Tenant, account.Username));
-
+                    
                 this.notificationService.SendAccountNameReminder(account);
             }
         }

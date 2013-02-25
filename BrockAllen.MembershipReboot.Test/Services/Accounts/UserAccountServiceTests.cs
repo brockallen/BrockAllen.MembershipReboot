@@ -70,8 +70,8 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 SecuritySettings.Instance.MultiTenant = true;
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { Tenant = "a" }, 
-                    new UserAccount { Tenant = "a" }, 
+                    new UserAccount { Tenant = "a" },
+                    new UserAccount { Tenant = "a" },
                     new UserAccount { Tenant = "b" });
                 var result = sub.Object.GetAll(null);
                 Assert.AreEqual(0, result.Count());
@@ -96,10 +96,10 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID=1, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed=true },
-                    new UserAccount { ID=2, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed=true },
-                    new UserAccount { ID=3, Tenant = SecuritySettings.Instance.DefaultTenant,  },
-                    new UserAccount { ID=4, Tenant = SecuritySettings.Instance.DefaultTenant,  });
+                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed = true },
+                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed = true },
+                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, },
+                    new UserAccount { ID = 4, Tenant = SecuritySettings.Instance.DefaultTenant, });
                 var result = sub.Object.GetAll(null);
                 Assert.AreEqual(2, result.Count());
                 CollectionAssert.AreEquivalent(new int[] { 3, 4 }, result.Select(x => x.ID).ToArray());
@@ -428,7 +428,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 Assert.IsFalse(sub.Object.EmailExists("t3", "a"));
                 Assert.IsFalse(sub.Object.EmailExists("a"));
             }
-            
+
             [TestMethod]
             public void MultiTenantNotEnabled_ReturnsCorrectValues()
             {
@@ -638,7 +638,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
                 sub.NotificationService.Verify(x => x.SendAccountVerified(result));
             }
-           
+
         }
 
         [TestClass]
@@ -686,9 +686,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                
+
                 sub.Object.VerifyAccount("key");
-                
+
                 account.Verify(x => x.VerifyAccount("key"));
                 sub.UserAccountRepository.Verify(x => x.SaveChanges());
             }
@@ -759,7 +759,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
                 account.Object.IsAccountVerified = true;
-                
+
                 Assert.IsFalse(sub.Object.CancelNewAccount("key"));
             }
             [TestMethod]
@@ -916,6 +916,841 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             }
         }
 
+        [TestClass]
+        public class Authenticate
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
 
+            [TestMethod]
+            public void NoTenantParam_PassesNullForTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.Authenticate("user", "pass");
+                sub.Mock.Verify(x => x.Authenticate(null, "user", "pass"));
+            }
+
+            [TestMethod]
+            public void NoLockoutParams_PassessDefaultLocakoutParams()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.Authenticate("ten", "user", "pass");
+                sub.Mock.Verify(x => x.Authenticate("ten", "user", "pass", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
+            }
+
+            [TestMethod]
+            public void NoTenantParam_LockoutParams_PassessNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.Authenticate("user", "pass", 10, TimeSpan.FromDays(1));
+                sub.Mock.Verify(x => x.Authenticate(null, "user", "pass", 10, TimeSpan.FromDays(1)));
+            }
+
+            [TestMethod]
+            public void MultiTenantEnabled_NullTenantParam_ReturnsFail()
+            {
+                SecuritySettings.Instance.MultiTenant = true;
+
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.Authenticate(null, "user", "pass"));
+            }
+
+            [TestMethod]
+            public void NullUsername_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.Authenticate(null, "pass"));
+            }
+            [TestMethod]
+            public void NullPassword_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.Authenticate("user", null));
+            }
+
+            [TestMethod]
+            public void NoAccountFound_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
+                Assert.IsFalse(sub.Object.Authenticate("user", "pass"));
+            }
+
+            [TestMethod]
+            public void AccountFound_CallsAuthenticate()
+            {
+                var sub = new MockUserAccountService();
+                UserAccount account = new UserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account);
+                sub.Object.Authenticate("user", "pass");
+                sub.Mock.Verify(x => x.Authenticate(account, "pass", It.IsAny<int>(), It.IsAny<TimeSpan>()));
+            }
+
+            [TestMethod]
+            public void CallsAuthenticateOnUserAccount()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1));
+                account.Verify(x => x.Authenticate("pass", 10, TimeSpan.FromDays(1)));
+            }
+            [TestMethod]
+            public void CallsSaveChangesOnRepo()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1));
+                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+            }
+            [TestMethod]
+            public void userAccountReturnsTrue_ReturnsTrue()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                account.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                Assert.IsTrue(sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1)));
+            }
+            [TestMethod]
+            public void userAccountReturnsFalse_ReturnsFalse()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                account.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
+                Assert.IsFalse(sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1)));
+            }
+        }
+
+        [TestClass]
+        public class ChangePassword
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+
+            [TestMethod]
+            public void NoTenantParam_PassesNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.ChangePassword("user", "old", "new");
+                sub.Mock.Verify(x => x.ChangePassword(null, "user", "old", "new"));
+            }
+            [TestMethod]
+            public void NoLockoutParams_PassesDefaultLocakoutParams()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.ChangePassword("ten", "user", "old", "new");
+                sub.Mock.Verify(x => x.ChangePassword("ten", "user", "old", "new", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
+            }
+            [TestMethod]
+            public void NoTenantParams_WithLockoutParams_PassesNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.ChangePassword("user", "old", "new", 10, TimeSpan.FromDays(1));
+                sub.Mock.Verify(x => x.ChangePassword(null, "user", "old", "new", 10, TimeSpan.FromDays(1)));
+            }
+            [TestMethod]
+            public void MultiTenantEnabled_NullTenant_ReturnsFail()
+            {
+                SecuritySettings.Instance.MultiTenant = true;
+
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangePassword(null, "user", "old", "new"));
+            }
+            [TestMethod]
+            public void NullUsername_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangePassword(null, "old", "new"));
+            }
+            [TestMethod]
+            public void NullOldPass_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangePassword("user", null, "new"));
+            }
+            [TestMethod]
+            public void NullNewPass_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangePassword("user", "old", null));
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void ValidatePasswordFails_Throws()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.ValidatePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new ValidationException());
+                sub.Object.ChangePassword("user", "old", "new");
+            }
+            [TestMethod]
+            public void NoAccountFound_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
+                Assert.IsFalse(sub.Object.ChangePassword("user", "old", "new"));
+            }
+            [TestMethod]
+            public void AccountFound_CallsAccountChangePassword()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePassword("user", "old", "new");
+                account.Verify(x => x.ChangePassword("old", "new", It.IsAny<int>(), It.IsAny<TimeSpan>()));
+            }
+            [TestMethod]
+            public void RepositorySaveChangesCalled()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePassword("user", "old", "new");
+                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+            }
+            [TestMethod]
+            public void UserAccountReturnsTrue_ReturnsTrue()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                Assert.IsTrue(sub.Object.ChangePassword("user", "old", "new"));
+            }
+            [TestMethod]
+            public void UserAccountReturnsFalse_ReturnsFalse()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
+                Assert.IsFalse(sub.Object.ChangePassword("user", "old", "new"));
+            }
+            [TestMethod]
+            public void UserAccountReturnsTrue_SendPasswordChangeNoticeCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Object.ChangePassword("user", "old", "new");
+                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(account.Object));
+            }
+            [TestMethod]
+            public void UserAccountReturnsFalse_SendPasswordChangeNoticeNotCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
+                sub.Object.ChangePassword("user", "old", "new");
+                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(account.Object), Times.Never());
+            }
+        }
+
+        [TestClass]
+        public class ResetPassword
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+
+            [TestMethod]
+            public void NoTenantParam_PassessNullForTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.ResetPassword("email");
+                sub.Mock.Verify(x => x.ResetPassword(null, "email"));
+            }
+            [TestMethod]
+            public void MultiTenantEnabled_NullTenantParam_ReturnsFail()
+            {
+                SecuritySettings.Instance.MultiTenant = true;
+
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ResetPassword(null, "email"));
+            }
+            [TestMethod]
+            public void NullEmail_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ResetPassword(null));
+            }
+
+            [TestMethod]
+            public void NoAccountFound_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
+                Assert.IsFalse(sub.Object.ResetPassword("email"));
+            }
+
+            [TestMethod]
+            public void AccountNotVerified_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = false;
+                Assert.IsFalse(sub.Object.ResetPassword("email"));
+            }
+            [TestMethod]
+            public void AccountNotVerified_SendAccountCreateCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = false;
+                sub.Object.ResetPassword("email");
+                sub.NotificationService.Verify(x => x.SendAccountCreate(account.Object));
+            }
+            [TestMethod]
+            public void AccountNotVerified_DoNotRequireAccountVerification_SendAccountCreateNotCalled()
+            {
+                SecuritySettings.Instance.RequireAccountVerification = false;
+
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = false;
+                sub.Object.ResetPassword("email");
+                sub.NotificationService.Verify(x => x.SendAccountCreate(account.Object), Times.Never());
+            }
+
+            [TestMethod]
+            public void AccountVerified_UserAccountResetPasswordCalled()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = true;
+                sub.Object.ResetPassword("email");
+                account.Verify(x => x.ResetPassword());
+            }
+            [TestMethod]
+            public void UserAccountResetPasswordSuccess_ReturnsSuccess()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = true;
+                account.Setup(x => x.ResetPassword()).Returns(true);
+                Assert.IsTrue(sub.Object.ResetPassword("email"));
+            }
+            [TestMethod]
+            public void UserAccountResetPasswordFail_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = true;
+                account.Setup(x => x.ResetPassword()).Returns(false);
+                Assert.IsFalse(sub.Object.ResetPassword("email"));
+            }
+            [TestMethod]
+            public void UserAccountRepoSaveChangesCalled()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = true;
+                sub.Object.ResetPassword("email");
+                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+            }
+            [TestMethod]
+            public void UserAccountResetPasswordSuccess_SendResetPasswordCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = true;
+                account.Setup(x => x.ResetPassword()).Returns(true);
+
+                sub.Object.ResetPassword("email");
+
+                sub.NotificationService.Verify(x => x.SendResetPassword(account.Object));
+            }
+            [TestMethod]
+            public void UserAccountResetPasswordFail_SendResetPasswordNotCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Object.IsAccountVerified = true;
+                account.Setup(x => x.ResetPassword()).Returns(false);
+
+                sub.Object.ResetPassword("email");
+
+                sub.NotificationService.Verify(x => x.SendResetPassword(account.Object), Times.Never());
+            }
+
+
+        }
+
+        [TestClass]
+        public class ChangePasswordFromResetKey
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+
+            [TestMethod]
+            public void NullKey_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangePasswordFromResetKey(null, "new"));
+            }
+            [TestMethod]
+            public void EmptyKey_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangePasswordFromResetKey("", "new"));
+            }
+            [TestMethod]
+            public void AccountNotFound_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns((UserAccount)null);
+                Assert.IsFalse(sub.Object.ChangePasswordFromResetKey("key", "new"));
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void PasswordValidationFails_Throws()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.ValidatePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new ValidationException());
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+            }
+            [TestMethod]
+            public void ChangePasswordFromResetKeyCalledOnUserAccount()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+                account.Verify(x => x.ChangePasswordFromResetKey("key", "new"));
+            }
+            [TestMethod]
+            public void UserAccountSuccess_ReturnsSuccess()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+                account.Setup(x => x.ChangePasswordFromResetKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+
+                Assert.IsTrue(sub.Object.ChangePasswordFromResetKey("key", "new"));
+            }
+            [TestMethod]
+            public void UserAccountFail_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+                account.Setup(x => x.ChangePasswordFromResetKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
+                Assert.IsFalse(sub.Object.ChangePasswordFromResetKey("key", "new"));
+            }
+            [TestMethod]
+            public void UserAccountSuccess_CallsSaveChangesOnUserAccountRepo()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+                account.Setup(x => x.ChangePasswordFromResetKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+
+                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+            }
+            [TestMethod]
+            public void UserAccountFails_DoesNotCallsSaveChangesOnUserAccountRepo()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+                account.Setup(x => x.ChangePasswordFromResetKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(), Times.Never());
+            }
+            [TestMethod]
+            public void UserAccountSuccess_SendPasswordChangeNoticeCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+                account.Setup(x => x.ChangePasswordFromResetKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+
+                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(account.Object));
+            }
+            [TestMethod]
+            public void UserAccountFail_SendPasswordChangeNoticeNotCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+                account.Setup(x => x.ChangePasswordFromResetKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
+                sub.Object.ChangePasswordFromResetKey("key", "new");
+
+                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(account.Object), Times.Never());
+            }
+        }
+
+        [TestClass]
+        public class SendUsernameReminder
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+
+            [TestMethod]
+            [ExpectedException(typeof(InvalidOperationException))]
+            public void NullNotificationService_Throws()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.SendUsernameReminder("email");
+            }
+
+            [TestMethod]
+            public void NoTenantParam_PassesNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                sub.Object.SendUsernameReminder("email");
+                sub.Mock.Verify(x => x.SendUsernameReminder(null, "email"));
+            }
+
+            [TestMethod]
+            public void MultiTenantEnabled_NullTenantParam_DoesNotSendAccountNameReminder()
+            {
+                SecuritySettings.Instance.MultiTenant = true;
+
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                sub.Object.SendUsernameReminder(null, "email");
+                sub.NotificationService.Verify(x => x.SendAccountNameReminder(It.IsAny<UserAccount>()), Times.Never());
+            }
+
+            [TestMethod]
+            public void NullEmailParam_DoesNotSendAccountNameReminder()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                sub.Object.SendUsernameReminder(null);
+                sub.NotificationService.Verify(x => x.SendAccountNameReminder(It.IsAny<UserAccount>()), Times.Never());
+            }
+
+            [TestMethod]
+            public void NoAccountFound_DoesNotSendAccountNameReminder()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
+                sub.Object.SendUsernameReminder("email");
+                sub.NotificationService.Verify(x => x.SendAccountNameReminder(It.IsAny<UserAccount>()), Times.Never());
+            }
+            [TestMethod]
+            public void AccountFound_DoesNotSendAccountNameReminder()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                UserAccount account = new UserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account);
+                sub.Object.SendUsernameReminder("email");
+                sub.NotificationService.Verify(x => x.SendAccountNameReminder(account));
+            }
+        }
+
+        [TestClass]
+        public class ChangeEmailRequest
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+
+            [TestMethod]
+            public void NoTenantParam_PassesNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.ChangeEmailRequest("user", "email@test.com");
+                sub.Mock.Verify(x => x.ChangeEmailRequest(null, "user", "email@test.com"));
+            }
+
+            [TestMethod]
+            public void EmailIsUsername_ReturnsFail()
+            {
+                SecuritySettings.Instance.EmailIsUsername = true;
+
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailRequest("user", "email@test.com"));
+            }
+
+            [TestMethod]
+            public void MultiTenantEnabled_NullTenant_ReturnsFail()
+            {
+                SecuritySettings.Instance.MultiTenant = true;
+
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailRequest(null, "user", "email@test.com"));
+            }
+            [TestMethod]
+            public void NullUsername_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailRequest(null, "email@test.com"));
+            }
+            [TestMethod]
+            public void NullEmail_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailRequest("user", null));
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void EmailNotValidFormat_Throws()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.ChangeEmailRequest("user", "email");
+            }
+            [TestMethod]
+            public void AccountNotFound_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
+                Assert.IsFalse(sub.Object.ChangeEmailRequest("user", "email@test.com"));
+            }
+            [TestMethod]
+            public void AccountFound_CallsUserAccountChangeEmailRequest()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                sub.Object.ChangeEmailRequest("user", "email@test.com");
+                account.Verify(x => x.ChangeEmailRequest("email@test.com"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailRequestSuccess_ReturnsSuccess()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(true);
+                Assert.IsTrue(sub.Object.ChangeEmailRequest("user", "email@test.com"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailRequestFail_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(false);
+                Assert.IsFalse(sub.Object.ChangeEmailRequest("user", "email@test.com"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailRequestSuccess_CallsSaveChangesOnRepo()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(true);
+                sub.Object.ChangeEmailRequest("user", "email@test.com");
+                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailRequestFail_DoesNotCallsSaveChangesOnRepo()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(false);
+                sub.Object.ChangeEmailRequest("user", "email@test.com");
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(), Times.Never());
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailRequestSuccess_CallsSendChangeEmailRequestNotice()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(true);
+                sub.Object.ChangeEmailRequest("user", "email@test.com");
+                sub.NotificationService.Verify(x => x.SendChangeEmailRequestNotice(account.Object, "email@test.com"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailRequestFails_DoesNotCallSendChangeEmailRequestNotice()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(false);
+                sub.Object.ChangeEmailRequest("user", "email@test.com");
+                sub.NotificationService.Verify(x => x.SendChangeEmailRequestNotice(It.IsAny<UserAccount>(), It.IsAny<string>()), Times.Never());
+            }
+        }
+
+        [TestClass]
+        public class ChangeEmailFromKey
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+
+            [TestMethod]
+            public void NoLockoutParams_PassDefaultLockoutParams()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+                sub.Mock.Verify(x => x.ChangeEmailFromKey("pass", "key", "email@test.com", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
+            }
+
+            [TestMethod]
+            public void NullPass_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailFromKey(null, "key", "email@test.com"));
+            }
+            [TestMethod]
+            public void NullKey_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", null, "email@test.com"));
+            }
+            [TestMethod]
+            public void NullEmail_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", null));
+            }
+            [TestMethod]
+            public void AccountNotFound_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns((UserAccount)null);
+                Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
+            }
+            [TestMethod]
+            public void AuthenticateFails_ReturnsFail()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
+                Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailFromKeyCalled()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+                account.Verify(x => x.ChangeEmailFromKey("key", "email@test.com"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailFromKeySuccess_ReturnSuccess()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+                Assert.IsTrue(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailFromKeyFail_ReturnFail()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+                Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
+            }
+
+            [TestMethod]
+            public void UserAccountChangeEmailFromKeySuccess_SaveChangesCalled()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailFromKeyFail_SaveChangesNotCalled()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(), Times.Never());
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailFromKeySuccess_SendEmailChangedNoticeCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                account.Object.Email = "old";
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+                sub.NotificationService.Verify(x => x.SendEmailChangedNotice(account.Object, "old"));
+            }
+            [TestMethod]
+            public void UserAccountChangeEmailFromKeyFail_SendEmailChangedNoticeNotCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+                sub.NotificationService.Verify(x => x.SendEmailChangedNotice(It.IsAny<UserAccount>(), It.IsAny<string>()), Times.Never());
+            }
+        }
     }
 }
