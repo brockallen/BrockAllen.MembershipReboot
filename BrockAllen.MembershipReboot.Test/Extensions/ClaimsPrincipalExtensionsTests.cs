@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BrockAllen.MembershipReboot.Test.Extensions

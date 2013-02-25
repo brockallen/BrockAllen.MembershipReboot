@@ -5,12 +5,10 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     using System;
     using System.Web;
-
+    using BrockAllen.MembershipReboot;
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-
     using Ninject;
     using Ninject.Web.Common;
-    using BrockAllen.MembershipReboot;
 
     public static class NinjectWebCommon 
     {

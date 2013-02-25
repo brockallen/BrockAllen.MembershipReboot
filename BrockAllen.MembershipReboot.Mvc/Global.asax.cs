@@ -1,14 +1,10 @@
-﻿using BrockAllen.MembershipReboot.Mvc.App_Start;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Security.Claims;
-using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using BrockAllen.MembershipReboot.Mvc.App_Start;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {

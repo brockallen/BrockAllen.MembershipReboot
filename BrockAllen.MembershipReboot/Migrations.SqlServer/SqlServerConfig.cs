@@ -1,9 +1,6 @@
 namespace BrockAllen.MembershipReboot.Migrations.SqlServer
 {
-    using System;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
-    using System.Linq;
 
     internal sealed class SqlServerConfig : DbMigrationsConfiguration<BrockAllen.MembershipReboot.EFMembershipRebootDatabase>
     {
