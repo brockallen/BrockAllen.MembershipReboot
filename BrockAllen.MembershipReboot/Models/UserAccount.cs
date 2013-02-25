@@ -28,9 +28,9 @@ namespace BrockAllen.MembershipReboot
 
             this.Tenant = tenant;
             this.Username = username;
-            this.SetPassword(password);
             this.Email = email;
             this.Created = this.UtcNow;
+            this.SetPassword(password);
             this.IsAccountVerified = !SecuritySettings.Instance.RequireAccountVerification;
             this.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
             this.Claims = new List<UserClaim>();
