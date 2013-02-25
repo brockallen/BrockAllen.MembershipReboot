@@ -71,7 +71,12 @@ namespace BrockAllen.MembershipReboot
 
             // issue cookie
             var sam = FederatedAuthentication.SessionAuthenticationModule;
-            if (sam == null) throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
+            if (sam == null)
+            {
+                Tracing.Verbose("[ClaimsBasedAuthenticationService.Signin] SessionAuthenticationModule is not configured");
+                throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
+            }
+            
             var token = new SessionSecurityToken(cp, TimeSpan.FromHours(DefaultTokenLifetime_InHours));
             sam.WriteSessionTokenToCookie(token);
 
@@ -84,7 +89,12 @@ namespace BrockAllen.MembershipReboot
 
             // clear cookie
             var sam = FederatedAuthentication.SessionAuthenticationModule;
-            if (sam == null) throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
+            if (sam == null)
+            {
+                Tracing.Verbose("[ClaimsBasedAuthenticationService.Signout] SessionAuthenticationModule is not configured");
+                throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
+            }
+
             sam.SignOut();
         }
     }
