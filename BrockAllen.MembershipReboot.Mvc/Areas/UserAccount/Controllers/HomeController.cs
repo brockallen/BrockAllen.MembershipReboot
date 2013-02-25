@@ -12,7 +12,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         UserAccountService userAccountService;
         ClaimsBasedAuthenticationService authSvc;
 
-        public HomeController(UserAccountService userAccountService, ClaimsBasedAuthenticationService authSvc)
+        public HomeController(
+            UserAccountService userAccountService, ClaimsBasedAuthenticationService authSvc)
         {
             this.userAccountService = userAccountService;
             this.authSvc = authSvc;

@@ -12,9 +12,13 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     public class ChangeEmailController : Controller
     {
         UserAccountService userAccountService;
-        public ChangeEmailController(UserAccountService userAccountService)
+        ClaimsBasedAuthenticationService authSvc;
+
+        public ChangeEmailController(
+            UserAccountService userAccountService, ClaimsBasedAuthenticationService authSvc)
         {
             this.userAccountService = userAccountService;
+            this.authSvc = authSvc;
         }
 
         protected override void Dispose(bool disposing)
@@ -77,6 +81,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     if (this.userAccountService.ChangeEmailFromKey(model.Password, model.Key, model.NewEmail))
                     {
+                        // since we've changed the email, we need to re-issue the cookie that
+                        // contains the claims.
+                        var account = this.userAccountService.GetByEmail(model.NewEmail);
+                        authSvc.SignIn(account.Username);
                         return View("Success");
                     }
 
