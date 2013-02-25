@@ -8,23 +8,23 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
 {
     public class HomeController : Controller
     {
-        UserAccountService userAccountService;
-        public HomeController(UserAccountService userAccountService)
+        IUserAccountRepository userAccountRepository;
+        public HomeController(IUserAccountRepository userAccountRepository)
         {
-            this.userAccountService = userAccountService;
+            this.userAccountRepository = userAccountRepository;
         }
 
         public ActionResult Index()
         {
             var names =
-                from a in userAccountService.GetAll()
+                from a in userAccountRepository.GetAll()
                 select a;
             return View(names.ToArray());
         }
 
         public ActionResult Detail(int id)
         {
-            var account = userAccountService.GetByID(id);
+            var account = userAccountRepository.Get(id);
             return View("Detail", account);
         }
 
