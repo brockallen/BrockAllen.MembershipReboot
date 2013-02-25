@@ -1508,14 +1508,15 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             }
 
             [TestMethod]
-            public void EmailIsUsername_ReturnsFail()
+            public void EmailIsUsername_DontAllowEmailChangeWhenEmailIsUsername_ReturnsFail()
             {
                 SecuritySettings.Instance.EmailIsUsername = true;
+                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = false;
 
                 var sub = new MockUserAccountService();
                 Assert.IsFalse(sub.Object.ChangeEmailRequest("user", "email@test.com"));
             }
-
+            
             [TestMethod]
             public void MultiTenantEnabled_NullTenant_ReturnsFail()
             {
@@ -1619,6 +1620,20 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Object.ChangeEmailRequest("user", "email@test.com");
                 sub.NotificationService.Verify(x => x.SendChangeEmailRequestNotice(It.IsAny<UserAccount>(), It.IsAny<string>()), Times.Never());
             }
+
+            [TestMethod]
+            public void EmailIsUsername_AllowEmailChangeWhenEmailIsUsername_ReturnsSuccess()
+            {
+                SecuritySettings.Instance.EmailIsUsername = true;
+                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = true;
+
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(true);
+
+                Assert.IsTrue(sub.Object.ChangeEmailRequest("user", "email@test.com"));
+            }
         }
 
         [TestClass]
@@ -1637,6 +1652,17 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
                 sub.Mock.Verify(x => x.ChangeEmailFromKey("pass", "key", "email@test.com", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
             }
+
+            [TestMethod]
+            public void EmailIsUsername_NotAllowEmailChangeWhenEmailIsUsername_ReturnsFail()
+            {
+                SecuritySettings.Instance.EmailIsUsername = true;
+                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = false;
+                
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
+            }
+
 
             [TestMethod]
             public void NullPass_ReturnsFail()
@@ -1749,6 +1775,40 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
                 sub.NotificationService.Verify(x => x.SendEmailChangedNotice(It.IsAny<UserAccount>(), It.IsAny<string>()), Times.Never());
+            }
+
+            [TestMethod]
+            public void EmailIsUsername_AllowEmailChangeWhenEmailIsUsername_WhenSuccess_UpdatesUsername()
+            {
+                SecuritySettings.Instance.EmailIsUsername = true;
+                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = true;
+
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+
+                Assert.AreEqual("email@test.com", account.Object.Username);
+            }
+
+            [TestMethod]
+            public void EmailIsUsername_AllowEmailChangeWhenEmailIsUsername_WhenFail_DoesNotUpdatesUsername()
+            {
+                SecuritySettings.Instance.EmailIsUsername = true;
+                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = true;
+
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
+                sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
+
+                Assert.AreNotEqual("email@test.com", account.Object.Username);
             }
         }
     }

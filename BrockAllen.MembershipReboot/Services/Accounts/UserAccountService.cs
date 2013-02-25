@@ -602,12 +602,11 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.ChangeEmailRequest] called: {0}, {1}, {2}", tenant, username, newEmail));
 
-            if (SecuritySettings.Instance.EmailIsUsername)
+            if (SecuritySettings.Instance.EmailIsUsername && 
+                !SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername)
             {
-                Tracing.Warning(String.Format("[UserAccountService.ChangeEmailRequest] security setting EmailIsUsername is true, so change request failed: {0}, {1}, {2}", tenant, username, newEmail));
+                Tracing.Warning(String.Format("[UserAccountService.ChangeEmailRequest] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is false, so change request failed: {0}, {1}, {2}", tenant, username, newEmail));
 
-                // if username is email, then this is same as 
-                // changing the primary key, so we don't allow it
                 return false;
             }
 
@@ -669,6 +668,14 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}", key, newEmail));
 
+            if (SecuritySettings.Instance.EmailIsUsername &&
+                !SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername)
+            {
+                Tracing.Warning(String.Format("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is false, so change request failed: key: {0}, new email: {1}", key, newEmail));
+
+                return false;
+            }
+            
             if (String.IsNullOrWhiteSpace(password)) return false;
             if (String.IsNullOrWhiteSpace(key)) return false;
             if (String.IsNullOrWhiteSpace(newEmail)) return false;
@@ -685,6 +692,13 @@ namespace BrockAllen.MembershipReboot
 
             var oldEmail = account.Email;
             var result = account.ChangeEmailFromKey(key, newEmail);
+            
+            if (result &&
+                SecuritySettings.Instance.EmailIsUsername &&
+                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername)
+            {
+                account.Username = newEmail;
+            }
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] change email outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
 
