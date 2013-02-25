@@ -697,6 +697,7 @@ namespace BrockAllen.MembershipReboot
                 SecuritySettings.Instance.EmailIsUsername &&
                 SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername)
             {
+                Tracing.Warning(String.Format("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, newEmail));
                 account.Username = newEmail;
             }
 
