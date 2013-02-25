@@ -1,8 +1,6 @@
 # What is MembershipReboot
 
-The BrockAllen.MembershipReboot project is intended as an improved version of the ASP.NET Membership Provider.
-
-MembershipReboot is claims-aware and uses password stretching for safer password storage.
+The BrockAllen.MembershipReboot project is intended as an on-premise user account and identity management library. It has nothing to do with the ASP.NET Membership Provider (but was inspired by it). MembershipReboot is claims-aware and uses password stretching for proper password storage.
 
 The most common use case will be to integrate this into an ASP.NET or ASP.NET MVC applcation, though the library can also be used over a network as a service.
 
