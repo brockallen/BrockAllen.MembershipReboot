@@ -59,10 +59,13 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                 .ToMethod(x => new EFUserAccountRepository(Constants.ConnectionName))
                 .InRequestScope();
             
-            //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
-            kernel
-                .Bind<IMessageDelivery>()
-                .To<SmtpMessageDelivery>();
+            kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
+            //kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
+            
+            //kernel.Bind<IPasswordPolicy>().To<NopPasswordPolicy>();
+            kernel.Bind<IPasswordPolicy>().ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });
+
+            kernel.Bind<INotificationService>().To<NotificationService>();
             
             kernel
                 .Bind<ApplicationInformation>()
@@ -89,14 +92,6 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                             ConfirmChangeEmailUrl = baseUrl + "ChangeEmail/Confirm/"
                         };
                     });
-
-            //kernel.Bind<IPasswordPolicy>().To<NopPasswordPolicy>();
-            kernel
-                .Bind<IPasswordPolicy>()
-                .ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });
-            kernel
-                .Bind<INotificationService>()
-                .To<NotificationService>();
         }        
     }
 }

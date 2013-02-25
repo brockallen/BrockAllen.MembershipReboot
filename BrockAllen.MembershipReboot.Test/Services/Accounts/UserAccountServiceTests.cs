@@ -881,19 +881,18 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.UserAccountRepository.Verify(x => x.Remove(account.Object));
             }
             [TestMethod]
-            public void AllowAccountDeletionDisabled_AccountIsVerified_SetsDisabledFlagsOnAccount()
+            public void AllowAccountDeletionDisabled_AccountIsVerified_CallsCloseOnAccount()
             {
                 SecuritySettings.Instance.AllowAccountDeletion = false;
 
                 var sub = new MockUserAccountService();
-                var account = new UserAccount();
-                account.IsLoginAllowed = true;
-                account.IsAccountVerified = true;
-                sub.Object.DeleteAccount(account);
+                var account = new MockUserAccount();
+                account.Object.IsLoginAllowed = true;
+                account.Object.IsAccountVerified = true;
+                sub.Object.DeleteAccount(account.Object);
 
-                sub.UserAccountRepository.Verify(x => x.Remove(account), Times.Never());
-                Assert.AreEqual(false, account.IsLoginAllowed);
-                Assert.AreEqual(true, account.IsAccountClosed);
+                sub.UserAccountRepository.Verify(x => x.Remove(account.Object), Times.Never());
+                account.Verify(x => x.CloseAccount());
             }
             [TestMethod]
             public void CallsSaveChangesOnRepo()

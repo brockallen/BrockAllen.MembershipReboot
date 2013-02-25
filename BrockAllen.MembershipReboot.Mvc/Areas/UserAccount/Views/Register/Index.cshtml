@@ -19,3 +19,27 @@
 
     </fieldset>
 }
+
+@using (Html.BeginForm("Confirm", "Register", FormMethod.Get))
+{
+    <fieldset>
+        <legend>Confirm</legend>
+        <p>
+            <label for="id">Key</label>
+            <input id="id" name="id" />
+        </p>
+        <p class="buttons"><button>Submit</button></p>
+    </fieldset>
+}
+
+@using (Html.BeginForm("Cancel", "Register", FormMethod.Get))
+{
+    <fieldset>
+        <legend>Cancel</legend>
+        <p>
+            <label for="id">Key</label>
+            <input id="id" name="id" />
+        </p>
+        <p class="buttons"><button>Submit</button></p>
+    </fieldset>
+}

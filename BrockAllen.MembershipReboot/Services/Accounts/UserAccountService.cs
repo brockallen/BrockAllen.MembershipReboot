@@ -334,8 +334,7 @@ namespace BrockAllen.MembershipReboot
             else
             {
                 Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] marking account closed: {0}, {1}", account.Tenant, account.Username));
-                account.IsLoginAllowed = false;
-                account.IsAccountClosed = true;
+                account.CloseAccount();
             }
 
             using (var tx = new TransactionScope())

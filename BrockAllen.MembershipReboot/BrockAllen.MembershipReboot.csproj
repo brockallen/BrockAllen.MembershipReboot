@@ -90,6 +90,14 @@
     <Compile Include="Migrations.SqlCe\201301101958249_InitialMigration.Designer.cs">
       <DependentUpon>201301101958249_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations.SqlCe\201302251409247_ExpandKeyAndAddAccountCloseFields.cs" />
+    <Compile Include="Migrations.SqlCe\201302251409247_ExpandKeyAndAddAccountCloseFields.Designer.cs">
+      <DependentUpon>201302251409247_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations.SqlServer\201302251410424_ExpandKeyAndAddAccountCloseFields.cs" />
+    <Compile Include="Migrations.SqlServer\201302251410424_ExpandKeyAndAddAccountCloseFields.Designer.cs">
+      <DependentUpon>201302251410424_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Repository\EF\DbContextRepository`2.cs" />
     <Compile Include="Repository\EF\DbContextRepository`3.cs" />
@@ -118,7 +126,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations.SqlServer\201301101956394_InitialMigration.resx">
       <DependentUpon>201301101956394_InitialMigration.cs</DependentUpon>
@@ -126,11 +136,19 @@
     <EmbeddedResource Include="Migrations.SqlCe\201301101958249_InitialMigration.resx">
       <DependentUpon>201301101958249_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations.SqlCe\201302251409247_ExpandKeyAndAddAccountCloseFields.resx">
+      <DependentUpon>201302251409247_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations.SqlServer\201302251410424_ExpandKeyAndAddAccountCloseFields.resx">
+      <DependentUpon>201302251410424_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="license.txt" />
     <Content Include="Migrations.SqlCe\Sql\201301101958249_InitialMigration.sql" />
+    <Content Include="Migrations.SqlCe\Sql\201302251409247_ExpandKeyAndAddAccountCloseFields.Designer.sql" />
     <Content Include="Migrations.SqlServer\Sql\201301101956394_InitialMigration.sql" />
+    <Content Include="Migrations.SqlServer\Sql\201302251410424_ExpandKeyAndAddAccountCloseFields.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

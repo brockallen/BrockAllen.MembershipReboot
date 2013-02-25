@@ -20,3 +20,15 @@
         </div>
     </fieldset>
 }
+
+@using (Html.BeginForm("Confirm", "ChangeEmail", FormMethod.Get))
+{
+    <fieldset>
+        <legend>Confirm</legend>
+        <p>
+            <label for="id">Key</label>
+            <input id="id" name="id" />
+        </p>
+        <p class="buttons"><button>Submit</button></p>
+    </fieldset>
+}

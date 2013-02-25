@@ -1269,5 +1269,23 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 Assert.AreEqual("value2", sub.Claims.First().Value);
             }
         }
+
+        [TestClass]
+        public class CloseAccount
+        {
+            [TestMethod]
+            public void SetsClosedFields()
+            {
+                var sub = new MockUserAccount();
+                sub.Object.IsLoginAllowed = true;
+                var now = new DateTime(2000, 2, 3, 8, 30, 0);
+                sub.Setup(x => x.UtcNow).Returns(now);
+                sub.Object.CloseAccount();
+
+                Assert.AreEqual(now, sub.Object.AccountClosed);
+                Assert.AreEqual(true, sub.Object.IsAccountClosed);
+                Assert.AreEqual(false, sub.Object.IsLoginAllowed);
+            }
+        }
     }
 }

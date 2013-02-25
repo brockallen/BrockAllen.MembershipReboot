@@ -133,6 +133,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\NinjectWebCommon.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangePasswordController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\CloseAccountController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\HomeController.cs" />
@@ -183,6 +185,10 @@
     <Content Include="Areas\UserAccount\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\UserAccount\Views\_ViewStart.cshtml" />
     <Content Include="Areas\UserAccount\Views\SendUsernameReminder\Success.cshtml" />
+    <Content Include="Areas\Admin\Views\Web.config" />
+    <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\Detail.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\Object.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>
@@ -226,6 +232,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Admin\Models\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
   <ItemGroup>

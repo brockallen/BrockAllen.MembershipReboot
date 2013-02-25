@@ -61,12 +61,13 @@ namespace BrockAllen.MembershipReboot
         public virtual bool IsAccountVerified { get; internal set; }
         public virtual bool IsLoginAllowed { get; set; }
         public virtual bool IsAccountClosed { get; internal set; }
+        public virtual DateTime? AccountClosed { get; internal set; }
 
         public virtual DateTime? LastLogin { get; internal set; }
         public virtual DateTime? LastFailedLogin { get; internal set; }
         public virtual int FailedLoginCount { get; internal set; }
 
-        [StringLength(50)]
+        [StringLength(100)]
         public virtual string VerificationKey { get; internal set; }
         public virtual DateTime? VerificationKeySent { get; internal set; }
 
@@ -345,6 +346,13 @@ namespace BrockAllen.MembershipReboot
             }
 
             return false;
+        }
+
+        protected internal virtual void CloseAccount()
+        {
+            IsLoginAllowed = false;
+            IsAccountClosed = true;
+            AccountClosed = UtcNow;
         }
 
         public virtual bool HasClaim(string type)

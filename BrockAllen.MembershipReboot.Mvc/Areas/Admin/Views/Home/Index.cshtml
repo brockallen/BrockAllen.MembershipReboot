@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Accounts</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Tenant</th>
+            <th>Email</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            int id = item.ID;
+            string name = item.Username;
+            <tr>
+                <td>@Html.ActionLink(name, "Detail", new { id = id })</td>
+                <td>@item.Tenant</td>
+                <td>@item.Email</td>
+                <td>@item.Created</td>
+            </tr>
+        }
+    </tbody>
+</table>
