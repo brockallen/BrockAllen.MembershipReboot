@@ -12,7 +12,7 @@ namespace BrockAllen.MembershipReboot
         {
         }
 
-        public DbContextRepository(Ctx db)
+        public DbContextRepository(DbContext db)
             : base(db)
         {
         }
