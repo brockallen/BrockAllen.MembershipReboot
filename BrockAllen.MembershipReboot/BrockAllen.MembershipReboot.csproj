@@ -41,7 +41,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.identitymodel.services" />
+    <Reference Include="System.Identitymodel.Services" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
