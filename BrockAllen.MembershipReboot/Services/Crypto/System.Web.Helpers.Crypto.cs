@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 //using System.Web.Helpers.Resources;
 
-namespace System.Web.Helpers
+namespace BrockAllen.MembershipReboot.Helpers
 {
     internal static class Crypto
     {

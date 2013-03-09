@@ -81,7 +81,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
         [TestMethod]
         public void PasswordWithoutPrefix_StillValidatesWithDefault()
         {
-            var hash = System.Web.Helpers.Crypto.HashPassword("pass");
+            var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
             Assert.IsTrue(CryptoHelper.VerifyHashedPassword(hash, "pass"));
         }
 
@@ -89,7 +89,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
         public void IncorrectPrefix_DoesNotVerify()
         {
             {
-                var hash = System.Web.Helpers.Crypto.HashPassword("pass");
+                var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
                 Assert.IsFalse(CryptoHelper.VerifyHashedPassword("5000." + hash, "pass"));
             }
             {
