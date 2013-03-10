@@ -12,7 +12,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
         public void Init()
         {
             SecuritySettings.Instance = new SecuritySettings();
-            CryptoHelper.GetYear = () => 2012;
+            CryptoHelper.GetCurrentYear = () => 2012;
         }
 
         const int IterationsForCurrentYear = 64000;

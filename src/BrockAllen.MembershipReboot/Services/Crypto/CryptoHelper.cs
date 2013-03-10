@@ -7,7 +7,7 @@ namespace BrockAllen.MembershipReboot
     internal static class CryptoHelper
     {
         internal const char PasswordHashingIterationCountSeparator = '.';
-        internal static Func<int> GetYear = () => DateTime.Now.Year;
+        internal static Func<int> GetCurrentYear = () => DateTime.Now.Year;
 
         internal static string Hash(string value)
         {
@@ -24,7 +24,7 @@ namespace BrockAllen.MembershipReboot
             var count = SecuritySettings.Instance.PasswordHashingIterationCount;
             if (count <= 0)
             {
-                count = GetIterationsFromYear(GetYear());
+                count = GetIterationsFromYear(GetCurrentYear());
             }
             var result = Crypto.HashPassword(password, count);
             return count.ToString() + PasswordHashingIterationCountSeparator + result;
