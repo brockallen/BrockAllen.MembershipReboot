@@ -62,7 +62,7 @@ namespace BrockAllen.MembershipReboot
             {
                 return val;
             }
-            return 0;
+            return -1;
         }
 
         // from OWASP : https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
