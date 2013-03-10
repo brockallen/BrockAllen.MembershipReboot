@@ -22,22 +22,22 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
         {
             {
                 var result = CryptoHelper.HashPassword("pass");
-                StringAssert.StartsWith(result, IterationsForCurrentYear.ToString() + CryptoHelper.PasswordHashingIterationCountSeparator);
+                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(IterationsForCurrentYear) + CryptoHelper.PasswordHashingIterationCountSeparator);
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 5000;
                 var result = CryptoHelper.HashPassword("pass");
-                StringAssert.StartsWith(result, "5000" + CryptoHelper.PasswordHashingIterationCountSeparator);
+                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(5000) + CryptoHelper.PasswordHashingIterationCountSeparator);
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 10000;
                 var result = CryptoHelper.HashPassword("pass");
-                StringAssert.StartsWith(result, "10000" + CryptoHelper.PasswordHashingIterationCountSeparator);
+                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(10000) + CryptoHelper.PasswordHashingIterationCountSeparator);
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 50;
                 var result = CryptoHelper.HashPassword("pass");
-                StringAssert.StartsWith(result, "50" + CryptoHelper.PasswordHashingIterationCountSeparator);
+                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(50) + CryptoHelper.PasswordHashingIterationCountSeparator);
             }
         }
 
@@ -46,7 +46,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
         {
             SecuritySettings.Instance.PasswordHashingIterationCount = -1;
             var result = CryptoHelper.HashPassword("pass");
-            StringAssert.StartsWith(result, IterationsForCurrentYear.ToString() + CryptoHelper.PasswordHashingIterationCountSeparator);
+            StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(IterationsForCurrentYear) + CryptoHelper.PasswordHashingIterationCountSeparator);
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
         {
             SecuritySettings.Instance.PasswordHashingIterationCount = 0;
             var result = CryptoHelper.HashPassword("pass");
-            StringAssert.StartsWith(result, IterationsForCurrentYear.ToString() + CryptoHelper.PasswordHashingIterationCountSeparator);
+            StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(IterationsForCurrentYear) + CryptoHelper.PasswordHashingIterationCountSeparator);
         }
 
         [TestMethod]
@@ -95,11 +95,11 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
         {
             {
                 var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
-                Assert.IsFalse(CryptoHelper.VerifyHashedPassword("5000." + hash, "pass"));
+                Assert.IsFalse(CryptoHelper.VerifyHashedPassword(CryptoHelper.EncodeIterations(5000) + "." + hash, "pass"));
             }
             {
                 var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
-                Assert.IsFalse(CryptoHelper.VerifyHashedPassword("5000.5." + hash, "pass"));
+                Assert.IsFalse(CryptoHelper.VerifyHashedPassword(CryptoHelper.EncodeIterations(5000) + ".5." + hash, "pass"));
             }
             {
                 var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
@@ -112,7 +112,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Crypto
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 10000;
                 var hash = CryptoHelper.HashPassword("pass");
-                hash = hash.Replace("10000", "5000");
+                hash = hash.Replace(CryptoHelper.EncodeIterations(10000), CryptoHelper.EncodeIterations(5000));
                 Assert.IsFalse(CryptoHelper.VerifyHashedPassword(hash, "pass"));
             }
         }

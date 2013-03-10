@@ -27,7 +27,7 @@ namespace BrockAllen.MembershipReboot
                 count = GetIterationsFromYear(GetCurrentYear());
             }
             var result = Crypto.HashPassword(password, count);
-            return count.ToString() + PasswordHashingIterationCountSeparator + result;
+            return EncodeIterations(count) + PasswordHashingIterationCountSeparator + result;
         }
 
         internal static bool VerifyHashedPassword(string hashedPassword, string password)
@@ -36,9 +36,8 @@ namespace BrockAllen.MembershipReboot
             {
                 var parts = hashedPassword.Split(PasswordHashingIterationCountSeparator);
                 if (parts.Length != 2) return false;
-                
-                int count;
-                if (!Int32.TryParse(parts[0], out count)) return false;
+
+                int count = DecodeIterations(parts[0]);
                 if (count <= 0) return false;
 
                 hashedPassword = parts[1];
@@ -49,6 +48,21 @@ namespace BrockAllen.MembershipReboot
             {
                 return Crypto.VerifyHashedPassword(hashedPassword, password);
             }
+        }
+
+        internal static string EncodeIterations(int count)
+        {
+            return count.ToString("X");
+        }
+
+        internal static int DecodeIterations(string prefix)
+        {
+            int val;
+            if (Int32.TryParse(prefix, System.Globalization.NumberStyles.HexNumber, null, out val))
+            {
+                return val;
+            }
+            return 0;
         }
 
         // from OWASP : https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
