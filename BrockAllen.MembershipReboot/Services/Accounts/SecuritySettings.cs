@@ -36,7 +36,7 @@ namespace BrockAllen.MembershipReboot
             AccountLockoutFailedLoginAttempts = GetAppSettings("AccountLockoutFailedLoginAttempts", 10);
             AccountLockoutDuration = GetAppSettings("AccountLockoutDuration", TimeSpan.FromMinutes(5));
             AllowAccountDeletion = GetAppSettings("AllowAccountDeletion", true);
-            PasswordHashingIterationCount = GetAppSettings("PasswordHashingIterationCount", 1000);
+            PasswordHashingIterationCount = GetAppSettings("PasswordHashingIterationCount", 0);
         }
 
         const string AppSettingsPrefix = "membershipReboot:";
