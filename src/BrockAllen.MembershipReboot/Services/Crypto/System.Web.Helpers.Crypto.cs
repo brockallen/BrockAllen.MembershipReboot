@@ -1,4 +1,6 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+﻿// Original Version Copyright:
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+// Original License: http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
 using System.Diagnostics.CodeAnalysis;
