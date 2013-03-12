@@ -1,51 +1,102 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class SecuritySettings
+    public class SecuritySettings : ConfigurationSection
     {
-        public static SecuritySettings Instance { get; set; }
+        public const string SectionName = "membershipReboot";
 
-        public bool MultiTenant { get; set; }
-        public string DefaultTenant { get; set; }
-        public bool EmailIsUsername { get; set; }
-        public bool UsernamesUniqueAcrossTenants { get; set; }
-        public bool RequireAccountVerification { get; set; }
-        public bool AllowLoginAfterAccountCreation { get; set; }
-        public int AccountLockoutFailedLoginAttempts { get; set; }
-        public TimeSpan AccountLockoutDuration { get; set; }
-        public bool AllowAccountDeletion { get; set; }
+        private const string MULTITENANT = "multiTenant";
+        private const string DEFAULTTENANT = "defaultTenant";
+        private const string EMAILISUSERNAME = "emailIsUsername";
+        private const string USERNAMESUNIQUEACROSSTENANTS = "usernamesUniqueAcrossTenants";
+        private const string REQUIREACCOUNTVERIFICATION = "requireAccountVerification";
+        private const string ALLOWLOGINAFTERACCOUNTCREATION = "allowLoginAfterAccountCreation";
+        private const string ACCOUNTLOCKOUTFAILEDLOGINATTEMPTS = "accountLockoutFailedLoginAttempts";
+        private const string ACCOUNTLOCKOUTDURATION = "accountLockoutDuration";
+        private const string ALLOWACCOUNTDELETION = "allowAccountDeletion";
+        private const string CONNECTIONSTRING = "connectionString";
 
-        static SecuritySettings()
+        public static SecuritySettings Instance
         {
-            Instance = new SecuritySettings();
-        }
-        
-        public SecuritySettings()
-        {
-            MultiTenant = GetAppSettings("MultiTenant", false);
-            DefaultTenant = GetAppSettings("DefaultTenant", "default");
-            EmailIsUsername = GetAppSettings("EmailIsUsername", false);
-            UsernamesUniqueAcrossTenants = GetAppSettings("UsernamesUniqueAcrossTenants", false);
-            RequireAccountVerification = GetAppSettings("RequireAccountVerification", true);
-            AllowLoginAfterAccountCreation = GetAppSettings("AllowLoginAfterAccountCreation", true);
-            AccountLockoutFailedLoginAttempts = GetAppSettings("AccountLockoutFailedLoginAttempts", 10);
-            AccountLockoutDuration = GetAppSettings("AccountLockoutDuration", TimeSpan.FromMinutes(5));
-            AllowAccountDeletion = GetAppSettings("AllowAccountDeletion", true);
+            get { return (SecuritySettings)System.Configuration.ConfigurationManager.GetSection(SectionName); }
         }
 
-        const string AppSettingsPrefix = "membershipReboot:";
-
-        private T GetAppSettings<T>(string name, T defaultValue)
+        [ConfigurationProperty(MULTITENANT, DefaultValue = false)]
+        public bool MultiTenant
         {
-            var val = ConfigurationManager.AppSettings[AppSettingsPrefix + name];
-            if (val != null) return (T)Convert.ChangeType(val, typeof(T));
-            return defaultValue;
+            get { return (bool)this[MULTITENANT]; }
+            set { this[MULTITENANT] = value; }
+        }
+
+        [ConfigurationProperty(DEFAULTTENANT, DefaultValue = "default")]
+        public string DefaultTenant
+        {
+            get { return (string)this[DEFAULTTENANT]; }
+            set { this[DEFAULTTENANT] = value; }
+        }
+
+        [ConfigurationProperty(EMAILISUSERNAME, DefaultValue = false)]
+        public bool EmailIsUsername
+        {
+            get { return (bool)this[EMAILISUSERNAME]; }
+            set { this[EMAILISUSERNAME] = value; }
+        }
+
+        [ConfigurationProperty(USERNAMESUNIQUEACROSSTENANTS, DefaultValue = false)]
+        public bool UsernamesUniqueAcrossTenants
+        {
+            get { return (bool)this[USERNAMESUNIQUEACROSSTENANTS]; }
+            set { this[USERNAMESUNIQUEACROSSTENANTS] = value; }
+        }
+
+        [ConfigurationProperty(REQUIREACCOUNTVERIFICATION, DefaultValue = true)]
+        public bool RequireAccountVerification
+        {
+            get { return (bool)this[REQUIREACCOUNTVERIFICATION]; }
+            set { this[REQUIREACCOUNTVERIFICATION] = value; }
+        }
+
+        [ConfigurationProperty(ALLOWLOGINAFTERACCOUNTCREATION, DefaultValue = true)]
+        public bool AllowLoginAfterAccountCreation
+        {
+            get { return (bool)this[ALLOWLOGINAFTERACCOUNTCREATION]; }
+            set { this[ALLOWLOGINAFTERACCOUNTCREATION] = value; }
+        }
+
+        [ConfigurationProperty(ACCOUNTLOCKOUTFAILEDLOGINATTEMPTS, DefaultValue = 10)]
+        public int AccountLockoutFailedLoginAttempts
+        {
+            get { return (int)this[ACCOUNTLOCKOUTFAILEDLOGINATTEMPTS]; }
+            set { this[ACCOUNTLOCKOUTFAILEDLOGINATTEMPTS] = value; }
+        }
+
+        public TimeSpan AccountLockoutDuration
+        {
+            get { return TimeSpan.FromMinutes(AccountLockoutMinutes); }
+            set { AccountLockoutMinutes = (int)value.TotalMinutes; }
+        }
+
+        [ConfigurationProperty(MULTITENANT, DefaultValue = false)]
+        public int AccountLockoutMinutes
+        {
+            get { return (int)this[ACCOUNTLOCKOUTDURATION]; }
+            set { this[ACCOUNTLOCKOUTDURATION] = value; }
+        }
+
+        [ConfigurationProperty(ALLOWACCOUNTDELETION, DefaultValue = true)]
+        public bool AllowAccountDeletion
+        {
+            get { return (bool)this[ALLOWACCOUNTDELETION]; }
+            set { this[ALLOWACCOUNTDELETION] = value; }
+        }
+
+        [ConfigurationProperty(CONNECTIONSTRING, DefaultValue = "MembershipReboot")]
+        public string ConnectionString
+        {
+            get { return (string)this[CONNECTIONSTRING]; }
+            set { this[CONNECTIONSTRING] = value; }
         }
     }
 }
