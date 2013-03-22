@@ -103,11 +103,18 @@ namespace BrockAllen.MembershipReboot
         {
             if (Authenticate(oldPassword, failedLoginCount, lockoutDuration))
             {
+                if (oldPassword == newPassword)
+                {
+                    Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tenant:user {0}:{1} -- new password same as old password", this.Tenant, this.Username));
+                    
+                    throw new ValidationException("The new password must be different than the old password.");
+                }
+
                 SetPassword(newPassword);
                 return true;
             }
 
-            Tracing.Verbose("[UserAccount.ChangePassword] failed -- auth failed");
+            Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tentant:username {0}:{1} -- auth failed", this.Tenant, this.Username));
 
             return false;
         }

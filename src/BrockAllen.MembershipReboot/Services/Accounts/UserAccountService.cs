@@ -444,20 +444,26 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
-            var result = account.ChangePassword(oldPassword, newPassword, failedLoginCount, lockoutDuration);
-
-            Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] change password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
-
-            using (var tx = new TransactionScope())
+            bool result = false;
+            try
             {
-                this.userRepository.SaveChanges();
-
-                if (result && this.notificationService != null)
+                result = account.ChangePassword(oldPassword, newPassword, failedLoginCount, lockoutDuration);
+                Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] change password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
+            }
+            finally
+            {
+                // put this into finally since ChangePassword uses Authenticate which modifies state
+                using (var tx = new TransactionScope())
                 {
-                    this.notificationService.SendPasswordChangeNotice(account);
-                }
+                    this.userRepository.SaveChanges();
 
-                tx.Complete();
+                    if (result && this.notificationService != null)
+                    {
+                        this.notificationService.SendPasswordChangeNotice(account);
+                    }
+
+                    tx.Complete();
+                }
             }
             return result;
         }

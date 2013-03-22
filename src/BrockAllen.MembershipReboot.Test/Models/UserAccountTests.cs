@@ -231,6 +231,17 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var result = subject.Object.ChangePassword("old", "new", 0, TimeSpan.Zero);
                 subject.Verify(x => x.SetPassword("new"));
             }
+            
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void NewPasswordSameAsOldChangePassword_Fails()
+            {
+                Mock<UserAccount> subject = new MockUserAccount();
+                subject
+                    .Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>()))
+                    .Returns(true);
+                var result = subject.Object.ChangePassword("same", "same", 0, TimeSpan.Zero);
+            }
         }
 
         [TestClass]
