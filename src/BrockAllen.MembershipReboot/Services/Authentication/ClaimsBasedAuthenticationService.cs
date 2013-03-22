@@ -8,8 +8,6 @@ namespace BrockAllen.MembershipReboot
 {
     public class ClaimsBasedAuthenticationService : IDisposable
     {
-        const int DefaultTokenLifetime_InHours = 10;
-
         UserAccountService userService;
 
         public ClaimsBasedAuthenticationService(UserAccountService userService)
@@ -77,7 +75,17 @@ namespace BrockAllen.MembershipReboot
                 throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
             }
             
-            var token = new SessionSecurityToken(cp, TimeSpan.FromHours(DefaultTokenLifetime_InHours));
+            var handler = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)] as SessionSecurityTokenHandler;
+            if (handler == null)
+            {
+                Tracing.Verbose("[ClaimsBasedAuthenticationService.Signin] SessionSecurityTokenHandler is not configured");
+                throw new Exception("SessionSecurityTokenHandler is not configured and it needs to be.");
+            }
+
+            var token = new SessionSecurityToken(cp, handler.TokenLifetime);
+            token.IsPersistent = FederatedAuthentication.FederationConfiguration.WsFederationConfiguration.PersistentCookiesOnPassiveRedirects;
+            token.IsReferenceMode = sam.IsReferenceMode;
+            
             sam.WriteSessionTokenToCookie(token);
 
             Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.Signin] cookie issued: {0}", claims.GetValue(ClaimTypes.NameIdentifier)));
