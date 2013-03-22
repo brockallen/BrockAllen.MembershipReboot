@@ -715,5 +715,26 @@ namespace BrockAllen.MembershipReboot
             }
             return result;
         }
+
+        public virtual bool IsPasswordExpired(string username)
+        {
+            return IsPasswordExpired(null, username);
+        }
+
+        public virtual bool IsPasswordExpired(string tenant, string username)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+
+            var account = this.GetByUsername(tenant, username);
+            if (account == null) return false;
+
+            return account.IsPasswordExpired;
+        }
     }
 }

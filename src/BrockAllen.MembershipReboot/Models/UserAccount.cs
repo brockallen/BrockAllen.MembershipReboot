@@ -354,6 +354,19 @@ namespace BrockAllen.MembershipReboot
             AccountClosed = UtcNow;
         }
 
+        protected internal virtual bool IsPasswordExpired
+        {
+            get
+            {
+                var frequency = SecuritySettings.Instance.PasswordResetFrequency;
+                if (frequency <= 0) return false;
+
+                var now = this.UtcNow;
+                var last = this.PasswordChanged;
+                return last.AddDays(frequency) <= now;
+            }
+        }
+
         public virtual bool HasClaim(string type)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");

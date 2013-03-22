@@ -22,6 +22,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             Assert.AreEqual(TimeSpan.FromMinutes(5), settings.AccountLockoutDuration);
             Assert.AreEqual(true, settings.AllowAccountDeletion);
             Assert.AreEqual(0, settings.PasswordHashingIterationCount);
+            Assert.AreEqual(0, settings.PasswordResetFrequency);
         }
     }
 }

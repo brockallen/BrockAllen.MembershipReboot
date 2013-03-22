@@ -1811,5 +1811,58 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 Assert.AreNotEqual("email@test.com", account.Object.Username);
             }
         }
+
+        [TestClass]
+        public class IsPasswordExpired
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+            
+            [TestMethod]
+            public void NoTenantParam_PassesNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.IsPasswordExpired("user");
+                sub.Mock.Verify(x => x.IsPasswordExpired(null, "user"));
+            }
+
+            [TestMethod]
+            public void MultiTenantEnabled_NullTenant_ReturnsFalse()
+            {
+                SecuritySettings.Instance.MultiTenant = true;
+
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.IsPasswordExpired(null, "user"));
+            }
+
+            [TestMethod]
+            public void NullUsername_ReturnsFalse()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.IsPasswordExpired("tenant", null));
+            }
+
+            [TestMethod]
+            public void NoAccount_ReturnsFalse()
+            {
+                var sub = new MockUserAccountService();
+                Assert.IsFalse(sub.Object.IsPasswordExpired("user"));
+            }
+            
+            [TestMethod]
+            public void ValidAccount_CallsAccount()
+            {
+                SecuritySettings.Instance.DefaultTenant = "tenant";
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount("tenant", "user", "pass", "email@foo.com");
+                sub.MockUserAccounts(account.Object);
+                var result = sub.Object.IsPasswordExpired("tenant", "user");
+                account.Verify(x => x.IsPasswordExpired);
+            }
+
+        }
     }
 }

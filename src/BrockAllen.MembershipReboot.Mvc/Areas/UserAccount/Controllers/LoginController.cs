@@ -50,13 +50,21 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 if (this.userAccountService.Authenticate(model.Username, model.Password))
                 {
                     authSvc.SignIn(model.Username);
-                    if (Url.IsLocalUrl(model.ReturnUrl))
+
+                    if (userAccountService.IsPasswordExpired(model.Username))
                     {
-                        return Redirect(model.ReturnUrl);
+                        return RedirectToAction("Index", "ChangePassword");
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                 }
                 else

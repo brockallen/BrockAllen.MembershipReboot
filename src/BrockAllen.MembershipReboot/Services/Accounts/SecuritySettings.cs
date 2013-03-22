@@ -36,6 +36,7 @@ namespace BrockAllen.MembershipReboot
         private const string ACCOUNTLOCKOUTDURATION = "accountLockoutDuration";
         private const string ALLOWACCOUNTDELETION = "allowAccountDeletion";
         private const string PASSWORDHASHINGITERATIONCOUNT = "passwordHashingIterationCount";
+        private const string PASSWORDRESETFREQUENCY = "passwordResetFrequency";
 
         [ConfigurationProperty(CONNECTIONSTRINGNAME, DefaultValue = "MembershipReboot")]
         public string ConnectionStringName
@@ -119,6 +120,13 @@ namespace BrockAllen.MembershipReboot
         {
             get { return (int)this[PASSWORDHASHINGITERATIONCOUNT]; }
             set { this[PASSWORDHASHINGITERATIONCOUNT] = value; }
+        }
+
+        [ConfigurationProperty(PASSWORDRESETFREQUENCY, DefaultValue = 0)]
+        public int PasswordResetFrequency
+        {
+            get { return (int)this[PASSWORDRESETFREQUENCY]; }
+            set { this[PASSWORDRESETFREQUENCY] = value; }
         }
     }
 }
