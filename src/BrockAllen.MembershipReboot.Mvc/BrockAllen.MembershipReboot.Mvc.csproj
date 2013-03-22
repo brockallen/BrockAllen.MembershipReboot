@@ -153,7 +153,6 @@
     <Compile Include="Areas\UserAccount\Models\RegisterInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\SendUsernameReminderInputModel.cs" />
     <Compile Include="Areas\UserAccount\UserAccountAreaRegistration.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
