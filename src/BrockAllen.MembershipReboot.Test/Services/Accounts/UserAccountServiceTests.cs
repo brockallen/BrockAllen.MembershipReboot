@@ -595,7 +595,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             public void EmailAlreadyExists_Throws()
             {
                 var sub = new MockUserAccountService();
-                sub.Mock.Setup(x => x.EmailExists(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+                sub.Mock.Setup(x => x.EmailExists(It.IsAny<string>(), It.Is<string>(e => e.CompareTo("email@test.com") == 0))).Returns(true);
                 sub.Object.CreateAccount("user", "pass", "email@test.com");
             }
 

@@ -208,7 +208,7 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(msg + " already in use.");
             }
 
-            if (EmailExists(tenant, username))
+            if (EmailExists(tenant, email))
             {
                 Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Email already exists: {0}, {1}, {2}", tenant, username, email));
 
