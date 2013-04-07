@@ -39,7 +39,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ResetPassword(model.Email))
+                    if (this.userAccountService.ResetPasswordWithEmail(model.Email))
                     {
                         return View("ResetSuccess");
                     }
