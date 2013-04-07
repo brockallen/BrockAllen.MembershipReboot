@@ -468,15 +468,10 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
-        public virtual bool ResetPassword(string email)
+        // Reset password with email address
+        // Use this when EMAILISUSERNAME is enabled. Otherwise, the account may not be uniquely identified if a gievn email address is used in multiple accounts.
+        public virtual bool ResetPasswordWithEmail(string tenant, string email)
         {
-            return ResetPassword(null, email);
-        }
-
-        public virtual bool ResetPassword(string tenant, string email)
-        {
-            Tracing.Information(String.Format("[UserAccountService.ResetPassword] called: {0}, {1}", tenant, email));
-
             if (!SecuritySettings.Instance.MultiTenant)
             {
                 tenant = SecuritySettings.Instance.DefaultTenant;
@@ -486,7 +481,36 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(email)) return false;
 
             var account = this.GetByEmail(tenant, email);
+
+            return ResetPassword(account);
+        }
+
+        public virtual bool ResetPasswordWithEmail(string email)
+        {
+            return this.ResetPasswordWithEmail(null, email);
+        }
+
+        // Reset password with user name. Use this when EMAILISUSERNAME is disabled.
+        public virtual bool ResetPasswordWithUserName(string tenant, string username)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+
+            var account = this.GetByUsername(tenant, username);
+
+            return ResetPassword(account);
+        }
+
+        public virtual bool ResetPassword(UserAccount account)
+        {
             if (account == null) return false;
+
+            Tracing.Information(String.Format("[UserAccountService.ResetPassword] called: {0}, {1}", account.Username, account.Email));
 
             if (!account.IsAccountVerified)
             {
