@@ -397,6 +397,45 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
+        public virtual void SetPassword(string username, string newPassword)
+        {
+            SetPassword(null, username, newPassword);
+        }
+
+        public virtual void SetPassword(string tenant, string username, string newPassword)
+        {
+            Tracing.Information(String.Format("[UserAccountService.SetPassword] called: {0}, {1}", tenant, username));
+
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException("Invalid tenant.");
+            if (String.IsNullOrWhiteSpace(username)) throw new ValidationException("Invalid username.");
+            if (String.IsNullOrWhiteSpace(newPassword)) throw new ValidationException("Invalid newPassword.");
+
+            ValidatePassword(tenant, username, newPassword);
+
+            var account = this.GetByUsername(tenant, username);
+            if (account == null) throw new ValidationException("Invalid tenant and/or username.");
+
+            Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}, {1}", tenant, username));
+
+            using (var tx = new TransactionScope())
+            {
+                account.SetPassword(newPassword);
+                this.userRepository.SaveChanges();
+                
+                if (this.notificationService != null)
+                {
+                    this.notificationService.SendPasswordChangeNotice(account);
+                }
+                
+                tx.Complete();
+            }
+        }
+
         public virtual bool ChangePassword(
             string username, string oldPassword, string newPassword)
         {

@@ -1023,6 +1023,103 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
         }
 
         [TestClass]
+        public class SetPassword
+        {
+            [TestInitialize]
+            public void Init()
+            {
+                SecuritySettings.Instance = new SecuritySettings();
+            }
+
+            [TestMethod]
+            public void NoTenantParam_PassesNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                try
+                {
+                    sub.Object.SetPassword("user", "pass");
+                }
+                catch { }
+                sub.Mock.Verify(x => x.SetPassword(null, "user", "pass"));
+            }
+
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void MultiTenantEnabled_NullTenant_Throws()
+            {
+                SecuritySettings.Instance.MultiTenant = true;
+
+                var sub = new MockUserAccountService();
+                sub.Object.SetPassword(null, "user", "pass");
+            }
+
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void NullUsername_Throws()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.SetPassword(null, "pass");
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void NullPassword_Throws()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.SetPassword("user", null);
+            }
+
+            [TestMethod]
+            public void ValidatePassCalled()
+            {
+                var sub = new MockUserAccountService();
+                try
+                {
+                    sub.Object.SetPassword("user", "pass");
+                }
+                catch { }
+
+                sub.Mock.Verify(x => x.ValidatePassword(SecuritySettings.Instance.DefaultTenant, "user", "pass"));
+            }
+
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void NoUser_Throws()
+            {
+                var sub = new MockUserAccountService();
+                sub.MockUserAccounts(new UserAccount { Tenant = "tenant", Username = "user" });
+                sub.Object.SetPassword("tenant", "user2", "pass");
+            }
+            [TestMethod]
+            public void ValidUser_SetPasswordCalled()
+            {
+                var sub = new MockUserAccountService();
+                var user = new MockUserAccount(SecuritySettings.Instance.DefaultTenant, "user", "foo", "user@foo.com");
+                sub.MockUserAccounts(user.Object);
+                sub.Object.SetPassword("user", "pass");
+                user.Verify(x => x.SetPassword("pass"));
+            }
+            [TestMethod]
+            public void ValidUser_RepositorySaved()
+            {
+                var sub = new MockUserAccountService();
+                var user = new MockUserAccount(SecuritySettings.Instance.DefaultTenant, "user", "foo", "user@foo.com");
+                sub.MockUserAccounts(user.Object);
+                sub.Object.SetPassword("user", "pass");
+                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+            }
+            [TestMethod]
+            public void NotificationServicedCalled()
+            {
+                var sub = new MockUserAccountService();
+                sub.NotificationService = new Mock<INotificationService>();
+                var user = new MockUserAccount(SecuritySettings.Instance.DefaultTenant, "user", "foo", "user@foo.com");
+                sub.MockUserAccounts(user.Object);
+                sub.Object.SetPassword("user", "pass");
+                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(user.Object));
+            }
+        }
+
+        [TestClass]
         public class ChangePassword
         {
             [TestInitialize]
