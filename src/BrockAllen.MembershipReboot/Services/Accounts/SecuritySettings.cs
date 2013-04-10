@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Configuration;
 
 namespace BrockAllen.MembershipReboot
@@ -9,12 +10,17 @@ namespace BrockAllen.MembershipReboot
 
         static SecuritySettings()
         {
+            var instance = new SecuritySettings();
             var configSection = GetConfigSection();
-            if (configSection == null)
+            if (configSection != null)
             {
-                configSection = new SecuritySettings();
+                foreach (var prop in configSection.Properties.Cast<ConfigurationProperty>())
+                {
+                    var val = configSection[prop];
+                    instance[prop] = val;
+                }
             }
-            Instance = configSection;
+            Instance = instance;
         }
 
         public const string SectionName = "membershipReboot";
