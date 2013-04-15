@@ -22,6 +22,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
             if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
 
+            this.NameID = Guid.NewGuid();
             this.Tenant = tenant;
             this.Username = username;
             this.Email = email;
@@ -40,6 +41,7 @@ namespace BrockAllen.MembershipReboot
 
         [Key]
         public virtual int ID { get; set; }
+        public virtual Guid NameID { get; set; }
 
         [StringLength(50)]
         [Required]
