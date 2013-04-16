@@ -121,6 +121,16 @@ namespace BrockAllen.MembershipReboot
             }
             return account;
         }
+        
+        public virtual UserAccount GetByNameId(Guid nameId)
+        {
+            var account = userRepository.GetAll().Where(x => x.NameID == nameId).SingleOrDefault();
+            if (account == null)
+            {
+                Tracing.Verbose(String.Format("[UserAccountService.GetByNameId] failed to locate account: {0}", nameId));
+            }
+            return account;
+        }
 
         public virtual bool UsernameExists(string username)
         {
@@ -286,6 +296,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccountService.CancelNewAccount] account located: {0}, {1}", account.Tenant, account.Username));
 
             if (account.IsAccountVerified) return false;
+            if (account.VerificationPurpose != VerificationKeyPurpose.VerifyAccount) return false;
             if (account.VerificationKey != key) return false;
 
             Tracing.Verbose(String.Format("[UserAccountService.CancelNewAccount] deleting account: {0}, {1}", account.Tenant, account.Username));
@@ -633,6 +644,50 @@ namespace BrockAllen.MembershipReboot
                 this.notificationService.SendAccountNameReminder(account);
             }
         }
+
+        //public virtual void ChangeUsername(string username, string newUsername)
+        //{
+        //    ChangeUsername(null, username, newUsername);
+        //}
+
+        //public virtual void ChangeUsername(string tenant, string username, string newUsername)
+        //{
+        //    Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}, {2}", tenant, username, newUsername));
+
+        //    if (!SecuritySettings.Instance.MultiTenant)
+        //    {
+        //        tenant = SecuritySettings.Instance.DefaultTenant;
+        //    }
+
+        //    if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+        //    if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
+        //    if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentException("newUsername");
+
+        //    var account = GetByUsername(tenant, username);
+        //    if (account == null) throw new ValidationException("Invalid account");
+
+        //    if (UsernameExists(tenant, newUsername))
+        //    {
+        //        Tracing.Information(String.Format("[UserAccountService.ChangeUsername] failed because new username already in use: {0}, {1}, {2}", tenant, username, newUsername));
+        //        throw new ValidationException("New username is already in use.");
+        //    }
+
+        //    Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
+            
+        //    account.Username = newUsername;
+
+        //    using (var tx = new TransactionScope())
+        //    {
+        //        this.userRepository.SaveChanges();
+
+        //        if (this.notificationService != null)
+        //        {
+        //            this.notificationService.SendChangeUsernameRequestNotice(account);
+        //        }
+
+        //        tx.Complete();
+        //    }
+        //}
 
         public virtual bool ChangeEmailRequest(string username, string newEmail)
         {

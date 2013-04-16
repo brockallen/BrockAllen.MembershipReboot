@@ -156,6 +156,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var subject = new UserAccount();
                 subject.IsAccountVerified = true;
+                subject.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 subject.VerificationKey = "test1";
                 var result = subject.VerifyAccount("test2");
                 Assert.IsFalse(result);
@@ -166,6 +167,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var subject = new UserAccount();
                 subject.VerificationKey = "test1";
+                subject.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 var result = subject.VerifyAccount("test1");
                 Assert.IsTrue(result);
             }
@@ -174,6 +176,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
             public void SuccessfulVerification_VerificationFlagsReset()
             {
                 var subject = new UserAccount();
+                subject.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 subject.VerificationKey = "test";
                 subject.VerifyAccount("test");
                 Assert.AreEqual(true, subject.IsAccountVerified);
@@ -185,6 +188,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var sent = new DateTime(2000, 2, 3);
                 var subject = new UserAccount();
+                subject.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 subject.VerificationKey = "test1";
                 subject.VerificationKeySent = sent;
                 
@@ -231,7 +235,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var result = subject.Object.ChangePassword("old", "new", 0, TimeSpan.Zero);
                 subject.Verify(x => x.SetPassword("new"));
             }
-            
+
             [TestMethod]
             [ExpectedException(typeof(ValidationException))]
             public void NewPasswordSameAsOldChangePassword_Fails()
@@ -357,6 +361,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var subject = new MockUserAccount();
                 subject.Object.IsAccountVerified = true;
                 subject.Object.VerificationKey = "key";
+                subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
                 subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 var result = subject.Object.ResetPassword();
                 Assert.AreEqual("key", subject.Object.VerificationKey);
@@ -424,12 +429,24 @@ namespace BrockAllen.MembershipReboot.Test.Models
             }
 
             [TestMethod]
+            public void PurposeDoesntMatch_ReturnsFail()
+            {
+                var subject = new MockUserAccount();
+                subject.Object.IsAccountVerified = true;
+                subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
+                subject.Object.VerificationKey = "key1";
+                subject.Object.VerificationPurpose = null;
+                var result = subject.Object.ChangePasswordFromResetKey("key2", "new");
+                Assert.IsFalse(result);
+            }
+            [TestMethod]
             public void KeyDoesntMatchVerificationKey_ReturnsFail()
             {
                 var subject = new MockUserAccount();
                 subject.Object.IsAccountVerified = true;
                 subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 subject.Object.VerificationKey = "key1";
+                subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
                 var result = subject.Object.ChangePasswordFromResetKey("key2", "new");
                 Assert.IsFalse(result);
             }
@@ -438,6 +455,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var subject = new MockUserAccount();
                 subject.Object.IsAccountVerified = true;
+                subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
                 subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 subject.Object.VerificationKey = "key";
                 var result = subject.Object.ChangePasswordFromResetKey("key", "new");
@@ -448,6 +466,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var subject = new MockUserAccount();
                 subject.Object.IsAccountVerified = true;
+                subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
                 subject.Object.VerificationKey = "key";
                 subject.Object.VerificationKeySent = new DateTime(2000, 2, 3);
                 subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
@@ -461,6 +480,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var subject = new MockUserAccount();
                 subject.Object.IsAccountVerified = true;
                 subject.Object.VerificationKey = "key";
+                subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
                 subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 var result = subject.Object.ChangePasswordFromResetKey("key", "new");
                 subject.Verify(x => x.SetPassword("new"));
@@ -746,7 +766,24 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var sub = new MockUserAccount();
                 sub.Object.IsAccountVerified = true;
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
                 sub.Setup(x => x.IsVerificationKeyStale).Returns(true);
+                sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
+                sub.Setup(x => x.GenerateSalt()).Returns("salt");
+                var now = new DateTime(2000, 2, 3);
+                sub.Setup(x => x.UtcNow).Returns(now);
+
+                var result = sub.Object.ChangeEmailRequest("test@test.com");
+                Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
+                Assert.AreEqual(now, sub.Object.VerificationKeySent);
+            }
+
+            [TestMethod]
+            public void ChangeEmailSuccess_VerificationPurposeMismatch_VerificationKeyFlagsReset()
+            {
+                var sub = new MockUserAccount();
+                sub.Object.IsAccountVerified = true;
+                sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
                 sub.Setup(x => x.GenerateSalt()).Returns("salt");
                 var now = new DateTime(2000, 2, 3);
@@ -762,12 +799,14 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var sub = new MockUserAccount();
                 sub.Object.IsAccountVerified = true;
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
                 sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
                 sub.Setup(x => x.GenerateSalt()).Returns("salt");
                 var now = new DateTime(2000, 2, 3);
                 sub.Setup(x => x.UtcNow).Returns(now);
                 sub.Object.VerificationKey = "key";
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
 
                 var result = sub.Object.ChangeEmailRequest("test@test.com");
                 Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
@@ -781,6 +820,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 sub.Object.IsAccountVerified = true;
                 sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("key");
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
                 sub.Object.VerificationKey = "key";
                 var date = new DateTime(2000, 2, 3);
                 sub.Object.VerificationKeySent = date;
@@ -831,11 +871,21 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 Assert.IsFalse(result);
             }
             [TestMethod]
+            public void PurposeDoesNotMatch_ReturnsFail()
+            {
+                var sub = new MockUserAccount();
+                sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
+                sub.Object.VerificationKey = "key1";
+                var result = sub.Object.ChangeEmailFromKey("key2", "new@test.com");
+                Assert.IsFalse(result);
+            }
+            [TestMethod]
             public void KeyDoesNotMatch_ReturnsFail()
             {
                 var sub = new MockUserAccount();
                 sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 sub.Object.VerificationKey = "key1";
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
                 var result = sub.Object.ChangeEmailFromKey("key2", "new@test.com");
                 Assert.IsFalse(result);
             }
@@ -845,6 +895,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var sub = new MockUserAccount();
                 sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
                 sub.Object.VerificationKey = "key";
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
                 sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("prefix");
 
                 var result = sub.Object.ChangeEmailFromKey("key", "new@test.com");
@@ -855,6 +906,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
             {
                 var sub = new MockUserAccount();
                 sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
                 sub.Object.VerificationKey = "prefixkey";
                 sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("prefix");
 
@@ -866,11 +918,11 @@ namespace BrockAllen.MembershipReboot.Test.Models
             public void ChangeEmailFromKeySuccess_SetsNewEmail()
             {
                 var sub = new MockUserAccount();
-                sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
-                sub.Object.VerificationKey = "prefixkey";
-                sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("prefix");
-
-                var result = sub.Object.ChangeEmailFromKey("prefixkey", "new@test.com");
+                sub.Object.IsAccountVerified = true;
+                sub.Object.ChangeEmailRequest("new@test.com");
+                var key = sub.Object.VerificationKey;
+                
+                var result = sub.Object.ChangeEmailFromKey(key, "new@test.com");
                 Assert.AreEqual("new@test.com", sub.Object.Email);
             }
 
@@ -878,14 +930,13 @@ namespace BrockAllen.MembershipReboot.Test.Models
             public void ChangeEmailFromKeySuccess_VerificationKeysReset()
             {
                 var sub = new MockUserAccount();
-                sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
-                sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("prefix");
-                sub.Object.VerificationKey = "prefixkey";
-                sub.Object.VerificationKeySent = new DateTime(2000, 2, 3);
-
-                var result = sub.Object.ChangeEmailFromKey("prefixkey", "new@test.com");
+                sub.Object.IsAccountVerified = true;
+                sub.Object.ChangeEmailRequest("new@test.com");
+                var key = sub.Object.VerificationKey;
+                sub.Object.ChangeEmailFromKey(key, "new@test.com");
 
                 Assert.IsNull(sub.Object.VerificationKey);
+                Assert.IsNull(sub.Object.VerificationPurpose);
                 Assert.IsNull(sub.Object.VerificationKeySent);
             }
 

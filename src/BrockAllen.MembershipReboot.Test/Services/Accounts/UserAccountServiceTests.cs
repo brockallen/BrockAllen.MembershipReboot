@@ -763,10 +763,21 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 Assert.IsFalse(sub.Object.CancelNewAccount("key"));
             }
             [TestMethod]
+            public void PurposeDoesntMatch_ReturnsFalse()
+            {
+                var sub = new MockUserAccountService();
+                var account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                account.Object.VerificationKey = "key1";
+
+                Assert.IsFalse(sub.Object.CancelNewAccount("key1"));
+            }
+            [TestMethod]
             public void KeysDontMatch_ReturnsFalse()
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
+                account.Object.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
                 account.Object.VerificationKey = "key1";
 
@@ -777,7 +788,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
+                account.Object.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                account.Object.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 account.Object.VerificationKey = "key";
 
                 Assert.IsTrue(sub.Object.CancelNewAccount("key"));
@@ -787,7 +800,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
+                account.Object.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
+                account.Object.VerificationPurpose = VerificationKeyPurpose.VerifyAccount;
                 account.Object.VerificationKey = "key";
 
                 sub.Object.CancelNewAccount("key");
