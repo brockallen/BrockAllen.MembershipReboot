@@ -137,6 +137,7 @@
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangePasswordController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\CloseAccountController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\ChangeUsernameController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LoginController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LogoutController.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Areas\UserAccount\Models\ChangeEmailFromKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordFromResetKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangeUsernameInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\LoginInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\PasswordResetInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\RegisterInputModel.cs" />
@@ -188,6 +190,8 @@
     <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Home\Detail.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\Object.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeUsername\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeUsername\Success.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>
