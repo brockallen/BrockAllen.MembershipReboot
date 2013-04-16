@@ -559,7 +559,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 {
                     SecuritySettings.Instance.EmailIsUsername = true;
                     var sub = new MockUserAccountService();
-                    sub.Mock.Setup(x => x.UsernameExists(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+                    sub.Mock.Setup(x => x.EmailExists(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
                     sub.Object.CreateAccount("user", "pass", "email@test.com");
                 }
                 catch (ValidationException ex)
@@ -1620,16 +1620,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             }
 
             [TestMethod]
-            public void EmailIsUsername_DontAllowEmailChangeWhenEmailIsUsername_ReturnsFail()
-            {
-                SecuritySettings.Instance.EmailIsUsername = true;
-                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = false;
-
-                var sub = new MockUserAccountService();
-                Assert.IsFalse(sub.Object.ChangeEmailRequest("user", "email@test.com"));
-            }
-            
-            [TestMethod]
             public void MultiTenantEnabled_NullTenant_ReturnsFail()
             {
                 SecuritySettings.Instance.MultiTenant = true;
@@ -1737,7 +1727,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             public void EmailIsUsername_AllowEmailChangeWhenEmailIsUsername_ReturnsSuccess()
             {
                 SecuritySettings.Instance.EmailIsUsername = true;
-                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = true;
 
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
@@ -1763,16 +1752,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
                 sub.Mock.Verify(x => x.ChangeEmailFromKey("pass", "key", "email@test.com", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
-            }
-
-            [TestMethod]
-            public void EmailIsUsername_NotAllowEmailChangeWhenEmailIsUsername_ReturnsFail()
-            {
-                SecuritySettings.Instance.EmailIsUsername = true;
-                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = false;
-                
-                var sub = new MockUserAccountService();
-                Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
             }
 
 
@@ -1893,7 +1872,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             public void EmailIsUsername_AllowEmailChangeWhenEmailIsUsername_WhenSuccess_UpdatesUsername()
             {
                 SecuritySettings.Instance.EmailIsUsername = true;
-                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = true;
 
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
@@ -1910,7 +1888,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             public void EmailIsUsername_AllowEmailChangeWhenEmailIsUsername_WhenFail_DoesNotUpdatesUsername()
             {
                 SecuritySettings.Instance.EmailIsUsername = true;
-                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername = true;
 
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();

@@ -34,7 +34,6 @@ namespace BrockAllen.MembershipReboot
         private const string MULTITENANT = "multiTenant";
         private const string DEFAULTTENANT = "defaultTenant";
         private const string EMAILISUSERNAME = "emailIsUsername";
-        private const string ALLOWEMAILCHANGEWHENEMAILISUSERNAME = "allowEmailChangeWhenEmailIsUsername";
         private const string USERNAMESUNIQUEACROSSTENANTS = "usernamesUniqueAcrossTenants";
         private const string REQUIREACCOUNTVERIFICATION = "requireAccountVerification";
         private const string ALLOWLOGINAFTERACCOUNTCREATION = "allowLoginAfterAccountCreation";
@@ -70,13 +69,6 @@ namespace BrockAllen.MembershipReboot
         {
             get { return (bool)this[EMAILISUSERNAME]; }
             set { this[EMAILISUSERNAME] = value; }
-        }
-
-        [ConfigurationProperty(ALLOWEMAILCHANGEWHENEMAILISUSERNAME, DefaultValue = false)]
-        public bool AllowEmailChangeWhenEmailIsUsername
-        {
-            get { return (bool)this[ALLOWEMAILCHANGEWHENEMAILISUSERNAME]; }
-            set { this[ALLOWEMAILCHANGEWHENEMAILISUSERNAME] = value; }
         }
 
         [ConfigurationProperty(USERNAMESUNIQUEACROSSTENANTS, DefaultValue = false)]

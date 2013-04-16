@@ -14,7 +14,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             Assert.AreEqual(false, settings.MultiTenant);
             Assert.AreEqual("default", settings.DefaultTenant);
             Assert.AreEqual(false, settings.EmailIsUsername);
-            Assert.AreEqual(false, settings.AllowEmailChangeWhenEmailIsUsername);
             Assert.AreEqual(false, settings.UsernamesUniqueAcrossTenants);
             Assert.AreEqual(true, settings.RequireAccountVerification);
             Assert.AreEqual(true, settings.AllowLoginAfterAccountCreation);

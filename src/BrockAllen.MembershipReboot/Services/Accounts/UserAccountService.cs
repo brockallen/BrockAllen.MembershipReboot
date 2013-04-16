@@ -210,19 +210,18 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Email is invalid.");
             }
 
-            if (UsernameExists(tenant, username))
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Username already exists: {0}, {1}", tenant, username));
-
-                var msg = SecuritySettings.Instance.EmailIsUsername ? "Email" : "Username";
-                throw new ValidationException(msg + " already in use.");
-            }
-
             if (EmailExists(tenant, email))
             {
                 Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Email already exists: {0}, {1}, {2}", tenant, username, email));
 
                 throw new ValidationException("Email already in use.");
+            }
+            
+            if (UsernameExists(tenant, username))
+            {
+                Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Username already exists: {0}, {1}", tenant, username));
+                
+                throw new ValidationException("Username already in use.");
             }
 
             using (var tx = new TransactionScope())
@@ -645,49 +644,49 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        //public virtual void ChangeUsername(string username, string newUsername)
-        //{
-        //    ChangeUsername(null, username, newUsername);
-        //}
+        public virtual void ChangeUsername(string username, string newUsername)
+        {
+            ChangeUsername(null, username, newUsername);
+        }
 
-        //public virtual void ChangeUsername(string tenant, string username, string newUsername)
-        //{
-        //    Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}, {2}", tenant, username, newUsername));
+        public virtual void ChangeUsername(string tenant, string username, string newUsername)
+        {
+            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}, {2}", tenant, username, newUsername));
 
-        //    if (!SecuritySettings.Instance.MultiTenant)
-        //    {
-        //        tenant = SecuritySettings.Instance.DefaultTenant;
-        //    }
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
 
-        //    if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
-        //    if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
-        //    if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentException("newUsername");
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
+            if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentException("newUsername");
 
-        //    var account = GetByUsername(tenant, username);
-        //    if (account == null) throw new ValidationException("Invalid account");
+            var account = GetByUsername(tenant, username);
+            if (account == null) throw new ValidationException("Invalid account");
 
-        //    if (UsernameExists(tenant, newUsername))
-        //    {
-        //        Tracing.Information(String.Format("[UserAccountService.ChangeUsername] failed because new username already in use: {0}, {1}, {2}", tenant, username, newUsername));
-        //        throw new ValidationException("New username is already in use.");
-        //    }
+            if (UsernameExists(tenant, newUsername))
+            {
+                Tracing.Information(String.Format("[UserAccountService.ChangeUsername] failed because new username already in use: {0}, {1}, {2}", tenant, username, newUsername));
+                throw new ValidationException("New username is already in use.");
+            }
 
-        //    Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
-            
-        //    account.Username = newUsername;
+            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
 
-        //    using (var tx = new TransactionScope())
-        //    {
-        //        this.userRepository.SaveChanges();
+            account.Username = newUsername;
 
-        //        if (this.notificationService != null)
-        //        {
-        //            this.notificationService.SendChangeUsernameRequestNotice(account);
-        //        }
+            using (var tx = new TransactionScope())
+            {
+                this.userRepository.SaveChanges();
 
-        //        tx.Complete();
-        //    }
-        //}
+                if (this.notificationService != null)
+                {
+                    this.notificationService.SendChangeUsernameRequestNotice(account);
+                }
+
+                tx.Complete();
+            }
+        }
 
         public virtual bool ChangeEmailRequest(string username, string newEmail)
         {
@@ -697,14 +696,6 @@ namespace BrockAllen.MembershipReboot
         public virtual bool ChangeEmailRequest(string tenant, string username, string newEmail)
         {
             Tracing.Information(String.Format("[UserAccountService.ChangeEmailRequest] called: {0}, {1}, {2}", tenant, username, newEmail));
-
-            if (SecuritySettings.Instance.EmailIsUsername && 
-                !SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername)
-            {
-                Tracing.Warning(String.Format("[UserAccountService.ChangeEmailRequest] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is false, so change request failed: {0}, {1}, {2}", tenant, username, newEmail));
-
-                return false;
-            }
 
             if (!SecuritySettings.Instance.MultiTenant)
             {
@@ -764,14 +755,6 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}", key, newEmail));
 
-            if (SecuritySettings.Instance.EmailIsUsername &&
-                !SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername)
-            {
-                Tracing.Warning(String.Format("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is false, so change request failed: key: {0}, new email: {1}", key, newEmail));
-
-                return false;
-            }
-            
             if (String.IsNullOrWhiteSpace(password)) return false;
             if (String.IsNullOrWhiteSpace(key)) return false;
             if (String.IsNullOrWhiteSpace(newEmail)) return false;
@@ -789,9 +772,7 @@ namespace BrockAllen.MembershipReboot
             var oldEmail = account.Email;
             var result = account.ChangeEmailFromKey(key, newEmail);
             
-            if (result &&
-                SecuritySettings.Instance.EmailIsUsername &&
-                SecuritySettings.Instance.AllowEmailChangeWhenEmailIsUsername)
+            if (result && SecuritySettings.Instance.EmailIsUsername)
             {
                 Tracing.Warning(String.Format("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, newEmail));
                 account.Username = newEmail;
