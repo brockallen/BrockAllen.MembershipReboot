@@ -9,6 +9,7 @@ namespace BrockAllen.MembershipReboot
         void SendPasswordChangeNotice(UserAccount user);
         void SendAccountNameReminder(UserAccount user);
         void SendAccountDelete(UserAccount user);
+        void SendChangeUsernameRequestNotice(UserAccount user);
         void SendChangeEmailRequestNotice(UserAccount user, string newEmail);
         void SendEmailChangedNotice(UserAccount user, string oldEmail);
     }

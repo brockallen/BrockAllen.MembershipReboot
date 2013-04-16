@@ -259,5 +259,28 @@ Thanks!
 {emailSignature}
 ";
         }
+
+
+        public void SendChangeUsernameRequestNotice(UserAccount user)
+        {
+            Tracing.Information(String.Format("[NotificationService.SendChangeUsernameRequestNotice] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
+
+            var msg = GetUsernameChangedNoticeFormat();
+            var body = DoTokenReplacement(msg, user);
+            DeliverMessage(user, "Username Changed", body);
+        }
+
+        protected virtual string GetUsernameChangedNoticeFormat()
+        {
+            return @"
+This email is to confirm that your username has been changed for your account with {applicationName}.
+
+New Username: {username}
+
+Thanks!
+
+{emailSignature}
+";
+        }
     }
 }
