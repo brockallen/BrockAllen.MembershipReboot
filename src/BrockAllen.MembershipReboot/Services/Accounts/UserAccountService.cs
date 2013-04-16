@@ -651,6 +651,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ChangeUsername(string tenant, string username, string newUsername)
         {
+            if (SecuritySettings.Instance.EmailIsUsername)
+            {
+                throw new Exception("EmailIsUsername is enabled in SecuritySettings -- use ChangeEmail APIs instead.");
+            }
+
             Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}, {2}", tenant, username, newUsername));
 
             if (!SecuritySettings.Instance.MultiTenant)
@@ -668,7 +673,7 @@ namespace BrockAllen.MembershipReboot
             if (UsernameExists(tenant, newUsername))
             {
                 Tracing.Information(String.Format("[UserAccountService.ChangeUsername] failed because new username already in use: {0}, {1}, {2}", tenant, username, newUsername));
-                throw new ValidationException("New username is already in use.");
+                throw new ValidationException("Username is already in use.");
             }
 
             Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
@@ -718,6 +723,13 @@ namespace BrockAllen.MembershipReboot
             if (account == null) return false;
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] account located: {0}, {1}", account.Tenant, account.Username));
+
+            if (EmailExists(tenant, newEmail))
+            {
+                Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] Email already exists: {0}, {1}, new email: {2}", tenant, username, newEmail));
+
+                throw new ValidationException("Email already in use.");
+            }
 
             var result = account.ChangeEmailRequest(newEmail);
 
