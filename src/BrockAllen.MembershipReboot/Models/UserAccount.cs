@@ -383,7 +383,7 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void CloseAccount()
         {
-            Tracing.Verbose(String.Format("[UserAccount.CloseAccount] called on: {0}, {0}", Tenant, Username));
+            Tracing.Verbose(String.Format("[UserAccount.CloseAccount] called on: {0}, {1}", Tenant, Username));
 
             this.ClearVerificationKey();
             IsLoginAllowed = false;
