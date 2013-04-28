@@ -2,7 +2,7 @@ namespace BrockAllen.MembershipReboot.Migrations.SqlCe
 {
     using System.Data.Entity.Migrations;
 
-    internal sealed class SqlCeConfig : DbMigrationsConfiguration<BrockAllen.MembershipReboot.EFMembershipRebootDatabase>
+    public class SqlCeConfig : DbMigrationsConfiguration<BrockAllen.MembershipReboot.EFMembershipRebootDatabase>
     {
         public SqlCeConfig()
         {
