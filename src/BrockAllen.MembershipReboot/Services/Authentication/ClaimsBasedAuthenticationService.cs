@@ -6,11 +6,20 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class ClaimsBasedAuthenticationService : IDisposable
+    public class ClaimsBasedAuthenticationService : ClaimsBasedAuthenticationService<UserAccount, int>
     {
-        UserAccountService userService;
-
         public ClaimsBasedAuthenticationService(UserAccountService userService)
+            : base(userService)
+        {
+        }
+    }
+
+    public class ClaimsBasedAuthenticationService<T, TKey> : IDisposable
+        where T : UserAccount<TKey>, new()
+    {
+        UserAccountService<T, TKey> userService;
+
+        public ClaimsBasedAuthenticationService(UserAccountService<T, TKey> userService)
         {
             this.userService = userService;
         }
@@ -74,7 +83,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[ClaimsBasedAuthenticationService.Signin] SessionAuthenticationModule is not configured");
                 throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
             }
-            
+
             var handler = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)] as SessionSecurityTokenHandler;
             if (handler == null)
             {
@@ -85,7 +94,7 @@ namespace BrockAllen.MembershipReboot
             var token = new SessionSecurityToken(cp, handler.TokenLifetime);
             token.IsPersistent = FederatedAuthentication.FederationConfiguration.WsFederationConfiguration.PersistentCookiesOnPassiveRedirects;
             token.IsReferenceMode = sam.IsReferenceMode;
-            
+
             sam.WriteSessionTokenToCookie(token);
 
             Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.Signin] cookie issued: {0}", claims.GetValue(ClaimTypes.NameIdentifier)));

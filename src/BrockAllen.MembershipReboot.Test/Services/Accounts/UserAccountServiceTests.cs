@@ -604,7 +604,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.Add(result));
+                sub.UserAccountRepository.Verify(x => x.Add((UserAccount)result));
                 sub.UserAccountRepository.Verify(x => x.SaveChanges());
             }
 
@@ -1909,7 +1909,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 SecuritySettings.Instance = new SecuritySettings();
             }
-            
+
             [TestMethod]
             public void NoTenantParam_PassesNullTenant()
             {
@@ -1940,7 +1940,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 Assert.IsFalse(sub.Object.IsPasswordExpired("user"));
             }
-            
+
             [TestMethod]
             public void ValidAccount_CallsAccount()
             {

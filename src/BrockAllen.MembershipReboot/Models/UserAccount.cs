@@ -5,7 +5,21 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class UserAccount
+    using BrockAllen.MembershipReboot.Models;
+
+    public class UserAccount : UserAccount<int>, IEntity
+    {
+        public UserAccount()
+        {
+        }
+
+        protected internal UserAccount(string tenant, string username, string password, string email)
+            : base(tenant, username, password, email)
+        {
+        }
+    }
+
+    public class UserAccount<TKey> : IEntity<TKey>
     {
         internal const int VerificationKeyStaleDurationDays = 1;
 
@@ -14,7 +28,7 @@ namespace BrockAllen.MembershipReboot
             this.Claims = new List<UserClaim>();
         }
 
-        internal protected UserAccount(string tenant, string username, string password, string email)
+        internal protected void Initialise(string tenant, string username, string password, string email)
         {
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
@@ -37,8 +51,18 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
+        internal protected UserAccount(string tenant, string username, string password, string email)
+        {
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
+            if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
+            if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
+
+            this.Initialise(tenant, username, password, email);
+        }
+
         [Key]
-        public virtual int ID { get; set; }
+        public virtual TKey ID { get; set; }
         public virtual Guid NameID { get; set; }
 
         [StringLength(50)]
@@ -82,7 +106,7 @@ namespace BrockAllen.MembershipReboot
             this.VerificationPurpose = purpose;
             this.VerificationKeySent = UtcNow;
         }
-        
+
         internal void ClearVerificationKey()
         {
             this.VerificationKey = null;

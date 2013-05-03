@@ -62,6 +62,7 @@ local.properties
 *.vspscc
 .builds
 *.dotCover
+*.ncrunch*
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 packages/

@@ -5,15 +5,24 @@ using System.Transactions;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class UserAccountService : IDisposable
+    public class UserAccountService : UserAccountService<UserAccount, int>
     {
-        IUserAccountRepository userRepository;
-        INotificationService notificationService;
+        public UserAccountService(IUserAccountRepository userAccountRepository, INotificationService notificationService, IPasswordPolicy passwordPolicy)
+            : base(userAccountRepository, notificationService, passwordPolicy)
+        {
+        }
+    }
+
+    public class UserAccountService<T, TKey> : IDisposable
+        where T : UserAccount<TKey>, new()
+    {
+        IUserAccountRepositoryBase<T, TKey> userRepository;
+        INotificationService<TKey> notificationService;
         IPasswordPolicy passwordPolicy;
 
         public UserAccountService(
-            IUserAccountRepository userAccountRepository,
-            INotificationService notificationService,
+            IUserAccountRepositoryBase<T, TKey> userAccountRepository,
+            INotificationService<TKey> notificationService,
             IPasswordPolicy passwordPolicy)
         {
             if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
@@ -37,29 +46,29 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.SaveChanges();
         }
 
-        public virtual IQueryable<UserAccount> GetAll()
+        public virtual IQueryable<UserAccount<TKey>> GetAll()
         {
             return GetAll(null);
         }
 
-        public virtual IQueryable<UserAccount> GetAll(string tenant)
+        public virtual IQueryable<UserAccount<TKey>> GetAll(string tenant)
         {
             if (!SecuritySettings.Instance.MultiTenant)
             {
                 tenant = SecuritySettings.Instance.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<UserAccount>().AsQueryable();
+            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<UserAccount<TKey>>().AsQueryable();
 
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
         }
 
-        public virtual UserAccount GetByUsername(string username)
+        public virtual UserAccount<TKey> GetByUsername(string username)
         {
             return GetByUsername(null, username);
         }
 
-        public virtual UserAccount GetByUsername(string tenant, string username)
+        public virtual UserAccount<TKey> GetByUsername(string tenant, string username)
         {
             if (!SecuritySettings.Instance.MultiTenant)
             {
@@ -77,12 +86,12 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount GetByEmail(string email)
+        public virtual UserAccount<TKey> GetByEmail(string email)
         {
             return GetByEmail(null, email);
         }
 
-        public virtual UserAccount GetByEmail(string tenant, string email)
+        public virtual UserAccount<TKey> GetByEmail(string tenant, string email)
         {
             if (!SecuritySettings.Instance.MultiTenant)
             {
@@ -100,7 +109,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount GetByID(int id)
+        public virtual UserAccount<TKey> GetByID(TKey id)
         {
             var account = this.userRepository.Get(id);
             if (account == null)
@@ -110,7 +119,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount GetByVerificationKey(string key)
+        public virtual UserAccount<TKey> GetByVerificationKey(string key)
         {
             if (String.IsNullOrWhiteSpace(key)) return null;
 
@@ -121,8 +130,8 @@ namespace BrockAllen.MembershipReboot
             }
             return account;
         }
-        
-        public virtual UserAccount GetByNameId(Guid nameId)
+
+        public virtual UserAccount<TKey> GetByNameId(Guid nameId)
         {
             var account = userRepository.GetAll().Where(x => x.NameID == nameId).SingleOrDefault();
             if (account == null)
@@ -176,12 +185,12 @@ namespace BrockAllen.MembershipReboot
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).Any();
         }
 
-        public virtual UserAccount CreateAccount(string username, string password, string email)
+        public virtual UserAccount<TKey> CreateAccount(string username, string password, string email)
         {
             return CreateAccount(null, username, password, email);
         }
 
-        public virtual UserAccount CreateAccount(string tenant, string username, string password, string email)
+        public virtual UserAccount<TKey> CreateAccount(string tenant, string username, string password, string email)
         {
             Tracing.Information(String.Format("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email));
 
@@ -216,17 +225,19 @@ namespace BrockAllen.MembershipReboot
 
                 throw new ValidationException("Email already in use.");
             }
-            
+
             if (UsernameExists(tenant, username))
             {
                 Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Username already exists: {0}, {1}", tenant, username));
-                
+
                 throw new ValidationException("Username already in use.");
             }
 
             using (var tx = new TransactionScope())
             {
-                var account = new UserAccount(tenant, username, password, email);
+                var account = new T();
+                account.Initialise(tenant, username, password, email);
+
                 this.userRepository.Add(account);
                 this.userRepository.SaveChanges();
 
@@ -330,12 +341,12 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual void DeleteAccount(UserAccount account)
+        protected internal virtual void DeleteAccount(UserAccount<TKey> account)
         {
             if (SecuritySettings.Instance.AllowAccountDeletion || !account.IsAccountVerified)
             {
                 Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] removing account record: {0}, {1}", account.Tenant, account.Username));
-                this.userRepository.Remove(account);
+                this.userRepository.Remove((T)account);
             }
             else
             {
@@ -397,7 +408,7 @@ namespace BrockAllen.MembershipReboot
             return Authenticate(account, password, failedLoginCount, lockoutDuration);
         }
 
-        protected internal virtual bool Authenticate(UserAccount account, string password, int failedLoginCount, TimeSpan lockoutDuration)
+        protected internal virtual bool Authenticate(UserAccount<TKey> account, string password, int failedLoginCount, TimeSpan lockoutDuration)
         {
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
             this.userRepository.SaveChanges();
@@ -436,12 +447,12 @@ namespace BrockAllen.MembershipReboot
             {
                 account.SetPassword(newPassword);
                 this.userRepository.SaveChanges();
-                
+
                 if (this.notificationService != null)
                 {
                     this.notificationService.SendPasswordChangeNotice(account);
                 }
-                
+
                 tx.Complete();
             }
         }
@@ -639,7 +650,7 @@ namespace BrockAllen.MembershipReboot
             if (account != null)
             {
                 Tracing.Verbose(String.Format("[UserAccountService.SendUsernameReminder] account located: {0}, {1}", account.Tenant, account.Username));
-                    
+
                 this.notificationService.SendAccountNameReminder(account);
             }
         }
@@ -783,7 +794,7 @@ namespace BrockAllen.MembershipReboot
 
             var oldEmail = account.Email;
             var result = account.ChangeEmailFromKey(key, newEmail);
-            
+
             if (result && SecuritySettings.Instance.EmailIsUsername)
             {
                 Tracing.Warning(String.Format("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, newEmail));
