@@ -1,16 +1,11 @@
 ﻿namespace BrockAllen.MembershipReboot
 {
-    public interface IUserAccountRepository : IUserAccountRepositoryBase<UserAccount, int>
+    public interface IUserAccountRepository : IUserAccountRepository<UserAccount, int>
     {
     }
 
-    public interface IUserAccountRepository<TKey>
-        : IUserAccountRepositoryBase<UserAccount<TKey>, TKey>
-    {
-    }
-
-    public interface IUserAccountRepositoryBase<T, TKey> : IRepository<T, TKey>
-        where T : class
+    public interface IUserAccountRepository<T, TKey> : IRepository<T, TKey>
+        where T : UserAccount<TKey>
     {
     }
 }

@@ -1,20 +1,20 @@
 ﻿
 namespace BrockAllen.MembershipReboot
 {
-    public interface INotificationService : INotificationService<int>
-    {
-    }
+    //public interface INotificationService : INotificationService<int>
+    //{
+    //}
 
-    public interface INotificationService<TKey>
+    public interface INotificationService
     {
-        void SendAccountCreate(UserAccount<TKey> user);
-        void SendAccountVerified(UserAccount<TKey> user);
-        void SendResetPassword(UserAccount<TKey> user);
-        void SendPasswordChangeNotice(UserAccount<TKey> user);
-        void SendAccountNameReminder(UserAccount<TKey> user);
-        void SendAccountDelete(UserAccount<TKey> user);
-        void SendChangeUsernameRequestNotice(UserAccount<TKey> user);
-        void SendChangeEmailRequestNotice(UserAccount<TKey> user, string newEmail);
-        void SendEmailChangedNotice(UserAccount<TKey> user, string oldEmail);
+        void SendAccountCreate<TKey>(UserAccount<TKey> user);
+        void SendAccountVerified<TKey>(UserAccount<TKey> user);
+        void SendResetPassword<TKey>(UserAccount<TKey> user);
+        void SendPasswordChangeNotice<TKey>(UserAccount<TKey> user);
+        void SendAccountNameReminder<TKey>(UserAccount<TKey> user);
+        void SendAccountDelete<TKey>(UserAccount<TKey> user);
+        void SendChangeUsernameRequestNotice<TKey>(UserAccount<TKey> user);
+        void SendChangeEmailRequestNotice<TKey>(UserAccount<TKey> user, string newEmail);
+        void SendEmailChangedNotice<TKey>(UserAccount<TKey> user, string oldEmail);
     }
 }

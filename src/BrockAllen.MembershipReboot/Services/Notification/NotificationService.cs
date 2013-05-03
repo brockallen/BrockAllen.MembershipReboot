@@ -2,15 +2,15 @@
 
 namespace BrockAllen.MembershipReboot
 {
-    public class NotificationService : NotificationService<int>, INotificationService
-    {
-        public NotificationService(IMessageDelivery messageDelivery, ApplicationInformation appInfo)
-            : base(messageDelivery, appInfo)
-        {
-        }
-    }
+    //public class NotificationService : NotificationService<int>, INotificationService
+    //{
+    //    public NotificationService(IMessageDelivery messageDelivery, ApplicationInformation appInfo)
+    //        : base(messageDelivery, appInfo)
+    //    {
+    //    }
+    //}
 
-    public class NotificationService<TKey> : INotificationService<TKey>
+    public class NotificationService : INotificationService
     {
         IMessageDelivery messageDelivery;
         ApplicationInformation appInfo;
@@ -20,7 +20,7 @@ namespace BrockAllen.MembershipReboot
             this.appInfo = appInfo;
         }
 
-        protected virtual string DoTokenReplacement(string msg, UserAccount<TKey> user)
+        protected virtual string DoTokenReplacement<TKey>(string msg, UserAccount<TKey> user)
         {
             msg = msg.Replace("{username}", user.Username);
             msg = msg.Replace("{email}", user.Email);
@@ -39,7 +39,7 @@ namespace BrockAllen.MembershipReboot
             return msg;
         }
 
-        protected virtual void DeliverMessage(UserAccount<TKey> user, string subject, string body)
+        protected virtual void DeliverMessage<TKey>(UserAccount<TKey> user, string subject, string body)
         {
             DeliverMessage(user.Email, subject, body);
         }
@@ -59,7 +59,7 @@ namespace BrockAllen.MembershipReboot
             this.messageDelivery.Send(msg);
         }
 
-        public void SendAccountCreate(UserAccount<TKey> user)
+        public void SendAccountCreate<TKey>(UserAccount<TKey> user)
         {
             Tracing.Information(String.Format("[NotificationService.SendAccountCreate] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 
@@ -89,7 +89,7 @@ Thanks!
 ";
         }
 
-        public void SendAccountVerified(UserAccount<TKey> user)
+        public void SendAccountVerified<TKey>(UserAccount<TKey> user)
         {
             Tracing.Information(String.Format("[NotificationService.SendAccountVerified] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 
@@ -115,7 +115,7 @@ Thanks!
 ";
         }
 
-        public void SendResetPassword(UserAccount<TKey> user)
+        public void SendResetPassword<TKey>(UserAccount<TKey> user)
         {
             Tracing.Information(String.Format("[NotificationService.SendResetPassword] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 
@@ -141,7 +141,7 @@ Thanks!
 ";
         }
 
-        public void SendPasswordChangeNotice(UserAccount<TKey> user)
+        public void SendPasswordChangeNotice<TKey>(UserAccount<TKey> user)
         {
             Tracing.Information(String.Format("[NotificationService.SendPasswordChangeNotice] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 
@@ -167,7 +167,7 @@ Thanks!
 ";
         }
 
-        public void SendAccountNameReminder(UserAccount<TKey> user)
+        public void SendAccountNameReminder<TKey>(UserAccount<TKey> user)
         {
             Tracing.Information(String.Format("[NotificationService.SendAccountNameReminder] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 
@@ -193,7 +193,7 @@ Thanks!
 ";
         }
 
-        public void SendAccountDelete(UserAccount<TKey> user)
+        public void SendAccountDelete<TKey>(UserAccount<TKey> user)
         {
             Tracing.Information(String.Format("[NotificationService.SendAccountDelete] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 
@@ -213,7 +213,7 @@ Thanks!
 ";
         }
 
-        public void SendChangeEmailRequestNotice(UserAccount<TKey> user, string newEmail)
+        public void SendChangeEmailRequestNotice<TKey>(UserAccount<TKey> user, string newEmail)
         {
             Tracing.Information(String.Format("[NotificationService.SendChangeEmailRequestNotice] {0}, {1}, {2}, {3}", user.Tenant, user.Username, user.Email, newEmail));
 
@@ -243,7 +243,7 @@ Thanks!
 ";
         }
 
-        public void SendEmailChangedNotice(UserAccount<TKey> user, string oldEmail)
+        public void SendEmailChangedNotice<TKey>(UserAccount<TKey> user, string oldEmail)
         {
             Tracing.Information(String.Format("[NotificationService.SendEmailChangedNotice] {0}, {1}, {2}, {3}", user.Tenant, user.Username, user.Email, oldEmail));
 
@@ -269,7 +269,7 @@ Thanks!
         }
 
 
-        public void SendChangeUsernameRequestNotice(UserAccount<TKey> user)
+        public void SendChangeUsernameRequestNotice<TKey>(UserAccount<TKey> user)
         {
             Tracing.Information(String.Format("[NotificationService.SendChangeUsernameRequestNotice] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 

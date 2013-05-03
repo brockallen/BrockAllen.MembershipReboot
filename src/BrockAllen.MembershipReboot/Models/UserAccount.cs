@@ -5,9 +5,7 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    using BrockAllen.MembershipReboot.Models;
-
-    public class UserAccount : UserAccount<int>, IEntity
+    public class UserAccount : UserAccount<int>
     {
         public UserAccount()
         {
@@ -19,7 +17,7 @@ namespace BrockAllen.MembershipReboot
         }
     }
 
-    public class UserAccount<TKey> : IEntity<TKey>
+    public class UserAccount<TKey>
     {
         internal const int VerificationKeyStaleDurationDays = 1;
 

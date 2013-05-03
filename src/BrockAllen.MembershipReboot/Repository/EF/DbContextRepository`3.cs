@@ -3,10 +3,8 @@ using System.Data.Entity;
 
 namespace BrockAllen.MembershipReboot
 {
-    using BrockAllen.MembershipReboot.Models;
-
     public class DbContextRepository<T, Key, Ctx> : DbContextRepository<T, Key>, IDisposable
-        where T : class, IEntity<Key>
+        where T : class
         where Ctx : DbContext, new()
     {
         public DbContextRepository()

@@ -16,13 +16,13 @@ namespace BrockAllen.MembershipReboot
     public class UserAccountService<T, TKey> : IDisposable
         where T : UserAccount<TKey>, new()
     {
-        IUserAccountRepositoryBase<T, TKey> userRepository;
-        INotificationService<TKey> notificationService;
+        IUserAccountRepository<T, TKey> userRepository;
+        INotificationService notificationService;
         IPasswordPolicy passwordPolicy;
 
         public UserAccountService(
-            IUserAccountRepositoryBase<T, TKey> userAccountRepository,
-            INotificationService<TKey> notificationService,
+            IUserAccountRepository<T, TKey> userAccountRepository,
+            INotificationService notificationService,
             IPasswordPolicy passwordPolicy)
         {
             if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");

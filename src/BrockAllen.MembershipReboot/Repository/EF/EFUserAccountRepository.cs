@@ -3,11 +3,10 @@ namespace BrockAllen.MembershipReboot
 {
     public class EFUserAccountRepository : DbContextRepository<UserAccount, int, EFMembershipRebootDatabase>, IUserAccountRepository
     {
-
     }
 
     public class EFUserAccountRepository<TKey>
-        : DbContextRepository<UserAccount<TKey>, TKey, EFMembershipRebootDatabase>, IUserAccountRepository<TKey>
+        : DbContextRepository<UserAccount<TKey>, TKey, EFMembershipRebootDatabase>, IUserAccountRepository<UserAccount<TKey>, TKey>
     {
         public EFUserAccountRepository()
         {

@@ -89,7 +89,6 @@
     <Compile Include="Migrations.SqlCe\201304160324511_VerificationPurpose.Designer.cs">
       <DependentUpon>201304160324511_VerificationPurpose.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\VerificationKeyPurpose.cs" />
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Repository\EF\DbContextRepository`2.cs" />
