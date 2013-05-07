@@ -55,6 +55,7 @@
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Constants\MembershipRebootConstants.cs" />
     <Compile Include="Extensions\DisposableExtensions.cs" />
+    <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Migrations.SqlServer\SqlServerConfig.cs" />
     <Compile Include="Migrations.SqlCe\SqlCeConfig.cs" />
     <Compile Include="Migrations.SqlServer\201301101956394_InitialMigration.cs" />
