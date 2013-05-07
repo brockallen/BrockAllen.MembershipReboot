@@ -70,14 +70,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                 .ToMethod(x=>
                     {
                         // build URL
-                        var ctx = HttpContext.Current;
-                        var baseUrl =
-                            ctx.Request.Url.Scheme + 
-                            "://" + 
-                            ctx.Request.Url.Host + (ctx.Request.Url.Port == 80 ? "" : ":" + ctx.Request.Url.Port) + 
-                            ctx.Request.ApplicationPath;
-                        if (!baseUrl.EndsWith("/")) baseUrl += "/";
-                        
+                        var baseUrl = HttpContext.Current.GetApplicationUrl();
                         // area name
                         baseUrl += "UserAccount/";
                         
