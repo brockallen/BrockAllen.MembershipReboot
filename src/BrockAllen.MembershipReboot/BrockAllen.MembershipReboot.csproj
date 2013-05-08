@@ -90,16 +90,23 @@
     <Compile Include="Migrations.SqlCe\201304160324511_VerificationPurpose.Designer.cs">
       <DependentUpon>201304160324511_VerificationPurpose.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\LinkedAccountClaim.cs" />
+    <Compile Include="Models\LinkedAccount.cs" />
     <Compile Include="Models\VerificationKeyPurpose.cs" />
     <Compile Include="Models\UserClaim.cs" />
+    <Compile Include="Repository\EF\EFLinkedAccountRepository.cs" />
+    <Compile Include="Repository\ILinkedAccountRepository.cs" />
+    <Compile Include="Repository\EF\DbContextRepository`1.cs" />
     <Compile Include="Repository\EF\DbContextRepository`2.cs" />
-    <Compile Include="Repository\EF\DbContextRepository`3.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
     <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Services\Accounts\BasicPasswordPolicy.cs" />
+    <Compile Include="Services\Authentication\LinkedAccountSignInStatus.cs" />
+    <Compile Include="Services\Authentication\LinkedAccountAuthenticationService.cs" />
     <Compile Include="Services\Crypto\System.Web.Helpers.Crypto.cs" />
     <Compile Include="Services\Crypto\CryptoHelper.cs" />
+    <Compile Include="Services\LinkedAccounts\LinkedAccountService.cs" />
     <Compile Include="Services\Notification\ApplicationInformation.cs" />
     <Compile Include="Services\Authentication\ClaimsBasedAuthenticationService.cs" />
     <Compile Include="Services\Accounts\IPasswordPolicy.cs" />

@@ -2,7 +2,7 @@
 namespace BrockAllen.MembershipReboot
 {
     public class EFUserAccountRepository 
-        : DbContextRepository<UserAccount, int, EFMembershipRebootDatabase>, IUserAccountRepository
+        : DbContextRepository<UserAccount, EFMembershipRebootDatabase>, IUserAccountRepository
     {
         public EFUserAccountRepository()
         {

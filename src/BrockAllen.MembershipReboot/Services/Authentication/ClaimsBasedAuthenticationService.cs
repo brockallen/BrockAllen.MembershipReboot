@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignIn(string username)
         {
-            SignIn(null, username);
+            SignIn((string)null, username);
         }
 
         public virtual void SignIn(string tenant, string username)
@@ -45,6 +46,14 @@ namespace BrockAllen.MembershipReboot
             var account = this.userService.GetByUsername(tenant, username);
             if (account == null) throw new ArgumentException("Invalid username");
 
+            SignIn(account, AuthenticationMethods.Password);
+        }
+
+        public virtual void SignIn(UserAccount account, string method)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+            if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
+
             // gather claims
             var claims =
                 (from uc in account.Claims
@@ -54,7 +63,7 @@ namespace BrockAllen.MembershipReboot
             {
                 claims.Insert(0, new Claim(ClaimTypes.Email, account.Email));
             }
-            claims.Insert(0, new Claim(ClaimTypes.AuthenticationMethod, AuthenticationMethods.Password));
+            claims.Insert(0, new Claim(ClaimTypes.AuthenticationMethod, method));
             claims.Insert(0, new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
             claims.Insert(0, new Claim(ClaimTypes.Name, account.Username));
             claims.Insert(0, new Claim(MembershipRebootConstants.ClaimTypes.Tenant, account.Tenant));
@@ -74,7 +83,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[ClaimsBasedAuthenticationService.Signin] SessionAuthenticationModule is not configured");
                 throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
             }
-            
+
             var handler = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)] as SessionSecurityTokenHandler;
             if (handler == null)
             {
@@ -85,10 +94,11 @@ namespace BrockAllen.MembershipReboot
             var token = new SessionSecurityToken(cp, handler.TokenLifetime);
             token.IsPersistent = FederatedAuthentication.FederationConfiguration.WsFederationConfiguration.PersistentCookiesOnPassiveRedirects;
             token.IsReferenceMode = sam.IsReferenceMode;
-            
+
             sam.WriteSessionTokenToCookie(token);
 
             Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.Signin] cookie issued: {0}", claims.GetValue(ClaimTypes.NameIdentifier)));
+
         }
 
         public virtual void SignOut()
