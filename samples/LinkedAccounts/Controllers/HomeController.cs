@@ -49,6 +49,19 @@ namespace LinkedAccounts.Controllers
             this.userAccountService = userAccountService;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.claimsBasedAuthenticationService.TryDispose();
+                this.claimsBasedAuthenticationService = null;
+                this.userAccountService.TryDispose();
+                this.userAccountService = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -78,6 +91,7 @@ namespace LinkedAccounts.Controllers
                     var provider = result.ProviderName;
                     var claims = result.Claims;
                     var id = claims.GetValue(ClaimTypes.NameIdentifier);
+
                     this.claimsBasedAuthenticationService.SignInWithLinkedAccount(provider, id, claims);
 
                     if (result.ReturnUrl != null)
