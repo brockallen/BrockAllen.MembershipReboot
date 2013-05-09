@@ -10,6 +10,12 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
     [TestClass]
     public class UserAccountServiceTests
     {
+        static Guid a = Guid.NewGuid();
+        static Guid b = Guid.NewGuid();
+        static Guid c = Guid.NewGuid();
+        static Guid d = Guid.NewGuid();
+
+
         [TestClass]
         public class Ctor
         {
@@ -96,13 +102,13 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed = true },
-                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed = true },
-                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, },
-                    new UserAccount { ID = 4, Tenant = SecuritySettings.Instance.DefaultTenant, });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed = true },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, IsAccountClosed = true },
+                    new UserAccount { ID = c, Tenant = SecuritySettings.Instance.DefaultTenant, },
+                    new UserAccount { ID = d, Tenant = SecuritySettings.Instance.DefaultTenant, });
                 var result = sub.Object.GetAll(null);
                 Assert.AreEqual(2, result.Count());
-                CollectionAssert.AreEquivalent(new int[] { 3, 4 }, result.Select(x => x.ID).ToArray());
+                CollectionAssert.AreEquivalent(new Guid[] { c,d }, result.Select(x => x.ID).ToArray());
             }
         }
 
@@ -142,11 +148,11 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
-                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "b" },
-                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "c" });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "b" },
+                    new UserAccount { ID = c, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "c" });
                 var result = sub.Object.GetByUsername("b");
-                Assert.AreEqual(2, result.ID);
+                Assert.AreEqual(b, result.ID);
             }
             [TestMethod]
             [ExpectedException(typeof(InvalidOperationException))]
@@ -154,9 +160,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
-                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
-                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "c" });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
+                    new UserAccount { ID = c, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "c" });
                 sub.Object.GetByUsername("a");
             }
             [TestMethod]
@@ -164,9 +170,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
-                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "b" },
-                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "c" });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "a" },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "b" },
+                    new UserAccount { ID = c, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "c" });
                 var result = sub.Object.GetByUsername("d");
                 Assert.IsNull(result);
             }
@@ -208,11 +214,11 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
-                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "b" },
-                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "c" });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "b" },
+                    new UserAccount { ID = c, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "c" });
                 var result = sub.Object.GetByEmail("b");
-                Assert.AreEqual(2, result.ID);
+                Assert.AreEqual(b, result.ID);
             }
             [TestMethod]
             [ExpectedException(typeof(InvalidOperationException))]
@@ -220,9 +226,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
-                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
-                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "c" });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
+                    new UserAccount { ID = c, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "c" });
                 sub.Object.GetByEmail("a");
             }
             [TestMethod]
@@ -230,9 +236,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
-                    new UserAccount { ID = 2, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "b" },
-                    new UserAccount { ID = 3, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "c" });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "b" },
+                    new UserAccount { ID = c, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "c" });
                 var result = sub.Object.GetByEmail("d");
                 Assert.IsNull(result);
             }
@@ -246,9 +252,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 var ua = new UserAccount();
-                sub.UserAccountRepository.Setup(x => x.Get(1)).Returns(ua);
-                var result = sub.Object.GetByID(1);
-                sub.UserAccountRepository.Verify(x => x.Get(1));
+                sub.UserAccountRepository.Setup(x => x.Get(a)).Returns(ua);
+                var result = sub.Object.GetByID(a);
+                sub.UserAccountRepository.Verify(x => x.Get(a));
                 Assert.AreSame(ua, result);
             }
         }
@@ -276,11 +282,11 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, VerificationKey = "a" },
-                    new UserAccount { ID = 2, VerificationKey = "b" },
-                    new UserAccount { ID = 3, VerificationKey = "c" });
+                    new UserAccount { ID = a, VerificationKey = "a" },
+                    new UserAccount { ID = b, VerificationKey = "b" },
+                    new UserAccount { ID = c, VerificationKey = "c" });
                 var result = sub.Object.GetByVerificationKey("b");
-                Assert.AreEqual(2, result.ID);
+                Assert.AreEqual(b, result.ID);
             }
             [TestMethod]
             [ExpectedException(typeof(InvalidOperationException))]
@@ -288,9 +294,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, VerificationKey = "a" },
-                    new UserAccount { ID = 2, VerificationKey = "b" },
-                    new UserAccount { ID = 3, VerificationKey = "b" });
+                    new UserAccount { ID = a, VerificationKey = "a" },
+                    new UserAccount { ID = b, VerificationKey = "b" },
+                    new UserAccount { ID = c, VerificationKey = "b" });
                 var result = sub.Object.GetByVerificationKey("b");
             }
             [TestMethod]
@@ -298,9 +304,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, VerificationKey = "a" },
-                    new UserAccount { ID = 2, VerificationKey = "b" },
-                    new UserAccount { ID = 3, VerificationKey = "c" });
+                    new UserAccount { ID = a, VerificationKey = "a" },
+                    new UserAccount { ID = b, VerificationKey = "b" },
+                    new UserAccount { ID = c, VerificationKey = "c" });
                 var result = sub.Object.GetByVerificationKey("d");
                 Assert.IsNull(result);
             }
@@ -344,9 +350,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 SecuritySettings.Instance.UsernamesUniqueAcrossTenants = true;
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = "t1", Username = "a" },
-                    new UserAccount { ID = 2, Tenant = "t1", Username = "b" },
-                    new UserAccount { ID = 3, Tenant = "t2", Username = "c" });
+                    new UserAccount { ID = a, Tenant = "t1", Username = "a" },
+                    new UserAccount { ID = b, Tenant = "t1", Username = "b" },
+                    new UserAccount { ID = c, Tenant = "t2", Username = "c" });
                 Assert.IsTrue(sub.Object.UsernameExists("a"));
                 Assert.IsTrue(sub.Object.UsernameExists("t1", "a"));
                 Assert.IsTrue(sub.Object.UsernameExists("t2", "a"));
@@ -363,10 +369,10 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 SecuritySettings.Instance.MultiTenant = true;
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = "t1", Username = "a" },
-                    new UserAccount { ID = 2, Tenant = "t1", Username = "b" },
-                    new UserAccount { ID = 3, Tenant = "t2", Username = "a" },
-                    new UserAccount { ID = 4, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "d" });
+                    new UserAccount { ID = a, Tenant = "t1", Username = "a" },
+                    new UserAccount { ID = b, Tenant = "t1", Username = "b" },
+                    new UserAccount { ID = c, Tenant = "t2", Username = "a" },
+                    new UserAccount { ID = d, Tenant = SecuritySettings.Instance.DefaultTenant, Username = "d" });
                 Assert.IsTrue(sub.Object.UsernameExists("t1", "a"));
                 Assert.IsTrue(sub.Object.UsernameExists("t1", "b"));
                 Assert.IsTrue(sub.Object.UsernameExists("t2", "a"));
@@ -416,9 +422,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 SecuritySettings.Instance.MultiTenant = true;
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = "t1", Email = "a" },
-                    new UserAccount { ID = 1, Tenant = "t1", Email = "b" },
-                    new UserAccount { ID = 1, Tenant = "t2", Email = "a" });
+                    new UserAccount { ID = a, Tenant = "t1", Email = "a" },
+                    new UserAccount { ID = b, Tenant = "t1", Email = "b" },
+                    new UserAccount { ID = c, Tenant = "t2", Email = "a" });
                 Assert.IsTrue(sub.Object.EmailExists("t1", "a"));
                 Assert.IsTrue(sub.Object.EmailExists("t1", "b"));
                 Assert.IsTrue(sub.Object.EmailExists("t2", "a"));
@@ -434,9 +440,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.MockUserAccounts(
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
-                    new UserAccount { ID = 1, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "b" },
-                    new UserAccount { ID = 1, Tenant = "t2", Email = "a" });
+                    new UserAccount { ID = a, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "a" },
+                    new UserAccount { ID = b, Tenant = SecuritySettings.Instance.DefaultTenant, Email = "b" },
+                    new UserAccount { ID = c, Tenant = "t2", Email = "a" });
 
                 Assert.IsTrue(sub.Object.EmailExists("a"));
                 Assert.IsTrue(sub.Object.EmailExists("b"));
