@@ -52,7 +52,7 @@
     </Reference>
     <Reference Include="BrockAllen.OAuth2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BrockAllen.OAuth2.2.0.3\lib\net45\BrockAllen.OAuth2.dll</HintPath>
+      <HintPath>..\packages\BrockAllen.OAuth2.2.1.0\lib\net45\BrockAllen.OAuth2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />

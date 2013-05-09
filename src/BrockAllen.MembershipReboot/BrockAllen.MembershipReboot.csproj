@@ -102,7 +102,6 @@
     <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Services\Accounts\BasicPasswordPolicy.cs" />
-    <Compile Include="Services\Authentication\LinkedAccountSignInStatus.cs" />
     <Compile Include="Services\Authentication\LinkedAccountAuthenticationService.cs" />
     <Compile Include="Services\Crypto\System.Web.Helpers.Crypto.cs" />
     <Compile Include="Services\Crypto\CryptoHelper.cs" />

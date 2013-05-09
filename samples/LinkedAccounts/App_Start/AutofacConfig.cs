@@ -30,8 +30,8 @@ namespace LinkedAccounts
                 .As<ILinkedAccountRepository>()
                 .InstancePerHttpRequest();
 
-            //builder.RegisterType<NopMessageDelivery>().As<IMessageDelivery>();
-            builder.RegisterType<SmtpMessageDelivery>().As<IMessageDelivery>();
+            builder.RegisterType<NopMessageDelivery>().As<IMessageDelivery>();
+            //builder.RegisterType<SmtpMessageDelivery>().As<IMessageDelivery>();
             
             builder.RegisterType<NopPasswordPolicy>().As<IPasswordPolicy>();
             //builder.Register<IPasswordPolicy>(x=>new BasicPasswordPolicy { MinLength = 4 });

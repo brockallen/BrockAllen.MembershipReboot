@@ -22,15 +22,15 @@ namespace BrockAllen.MembershipReboot
             this.linkedAccountService = linkedAccountService;
         }
 
-        public LinkedAccountSignInStatus SignIn(
+        public void SignIn(
             string providerName, 
             string providerAccountID, 
             IEnumerable<Claim> externalClaims)
         {
-            return SignIn(null, providerName, providerAccountID, externalClaims);
+            SignIn(null, providerName, providerAccountID, externalClaims);
         }
 
-        public LinkedAccountSignInStatus SignIn(
+        public void SignIn(
             string tenant, 
             string providerName, 
             string providerAccountID, 
@@ -51,12 +51,11 @@ namespace BrockAllen.MembershipReboot
             {
                 var nameID = user.Claims.GetValue(ClaimTypes.NameIdentifier);
                 var localID = new Guid(nameID);
-                linkedAccountService.Add(providerName, providerAccountID, localID, claims);
-                return LinkedAccountSignInStatus.Success;
+                this.linkedAccountService.Add(providerName, providerAccountID, localID, claims);
+                return;
             }
 
             UserAccount account = null;
-            bool isNew = false;
 
             var linkedAccount = this.linkedAccountService.Get(providerName, providerAccountID);
             if (linkedAccount == null)
@@ -64,42 +63,35 @@ namespace BrockAllen.MembershipReboot
                 var email = claims.GetValue(ClaimTypes.Email);
                 if (String.IsNullOrWhiteSpace(email))
                 {
-                    return LinkedAccountSignInStatus.Failure_NewAccountNoEmailInClaims;
+                    throw new ValidationException("Can't create an account because there was no email from the identity provider");
                 }
 
                 var name = claims.GetValue(ClaimTypes.Name);
                 if (name == null) name = email;
                 var pwd = CryptoHelper.GenerateSalt();
+
                 account = this.userAccountService.CreateAccount(tenant, name, pwd, email);
                 this.linkedAccountService.Add(providerName, providerAccountID, account.NameID, claims);
-                isNew = true;
             }
             else
             {
-                linkedAccountService.Update(linkedAccount, claims);
                 account = this.userAccountService.GetByNameId(linkedAccount.LocalAccountID);
+                this.linkedAccountService.Update(linkedAccount, claims);
             }
 
-            if (account.IsAccountVerified)
+            if (account == null) throw new Exception("Account not found");
+
+            if (!account.IsAccountVerified)
             {
-                if (account.IsLoginAllowed)
-                {
-                    this.SignIn(account, providerName);
-
-                    if (isNew)
-                    {
-                        return LinkedAccountSignInStatus.Success_NewAccount;
-                    }
-                    else
-                    {
-                        return LinkedAccountSignInStatus.Success;
-                    }
-                }
-
-                return LinkedAccountSignInStatus.Failure_LoginNotAllowed;
+                throw new ValidationException("Account not yet verified");
             }
 
-            return LinkedAccountSignInStatus.Failure_AccountNotVerified;
+            if (!account.IsLoginAllowed)
+            {
+                throw new ValidationException("Login not allowed for this account");
+            }
+
+            this.SignIn(account, providerName);
         }
     }
 }

@@ -63,6 +63,8 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
 
             var claims = GetLinkedClaimsFromClaims(externalClaims);
+            
+
             account.Claims.Clear();
             foreach (var c in claims)
             {

@@ -78,34 +78,18 @@ namespace LinkedAccounts.Controllers
                 var result = await OAuth2Client.Instance.ProcessCallbackAsync();
                 if (result.Error == null)
                 {
-                    var claims = result.Claims;
                     var provider = result.ProviderName;
-                    var id = claims.GetValue(BrockAllen.OAuth2.Constants.ClaimTypes.IdentityProvider);
+                    var claims = result.Claims;
+                    var id = claims.GetValue(ClaimTypes.NameIdentifier);
+                    this.linkedAccountAuthenticationService.SignIn(provider, id, claims);
 
-                    var signInResult = this.linkedAccountAuthenticationService.SignIn(provider, id, claims);
-                    if (signInResult.IsSuccess())
+                    if (result.ReturnUrl != null)
                     {
-                        if (result.ReturnUrl != null)
-                        {
-                            return Redirect(result.ReturnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index");
-                        }
+                        return Redirect(result.ReturnUrl);
                     }
-
-                    switch (signInResult)
+                    else
                     {
-                        case LinkedAccountSignInStatus.Failure_AccountNotVerified:
-                            ModelState.AddModelError("", "Account not yet verified");
-                            break;
-                        case LinkedAccountSignInStatus.Failure_LoginNotAllowed:
-                            ModelState.AddModelError("", "Login not allowed");
-                            break;
-                        case LinkedAccountSignInStatus.Failure_NewAccountNoEmailInClaims:
-                            ModelState.AddModelError("", "Can't create an account because there was no email from your identity provider");
-                            break;
+                        return RedirectToAction("Index");
                     }
                 }
                 else
