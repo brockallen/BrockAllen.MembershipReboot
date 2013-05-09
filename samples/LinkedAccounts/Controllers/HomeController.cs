@@ -38,16 +38,13 @@ namespace LinkedAccounts.Controllers
             //    "4L08bE3WM8Ra4rRNMv3N--un5YOBr4gx");
         }
 
-        LinkedAccountService linkedAccountService;
         LinkedAccountAuthenticationService linkedAccountAuthenticationService;
         UserAccountService userAccountService;
 
         public HomeController(
-            LinkedAccountService linkedAccountService,
             LinkedAccountAuthenticationService linkedAccountAuthenticationService, 
             UserAccountService userAccountService)
         {
-            this.linkedAccountService = linkedAccountService;
             this.linkedAccountAuthenticationService = linkedAccountAuthenticationService;
             this.userAccountService = userAccountService;
         }
