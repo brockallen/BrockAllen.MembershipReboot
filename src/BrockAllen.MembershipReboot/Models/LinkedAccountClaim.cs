@@ -10,6 +10,10 @@ namespace BrockAllen.MembershipReboot
 {
     public class LinkedAccountClaim
     {
+        internal protected LinkedAccountClaim()
+        {
+        }
+
         [Key]
         [Column(Order = 1)]
         [StringLength(50)]

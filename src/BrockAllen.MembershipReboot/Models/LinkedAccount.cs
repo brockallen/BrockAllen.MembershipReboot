@@ -11,7 +11,7 @@ namespace BrockAllen.MembershipReboot
 {
     public class LinkedAccount
     {
-        public LinkedAccount()
+        internal protected LinkedAccount()
         {
             this.Claims = new HashSet<LinkedAccountClaim>();
         }
