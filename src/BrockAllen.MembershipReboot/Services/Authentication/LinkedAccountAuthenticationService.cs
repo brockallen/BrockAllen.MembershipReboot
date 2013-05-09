@@ -8,20 +8,18 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class LinkedAccountAuthenticationService
+    public class LinkedAccountAuthenticationService : ClaimsBasedAuthenticationService
     {
         UserAccountService userAccountService;
         LinkedAccountService linkedAccountService;
-        ClaimsBasedAuthenticationService claimsBasedAuthenticationService;
 
         public LinkedAccountAuthenticationService(
             UserAccountService userAccountService, 
-            LinkedAccountService linkedAccountService,
-            ClaimsBasedAuthenticationService claimsBasedAuthenticationService)
+            LinkedAccountService linkedAccountService)
+            : base(userAccountService)
         {
             this.userAccountService = userAccountService;
             this.linkedAccountService = linkedAccountService;
-            this.claimsBasedAuthenticationService = claimsBasedAuthenticationService;
         }
 
         public LinkedAccountSignInStatus SignIn(
@@ -86,7 +84,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (account.IsLoginAllowed)
                 {
-                    this.claimsBasedAuthenticationService.SignIn(account, providerName);
+                    this.SignIn(account, providerName);
 
                     if (isNew)
                     {

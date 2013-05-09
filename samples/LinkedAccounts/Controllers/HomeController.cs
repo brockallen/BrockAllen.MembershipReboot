@@ -38,18 +38,15 @@ namespace LinkedAccounts.Controllers
             //    "4L08bE3WM8Ra4rRNMv3N--un5YOBr4gx");
         }
 
-        ClaimsBasedAuthenticationService claimsBasedAuthenticationService;
         LinkedAccountService linkedAccountService;
         LinkedAccountAuthenticationService linkedAccountAuthenticationService;
         UserAccountService userAccountService;
 
         public HomeController(
-            ClaimsBasedAuthenticationService claimsBasedAuthenticationService,
             LinkedAccountService linkedAccountService,
             LinkedAccountAuthenticationService linkedAccountAuthenticationService, 
             UserAccountService userAccountService)
         {
-            this.claimsBasedAuthenticationService = claimsBasedAuthenticationService;
             this.linkedAccountService = linkedAccountService;
             this.linkedAccountAuthenticationService = linkedAccountAuthenticationService;
             this.userAccountService = userAccountService;
@@ -64,7 +61,7 @@ namespace LinkedAccounts.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                claimsBasedAuthenticationService.SignOut();
+                linkedAccountAuthenticationService.SignOut();
             }
             return RedirectToAction("Index");
         }

@@ -10,7 +10,6 @@ namespace BrockAllen.MembershipReboot
 {
     public class LinkedAccountService : IDisposable
     {
-        UserAccountService userAccountService;
         ILinkedAccountRepository linkedAccountRepository;
 
         public LinkedAccountService(ILinkedAccountRepository linkedAccountRepository)
@@ -24,16 +23,6 @@ namespace BrockAllen.MembershipReboot
             {
                 this.linkedAccountRepository = null;
             }
-        }
-
-        public virtual UserAccount GetUserAccount(string providerName, string providerAccountID)
-        {
-            var linkedAccount = Get(providerName, providerAccountID);
-            if (linkedAccount != null)
-            {
-                return this.userAccountService.GetByNameId(linkedAccount.LocalAccountID);
-            }
-            return null;
         }
 
         public virtual void Add(

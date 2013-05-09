@@ -98,7 +98,6 @@ namespace BrockAllen.MembershipReboot
             sam.WriteSessionTokenToCookie(token);
 
             Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.Signin] cookie issued: {0}", claims.GetValue(ClaimTypes.NameIdentifier)));
-
         }
 
         public virtual void SignOut()
