@@ -81,16 +81,6 @@ namespace BrockAllen.MembershipReboot
 
             if (account == null) throw new Exception("Account not found");
 
-            if (!account.IsAccountVerified)
-            {
-                throw new ValidationException("Account not yet verified");
-            }
-
-            if (!account.IsLoginAllowed)
-            {
-                throw new ValidationException("Login not allowed for this account");
-            }
-
             this.SignIn(account, providerName);
         }
     }

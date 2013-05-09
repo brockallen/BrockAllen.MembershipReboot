@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Linq;
@@ -53,6 +54,16 @@ namespace BrockAllen.MembershipReboot
         {
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
+
+            if (!account.IsAccountVerified)
+            {
+                throw new ValidationException("Account not yet verified");
+            }
+
+            if (!account.IsLoginAllowed)
+            {
+                throw new ValidationException("Login not allowed for this account");
+            }
 
             // gather claims
             var claims =
