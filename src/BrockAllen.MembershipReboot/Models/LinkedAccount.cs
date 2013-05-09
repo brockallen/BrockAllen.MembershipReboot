@@ -17,15 +17,17 @@ namespace BrockAllen.MembershipReboot
         }
 
         [Key]
-        [Column(Order=1)]
+        [Column(Order = 1)]
+        public virtual Guid UserAccountID { get; set; }
+        [Key]
+        [Column(Order=2)]
         [StringLength(50)]
         public virtual string ProviderName { get; set; }
         [Key]
-        [Column(Order = 2)]
+        [Column(Order = 3)]
         [StringLength(100)]
         public virtual string ProviderAccountID { get; set; }
         
-        public virtual Guid UserAccountID { get; set; }
         public virtual DateTime LastLogin { get; set; }
 
         [Required]

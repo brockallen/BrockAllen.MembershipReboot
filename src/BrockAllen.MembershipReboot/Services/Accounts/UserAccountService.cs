@@ -138,11 +138,23 @@ namespace BrockAllen.MembershipReboot
 
         public virtual UserAccount GetByLinkedAccount(string provider, string id)
         {
+            return GetByLinkedAccount(null, provider, id);
+        }
+
+        public virtual UserAccount GetByLinkedAccount(string tenant, string provider, string id)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(provider)) return null;
             if (String.IsNullOrWhiteSpace(id)) return null;
 
             var query =
                 from u in userRepository.GetAll()
+                where u.Tenant == tenant
                 from l in u.LinkedAccounts
                 where l.ProviderName == provider && l.ProviderAccountID == id
                 select u;

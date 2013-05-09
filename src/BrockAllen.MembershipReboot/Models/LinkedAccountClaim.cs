@@ -16,23 +16,26 @@ namespace BrockAllen.MembershipReboot
 
         [Key]
         [Column(Order = 1)]
+        public virtual Guid UserAccountID { get; set; }
+        [Key]
+        [Column(Order = 2)]
         [StringLength(50)]
         public virtual string ProviderName { get; set; }
         [Key]
-        [Column(Order = 2)]
+        [Column(Order = 3)]
         [StringLength(100)]
         public virtual string ProviderAccountID { get; set; }
         [Key]
-        [Column(Order = 3)]
+        [Column(Order = 4)]
         [StringLength(150)]
         public virtual string Type { get; set; }
         [Key]
-        [Column(Order = 4)]
+        [Column(Order = 5)]
         [StringLength(150)]
         public virtual string Value { get; set; }
 
         [Required]
-        [ForeignKey("ProviderName, ProviderAccountID")]
+        [ForeignKey("UserAccountID, ProviderName, ProviderAccountID")]
         public virtual LinkedAccount LinkedAccount { get; set; }
     }
 }
