@@ -147,19 +147,24 @@ namespace BrockAllen.MembershipReboot
             var user = ClaimsPrincipal.Current;
             if (user.Identity.IsAuthenticated)
             {
+                // already logged in, so use the current user's account
                 account = this.userService.GetByID(user.Claims.GetValue(ClaimTypes.NameIdentifier));
             }
             else
             {
-                account = this.userService.GetByLinkedAccount(providerName, providerAccountID);
+                // see if there's already an account mapped to this provider
+                account = this.userService.GetByLinkedAccount(tenant, providerName, providerAccountID);
                 if (account == null)
                 {
+                    // no account associated, so create one
+                    // we need email
                     var email = claims.GetValue(ClaimTypes.Email);
                     if (String.IsNullOrWhiteSpace(email))
                     {
                         throw new ValidationException("Can't create an account because there was no email from the identity provider");
                     }
 
+                    // guess at a name to use
                     var name = claims.GetValue(ClaimTypes.Name);
                     if (name == null) name = email;
                     var pwd = CryptoHelper.GenerateSalt();
@@ -170,9 +175,13 @@ namespace BrockAllen.MembershipReboot
 
             if (account == null) throw new Exception("Failed to locate account");
 
+            // add/update the provider with this account
             account.AddOrUpdateLinkedAccount(providerName, providerAccountID, claims);
             this.userService.SaveChanges();
 
+            // signin from the account
+            // if we want to include the provider's claims, then perhaps this
+            // should be done in the claims transformer
             this.SignIn(account, providerName);
         }
 
