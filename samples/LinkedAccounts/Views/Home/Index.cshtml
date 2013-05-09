@@ -9,6 +9,7 @@
     if (id.Identity.IsAuthenticated)
     {
         <p>@Html.ActionLink("Sign Out", "Logout")</p>
+        <p>@Html.ActionLink("Close Account", "CloseAccount")</p>
         <h2>Claims</h2>
         <dl>
             @foreach (var claim in id.Claims)

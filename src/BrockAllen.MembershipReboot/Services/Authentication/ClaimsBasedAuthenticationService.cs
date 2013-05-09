@@ -26,6 +26,14 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
+        public virtual void SignIn(Guid userID)
+        {
+            var account = this.userService.GetByID(userID);
+            if (account == null) throw new ArgumentException("Invalid userID");
+
+            SignIn(account, AuthenticationMethods.Password);
+        }
+
         public virtual void SignIn(string username)
         {
             SignIn((string)null, username);
@@ -78,10 +86,10 @@ namespace BrockAllen.MembershipReboot
             claims.Insert(0, new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
             claims.Insert(0, new Claim(ClaimTypes.Name, account.Username));
             claims.Insert(0, new Claim(MembershipRebootConstants.ClaimTypes.Tenant, account.Tenant));
-            claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, account.NameID.ToString("D")));
+            claims.Insert(0, new Claim(ClaimTypes.NameIdentifier, account.ID.ToString("D")));
 
             // create principal/identity
-            var id = new ClaimsIdentity(claims, "Forms");
+            var id = new ClaimsIdentity(claims, method);
             var cp = new ClaimsPrincipal(id);
 
             // claims transform
@@ -109,6 +117,63 @@ namespace BrockAllen.MembershipReboot
             sam.WriteSessionTokenToCookie(token);
 
             Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.Signin] cookie issued: {0}", claims.GetValue(ClaimTypes.NameIdentifier)));
+        }
+
+        public void SignInWithLinkedAccount(
+                    string providerName,
+                    string providerAccountID,
+                    IEnumerable<Claim> externalClaims)
+        {
+            SignInWithLinkedAccount(null, providerName, providerAccountID, externalClaims);
+        }
+
+        public void SignInWithLinkedAccount(
+            string tenant,
+            string providerName,
+            string providerAccountID,
+            IEnumerable<Claim> claims)
+        {
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(providerName)) throw new ArgumentException("providerName");
+            if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
+            if (claims == null) throw new ArgumentNullException("claims");
+
+            UserAccount account = null;
+            var user = ClaimsPrincipal.Current;
+            if (user.Identity.IsAuthenticated)
+            {
+                account = this.userService.GetByID(user.Claims.GetValue(ClaimTypes.NameIdentifier));
+            }
+            else
+            {
+                account = this.userService.GetByLinkedAccount(providerName, providerAccountID);
+                if (account == null)
+                {
+                    var email = claims.GetValue(ClaimTypes.Email);
+                    if (String.IsNullOrWhiteSpace(email))
+                    {
+                        throw new ValidationException("Can't create an account because there was no email from the identity provider");
+                    }
+
+                    var name = claims.GetValue(ClaimTypes.Name);
+                    if (name == null) name = email;
+                    var pwd = CryptoHelper.GenerateSalt();
+
+                    account = this.userService.CreateAccount(tenant, name, pwd, email);
+                }
+            }
+
+            if (account == null) throw new Exception("Failed to locate account");
+
+            account.AddOrUpdateLinkedAccount(providerName, providerAccountID, claims);
+            this.userService.SaveChanges();
+
+            this.SignIn(account, providerName);
         }
 
         public virtual void SignOut()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -11,7 +12,8 @@ namespace BrockAllen.MembershipReboot
 
         internal protected UserAccount()
         {
-            this.Claims = new List<UserClaim>();
+            this.Claims = new HashSet<UserClaim>();
+            this.LinkedAccounts = new HashSet<LinkedAccount>();
         }
 
         internal protected UserAccount(string tenant, string username, string password, string email)
@@ -21,7 +23,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
             if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
 
-            this.NameID = Guid.NewGuid();
+            this.ID = Guid.NewGuid();
             this.Tenant = tenant;
             this.Username = username;
             this.Email = email;
@@ -29,7 +31,8 @@ namespace BrockAllen.MembershipReboot
             this.SetPassword(password);
             this.IsAccountVerified = !SecuritySettings.Instance.RequireAccountVerification;
             this.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
-            this.Claims = new List<UserClaim>();
+            this.Claims = new HashSet<UserClaim>();
+            this.LinkedAccounts = new HashSet<LinkedAccount>();
 
             if (SecuritySettings.Instance.RequireAccountVerification)
             {
@@ -38,8 +41,7 @@ namespace BrockAllen.MembershipReboot
         }
 
         [Key]
-        public virtual int ID { get; set; }
-        public virtual Guid NameID { get; set; }
+        public virtual Guid ID { get; set; }
 
         [StringLength(50)]
         [Required]
@@ -74,6 +76,7 @@ namespace BrockAllen.MembershipReboot
         public virtual string HashedPassword { get; internal set; }
 
         public virtual ICollection<UserClaim> Claims { get; internal set; }
+        public virtual ICollection<LinkedAccount> LinkedAccounts { get; internal set; }
 
         internal void SetVerificationKey(VerificationKeyPurpose purpose, string prefix = null)
         {
@@ -487,6 +490,46 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Verbose(String.Format("[UserAccount.RemoveClaim] {0}, {1}, {2}, {3}", Tenant, Username, type, value));
                 this.Claims.Remove(claim);
+            }
+        }
+
+        public virtual LinkedAccount GetLinkedAccount(string provider, string id)
+        {
+            return this.LinkedAccounts.Where(x => x.ProviderName == provider && x.ProviderAccountID == id).SingleOrDefault();
+        }
+        
+        public virtual void AddOrUpdateLinkedAccount(string provider, string id, IEnumerable<Claim> claims = null)
+        {
+            if (String.IsNullOrWhiteSpace(provider)) throw new ArgumentNullException("provider");
+            if (String.IsNullOrWhiteSpace(id)) throw new ArgumentNullException("id");
+
+            var linked = GetLinkedAccount(provider, id);
+            if (linked == null)
+            {
+                linked = new LinkedAccount
+                {
+                    ProviderName = provider,
+                    ProviderAccountID = id
+                };
+                this.LinkedAccounts.Add(linked);
+            }
+            UpdateLinkedAccount(linked, claims);
+        }
+
+        protected virtual void UpdateLinkedAccount(LinkedAccount account, IEnumerable<Claim> claims = null)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            account.LastLogin = UtcNow;
+            account.UpdateClaims(claims);
+        }
+
+        public virtual void RemoveLinkedAccount(string provider, string id)
+        {
+            var linked = GetLinkedAccount(provider, id);
+            if (linked != null)
+            {
+                this.LinkedAccounts.Remove(linked);
             }
         }
 

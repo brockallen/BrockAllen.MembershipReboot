@@ -15,6 +15,5 @@ namespace BrockAllen.MembershipReboot
         }
 
         public DbSet<UserAccount> Users { get; set; }
-        public DbSet<LinkedAccount> LinkedAccounts { get; set; }
     }
 }

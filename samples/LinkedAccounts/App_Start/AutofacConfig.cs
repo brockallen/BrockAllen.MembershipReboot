@@ -17,19 +17,12 @@ namespace LinkedAccounts
 
             builder.RegisterType<UserAccountService>();
             builder.RegisterType<ClaimsBasedAuthenticationService>();
-            builder.RegisterType<LinkedAccountService>();
-            builder.RegisterType<LinkedAccountAuthenticationService>();
 
             builder
                 .RegisterType<EFUserAccountRepository>()
                 .As<IUserAccountRepository>()
                 .InstancePerHttpRequest();
             
-            builder
-                .RegisterType<EFLinkedAccountRepository>()
-                .As<ILinkedAccountRepository>()
-                .InstancePerHttpRequest();
-
             builder.RegisterType<NopMessageDelivery>().As<IMessageDelivery>();
             //builder.RegisterType<SmtpMessageDelivery>().As<IMessageDelivery>();
             

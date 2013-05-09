@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BrockAllen.MembershipReboot
@@ -7,7 +8,7 @@ namespace BrockAllen.MembershipReboot
     {
         [Key]
         [Column(Order=1)]
-        public virtual int UserAccountID { get; set; }
+        public virtual Guid UserAccountID { get; set; }
         [Key]
         [Column(Order = 2)]
         [StringLength(150)]

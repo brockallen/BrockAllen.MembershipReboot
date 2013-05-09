@@ -38,14 +38,14 @@ namespace LinkedAccounts.Controllers
             //    "4L08bE3WM8Ra4rRNMv3N--un5YOBr4gx");
         }
 
-        LinkedAccountAuthenticationService linkedAccountAuthenticationService;
+        ClaimsBasedAuthenticationService claimsBasedAuthenticationService;
         UserAccountService userAccountService;
 
         public HomeController(
-            LinkedAccountAuthenticationService linkedAccountAuthenticationService, 
+            ClaimsBasedAuthenticationService claimsBasedAuthenticationService,
             UserAccountService userAccountService)
         {
-            this.linkedAccountAuthenticationService = linkedAccountAuthenticationService;
+            this.claimsBasedAuthenticationService = claimsBasedAuthenticationService;
             this.userAccountService = userAccountService;
         }
 
@@ -58,7 +58,7 @@ namespace LinkedAccounts.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                linkedAccountAuthenticationService.SignOut();
+                claimsBasedAuthenticationService.SignOut();
             }
             return RedirectToAction("Index");
         }
@@ -78,7 +78,7 @@ namespace LinkedAccounts.Controllers
                     var provider = result.ProviderName;
                     var claims = result.Claims;
                     var id = claims.GetValue(ClaimTypes.NameIdentifier);
-                    this.linkedAccountAuthenticationService.SignIn(provider, id, claims);
+                    this.claimsBasedAuthenticationService.SignInWithLinkedAccount(provider, id, claims);
 
                     if (result.ReturnUrl != null)
                     {
@@ -120,6 +120,13 @@ namespace LinkedAccounts.Controllers
         {
             var result = this.userAccountService.CancelNewAccount(id);
             return View("Index");
+        }
+
+        public ActionResult CloseAccount()
+        {
+            this.userAccountService.DeleteAccount(User.Identity.Name);
+            this.claimsBasedAuthenticationService.SignOut();
+            return RedirectToAction("Index");
         }
     }
 }

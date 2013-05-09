@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Transactions;
 
 namespace BrockAllen.MembershipReboot
@@ -99,7 +101,20 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount GetByID(int id)
+        public virtual UserAccount GetByID(string id)
+        {
+            Guid guid;
+            if (Guid.TryParse(id, out guid))
+            {
+                return GetByID(guid);
+            }
+            
+            Tracing.Verbose(String.Format("[UserAccountService.GetByID] failed to parse string into guid: {0}", id));
+            
+            return null;
+        }
+        
+        public virtual UserAccount GetByID(Guid id)
         {
             var account = this.userRepository.Get(id);
             if (account == null)
@@ -120,17 +135,26 @@ namespace BrockAllen.MembershipReboot
             }
             return account;
         }
-        
-        public virtual UserAccount GetByNameId(Guid nameId)
+
+        public virtual UserAccount GetByLinkedAccount(string provider, string id)
         {
-            var account = userRepository.GetAll().Where(x => x.NameID == nameId).SingleOrDefault();
+            if (String.IsNullOrWhiteSpace(provider)) return null;
+            if (String.IsNullOrWhiteSpace(id)) return null;
+
+            var query =
+                from u in userRepository.GetAll()
+                from l in u.LinkedAccounts
+                where l.ProviderName == provider && l.ProviderAccountID == id
+                select u;
+
+            var account = query.SingleOrDefault();
             if (account == null)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.GetByNameId] failed to locate account: {0}", nameId));
+                Tracing.Verbose(String.Format("[UserAccountService.GetByLinkedAccount] failed to locate by provider: {0}, id: {1}", provider, id));
             }
             return account;
         }
-
+        
         public virtual bool UsernameExists(string username)
         {
             return UsernameExists(null, username);
