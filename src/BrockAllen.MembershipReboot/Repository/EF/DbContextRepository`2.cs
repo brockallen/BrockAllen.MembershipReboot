@@ -9,13 +9,13 @@ namespace BrockAllen.MembershipReboot
     {
         protected DbContext db;
         DbSet<T> items;
-        
+
         public DbContextRepository(DbContext db)
         {
             this.db = db;
             this.items = db.Set<T>();
         }
-        
+
         IQueryable<T> IRepository<T, Key>.GetAll()
         {
             return items;
@@ -36,6 +36,11 @@ namespace BrockAllen.MembershipReboot
         }
 
         void IRepository<T, Key>.SaveChanges()
+        {
+            db.SaveChanges();
+        }
+
+        public void SaveChanges(T item)
         {
             db.SaveChanges();
         }

@@ -46,29 +46,34 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.SaveChanges();
         }
 
-        public virtual IQueryable<UserAccount<TKey>> GetAll()
+        public virtual void SaveChanges(T account)
+        {
+            this.userRepository.SaveChanges(account);
+        }
+
+        public virtual IQueryable<T> GetAll()
         {
             return GetAll(null);
         }
 
-        public virtual IQueryable<UserAccount<TKey>> GetAll(string tenant)
+        public virtual IQueryable<T> GetAll(string tenant)
         {
             if (!SecuritySettings.Instance.MultiTenant)
             {
                 tenant = SecuritySettings.Instance.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<UserAccount<TKey>>().AsQueryable();
+            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<T>().AsQueryable();
 
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
         }
 
-        public virtual UserAccount<TKey> GetByUsername(string username)
+        public virtual T GetByUsername(string username)
         {
             return GetByUsername(null, username);
         }
 
-        public virtual UserAccount<TKey> GetByUsername(string tenant, string username)
+        public virtual T GetByUsername(string tenant, string username)
         {
             if (!SecuritySettings.Instance.MultiTenant)
             {
@@ -86,12 +91,12 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount<TKey> GetByEmail(string email)
+        public virtual T GetByEmail(string email)
         {
             return GetByEmail(null, email);
         }
 
-        public virtual UserAccount<TKey> GetByEmail(string tenant, string email)
+        public virtual T GetByEmail(string tenant, string email)
         {
             if (!SecuritySettings.Instance.MultiTenant)
             {
@@ -109,7 +114,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount<TKey> GetByID(TKey id)
+        public virtual T GetByID(TKey id)
         {
             var account = this.userRepository.Get(id);
             if (account == null)
@@ -119,7 +124,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount<TKey> GetByVerificationKey(string key)
+        public virtual T GetByVerificationKey(string key)
         {
             if (String.IsNullOrWhiteSpace(key)) return null;
 
@@ -131,7 +136,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount<TKey> GetByNameId(Guid nameId)
+        public virtual T GetByNameId(Guid nameId)
         {
             var account = userRepository.GetAll().Where(x => x.NameID == nameId).SingleOrDefault();
             if (account == null)
@@ -185,12 +190,12 @@ namespace BrockAllen.MembershipReboot
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).Any();
         }
 
-        public virtual UserAccount<TKey> CreateAccount(string username, string password, string email)
+        public virtual T CreateAccount(string username, string password, string email)
         {
             return CreateAccount(null, username, password, email);
         }
 
-        public virtual UserAccount<TKey> CreateAccount(string tenant, string username, string password, string email)
+        public virtual T CreateAccount(string tenant, string username, string password, string email)
         {
             Tracing.Information(String.Format("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email));
 
@@ -239,7 +244,7 @@ namespace BrockAllen.MembershipReboot
                 account.Initialise(tenant, username, password, email);
 
                 this.userRepository.Add(account);
-                this.userRepository.SaveChanges();
+                this.userRepository.SaveChanges(account);
 
                 if (this.notificationService != null)
                 {
@@ -284,7 +289,7 @@ namespace BrockAllen.MembershipReboot
             var result = account.VerifyAccount(key);
             using (var tx = new TransactionScope())
             {
-                this.userRepository.SaveChanges();
+                this.userRepository.SaveChanges(account);
 
                 if (result && this.notificationService != null)
                 {
@@ -341,7 +346,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual void DeleteAccount(UserAccount<TKey> account)
+        protected internal virtual void DeleteAccount(T account)
         {
             if (SecuritySettings.Instance.AllowAccountDeletion || !account.IsAccountVerified)
             {
@@ -356,7 +361,7 @@ namespace BrockAllen.MembershipReboot
 
             using (var tx = new TransactionScope())
             {
-                this.userRepository.SaveChanges();
+                this.userRepository.SaveChanges(account);
 
                 if (this.notificationService != null)
                 {
@@ -408,10 +413,10 @@ namespace BrockAllen.MembershipReboot
             return Authenticate(account, password, failedLoginCount, lockoutDuration);
         }
 
-        protected internal virtual bool Authenticate(UserAccount<TKey> account, string password, int failedLoginCount, TimeSpan lockoutDuration)
+        protected internal virtual bool Authenticate(T account, string password, int failedLoginCount, TimeSpan lockoutDuration)
         {
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
-            this.userRepository.SaveChanges();
+            this.userRepository.SaveChanges(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.Authenticate] authentication outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful Login" : "Failed Login"));
 
@@ -446,7 +451,7 @@ namespace BrockAllen.MembershipReboot
             using (var tx = new TransactionScope())
             {
                 account.SetPassword(newPassword);
-                this.userRepository.SaveChanges();
+                this.userRepository.SaveChanges(account);
 
                 if (this.notificationService != null)
                 {
@@ -515,7 +520,7 @@ namespace BrockAllen.MembershipReboot
                 // put this into finally since ChangePassword uses Authenticate which modifies state
                 using (var tx = new TransactionScope())
                 {
-                    this.userRepository.SaveChanges();
+                    this.userRepository.SaveChanges(account);
 
                     if (result && this.notificationService != null)
                     {
@@ -574,7 +579,7 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
-                    this.userRepository.SaveChanges();
+                    this.userRepository.SaveChanges(account);
 
                     if (this.notificationService != null)
                     {
@@ -611,7 +616,7 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
-                    this.userRepository.SaveChanges();
+                    this.userRepository.SaveChanges(account);
 
                     if (this.notificationService != null)
                     {
@@ -693,7 +698,7 @@ namespace BrockAllen.MembershipReboot
 
             using (var tx = new TransactionScope())
             {
-                this.userRepository.SaveChanges();
+                this.userRepository.SaveChanges(account);
 
                 if (this.notificationService != null)
                 {
@@ -750,7 +755,7 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
-                    this.userRepository.SaveChanges();
+                    this.userRepository.SaveChanges(account);
 
                     if (this.notificationService != null)
                     {
@@ -807,7 +812,7 @@ namespace BrockAllen.MembershipReboot
             {
                 using (var tx = new TransactionScope())
                 {
-                    this.userRepository.SaveChanges();
+                    this.userRepository.SaveChanges(account);
 
                     if (this.notificationService != null)
                     {

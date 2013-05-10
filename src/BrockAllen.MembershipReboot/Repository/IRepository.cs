@@ -11,5 +11,6 @@ namespace BrockAllen.MembershipReboot
         void Add(T item);
         void Remove(T item);
         void SaveChanges();
+        void SaveChanges(T item);
     }
 }

@@ -604,8 +604,8 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.Add((UserAccount)result));
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Add(result));
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(result));
             }
 
             [TestMethod]
@@ -690,7 +690,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Object.VerifyAccount("key");
 
                 account.Verify(x => x.VerifyAccount("key"));
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account.Object));
             }
 
             [TestMethod]
@@ -916,7 +916,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var account = new UserAccount();
                 sub.Object.DeleteAccount(account);
 
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account));
             }
             [TestMethod]
             public void CallsSendAccountDelete()
@@ -1017,7 +1017,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1));
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account.Object));
             }
             [TestMethod]
             public void userAccountReturnsTrue_ReturnsTrue()
@@ -1120,7 +1120,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var user = new MockUserAccount(SecuritySettings.Instance.DefaultTenant, "user", "foo", "user@foo.com");
                 sub.MockUserAccounts(user.Object);
                 sub.Object.SetPassword("user", "pass");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(user.Object));
             }
             [TestMethod]
             public void NotificationServicedCalled()
@@ -1221,7 +1221,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 sub.Object.ChangePassword("user", "old", "new");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account.Object));
             }
             [TestMethod]
             public void UserAccountReturnsTrue_ReturnsTrue()
@@ -1376,7 +1376,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 account.Object.IsAccountVerified = true;
                 sub.Object.ResetPassword("email");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account.Object));
             }
             [TestMethod]
             public void UserAccountResetPasswordSuccess_SendResetPasswordCalled()
@@ -1490,7 +1490,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
 
                 sub.Object.ChangePasswordFromResetKey("key", "new");
 
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account.Object));
             }
             [TestMethod]
             public void UserAccountFails_DoesNotCallsSaveChangesOnUserAccountRepo()
@@ -1688,7 +1688,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(true);
                 sub.Object.ChangeEmailRequest("user", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account.Object));
             }
             [TestMethod]
             public void UserAccountChangeEmailRequestFail_DoesNotCallsSaveChangesOnRepo()
@@ -1829,7 +1829,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.SaveChanges(account.Object));
             }
             [TestMethod]
             public void UserAccountChangeEmailFromKeyFail_SaveChangesNotCalled()
