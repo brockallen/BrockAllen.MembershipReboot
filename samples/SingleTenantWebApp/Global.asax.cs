@@ -34,7 +34,7 @@ namespace BrockAllen.MembershipReboot.Mvc
                 var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");
                 svc.VerifyAccount(account.VerificationKey);
                 account.AddClaim(ClaimTypes.Role, "Administrator");
-                svc.SaveChanges();
+                svc.Update(account);
             }
         }
     }

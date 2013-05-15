@@ -41,15 +41,16 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
         }
 
         [TestClass]
-        public class SaveChanges
+        public class Update
         {
             [TestMethod]
-            public void CallsSaveChangesOnRepository()
+            public void CallsUpdateOnRepository()
             {
                 var repo = new Mock<IUserAccountRepository>();
                 var sub = new UserAccountService(repo.Object, null, null);
-                sub.SaveChanges();
-                repo.Verify(x => x.SaveChanges());
+                var ua = new UserAccount();
+                sub.Update(ua);
+                repo.Verify(x => x.Update(ua));
             }
         }
 
@@ -611,7 +612,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
                 sub.UserAccountRepository.Verify(x => x.Add(result));
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
             }
 
             [TestMethod]
@@ -696,7 +696,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Object.VerifyAccount("key");
 
                 account.Verify(x => x.VerifyAccount("key"));
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
 
             [TestMethod]
@@ -912,17 +912,9 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 account.Object.IsAccountVerified = true;
                 sub.Object.DeleteAccount(account.Object);
 
-                sub.UserAccountRepository.Verify(x => x.Remove(account.Object), Times.Never());
+                sub.UserAccountRepository.Verify(x => x.Remove(It.IsAny<UserAccount>()), Times.Never());
                 account.Verify(x => x.CloseAccount());
-            }
-            [TestMethod]
-            public void CallsSaveChangesOnRepo()
-            {
-                var sub = new MockUserAccountService();
-                var account = new UserAccount();
-                sub.Object.DeleteAccount(account);
-
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
             public void CallsSendAccountDelete()
@@ -1023,7 +1015,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1));
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
             public void userAccountReturnsTrue_ReturnsTrue()
@@ -1126,7 +1118,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var user = new MockUserAccount(SecuritySettings.Instance.DefaultTenant, "user", "foo", "user@foo.com");
                 sub.MockUserAccounts(user.Object);
                 sub.Object.SetPassword("user", "pass");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(user.Object));
             }
             [TestMethod]
             public void NotificationServicedCalled()
@@ -1227,7 +1219,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 sub.Object.ChangePassword("user", "old", "new");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
             public void UserAccountReturnsTrue_ReturnsTrue()
@@ -1267,7 +1259,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
                 sub.Object.ChangePassword("user", "old", "new");
-                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(account.Object), Times.Never());
+                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(It.IsAny<UserAccount>()), Times.Never());
             }
         }
 
@@ -1341,7 +1333,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 account.Object.IsAccountVerified = false;
                 sub.Object.ResetPassword("email");
-                sub.NotificationService.Verify(x => x.SendAccountCreate(account.Object), Times.Never());
+                sub.NotificationService.Verify(x => x.SendAccountCreate(It.IsAny<UserAccount>()), Times.Never());
             }
 
             [TestMethod]
@@ -1382,7 +1374,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 account.Object.IsAccountVerified = true;
                 sub.Object.ResetPassword("email");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
             public void UserAccountResetPasswordSuccess_SendResetPasswordCalled()
@@ -1410,7 +1402,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
 
                 sub.Object.ResetPassword("email");
 
-                sub.NotificationService.Verify(x => x.SendResetPassword(account.Object), Times.Never());
+                sub.NotificationService.Verify(x => x.SendResetPassword(It.IsAny<UserAccount>()), Times.Never());
             }
 
 
@@ -1496,7 +1488,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
 
                 sub.Object.ChangePasswordFromResetKey("key", "new");
 
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
             public void UserAccountFails_DoesNotCallsSaveChangesOnUserAccountRepo()
@@ -1509,7 +1501,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
 
                 sub.Object.ChangePasswordFromResetKey("key", "new");
 
-                sub.UserAccountRepository.Verify(x => x.SaveChanges(), Times.Never());
+                sub.UserAccountRepository.Verify(x => x.Update(It.IsAny<UserAccount>()), Times.Never());
             }
             [TestMethod]
             public void UserAccountSuccess_SendPasswordChangeNoticeCalled()
@@ -1537,7 +1529,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
 
                 sub.Object.ChangePasswordFromResetKey("key", "new");
 
-                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(account.Object), Times.Never());
+                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(It.IsAny<UserAccount>()), Times.Never());
             }
         }
 
@@ -1694,7 +1686,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(true);
                 sub.Object.ChangeEmailRequest("user", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
             public void UserAccountChangeEmailRequestFail_DoesNotCallsSaveChangesOnRepo()
@@ -1704,7 +1696,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
                 account.Setup(x => x.ChangeEmailRequest(It.IsAny<string>())).Returns(false);
                 sub.Object.ChangeEmailRequest("user", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges(), Times.Never());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object), Times.Never());
             }
             [TestMethod]
             public void UserAccountChangeEmailRequestSuccess_CallsSendChangeEmailRequestNotice()
@@ -1835,7 +1827,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges());
+                sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
             public void UserAccountChangeEmailFromKeyFail_SaveChangesNotCalled()
@@ -1846,7 +1838,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
-                sub.UserAccountRepository.Verify(x => x.SaveChanges(), Times.Never());
+                sub.UserAccountRepository.Verify(x => x.Update(It.IsAny<UserAccount>()), Times.Never());
             }
             [TestMethod]
             public void UserAccountChangeEmailFromKeySuccess_SendEmailChangedNoticeCalled()

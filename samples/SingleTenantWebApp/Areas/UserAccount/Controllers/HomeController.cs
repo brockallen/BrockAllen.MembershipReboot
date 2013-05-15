@@ -36,7 +36,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 //account.RemoveClaim(ClaimTypes.Gender);
                 account.AddClaim(ClaimTypes.Gender, gender);
             }
-            userAccountService.SaveChanges();
+            userAccountService.Update(account);
 
             // since we've changed the claims, we need to re-issue the cookie that
             // contains the claims.

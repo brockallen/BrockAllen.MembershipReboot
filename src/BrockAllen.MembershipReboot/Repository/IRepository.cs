@@ -8,9 +8,9 @@ namespace BrockAllen.MembershipReboot
     {
         IQueryable<T> GetAll();
         T Get(params object[] keys);
+        T Create();
         void Add(T item);
-        void Remove(params object[] keys);
         void Remove(T item);
-        void SaveChanges();
+        void Update(T item);
     }
 }

@@ -177,7 +177,7 @@ namespace BrockAllen.MembershipReboot
 
             // add/update the provider with this account
             account.AddOrUpdateLinkedAccount(providerName, providerAccountID, claims);
-            this.userService.SaveChanges();
+            this.userService.Update(account);
 
             // signin from the account
             // if we want to include the provider's claims, then perhaps this

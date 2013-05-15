@@ -16,13 +16,15 @@ namespace BrockAllen.MembershipReboot
             this.LinkedAccounts = new HashSet<LinkedAccount>();
         }
 
-        internal protected UserAccount(string tenant, string username, string password, string email)
+        internal protected virtual void Init(string tenant, string username, string password, string email)
         {
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
             if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
 
+            if (this.ID != Guid.Empty) throw new Exception("Can't call Init if UserAccount is already assigned an ID");
+            
             this.ID = Guid.NewGuid();
             this.Tenant = tenant;
             this.Username = username;
@@ -31,8 +33,6 @@ namespace BrockAllen.MembershipReboot
             this.SetPassword(password);
             this.IsAccountVerified = !SecuritySettings.Instance.RequireAccountVerification;
             this.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
-            this.Claims = new HashSet<UserClaim>();
-            this.LinkedAccounts = new HashSet<LinkedAccount>();
 
             if (SecuritySettings.Instance.RequireAccountVerification)
             {
@@ -41,7 +41,7 @@ namespace BrockAllen.MembershipReboot
         }
 
         [Key]
-        public virtual Guid ID { get; set; }
+        public virtual Guid ID { get; internal set; }
 
         [StringLength(50)]
         [Required]

@@ -12,6 +12,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
         public MockUserAccountService()
         {
             this.UserAccountRepository = new Mock<IUserAccountRepository>();
+            this.UserAccountRepository.Setup(x => x.Create()).Returns(new UserAccount());
         }
 
         Mock<UserAccountService> svc;

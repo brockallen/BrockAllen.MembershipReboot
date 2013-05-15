@@ -94,7 +94,6 @@
     <Compile Include="Models\LinkedAccount.cs" />
     <Compile Include="Models\VerificationKeyPurpose.cs" />
     <Compile Include="Models\UserClaim.cs" />
-    <Compile Include="Repository\EF\DbContextRepository`1.cs" />
     <Compile Include="Repository\EF\DbContextRepository`2.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
     <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
