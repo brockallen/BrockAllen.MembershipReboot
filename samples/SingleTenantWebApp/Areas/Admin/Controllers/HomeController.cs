@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
@@ -19,7 +20,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
             return View(names.ToArray());
         }
 
-        public ActionResult Detail(int id)
+        public ActionResult Detail(Guid id)
         {
             var account = userAccountRepository.Get(id);
             return View("Detail", account);

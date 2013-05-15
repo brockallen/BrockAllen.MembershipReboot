@@ -18,7 +18,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            int id = item.ID;
+            Guid id = item.ID;
             string name = item.Username;
             <tr>
                 <td>@Html.ActionLink(name, "Detail", new { id = id })</td>
