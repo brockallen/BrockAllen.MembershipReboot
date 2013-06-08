@@ -166,9 +166,19 @@ namespace BrockAllen.MembershipReboot
 
                     // guess at a name to use
                     var name = claims.GetValue(ClaimTypes.Name);
-                    if (name == null) name = email;
-                    var pwd = CryptoHelper.GenerateSalt();
+                    if (name == null ||
+                        this.userService.UsernameExists(tenant, name))
+                    {
+                        name = email;
+                    }
 
+                    // check to see if email already exists
+                    if (this.userService.EmailExists(tenant, email))
+                    {
+                        throw new ValidationException("Can't login with this provider because the email is already associated with another account. Please login with your local account and then associate the provider.");
+                    }
+
+                    var pwd = CryptoHelper.GenerateSalt();
                     account = this.userService.CreateAccount(tenant, name, pwd, email);
                 }
             }
