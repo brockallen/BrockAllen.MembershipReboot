@@ -235,6 +235,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
             if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
 
+            ValidateUsername(username);
             ValidatePassword(tenant, username, password);
 
             EmailAddressAttribute validator = new EmailAddressAttribute();
@@ -280,6 +281,17 @@ namespace BrockAllen.MembershipReboot
                 tx.Complete();
 
                 return account;
+            }
+        }
+
+        protected internal void ValidateUsername(string username)
+        {
+            if (!SecuritySettings.Instance.EmailIsUsername && 
+                username.Contains('@'))
+            {
+                Tracing.Verbose(String.Format("[ValidateUsername] Failed: {0}", username));
+
+                throw new ValidationException("Invalid username: Cannot contain the '@' character");
             }
         }
 
@@ -429,6 +441,83 @@ namespace BrockAllen.MembershipReboot
             if (account == null) return false;
 
             return Authenticate(account, password, failedLoginCount, lockoutDuration);
+        }
+
+        public virtual bool AuthenticateWithEmail(string email, string password)
+        {
+            return AuthenticateWithEmail(null, email, password);
+        }
+
+        public virtual bool AuthenticateWithEmail(string tenant, string email, string password)
+        {
+            return AuthenticateWithEmail(
+                tenant, email, password,
+                SecuritySettings.Instance.AccountLockoutFailedLoginAttempts,
+                SecuritySettings.Instance.AccountLockoutDuration);
+        }
+
+        public virtual bool AuthenticateWithEmail(
+            string email, string password,
+            int failedLoginCount, TimeSpan lockoutDuration)
+        {
+            return AuthenticateWithEmail(null, email, password, failedLoginCount, lockoutDuration);
+        }
+
+        public virtual bool AuthenticateWithEmail(
+            string tenant, string email, string password,
+            int failedLoginCount, TimeSpan lockoutDuration)
+        {
+            Tracing.Information(String.Format("[UserAccountService.AuthenticateWithEmail] called: {0}, {1}", tenant, email));
+
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(email)) return false;
+            if (String.IsNullOrWhiteSpace(password)) return false;
+
+            var account = this.GetByEmail(tenant, email);
+            if (account == null) return false;
+
+            return Authenticate(account, password, failedLoginCount, lockoutDuration);
+        }
+
+        public virtual UserAccount AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password)
+        {
+            return AuthenticateWithUsernameOrEmail(null, userNameOrEmail, password);
+        }
+
+        public virtual UserAccount AuthenticateWithUsernameOrEmail(string tenant, string userNameOrEmail, string password)
+        {
+            Tracing.Verbose(String.Format("[UserAccountService.AuthenticateWithUsernameOrEmail]: {0}, {1}", tenant, userNameOrEmail));
+
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (String.IsNullOrWhiteSpace(userNameOrEmail)) return null;
+            if (String.IsNullOrWhiteSpace(password)) return null;
+
+            if (userNameOrEmail.Contains("@"))
+            {
+                if (AuthenticateWithEmail(tenant, userNameOrEmail, password))
+                {
+                    return GetByEmail(tenant, userNameOrEmail);
+                }
+            }
+            else
+            {
+                if (Authenticate(tenant, userNameOrEmail, password))
+                {
+                    return GetByUsername(tenant, userNameOrEmail);
+                }
+            }
+
+            return null;
         }
 
         protected internal virtual bool Authenticate(UserAccount account, string password, int failedLoginCount, TimeSpan lockoutDuration)
@@ -700,6 +789,8 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
             if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentException("newUsername");
+
+            ValidateUsername(newUsername);
 
             var account = GetByUsername(tenant, username);
             if (account == null) throw new ValidationException("Invalid account");

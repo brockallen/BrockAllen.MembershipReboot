@@ -58,6 +58,11 @@ namespace BrockAllen.MembershipReboot
             SignIn(account, AuthenticationMethods.Password);
         }
 
+        public virtual void SignIn(UserAccount account)
+        {
+            SignIn(account, AuthenticationMethods.Password);
+        }
+
         public virtual void SignIn(UserAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
