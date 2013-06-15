@@ -952,7 +952,7 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
-            return account.IsPasswordExpired;
+            return account.GetIsPasswordExpired(SecuritySettings.Instance.PasswordResetFrequency);
         }
     }
 }

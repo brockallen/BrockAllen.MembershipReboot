@@ -1947,7 +1947,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var account = new MockUserAccount("tenant", "user", "pass", "email@foo.com");
                 sub.MockUserAccounts(account.Object);
                 var result = sub.Object.IsPasswordExpired("tenant", "user");
-                account.Verify(x => x.IsPasswordExpired);
+                account.Verify(x => x.GetIsPasswordExpired(It.IsAny<int>()));
             }
 
         }

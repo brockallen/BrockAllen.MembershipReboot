@@ -1391,62 +1391,59 @@ namespace BrockAllen.MembershipReboot.Test.Models
             [TestMethod]
             public void NoPasswordResetFrequency_IsNeverExpired()
             {
-                SecuritySettings.Instance.PasswordResetFrequency = 0;
                 var subject = new MockUserAccount();
                 subject.Setup(x => x.UtcNow).Returns(new DateTime(2000, 3, 10, 0, 8, 0));
 
                 subject.Object.PasswordChanged = new DateTime(2000, 3, 9, 0, 8, 0);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(0));
 
                 subject.Object.PasswordChanged = new DateTime(2000, 2, 9, 0, 8, 0);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(0));
 
                 subject.Object.PasswordChanged = new DateTime(1988, 2, 9, 0, 8, 0);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(0));
             }
 
             [TestMethod]
             public void NegativePasswordResetFrequency_IsNeverExpired()
             {
-                SecuritySettings.Instance.PasswordResetFrequency = -1;
                 var subject = new MockUserAccount();
                 subject.Setup(x => x.UtcNow).Returns(new DateTime(2000, 3, 10, 0, 8, 0));
 
                 subject.Object.PasswordChanged = new DateTime(2000, 3, 9, 0, 8, 0);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(-1));
 
                 subject.Object.PasswordChanged = new DateTime(2000, 2, 9, 0, 8, 0);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(-1));
 
                 subject.Object.PasswordChanged = new DateTime(1988, 2, 9, 0, 8, 0);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(-1));
             }
 
             [TestMethod]
             public void SetPasswordResetFrequency_IsExpiredAfterDuration()
             {
-                SecuritySettings.Instance.PasswordResetFrequency = 30;
                 var subject = new MockUserAccount();
                 var now = new DateTime(2000, 3, 10, 0, 8, 0);
                 subject.Setup(x => x.UtcNow).Returns(now);
 
                 subject.Object.PasswordChanged = now.AddDays(-5);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(30));
 
                 subject.Object.PasswordChanged = now.AddDays(-29);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(30));
 
                 subject.Object.PasswordChanged = now.AddDays(-30).AddSeconds(1);
-                Assert.IsFalse(subject.Object.IsPasswordExpired);
+                Assert.IsFalse(subject.Object.GetIsPasswordExpired(30));
 
                 subject.Object.PasswordChanged = now.AddDays(-30);
-                Assert.IsTrue(subject.Object.IsPasswordExpired);
+                Assert.IsTrue(subject.Object.GetIsPasswordExpired(30));
 
                 subject.Object.PasswordChanged = now.AddDays(-30).AddSeconds(-1);
-                Assert.IsTrue(subject.Object.IsPasswordExpired);
+                Assert.IsTrue(subject.Object.GetIsPasswordExpired(30));
 
                 subject.Object.PasswordChanged = now.AddDays(-40);
-                Assert.IsTrue(subject.Object.IsPasswordExpired);
+                Assert.IsTrue(subject.Object.GetIsPasswordExpired(30));
             }
         }
     }
