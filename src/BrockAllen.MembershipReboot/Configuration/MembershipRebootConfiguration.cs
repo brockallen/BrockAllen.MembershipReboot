@@ -53,17 +53,10 @@ namespace BrockAllen.MembershipReboot
             userAccountRepositoryType = typeof(T);
         }
         
-        IUserAccountRepository userAccountRepository;
-        internal void SetUserAccountRepository(IUserAccountRepository userAccountRepository)
-        {
-            this.userAccountRepository = userAccountRepository;
-        }
-
         public IUserAccountRepository CreateUserAccountRepository()
         {
-            var repo = this.userAccountRepository;
-            if (repo == null) repo = factory.Create<IUserAccountRepository>(userAccountRepositoryType);
-            return repo;
+            if (userAccountRepositoryType == null) throw new Exception("UserAccountRepository type not registered");
+            return factory.Create<IUserAccountRepository>(userAccountRepositoryType);
         }
 
         EventBus eventBus = new EventBus();

@@ -11,14 +11,11 @@ namespace BrockAllen.MembershipReboot
     {
         public static void FromLegacy(
             this MembershipRebootConfiguration config, 
-            IUserAccountRepository userAccountRepository, 
             INotificationService notificationService, 
             IPasswordPolicy passwordPolicy)
         {
             if (config == null) throw new ArgumentNullException("config");
             
-            config.SetUserAccountRepository(userAccountRepository);
-
             if (notificationService != null)
             {
                 config.AddEventHandler(new NotificationServiceEventHandler(notificationService));

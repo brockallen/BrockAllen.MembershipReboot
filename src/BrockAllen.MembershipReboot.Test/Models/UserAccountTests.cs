@@ -14,56 +14,56 @@ namespace BrockAllen.MembershipReboot.Test.Models
         public class Init
         {
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ArgumentNullException))]
             public void NullTenant_Throws()
             {
                 var sub = new UserAccount();
                 sub.Init(null, "user", "pass", "email");
             }
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ValidationException))]
             public void NullUsername_Throws()
             {
                 var sub = new UserAccount();
                 sub.Init("ten", null, "pass", "email");
             }
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ValidationException))]
             public void NullPass_Throws()
             {
                 var sub = new UserAccount();
                 sub.Init("ten", "user", null, "email");
             }
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ValidationException))]
             public void NullEmail_Throws()
             {
                 var sub = new UserAccount();
                 sub.Init("ten", "user", "pass", null);
             }
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ArgumentNullException))]
             public void EmptyTenant_Throws()
             {
                 var sub = new UserAccount();
                 sub.Init("", "user", "pass", "email");
             }
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ValidationException))]
             public void EmptyUsername_Throws()
             {
                 var sub = new UserAccount();
                 sub.Init("ten", "", "pass", "email");
             }
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ValidationException))]
             public void EmptyPass_Throws()
             {
                 var sub = new UserAccount();
                 sub.Init("ten", "user", "", "email");
             }
             [TestMethod]
-            [ExpectedException(typeof(ArgumentException))]
+            [ExpectedException(typeof(ValidationException))]
             public void EmptyEmail_Throws()
             {
                 var sub = new UserAccount();

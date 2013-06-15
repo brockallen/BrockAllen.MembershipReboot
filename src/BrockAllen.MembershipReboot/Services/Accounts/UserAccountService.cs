@@ -10,7 +10,8 @@ namespace BrockAllen.MembershipReboot
     public class UserAccountService : IDisposable
     {
         IUserAccountRepository userRepository;
-        INotificationService notificationService;
+        SecuritySettings securitySettings;
+        MembershipRebootConfiguration configuration;
         IPasswordPolicy passwordPolicy;
 
         public UserAccountService(
@@ -20,9 +21,14 @@ namespace BrockAllen.MembershipReboot
         {
             if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
 
-            this.userRepository = userAccountRepository;
-            this.notificationService = notificationService;
             this.passwordPolicy = passwordPolicy;
+
+            var config = new MembershipRebootConfiguration();
+            config.FromLegacy(notificationService, passwordPolicy);
+            
+            this.configuration = config;
+            this.userRepository = new UserAccountRepository(userAccountRepository, configuration.EventBus);
+            this.securitySettings = configuration.SecuritySettings;
         }
 
         public void Dispose()
@@ -260,35 +266,18 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Username already in use.");
             }
 
-            using (var tx = new TransactionScope())
+            var account = this.userRepository.Create();
+            account.Init(tenant, username, password, email);
+
+            account.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
+            if (!SecuritySettings.Instance.RequireAccountVerification)
             {
-                var account = this.userRepository.Create();
-                account.Init(tenant, username, password, email);
-
-                account.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
-                if (!SecuritySettings.Instance.RequireAccountVerification)
-                {
-                    account.VerifyAccount(account.VerificationKey);
-                }
-
-                this.userRepository.Add(account);
-
-                if (this.notificationService != null)
-                {
-                    if (SecuritySettings.Instance.RequireAccountVerification)
-                    {
-                        this.notificationService.SendAccountCreate(account);
-                    }
-                    else
-                    {
-                        this.notificationService.SendAccountVerified(account);
-                    }
-                }
-
-                tx.Complete();
-
-                return account;
+                account.VerifyAccount(account.VerificationKey);
             }
+
+            this.userRepository.Add(account);
+
+            return account;
         }
 
         protected internal void ValidateUsername(string username)
@@ -325,17 +314,8 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccountService.VerifyAccount] account located: {0}, {1}", account.Tenant, account.Username));
 
             var result = account.VerifyAccount(key);
-            using (var tx = new TransactionScope())
-            {
-                this.userRepository.Update(account);
-
-                if (result && this.notificationService != null)
-                {
-                    this.notificationService.SendAccountVerified(account);
-                }
-
-                tx.Complete();
-            }
+            this.userRepository.Update(account);
+            
             return result;
         }
 
@@ -386,26 +366,19 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void DeleteAccount(UserAccount account)
         {
-            using (var tx = new TransactionScope())
+            if (account == null) throw new ArgumentNullException("account");
+
+            account.CloseAccount();
+
+            if (SecuritySettings.Instance.AllowAccountDeletion || !account.IsAccountVerified)
             {
-                if (SecuritySettings.Instance.AllowAccountDeletion || !account.IsAccountVerified)
-                {
-                    Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] removing account record: {0}, {1}", account.Tenant, account.Username));
-                    this.userRepository.Remove(account);
-                }
-                else
-                {
-                    Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] marking account closed: {0}, {1}", account.Tenant, account.Username));
-                    account.CloseAccount();
-                    this.userRepository.Update(account);
-                }
-
-                if (this.notificationService != null)
-                {
-                    this.notificationService.SendAccountDelete(account);
-                }
-
-                tx.Complete();
+                Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] removing account record: {0}, {1}", account.Tenant, account.Username));
+                this.userRepository.Remove(account);
+            }
+            else
+            {
+                Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] marking account closed: {0}, {1}", account.Tenant, account.Username));
+                this.userRepository.Update(account);
             }
         }
 
@@ -562,18 +535,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}, {1}", tenant, username));
 
-            using (var tx = new TransactionScope())
-            {
-                account.SetPassword(newPassword);
-                this.userRepository.Update(account);
-
-                if (this.notificationService != null)
-                {
-                    this.notificationService.SendPasswordChangeNotice(account);
-                }
-
-                tx.Complete();
-            }
+            account.SetPassword(newPassword);
+            this.userRepository.Update(account);
         }
 
         public virtual bool ChangePassword(
@@ -632,17 +595,7 @@ namespace BrockAllen.MembershipReboot
             finally
             {
                 // put this into finally since ChangePassword uses Authenticate which modifies state
-                using (var tx = new TransactionScope())
-                {
-                    this.userRepository.Update(account);
-
-                    if (result && this.notificationService != null)
-                    {
-                        this.notificationService.SendPasswordChangeNotice(account);
-                    }
-
-                    tx.Complete();
-                }
+                this.userRepository.Update(account);
             }
             return result;
         }
@@ -667,42 +620,11 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByEmail(tenant, email);
             if (account == null) return false;
 
-            if (!account.IsAccountVerified)
-            {
-                // if they're not verified, resend the new account email
-                if (SecuritySettings.Instance.RequireAccountVerification &&
-                    this.notificationService != null)
-                {
-                    Tracing.Verbose(String.Format("[UserAccountService.ResetPassword] account not verified, re-sending account create notification: {0}, {1}", account.Tenant, account.Username));
-
-                    this.notificationService.SendAccountCreate(account);
-                    return true;
-                }
-
-                // if we don't have a notification system then not much we can do
-                Tracing.Warning(String.Format("[UserAccountService.ResetPassword] account not verified, no notification to re-send invite: {0}, {1}", account.Tenant, account.Username));
-
-                return false;
-            }
-
             var result = account.ResetPassword();
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ResetPassword] reset password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
 
-            if (result)
-            {
-                using (var tx = new TransactionScope())
-                {
-                    this.userRepository.Update(account);
-
-                    if (this.notificationService != null)
-                    {
-                        this.notificationService.SendResetPassword(account);
-                    }
-
-                    tx.Complete();
-                }
-            }
             return result;
         }
 
@@ -723,23 +645,10 @@ namespace BrockAllen.MembershipReboot
             ValidatePassword(account.Tenant, account.Username, newPassword);
 
             var result = account.ChangePasswordFromResetKey(key, newPassword);
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangePasswordFromResetKey] change password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
 
-            if (result)
-            {
-                using (var tx = new TransactionScope())
-                {
-                    this.userRepository.Update(account);
-
-                    if (this.notificationService != null)
-                    {
-                        this.notificationService.SendPasswordChangeNotice(account);
-                    }
-
-                    tx.Complete();
-                }
-            }
             return result;
         }
 
@@ -750,11 +659,6 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SendUsernameReminder(string tenant, string email)
         {
-            if (this.notificationService == null)
-            {
-                throw new InvalidOperationException("NotificationService not configured.");
-            }
-
             Tracing.Information(String.Format("[UserAccountService.SendUsernameReminder] called: {0}, {1}", tenant, email));
 
             if (!SecuritySettings.Instance.MultiTenant)
@@ -766,12 +670,12 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(email)) return;
 
             var account = this.GetByEmail(tenant, email);
-            if (account != null)
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.SendUsernameReminder] account located: {0}, {1}", account.Tenant, account.Username));
+            if (account == null) return;
 
-                this.notificationService.SendAccountNameReminder(account);
-            }
+            Tracing.Verbose(String.Format("[UserAccountService.SendUsernameReminder] account located: {0}, {1}", account.Tenant, account.Username));
+
+            account.SendAccountNameReminder();
+            this.userRepository.Update(account);
         }
 
         public virtual void ChangeUsername(string username, string newUsername)
@@ -810,19 +714,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
 
-            account.Username = newUsername;
-
-            using (var tx = new TransactionScope())
-            {
-                this.userRepository.Update(account);
-
-                if (this.notificationService != null)
-                {
-                    this.notificationService.SendChangeUsernameRequestNotice(account);
-                }
-
-                tx.Complete();
-            }
+            account.ChangeUsername(newUsername);
+            this.userRepository.Update(account);
         }
 
         public virtual bool ChangeEmailRequest(string username, string newEmail)
@@ -864,23 +757,9 @@ namespace BrockAllen.MembershipReboot
             }
 
             var result = account.ChangeEmailRequest(newEmail);
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] change request outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
-
-            if (result)
-            {
-                using (var tx = new TransactionScope())
-                {
-                    this.userRepository.Update(account);
-
-                    if (this.notificationService != null)
-                    {
-                        this.notificationService.SendChangeEmailRequestNotice(account, newEmail);
-                    }
-
-                    tx.Complete();
-                }
-            }
 
             return result;
         }
@@ -922,22 +801,10 @@ namespace BrockAllen.MembershipReboot
                 account.Username = newEmail;
             }
 
+            this.userRepository.Update(account);
+
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] change email outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
 
-            if (result)
-            {
-                using (var tx = new TransactionScope())
-                {
-                    this.userRepository.Update(account);
-
-                    if (this.notificationService != null)
-                    {
-                        this.notificationService.SendEmailChangedNotice(account, oldEmail);
-                    }
-
-                    tx.Complete();
-                }
-            }
             return result;
         }
 

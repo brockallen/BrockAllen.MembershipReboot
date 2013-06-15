@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class UserAccount
+    public class UserAccount : IEventSource
     {
         internal const int VerificationKeyStaleDurationDays = 1;
 
@@ -53,10 +53,24 @@ namespace BrockAllen.MembershipReboot
 
         public virtual ICollection<UserClaim> Claims { get; internal set; }
         public virtual ICollection<LinkedAccount> LinkedAccounts { get; internal set; }
+        
+        List<IEvent> events = new List<IEvent>();
+        IEnumerable<IEvent> IEventSource.Events
+        {
+            get { return events; }
+        }
+        void IEventSource.Clear()
+        {
+            events.Clear();
+        }
+        protected internal void AddEvent<E>(E evt) where E : IEvent
+        {
+            events.Add(evt);
+        }
 
         internal protected virtual void Init(string tenant, string username, string password, string email)
         {
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentNullException("tenant");
             if (String.IsNullOrWhiteSpace(username)) throw new ValidationException("Username is required.");
             if (String.IsNullOrWhiteSpace(password)) throw new ValidationException("Password is required.");
             if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Email is required.");
@@ -72,6 +86,8 @@ namespace BrockAllen.MembershipReboot
             this.IsAccountVerified = false;
             this.IsLoginAllowed = false;
             this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
+
+            this.AddEvent(new UserAccountEvents.AccountCreated { Account = this });
         }
 
         internal void SetVerificationKey(VerificationKeyPurpose purpose, string prefix = null)
@@ -118,6 +134,8 @@ namespace BrockAllen.MembershipReboot
             this.IsAccountVerified = true;
             this.ClearVerificationKey();
 
+            this.AddEvent(new UserAccountEvents.AccountVerified { Account = this });
+
             return true;
         }
 
@@ -154,6 +172,8 @@ namespace BrockAllen.MembershipReboot
 
             HashedPassword = HashPassword(password);
             PasswordChanged = UtcNow;
+
+            this.AddEvent(new UserAccountEvents.PasswordChanged { Account = this });
         }
 
         protected internal virtual bool IsVerificationKeyStale
@@ -179,7 +199,12 @@ namespace BrockAllen.MembershipReboot
             // if they've not yet verified then don't allow changes
             if (!this.IsAccountVerified)
             {
-                Tracing.Verbose("[UserAccount.ResetPassword] failed -- account not verified");
+                // if they've not yet verified then don't allow changes
+                // instead raise an event as if the account was just created to 
+                // the user re-recieves their notification
+                Tracing.Verbose("[UserAccount.ResetPassword] account not verified -- raising account create to resend notification");
+
+                this.AddEvent(new UserAccountEvents.AccountCreated { Account = this });
 
                 return false;
             }
@@ -196,6 +221,8 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccount.ResetPassword] not creating new verification keys");
             }
 
+        	this.AddEvent(new UserAccountEvents.PasswordResetRequested { Account = this });
+			
             return true;
         }
 
@@ -246,25 +273,35 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- no password");
+                
                 return false;
             }
 
             if (!IsAccountVerified)
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account not verified");
+                
+                this.AddEvent(new UserAccountEvents.AccountNotVerified { Account = this });
+                
                 return false;
             }
+            
             if (!IsLoginAllowed)
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account not allowed to login");
+                
+                this.AddEvent(new UserAccountEvents.AccountLocked { Account = this });
+                
                 return false;
             }
 
             if (HasTooManyRecentPasswordFailures(failedLoginCount, lockoutDuration))
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
-
+                
                 FailedLoginCount++;
+                this.AddEvent(new UserAccountEvents.TooManyRecentPasswordFailures { Account = this });
+                
                 return false;
             }
 
@@ -275,6 +312,8 @@ namespace BrockAllen.MembershipReboot
 
                 LastLogin = UtcNow;
                 FailedLoginCount = 0;
+                
+                this.AddEvent(new UserAccountEvents.SuccessfulLogin { Account = this });
             }
             else
             {
@@ -283,6 +322,8 @@ namespace BrockAllen.MembershipReboot
                 LastFailedLogin = UtcNow;
                 if (FailedLoginCount > 0) FailedLoginCount++;
                 else FailedLoginCount = 1;
+                
+                this.AddEvent(new UserAccountEvents.InvalidPassword { Account = this });
             }
 
             return valid;
@@ -329,6 +370,8 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccount.ChangeEmailRequest] not creating a new reset key");
             }
 
+            this.AddEvent(new UserAccountEvents.EmailChangeRequested { Account = this, NewEmail = newEmail });
+            
             return true;
         }
 
@@ -352,8 +395,11 @@ namespace BrockAllen.MembershipReboot
                         var emailHash = StripUglyBase64(Hash(lowerEmail));
                         if (this.VerificationKey.StartsWith(emailHash))
                         {
+                            var oldEmail = this.Email;
                             this.Email = newEmail;
                             this.ClearVerificationKey();
+
+                            this.AddEvent(new UserAccountEvents.EmailChanged { Account = this, OldEmail=oldEmail });
 
                             return true;
                         }
@@ -388,6 +434,8 @@ namespace BrockAllen.MembershipReboot
             IsLoginAllowed = false;
             IsAccountClosed = true;
             AccountClosed = UtcNow;
+
+            this.AddEvent(new UserAccountEvents.AccountClosed { Account = this });
         }
 
         protected internal virtual bool GetIsPasswordExpired(int passwordResetFrequency)
@@ -562,6 +610,20 @@ namespace BrockAllen.MembershipReboot
             {
                 return DateTime.UtcNow;
             }
+        }
+
+        protected internal virtual void SendAccountNameReminder()
+        {
+            this.AddEvent(new UserAccountEvents.UsernameReminderRequested { Account = this });
+        }
+
+        protected internal virtual void ChangeUsername(string newUsername)
+        {
+            if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentNullException(newUsername);
+
+            this.Username = newUsername;
+
+            this.AddEvent(new UserAccountEvents.UsernameChanged { Account = this });
         }
     }
 }
