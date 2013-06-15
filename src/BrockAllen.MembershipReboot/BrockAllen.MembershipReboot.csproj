@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\IFactory.cs" />
+    <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
+    <Compile Include="Configuration\MembershipRebootConfigurationExtensions.cs" />
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Constants\MembershipRebootConstants.cs" />
@@ -92,13 +95,17 @@
     </Compile>
     <Compile Include="Models\LinkedAccountClaim.cs" />
     <Compile Include="Models\LinkedAccount.cs" />
+    <Compile Include="Models\UserAccountEvents.cs" />
     <Compile Include="Models\VerificationKeyPurpose.cs" />
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Repository\EF\DbContextRepository`2.cs" />
     <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
     <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
+    <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Services\Accounts\BasicPasswordPolicy.cs" />
+    <Compile Include="Services\Bus\EventBus.cs" />
+    <Compile Include="Services\Bus\Events.cs" />
     <Compile Include="Services\Crypto\System.Web.Helpers.Crypto.cs" />
     <Compile Include="Services\Crypto\CryptoHelper.cs" />
     <Compile Include="Services\Notification\ApplicationInformation.cs" />
@@ -114,9 +121,12 @@
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Accounts\SecuritySettings.cs" />
+    <Compile Include="Services\Notification\NotificationServiceEventHandler.cs" />
     <Compile Include="Services\Notification\SmtpMessageDelivery.cs" />
     <Compile Include="Services\Accounts\UserAccountService.cs" />
+    <Compile Include="Services\Notification\SmtpNotificationEventHandlers.cs" />
     <Compile Include="Tracing\Tracing.cs" />
+    <Compile Include="Validation\IAccountValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
