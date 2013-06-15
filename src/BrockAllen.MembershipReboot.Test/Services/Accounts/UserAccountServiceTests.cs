@@ -991,22 +991,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             }
 
             [TestMethod]
-            public void NoLockoutParams_PassessDefaultLocakoutParams()
-            {
-                var sub = new MockUserAccountService();
-                sub.Object.Authenticate("ten", "user", "pass");
-                sub.Mock.Verify(x => x.Authenticate("ten", "user", "pass", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
-            }
-
-            [TestMethod]
-            public void NoTenantParam_LockoutParams_PassessNullTenant()
-            {
-                var sub = new MockUserAccountService();
-                sub.Object.Authenticate("user", "pass", 10, TimeSpan.FromDays(1));
-                sub.Mock.Verify(x => x.Authenticate(null, "user", "pass", 10, TimeSpan.FromDays(1)));
-            }
-
-            [TestMethod]
             public void MultiTenantEnabled_NullTenantParam_ReturnsFail()
             {
                 SecuritySettings.Instance.MultiTenant = true;
@@ -1019,7 +1003,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             public void NullUsername_ReturnsFail()
             {
                 var sub = new MockUserAccountService();
-                Assert.IsFalse(sub.Object.Authenticate(null, "pass"));
+                Assert.IsFalse(sub.Object.Authenticate((string)null, "pass"));
             }
             [TestMethod]
             public void NullPassword_ReturnsFail()
@@ -1043,7 +1027,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 UserAccount account = new UserAccount();
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account);
                 sub.Object.Authenticate("user", "pass");
-                sub.Mock.Verify(x => x.Authenticate(account, "pass", It.IsAny<int>(), It.IsAny<TimeSpan>()));
+                sub.Mock.Verify(x => x.Authenticate(account, "pass"));
             }
 
             [TestMethod]
@@ -1051,15 +1035,15 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
-                sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1));
-                account.Verify(x => x.Authenticate("pass", 10, TimeSpan.FromDays(1)));
+                sub.Object.Authenticate(account.Object, "pass");
+                account.Verify(x => x.Authenticate("pass", It.IsAny<int>(), It.IsAny<TimeSpan>()));
             }
             [TestMethod]
             public void CallsSaveChangesOnRepo()
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
-                sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1));
+                sub.Object.Authenticate(account.Object, "pass");
                 sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
@@ -1068,7 +1052,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 account.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
-                Assert.IsTrue(sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1)));
+                Assert.IsTrue(sub.Object.Authenticate(account.Object, "pass"));
             }
             [TestMethod]
             public void userAccountReturnsFalse_ReturnsFalse()
@@ -1076,7 +1060,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 account.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
-                Assert.IsFalse(sub.Object.Authenticate(account.Object, "pass", 10, TimeSpan.FromDays(1)));
+                Assert.IsFalse(sub.Object.Authenticate(account.Object, "pass"));
             }
         }
 
@@ -1688,7 +1672,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             {
                 var sub = new MockUserAccountService();
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
-                sub.Mock.Verify(x => x.ChangeEmailFromKey("pass", "key", "email@test.com", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
+                sub.Mock.Verify(x => x.ChangeEmailFromKey("pass", "key", "email@test.com"));
             }
 
 
@@ -1723,7 +1707,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
                 Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
             }
             [TestMethod]
@@ -1732,7 +1716,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
                 account.Verify(x => x.ChangeEmailFromKey("key", "email@test.com"));
             }
@@ -1742,7 +1726,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
                 Assert.IsTrue(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
             }
@@ -1752,7 +1736,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
                 Assert.IsFalse(sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com"));
             }
@@ -1763,7 +1747,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
                 sub.UserAccountRepository.Verify(x => x.Update(account.Object));
@@ -1775,7 +1759,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.NotificationService = new Mock<INotificationService>();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
                 sub.NotificationService.Verify(x => x.SendEmailChangedNotice(It.IsAny<UserAccount>(), It.IsAny<string>()), Times.Never());
@@ -1789,7 +1773,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
@@ -1805,7 +1789,7 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
 
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");

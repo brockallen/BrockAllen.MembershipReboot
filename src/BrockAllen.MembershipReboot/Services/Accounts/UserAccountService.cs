@@ -389,23 +389,6 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool Authenticate(string tenant, string username, string password)
         {
-            return Authenticate(
-                tenant, username, password,
-                securitySettings.AccountLockoutFailedLoginAttempts,
-                securitySettings.AccountLockoutDuration);
-        }
-
-        public virtual bool Authenticate(
-            string username, string password,
-            int failedLoginCount, TimeSpan lockoutDuration)
-        {
-            return Authenticate(null, username, password, failedLoginCount, lockoutDuration);
-        }
-
-        public virtual bool Authenticate(
-            string tenant, string username, string password,
-            int failedLoginCount, TimeSpan lockoutDuration)
-        {
             Tracing.Information(String.Format("[UserAccountService.Authenticate] called: {0}, {1}", tenant, username));
 
             if (!securitySettings.MultiTenant)
@@ -420,88 +403,14 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
-            return Authenticate(account, password, failedLoginCount, lockoutDuration);
+            return Authenticate(account, password);
         }
 
-        public virtual bool AuthenticateWithEmail(string email, string password)
+        protected internal virtual bool Authenticate(UserAccount account, string password)
         {
-            return AuthenticateWithEmail(null, email, password);
-        }
+            int failedLoginCount = securitySettings.AccountLockoutFailedLoginAttempts;
+            TimeSpan lockoutDuration = securitySettings.AccountLockoutDuration;
 
-        public virtual bool AuthenticateWithEmail(string tenant, string email, string password)
-        {
-            return AuthenticateWithEmail(
-                tenant, email, password,
-                securitySettings.AccountLockoutFailedLoginAttempts,
-                securitySettings.AccountLockoutDuration);
-        }
-
-        public virtual bool AuthenticateWithEmail(
-            string email, string password,
-            int failedLoginCount, TimeSpan lockoutDuration)
-        {
-            return AuthenticateWithEmail(null, email, password, failedLoginCount, lockoutDuration);
-        }
-
-        public virtual bool AuthenticateWithEmail(
-            string tenant, string email, string password,
-            int failedLoginCount, TimeSpan lockoutDuration)
-        {
-            Tracing.Information(String.Format("[UserAccountService.AuthenticateWithEmail] called: {0}, {1}", tenant, email));
-
-            if (!securitySettings.MultiTenant)
-            {
-                tenant = securitySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(email)) return false;
-            if (String.IsNullOrWhiteSpace(password)) return false;
-
-            var account = this.GetByEmail(tenant, email);
-            if (account == null) return false;
-
-            return Authenticate(account, password, failedLoginCount, lockoutDuration);
-        }
-
-        public virtual UserAccount AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password)
-        {
-            return AuthenticateWithUsernameOrEmail(null, userNameOrEmail, password);
-        }
-
-        public virtual UserAccount AuthenticateWithUsernameOrEmail(string tenant, string userNameOrEmail, string password)
-        {
-            Tracing.Verbose(String.Format("[UserAccountService.AuthenticateWithUsernameOrEmail]: {0}, {1}", tenant, userNameOrEmail));
-
-            if (!securitySettings.MultiTenant)
-            {
-                tenant = securitySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) return null;
-            if (String.IsNullOrWhiteSpace(userNameOrEmail)) return null;
-            if (String.IsNullOrWhiteSpace(password)) return null;
-
-            if (userNameOrEmail.Contains("@"))
-            {
-                if (AuthenticateWithEmail(tenant, userNameOrEmail, password))
-                {
-                    return GetByEmail(tenant, userNameOrEmail);
-                }
-            }
-            else
-            {
-                if (Authenticate(tenant, userNameOrEmail, password))
-                {
-                    return GetByUsername(tenant, userNameOrEmail);
-                }
-            }
-
-            return null;
-        }
-
-        protected internal virtual bool Authenticate(UserAccount account, string password, int failedLoginCount, TimeSpan lockoutDuration)
-        {
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
             this.userRepository.Update(account);
 
@@ -766,16 +675,6 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool ChangeEmailFromKey(string password, string key, string newEmail)
         {
-            return ChangeEmailFromKey(
-                password, key, newEmail,
-                securitySettings.AccountLockoutFailedLoginAttempts,
-                securitySettings.AccountLockoutDuration);
-        }
-
-        public virtual bool ChangeEmailFromKey(
-            string password, string key, string newEmail,
-            int failedLoginCount, TimeSpan lockoutDuration)
-        {
             Tracing.Information(String.Format("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}", key, newEmail));
 
             if (String.IsNullOrWhiteSpace(password)) return false;
@@ -787,7 +686,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] account located: {0}, {1}", account.Tenant, account.Username));
 
-            if (!Authenticate(account, password, failedLoginCount, lockoutDuration))
+            if (!Authenticate(account, password))
             {
                 return false;
             }
