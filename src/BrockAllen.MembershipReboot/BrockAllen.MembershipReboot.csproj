@@ -104,6 +104,7 @@
     <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Services\Accounts\BasicPasswordPolicy.cs" />
+    <Compile Include="Services\Accounts\UserAccountValidation.cs" />
     <Compile Include="Services\Bus\EventBus.cs" />
     <Compile Include="Services\Bus\Events.cs" />
     <Compile Include="Services\Crypto\System.Web.Helpers.Crypto.cs" />

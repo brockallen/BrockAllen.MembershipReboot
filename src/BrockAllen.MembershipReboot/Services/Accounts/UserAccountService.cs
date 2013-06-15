@@ -12,8 +12,16 @@ namespace BrockAllen.MembershipReboot
         IUserAccountRepository userRepository;
         SecuritySettings securitySettings;
         MembershipRebootConfiguration configuration;
-        IPasswordPolicy passwordPolicy;
+        AggregateValidator usernameValidator = new AggregateValidator();
+        AggregateValidator emailValidator = new AggregateValidator();
+        AggregateValidator passwordValidator = new AggregateValidator();
 
+        public UserAccountService(MembershipRebootConfiguration configuration)
+        {
+            InitFromConfiguration(configuration);
+        }
+
+        [Obsolete]
         public UserAccountService(
             IUserAccountRepository userAccountRepository,
             INotificationService notificationService,
@@ -21,14 +29,64 @@ namespace BrockAllen.MembershipReboot
         {
             if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
 
-            this.passwordPolicy = passwordPolicy;
-
             var config = new MembershipRebootConfiguration();
             config.FromLegacy(notificationService, passwordPolicy);
-            
-            this.configuration = config;
-            this.userRepository = new UserAccountRepository(userAccountRepository, configuration.EventBus);
+            this.InitFromConfiguration(config, userAccountRepository);
+        }
+
+        void InitFromConfiguration(MembershipRebootConfiguration configuration, IUserAccountRepository userAccountRepository = null)
+        {
+            this.configuration = configuration;
+            this.userRepository =
+                new UserAccountRepository(
+                    userAccountRepository ?? configuration.CreateUserAccountRepository(), 
+                    configuration.EventBus);
             this.securitySettings = configuration.SecuritySettings;
+
+            ConfigureRequiredValidation();
+            usernameValidator.Add(configuration.UsernameValidator);
+            emailValidator.Add(configuration.EmailValidator);
+            passwordValidator.Add(configuration.PasswordValidator);
+        }
+
+        private void ConfigureRequiredValidation()
+        {
+            if (!this.securitySettings.EmailIsUsername)
+            {
+                usernameValidator.Add(UserAccountValidation.UsernameDoesNotContainAtSign);
+            }
+            usernameValidator.Add(UserAccountValidation.UsernameMustNotAlreadyExist);
+
+            emailValidator.Add(UserAccountValidation.EmailIsValidFormat);
+            emailValidator.Add(UserAccountValidation.EmailMustNotAlreadyExist);
+        }
+
+        internal protected void ValidateUsername(UserAccount account, string value)
+        {
+            var result = this.usernameValidator.Validate(this, account, value);
+            if (result != null && result != ValidationResult.Success)
+            {
+                Tracing.Error("ValidateUsername failed: " + result.ErrorMessage);
+                throw new ValidationException(result.ErrorMessage);
+            }
+        }
+        internal protected void ValidatePassword(UserAccount account, string value)
+        {
+            var result = this.passwordValidator.Validate(this, account, value);
+            if (result != null && result != ValidationResult.Success)
+            {
+                Tracing.Error("ValidatePassword failed: " + result.ErrorMessage);
+                throw new ValidationException(result.ErrorMessage);
+            }
+        }
+        internal protected void ValidateEmail(UserAccount account, string value)
+        {
+            var result = this.emailValidator.Validate(this, account, value);
+            if (result != null && result != ValidationResult.Success)
+            {
+                Tracing.Error("ValidateEmail failed: " + result.ErrorMessage);
+                throw new ValidationException(result.ErrorMessage);
+            }
         }
 
         public void Dispose()
@@ -236,36 +294,6 @@ namespace BrockAllen.MembershipReboot
                 tenant = securitySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
-            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
-            if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
-            if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
-
-            ValidateUsername(username);
-            ValidatePassword(tenant, username, password);
-
-            EmailAddressAttribute validator = new EmailAddressAttribute();
-            if (!validator.IsValid(email))
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Email validation failed: {0}, {1}, {2}", tenant, username, email));
-
-                throw new ValidationException("Email is invalid.");
-            }
-
-            if (EmailExists(tenant, email))
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Email already exists: {0}, {1}, {2}", tenant, username, email));
-
-                throw new ValidationException("Email already in use.");
-            }
-
-            if (UsernameExists(tenant, username))
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.CreateAccount] Username already exists: {0}, {1}", tenant, username));
-
-                throw new ValidationException("Username already in use.");
-            }
-
             var account = this.userRepository.Create();
             account.Init(tenant, username, password, email);
             
@@ -275,33 +303,13 @@ namespace BrockAllen.MembershipReboot
                 account.VerifyAccount(account.VerificationKey);
             }
 
+            ValidateEmail(account, email);
+            ValidateUsername(account, username);
+            ValidatePassword(account, password);
+
             this.userRepository.Add(account);
             
             return account;
-        }
-
-        protected internal void ValidateUsername(string username)
-        {
-            if (!securitySettings.EmailIsUsername && 
-                username.Contains('@'))
-            {
-                Tracing.Verbose(String.Format("[ValidateUsername] Failed: {0}", username));
-
-                throw new ValidationException("Invalid username: Cannot contain the '@' character");
-            }
-        }
-
-        protected internal virtual void ValidatePassword(string tenant, string username, string password)
-        {
-            if (passwordPolicy != null)
-            {
-                if (!passwordPolicy.ValidatePassword(password))
-                {
-                    Tracing.Verbose(String.Format("[ValidatePassword] Failed: {0}, {1}, {2}", tenant, username, passwordPolicy.PolicyMessage));
-
-                    throw new ValidationException("Invalid password: " + passwordPolicy.PolicyMessage);
-                }
-            }
         }
 
         public virtual bool VerifyAccount(string key)
@@ -437,10 +445,11 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) throw new ValidationException("Invalid username.");
             if (String.IsNullOrWhiteSpace(newPassword)) throw new ValidationException("Invalid newPassword.");
 
-            ValidatePassword(tenant, username, newPassword);
-
+            //ValidatePassword(tenant, username, newPassword);
             var account = this.GetByUsername(tenant, username);
             if (account == null) throw new ValidationException("Invalid username.");
+
+            ValidatePassword(account, newPassword);
 
             Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}, {1}", tenant, username));
 
@@ -469,10 +478,12 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(oldPassword)) return false;
             if (String.IsNullOrWhiteSpace(newPassword)) return false;
 
-            ValidatePassword(tenant, username, newPassword);
+            //ValidatePassword(tenant, username, newPassword);
 
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
+
+            ValidatePassword(account, newPassword);
 
             if (!Authenticate(account, oldPassword))
             {
@@ -526,7 +537,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangePasswordFromResetKey] account located: {0}, {1}", account.Tenant, account.Username));
 
-            ValidatePassword(account.Tenant, account.Username, newPassword);
+            //ValidatePassword(account.Tenant, account.Username, newPassword);
+            ValidatePassword(account, newPassword);
 
             var result = account.ChangePasswordFromResetKey(key, newPassword);
             this.userRepository.Update(account);
@@ -585,16 +597,15 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
             if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentException("newUsername");
 
-            ValidateUsername(newUsername);
-
             var account = GetByUsername(tenant, username);
             if (account == null) throw new ValidationException("Invalid account");
 
-            if (UsernameExists(tenant, newUsername))
-            {
-                Tracing.Information(String.Format("[UserAccountService.ChangeUsername] failed because new username already in use: {0}, {1}, {2}", tenant, username, newUsername));
-                throw new ValidationException("Username is already in use.");
-            }
+            ValidateUsername(account, newUsername);
+            //if (UsernameExists(tenant, newUsername))
+            //{
+            //    Tracing.Information(String.Format("[UserAccountService.ChangeUsername] failed because new username already in use: {0}, {1}, {2}", tenant, username, newUsername));
+            //    throw new ValidationException("Username is already in use.");
+            //}
 
             Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
 
@@ -620,25 +631,27 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(newEmail)) return false;
 
-            EmailAddressAttribute validator = new EmailAddressAttribute();
-            if (!validator.IsValid(newEmail))
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] email validation failed: {0}, {1}, {2}", tenant, username, newEmail));
+            //EmailAddressAttribute validator = new EmailAddressAttribute();
+            //if (!validator.IsValid(newEmail))
+            //{
+            //    Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] email validation failed: {0}, {1}, {2}", tenant, username, newEmail));
 
-                throw new ValidationException("Email is invalid.");
-            }
+            //    throw new ValidationException("Email is invalid.");
+            //}
 
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] account located: {0}, {1}", account.Tenant, account.Username));
 
-            if (EmailExists(tenant, newEmail))
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] Email already exists: {0}, {1}, new email: {2}", tenant, username, newEmail));
+            ValidateEmail(account, newEmail);
 
-                throw new ValidationException("Email already in use.");
-            }
+            //if (EmailExists(tenant, newEmail))
+            //{
+            //    Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] Email already exists: {0}, {1}, new email: {2}", tenant, username, newEmail));
+
+            //    throw new ValidationException("Email already in use.");
+            //}
 
             var result = account.ChangeEmailRequest(newEmail);
             this.userRepository.Update(account);
@@ -666,7 +679,8 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            var oldEmail = account.Email;
+            ValidateEmail(account, newEmail);
+
             var result = account.ChangeEmailFromKey(key, newEmail);
 
             if (result && securitySettings.EmailIsUsername)
