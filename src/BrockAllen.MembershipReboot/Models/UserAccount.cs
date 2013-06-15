@@ -16,26 +16,6 @@ namespace BrockAllen.MembershipReboot
             this.LinkedAccounts = new HashSet<LinkedAccount>();
         }
 
-        internal protected virtual void Init(string tenant, string username, string password, string email)
-        {
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
-            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
-            if (String.IsNullOrWhiteSpace(password)) throw new ArgumentException("password");
-            if (String.IsNullOrWhiteSpace(email)) throw new ArgumentException("email");
-
-            if (this.ID != Guid.Empty) throw new Exception("Can't call Init if UserAccount is already assigned an ID");
-            
-            this.ID = Guid.NewGuid();
-            this.Tenant = tenant;
-            this.Username = username;
-            this.Email = email;
-            this.Created = this.UtcNow;
-            this.SetPassword(password);
-            this.IsAccountVerified = false;
-            this.IsLoginAllowed = false;
-            this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
-        }
-
         [Key]
         public virtual Guid ID { get; internal set; }
 
@@ -73,6 +53,26 @@ namespace BrockAllen.MembershipReboot
 
         public virtual ICollection<UserClaim> Claims { get; internal set; }
         public virtual ICollection<LinkedAccount> LinkedAccounts { get; internal set; }
+
+        internal protected virtual void Init(string tenant, string username, string password, string email)
+        {
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(username)) throw new ValidationException("Username is required.");
+            if (String.IsNullOrWhiteSpace(password)) throw new ValidationException("Password is required.");
+            if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Email is required.");
+
+            if (this.ID != Guid.Empty) throw new Exception("Can't call Init if UserAccount is already assigned an ID");
+
+            this.ID = Guid.NewGuid();
+            this.Tenant = tenant;
+            this.Username = username;
+            this.Email = email;
+            this.Created = this.UtcNow;
+            this.SetPassword(password);
+            this.IsAccountVerified = false;
+            this.IsLoginAllowed = false;
+            this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
+        }
 
         internal void SetVerificationKey(VerificationKeyPurpose purpose, string prefix = null)
         {
