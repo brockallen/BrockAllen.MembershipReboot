@@ -31,13 +31,9 @@ namespace BrockAllen.MembershipReboot
             this.Email = email;
             this.Created = this.UtcNow;
             this.SetPassword(password);
-            this.IsAccountVerified = !SecuritySettings.Instance.RequireAccountVerification;
-            this.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
-
-            if (SecuritySettings.Instance.RequireAccountVerification)
-            {
-                this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
-            }
+            this.IsAccountVerified = false;
+            this.IsLoginAllowed = false;
+            this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
         }
 
         [Key]

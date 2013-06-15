@@ -88,70 +88,12 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 Assert.AreEqual("email", sub.Object.Email);
                 Assert.AreEqual(now, sub.Object.Created);
                 Assert.AreNotEqual(Guid.Empty, sub.Object.ID);
+                Assert.IsFalse(sub.Object.IsLoginAllowed);
+                Assert.IsFalse(sub.Object.IsAccountVerified);
+                Assert.IsNotNull(sub.Object.VerificationKey);
+                Assert.AreEqual(VerificationKeyPurpose.VerifyAccount, sub.Object.VerificationPurpose);
                 sub.Verify(x => x.SetPassword("pass"));
             }
-
-            [TestMethod]
-            public void IsAccountVerified_SetProperly()
-            {
-                {
-                    SecuritySettings.Instance = new SecuritySettings();
-                    SecuritySettings.Instance.RequireAccountVerification = true;
-                    var sub = new UserAccount();
-                    sub.Init("ten", "user", "pass", "email");
-                    Assert.IsFalse(sub.IsAccountVerified);
-                }
-                {
-                    SecuritySettings.Instance = new SecuritySettings();
-                    SecuritySettings.Instance.RequireAccountVerification = false;
-                    var sub = new UserAccount();
-                    sub.Init("ten", "user", "pass", "email");
-                    Assert.IsTrue(sub.IsAccountVerified);
-                }
-            }
-
-            [TestMethod]
-            public void IsLoginAllowed_SetProperly()
-            {
-                {
-                    SecuritySettings.Instance = new SecuritySettings();
-                    SecuritySettings.Instance.AllowLoginAfterAccountCreation = true;
-                    var sub = new UserAccount();
-                    sub.Init("ten", "user", "pass", "email");
-                    Assert.IsTrue(sub.IsLoginAllowed);
-                }
-                {
-                    SecuritySettings.Instance = new SecuritySettings();
-                    SecuritySettings.Instance.AllowLoginAfterAccountCreation = false;
-                    var sub = new UserAccount();
-                    sub.Init("ten", "user", "pass", "email");
-                    Assert.IsFalse(sub.IsLoginAllowed);
-                }
-            }
-
-            [TestMethod]
-            public void Verification_SetProperly()
-            {
-                {
-                    SecuritySettings.Instance = new SecuritySettings();
-                    SecuritySettings.Instance.RequireAccountVerification = true;
-                    var sub = new UserAccount();
-                    sub.Init("ten", "user", "pass", "email");
-                    Assert.IsNotNull(sub.VerificationKey);
-                    Assert.IsNotNull(sub.VerificationKeySent);
-                }
-                {
-                    SecuritySettings.Instance = new SecuritySettings();
-                    SecuritySettings.Instance.RequireAccountVerification = false;
-                    var sub = new UserAccount();
-                    sub.Init("ten", "user", "pass", "email");
-                    Assert.IsNull(sub.VerificationKey);
-                    Assert.IsNull(sub.VerificationKeySent);
-                }
-            }
-
-
-
         }
 
         [TestClass]

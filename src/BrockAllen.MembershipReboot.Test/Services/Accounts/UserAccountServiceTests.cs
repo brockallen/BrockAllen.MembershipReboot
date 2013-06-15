@@ -645,6 +645,65 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.NotificationService.Verify(x => x.SendAccountVerified(result));
             }
 
+            [TestMethod]
+            public void IsAccountVerified_SetProperly()
+            {
+                {
+                    SecuritySettings.Instance = new SecuritySettings();
+                    SecuritySettings.Instance.RequireAccountVerification = true;
+
+                    var sub = new MockUserAccountService();
+                    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
+                    Assert.IsFalse(result.IsAccountVerified);
+                }
+                {
+                    SecuritySettings.Instance = new SecuritySettings();
+                    SecuritySettings.Instance.RequireAccountVerification = false;
+                    var sub = new MockUserAccountService();
+                    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
+                    Assert.IsTrue(result.IsAccountVerified);
+                }
+            }
+
+            [TestMethod]
+            public void IsLoginAllowed_SetProperly()
+            {
+                {
+                    SecuritySettings.Instance = new SecuritySettings();
+                    SecuritySettings.Instance.AllowLoginAfterAccountCreation = true;
+                    var sub = new MockUserAccountService();
+                    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
+                    Assert.IsTrue(result.IsLoginAllowed);
+                }
+                {
+                    SecuritySettings.Instance = new SecuritySettings();
+                    SecuritySettings.Instance.AllowLoginAfterAccountCreation = false;
+                    var sub = new MockUserAccountService();
+                    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
+                    Assert.IsFalse(result.IsLoginAllowed);
+                }
+            }
+
+            [TestMethod]
+            public void Verification_SetProperly()
+            {
+                {
+                    SecuritySettings.Instance = new SecuritySettings();
+                    SecuritySettings.Instance.RequireAccountVerification = true;
+                    var sub = new MockUserAccountService();
+                    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
+                    Assert.IsNotNull(result.VerificationKey);
+                    Assert.IsNotNull(result.VerificationKeySent);
+                }
+                {
+                    SecuritySettings.Instance = new SecuritySettings();
+                    SecuritySettings.Instance.RequireAccountVerification = false;
+                    var sub = new MockUserAccountService();
+                    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
+                    Assert.IsNull(result.VerificationKey);
+                    Assert.IsNull(result.VerificationKeySent);
+                }
+            }
         }
 
         [TestClass]

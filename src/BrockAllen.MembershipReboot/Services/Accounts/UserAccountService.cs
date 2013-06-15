@@ -264,6 +264,13 @@ namespace BrockAllen.MembershipReboot
             {
                 var account = this.userRepository.Create();
                 account.Init(tenant, username, password, email);
+
+                account.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
+                if (!SecuritySettings.Instance.RequireAccountVerification)
+                {
+                    account.VerifyAccount(account.VerificationKey);
+                }
+
                 this.userRepository.Add(account);
 
                 if (this.notificationService != null)
