@@ -1178,20 +1178,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Mock.Verify(x => x.ChangePassword(null, "user", "old", "new"));
             }
             [TestMethod]
-            public void NoLockoutParams_PassesDefaultLocakoutParams()
-            {
-                var sub = new MockUserAccountService();
-                sub.Object.ChangePassword("ten", "user", "old", "new");
-                sub.Mock.Verify(x => x.ChangePassword("ten", "user", "old", "new", SecuritySettings.Instance.AccountLockoutFailedLoginAttempts, SecuritySettings.Instance.AccountLockoutDuration));
-            }
-            [TestMethod]
-            public void NoTenantParams_WithLockoutParams_PassesNullTenant()
-            {
-                var sub = new MockUserAccountService();
-                sub.Object.ChangePassword("user", "old", "new", 10, TimeSpan.FromDays(1));
-                sub.Mock.Verify(x => x.ChangePassword(null, "user", "old", "new", 10, TimeSpan.FromDays(1)));
-            }
-            [TestMethod]
             public void MultiTenantEnabled_NullTenant_ReturnsFail()
             {
                 SecuritySettings.Instance.MultiTenant = true;
@@ -1233,13 +1219,14 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 Assert.IsFalse(sub.Object.ChangePassword("user", "old", "new"));
             }
             [TestMethod]
-            public void AccountFound_CallsAccountChangePassword()
+            public void AccountFound_CallsAccountSetPassword()
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 sub.Object.ChangePassword("user", "old", "new");
-                account.Verify(x => x.ChangePassword("old", "new", It.IsAny<int>(), It.IsAny<TimeSpan>()));
+                account.Verify(x => x.SetPassword("new"));
             }
             [TestMethod]
             public void RepositorySaveChangesCalled()
@@ -1247,37 +1234,27 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 sub.Object.ChangePassword("user", "old", "new");
                 sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
             [TestMethod]
-            public void UserAccountReturnsTrue_ReturnsTrue()
+            public void AuthenticateReturnsTrue_ReturnsTrue()
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-                account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(true);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
                 Assert.IsTrue(sub.Object.ChangePassword("user", "old", "new"));
             }
             [TestMethod]
-            public void UserAccountReturnsFalse_ReturnsFalse()
+            public void AuthenticateReturnsFalse_ReturnsFalse()
             {
                 var sub = new MockUserAccountService();
                 var account = new MockUserAccount();
                 sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-                account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
+                sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(false);
                 Assert.IsFalse(sub.Object.ChangePassword("user", "old", "new"));
-            }
-            [TestMethod]
-            public void UserAccountReturnsFalse_SendPasswordChangeNoticeNotCalled()
-            {
-                var sub = new MockUserAccountService();
-                sub.NotificationService = new Mock<INotificationService>();
-                var account = new MockUserAccount();
-                sub.Mock.Setup(x => x.GetByUsername(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-                account.Setup(x => x.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(false);
-                sub.Object.ChangePassword("user", "old", "new");
-                sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(It.IsAny<UserAccount>()), Times.Never());
             }
         }
 

@@ -139,25 +139,25 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual bool ChangePassword(string oldPassword, string newPassword, int failedLoginCount, TimeSpan lockoutDuration)
-        {
-            if (Authenticate(oldPassword, failedLoginCount, lockoutDuration))
-            {
-                if (oldPassword == newPassword)
-                {
-                    Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tenant:user {0}:{1} -- new password same as old password", this.Tenant, this.Username));
+        //protected internal virtual bool ChangePassword(string oldPassword, string newPassword, int failedLoginCount, TimeSpan lockoutDuration)
+        //{
+        //    if (Authenticate(oldPassword, failedLoginCount, lockoutDuration))
+        //    {
+        //        if (oldPassword == newPassword)
+        //        {
+        //            Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tenant:user {0}:{1} -- new password same as old password", this.Tenant, this.Username));
 
-                    throw new ValidationException("The new password must be different than the old password.");
-                }
+        //            throw new ValidationException("The new password must be different than the old password.");
+        //        }
 
-                SetPassword(newPassword);
-                return true;
-            }
+        //        SetPassword(newPassword);
+        //        return true;
+        //    }
 
-            Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tentant:username {0}:{1} -- auth failed", this.Tenant, this.Username));
+        //    Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tentant:username {0}:{1} -- auth failed", this.Tenant, this.Username));
 
-            return false;
-        }
+        //    return false;
+        //}
 
         protected internal virtual void SetPassword(string password)
         {

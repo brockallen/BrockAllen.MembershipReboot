@@ -174,54 +174,6 @@ namespace BrockAllen.MembershipReboot.Test.Models
         }
 
         [TestClass]
-        public class ChangePassword
-        {
-            [TestMethod]
-            public void AuthenticateFails_ReturnsFail()
-            {
-                var subject = new MockUserAccount();
-                subject
-                    .Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>()))
-                    .Returns(false);
-                var result = subject.Object.ChangePassword("old", "new", 0, TimeSpan.Zero);
-                Assert.IsFalse(result);
-            }
-
-            [TestMethod]
-            public void AuthenticateSucceeds_ReturnsSuccess()
-            {
-                Mock<UserAccount> subject = new MockUserAccount();
-                subject
-                    .Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>()))
-                    .Returns(true);
-                var result = subject.Object.ChangePassword("old", "new", 0, TimeSpan.Zero);
-                Assert.IsTrue(result);
-            }
-
-            [TestMethod]
-            public void SuccessfulChangePassword_SetsPassword()
-            {
-                Mock<UserAccount> subject = new MockUserAccount();
-                subject
-                    .Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>()))
-                    .Returns(true);
-                var result = subject.Object.ChangePassword("old", "new", 0, TimeSpan.Zero);
-                subject.Verify(x => x.SetPassword("new"));
-            }
-
-            [TestMethod]
-            [ExpectedException(typeof(ValidationException))]
-            public void NewPasswordSameAsOldChangePassword_Fails()
-            {
-                Mock<UserAccount> subject = new MockUserAccount();
-                subject
-                    .Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<TimeSpan>()))
-                    .Returns(true);
-                var result = subject.Object.ChangePassword("same", "same", 0, TimeSpan.Zero);
-            }
-        }
-
-        [TestClass]
         public class SetPassword
         {
             [TestMethod]

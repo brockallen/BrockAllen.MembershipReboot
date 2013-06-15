@@ -448,8 +448,7 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Update(account);
         }
 
-        public virtual bool ChangePassword(
-            string username, string oldPassword, string newPassword)
+        public virtual bool ChangePassword(string username, string oldPassword, string newPassword)
         {
             return ChangePassword(null, username, oldPassword, newPassword);
         }
@@ -457,26 +456,6 @@ namespace BrockAllen.MembershipReboot
         public virtual bool ChangePassword(
             string tenant, string username,
             string oldPassword, string newPassword)
-        {
-            return ChangePassword(
-                tenant, username,
-                oldPassword, newPassword,
-                securitySettings.AccountLockoutFailedLoginAttempts,
-                securitySettings.AccountLockoutDuration);
-        }
-
-        public virtual bool ChangePassword(
-            string username,
-            string oldPassword, string newPassword,
-            int failedLoginCount, TimeSpan lockoutDuration)
-        {
-            return ChangePassword(null, username, oldPassword, newPassword, failedLoginCount, lockoutDuration);
-        }
-
-        public virtual bool ChangePassword(
-            string tenant, string username,
-            string oldPassword, string newPassword,
-            int failedLoginCount, TimeSpan lockoutDuration)
         {
             Tracing.Information(String.Format("[UserAccountService.ChangePassword] called: {0}, {1}", tenant, username));
 
@@ -495,18 +474,18 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
-            bool result = false;
-            try
+            if (!Authenticate(account, oldPassword))
             {
-                result = account.ChangePassword(oldPassword, newPassword, failedLoginCount, lockoutDuration);
-                Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] change password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
+                Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change failed: {0}, {1}", account.Tenant, account.Username));
+                return false;
             }
-            finally
-            {
-                // put this into finally since ChangePassword uses Authenticate which modifies state
-                this.userRepository.Update(account);
-            }
-            return result;
+
+            account.SetPassword(newPassword);
+            this.userRepository.Update(account);
+            
+            Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change successful: {0}, {1}", account.Tenant, account.Username));
+
+            return true;
         }
 
         public virtual bool ResetPassword(string email)
