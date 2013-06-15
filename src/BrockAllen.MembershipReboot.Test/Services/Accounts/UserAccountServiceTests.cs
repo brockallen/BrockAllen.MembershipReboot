@@ -1271,41 +1271,50 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
             public void NoTenantParam_PassessNullForTenant()
             {
                 var sub = new MockUserAccountService();
-                sub.Object.ResetPassword("email");
+                try
+                {
+                    sub.Object.ResetPassword("email");
+                }
+                catch { }
                 sub.Mock.Verify(x => x.ResetPassword(null, "email"));
             }
             [TestMethod]
-            public void MultiTenantEnabled_NullTenantParam_ReturnsFail()
+            [ExpectedException(typeof(ValidationException))]
+            public void MultiTenantEnabled_NullTenantParam_Throws()
             {
                 SecuritySettings.Instance.MultiTenant = true;
 
                 var sub = new MockUserAccountService();
-                Assert.IsFalse(sub.Object.ResetPassword(null, "email"));
+                sub.Object.ResetPassword(null, "email");
             }
             [TestMethod]
-            public void NullEmail_ReturnsFail()
+            [ExpectedException(typeof(ValidationException))]
+            public void NullEmail_Throws()
             {
                 var sub = new MockUserAccountService();
-                Assert.IsFalse(sub.Object.ResetPassword(null));
+                sub.Object.ResetPassword(null);
             }
 
             [TestMethod]
-            public void NoAccountFound_ReturnsFail()
+            [ExpectedException(typeof(ValidationException))]
+            public void NoAccountFound_Throws()
             {
                 var sub = new MockUserAccountService();
                 sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
-                Assert.IsFalse(sub.Object.ResetPassword("email"));
+                sub.Object.ResetPassword("email");
             }
 
-            [TestMethod]
-            public void AccountNotVerified_ReturnsFail()
-            {
-                var sub = new MockUserAccountService();
-                var account = new MockUserAccount();
-                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-                account.Object.IsAccountVerified = false;
-                Assert.IsFalse(sub.Object.ResetPassword("email"));
-            }
+            //[TestMethod]
+            //[ExpectedException(typeof(ValidationException))]
+            //public void AccountNotVerified_Throws()
+            //{
+            //    var sub = new MockUserAccountService();
+            //    var account = new MockUserAccount();
+            //    sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+            //    account.Object.IsAccountVerified = false;
+            //    sub.Object.ResetPassword("email");
+            //}
+            
             [TestMethod]
             public void AccountNotVerified_SendAccountCreateCalled()
             {
@@ -1342,26 +1351,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 account.Verify(x => x.ResetPassword());
             }
             [TestMethod]
-            public void UserAccountResetPasswordSuccess_ReturnsSuccess()
-            {
-                var sub = new MockUserAccountService();
-                var account = new MockUserAccount();
-                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-                account.Object.IsAccountVerified = true;
-                account.Setup(x => x.ResetPassword()).Returns(true);
-                Assert.IsTrue(sub.Object.ResetPassword("email"));
-            }
-            [TestMethod]
-            public void UserAccountResetPasswordFail_ReturnsFail()
-            {
-                var sub = new MockUserAccountService();
-                var account = new MockUserAccount();
-                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-                account.Object.IsAccountVerified = true;
-                account.Setup(x => x.ResetPassword()).Returns(false);
-                Assert.IsFalse(sub.Object.ResetPassword("email"));
-            }
-            [TestMethod]
             public void UserAccountRepoSaveChangesCalled()
             {
                 var sub = new MockUserAccountService();
@@ -1371,22 +1360,6 @@ namespace BrockAllen.MembershipReboot.Test.Services.Accounts
                 sub.Object.ResetPassword("email");
                 sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
-            [TestMethod]
-            public void UserAccountResetPasswordFail_SendResetPasswordNotCalled()
-            {
-                var sub = new MockUserAccountService();
-                sub.NotificationService = new Mock<INotificationService>();
-                var account = new MockUserAccount();
-                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-                account.Object.IsAccountVerified = true;
-                account.Setup(x => x.ResetPassword()).Returns(false);
-
-                sub.Object.ResetPassword("email");
-
-                sub.NotificationService.Verify(x => x.SendResetPassword(It.IsAny<UserAccount>()), Times.Never());
-            }
-
-
         }
 
         [TestClass]

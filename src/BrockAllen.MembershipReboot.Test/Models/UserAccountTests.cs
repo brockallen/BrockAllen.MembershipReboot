@@ -251,69 +251,69 @@ namespace BrockAllen.MembershipReboot.Test.Models
         [TestClass]
         public class ResetPassword
         {
-            [TestMethod]
-            public void AccountNotVerified_ReturnsFail()
-            {
-                var subject = new UserAccount();
-                subject.IsAccountVerified = false;
-                var result = subject.ResetPassword();
-                Assert.IsFalse(result);
-            }
+            //[TestMethod]
+            //public void AccountNotVerified_ReturnsFail()
+            //{
+            //    var subject = new UserAccount();
+            //    subject.IsAccountVerified = false;
+            //    var result = subject.ResetPassword();
+            //    Assert.IsFalse(result);
+            //}
 
-            [TestMethod]
-            public void AccountVerified_ReturnsSuccess()
-            {
-                var subject = new UserAccount();
-                subject.IsAccountVerified = true;
-                var result = subject.ResetPassword();
-                Assert.IsTrue(result);
-            }
+            //[TestMethod]
+            //public void AccountVerified_ReturnsSuccess()
+            //{
+            //    var subject = new UserAccount();
+            //    subject.IsAccountVerified = true;
+            //    var result = subject.ResetPassword();
+            //    Assert.IsTrue(result);
+            //}
 
-            [TestMethod]
-            public void AccountVerified_VerificationKeyStale_VerificationKeyReset()
-            {
-                var subject = new MockUserAccount();
-                subject.Object.IsAccountVerified = true;
-                subject.Setup(x => x.IsVerificationKeyStale).Returns(true);
-                subject.Setup(x => x.GenerateSalt()).Returns("salt");
-                var result = subject.Object.ResetPassword();
-                Assert.AreEqual("salt", subject.Object.VerificationKey);
-            }
+            //[TestMethod]
+            //public void AccountVerified_VerificationKeyStale_VerificationKeyReset()
+            //{
+            //    var subject = new MockUserAccount();
+            //    subject.Object.IsAccountVerified = true;
+            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(true);
+            //    subject.Setup(x => x.GenerateSalt()).Returns("salt");
+            //    var result = subject.Object.ResetPassword();
+            //    Assert.AreEqual("salt", subject.Object.VerificationKey);
+            //}
 
-            [TestMethod]
-            public void AccountVerified_VerificationKeyNotStale_VerificationKeyNotReset()
-            {
-                var subject = new MockUserAccount();
-                subject.Object.IsAccountVerified = true;
-                subject.Object.VerificationKey = "key";
-                subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
-                subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
-                var result = subject.Object.ResetPassword();
-                Assert.AreEqual("key", subject.Object.VerificationKey);
-            }
+            //[TestMethod]
+            //public void AccountVerified_VerificationKeyNotStale_VerificationKeyNotReset()
+            //{
+            //    var subject = new MockUserAccount();
+            //    subject.Object.IsAccountVerified = true;
+            //    subject.Object.VerificationKey = "key";
+            //    subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
+            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
+            //    var result = subject.Object.ResetPassword();
+            //    Assert.AreEqual("key", subject.Object.VerificationKey);
+            //}
 
-            [TestMethod]
-            public void AccountVerified_VerificationKeyStale_VerificationKeySentReset()
-            {
-                var subject = new MockUserAccount();
-                subject.Object.IsAccountVerified = true;
-                subject.Setup(x => x.IsVerificationKeyStale).Returns(true);
-                var now = new DateTime(2000, 2, 3);
-                subject.Setup(x => x.UtcNow).Returns(now);
-                var result = subject.Object.ResetPassword();
-                Assert.AreEqual(now, subject.Object.VerificationKeySent);
-            }
-            [TestMethod]
-            public void AccountVerified_VerificationKeyNotStale_VerificationKeySentNotReset()
-            {
-                var subject = new MockUserAccount();
-                subject.Object.IsAccountVerified = true;
-                subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
-                var now = new DateTime(2000, 2, 3);
-                subject.Object.VerificationKeySent = now;
-                var result = subject.Object.ResetPassword();
-                Assert.AreEqual(now, subject.Object.VerificationKeySent);
-            }
+            //[TestMethod]
+            //public void AccountVerified_VerificationKeyStale_VerificationKeySentReset()
+            //{
+            //    var subject = new MockUserAccount();
+            //    subject.Object.IsAccountVerified = true;
+            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(true);
+            //    var now = new DateTime(2000, 2, 3);
+            //    subject.Setup(x => x.UtcNow).Returns(now);
+            //    var result = subject.Object.ResetPassword();
+            //    Assert.AreEqual(now, subject.Object.VerificationKeySent);
+            //}
+            //[TestMethod]
+            //public void AccountVerified_VerificationKeyNotStale_VerificationKeySentNotReset()
+            //{
+            //    var subject = new MockUserAccount();
+            //    subject.Object.IsAccountVerified = true;
+            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
+            //    var now = new DateTime(2000, 2, 3);
+            //    subject.Object.VerificationKeySent = now;
+            //    var result = subject.Object.ResetPassword();
+            //    Assert.AreEqual(now, subject.Object.VerificationKeySent);
+            //}
         }
 
         [TestClass]

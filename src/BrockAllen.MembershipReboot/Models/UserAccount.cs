@@ -194,9 +194,8 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected internal virtual bool ResetPassword()
+        protected internal virtual void ResetPassword()
         {
-            // if they've not yet verified then don't allow changes
             if (!this.IsAccountVerified)
             {
                 // if they've not yet verified then don't allow changes
@@ -205,25 +204,23 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccount.ResetPassword] account not verified -- raising account create to resend notification");
 
                 this.AddEvent(new UserAccountEvents.AccountCreated { Account = this });
-
-                return false;
-            }
-
-            // if there's no current key, or if there is a key but 
-            // it's older than one day, create a new reset key
-            if (IsVerificationKeyStale)
-            {
-                Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
-                this.SetVerificationKey(VerificationKeyPurpose.ChangePassword);
             }
             else
             {
-                Tracing.Verbose("[UserAccount.ResetPassword] not creating new verification keys");
-            }
+                // if there's no current key, or if there is a key but 
+                // it's older than one day, create a new reset key
+                if (IsVerificationKeyStale)
+                {
+                    Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
+                    this.SetVerificationKey(VerificationKeyPurpose.ChangePassword);
+                }
+                else
+                {
+                    Tracing.Verbose("[UserAccount.ResetPassword] not creating new verification keys");
+                }
 
-        	this.AddEvent(new UserAccountEvents.PasswordResetRequested { Account = this });
-			
-            return true;
+                this.AddEvent(new UserAccountEvents.PasswordResetRequested { Account = this });
+            }
         }
 
         protected internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)

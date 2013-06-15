@@ -488,12 +488,12 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        public virtual bool ResetPassword(string email)
+        public virtual void ResetPassword(string email)
         {
-            return ResetPassword(null, email);
+            ResetPassword(null, email);
         }
 
-        public virtual bool ResetPassword(string tenant, string email)
+        public virtual void ResetPassword(string tenant, string email)
         {
             Tracing.Information(String.Format("[UserAccountService.ResetPassword] called: {0}, {1}", tenant, email));
 
@@ -502,18 +502,14 @@ namespace BrockAllen.MembershipReboot
                 tenant = securitySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(email)) return false;
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException("Invalid tenant.");
+            if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Invalid email.");
 
             var account = this.GetByEmail(tenant, email);
-            if (account == null) return false;
+            if (account == null) throw new ValidationException("Invalid account.");
 
-            var result = account.ResetPassword();
+            account.ResetPassword();
             this.userRepository.Update(account);
-
-            Tracing.Verbose(String.Format("[UserAccountService.ResetPassword] reset password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
-
-            return result;
         }
 
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
