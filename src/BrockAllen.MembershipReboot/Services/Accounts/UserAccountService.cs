@@ -51,9 +51,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual IQueryable<UserAccount> GetAll(string tenant)
         {
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<UserAccount>().AsQueryable();
@@ -68,9 +68,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual UserAccount GetByUsername(string tenant, string username)
         {
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return null;
@@ -91,9 +91,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual UserAccount GetByEmail(string tenant, string email)
         {
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return null;
@@ -149,9 +149,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual UserAccount GetByLinkedAccount(string tenant, string provider, string id)
         {
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return null;
@@ -182,15 +182,15 @@ namespace BrockAllen.MembershipReboot
         {
             if (String.IsNullOrWhiteSpace(username)) return false;
 
-            if (SecuritySettings.Instance.UsernamesUniqueAcrossTenants)
+            if (securitySettings.UsernamesUniqueAcrossTenants)
             {
                 return this.userRepository.GetAll().Where(x => x.Username == username).Any();
             }
             else
             {
-                if (!SecuritySettings.Instance.MultiTenant)
+                if (!securitySettings.MultiTenant)
                 {
-                    tenant = SecuritySettings.Instance.DefaultTenant;
+                    tenant = securitySettings.DefaultTenant;
                 }
 
                 if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -206,9 +206,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool EmailExists(string tenant, string email)
         {
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -226,14 +226,14 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email));
 
-            if (SecuritySettings.Instance.EmailIsUsername)
+            if (securitySettings.EmailIsUsername)
             {
                 username = email;
             }
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
@@ -268,21 +268,21 @@ namespace BrockAllen.MembershipReboot
 
             var account = this.userRepository.Create();
             account.Init(tenant, username, password, email);
-
-            account.IsLoginAllowed = SecuritySettings.Instance.AllowLoginAfterAccountCreation;
-            if (!SecuritySettings.Instance.RequireAccountVerification)
+            
+            account.IsLoginAllowed = securitySettings.AllowLoginAfterAccountCreation;
+            if (!securitySettings.RequireAccountVerification)
             {
                 account.VerifyAccount(account.VerificationKey);
             }
 
             this.userRepository.Add(account);
-
+            
             return account;
         }
 
         protected internal void ValidateUsername(string username)
         {
-            if (!SecuritySettings.Instance.EmailIsUsername && 
+            if (!securitySettings.EmailIsUsername && 
                 username.Contains('@'))
             {
                 Tracing.Verbose(String.Format("[ValidateUsername] Failed: {0}", username));
@@ -348,9 +348,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.DeleteAccount] called: {0}, {1}", tenant, username));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -370,7 +370,7 @@ namespace BrockAllen.MembershipReboot
 
             account.CloseAccount();
 
-            if (SecuritySettings.Instance.AllowAccountDeletion || !account.IsAccountVerified)
+            if (securitySettings.AllowAccountDeletion || !account.IsAccountVerified)
             {
                 Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] removing account record: {0}, {1}", account.Tenant, account.Username));
                 this.userRepository.Remove(account);
@@ -391,8 +391,8 @@ namespace BrockAllen.MembershipReboot
         {
             return Authenticate(
                 tenant, username, password,
-                SecuritySettings.Instance.AccountLockoutFailedLoginAttempts,
-                SecuritySettings.Instance.AccountLockoutDuration);
+                securitySettings.AccountLockoutFailedLoginAttempts,
+                securitySettings.AccountLockoutDuration);
         }
 
         public virtual bool Authenticate(
@@ -408,11 +408,11 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.Authenticate] called: {0}, {1}", tenant, username));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
-
+            
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(password)) return false;
@@ -432,8 +432,8 @@ namespace BrockAllen.MembershipReboot
         {
             return AuthenticateWithEmail(
                 tenant, email, password,
-                SecuritySettings.Instance.AccountLockoutFailedLoginAttempts,
-                SecuritySettings.Instance.AccountLockoutDuration);
+                securitySettings.AccountLockoutFailedLoginAttempts,
+                securitySettings.AccountLockoutDuration);
         }
 
         public virtual bool AuthenticateWithEmail(
@@ -449,9 +449,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.AuthenticateWithEmail] called: {0}, {1}", tenant, email));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -473,9 +473,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Verbose(String.Format("[UserAccountService.AuthenticateWithUsernameOrEmail]: {0}, {1}", tenant, userNameOrEmail));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return null;
@@ -519,9 +519,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.SetPassword] called: {0}, {1}", tenant, username));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException("Invalid tenant.");
@@ -531,7 +531,7 @@ namespace BrockAllen.MembershipReboot
             ValidatePassword(tenant, username, newPassword);
 
             var account = this.GetByUsername(tenant, username);
-            if (account == null) throw new ValidationException("Invalid tenant and/or username.");
+            if (account == null) throw new ValidationException("Invalid username.");
 
             Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}, {1}", tenant, username));
 
@@ -552,8 +552,8 @@ namespace BrockAllen.MembershipReboot
             return ChangePassword(
                 tenant, username,
                 oldPassword, newPassword,
-                SecuritySettings.Instance.AccountLockoutFailedLoginAttempts,
-                SecuritySettings.Instance.AccountLockoutDuration);
+                securitySettings.AccountLockoutFailedLoginAttempts,
+                securitySettings.AccountLockoutDuration);
         }
 
         public virtual bool ChangePassword(
@@ -571,9 +571,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.ChangePassword] called: {0}, {1}", tenant, username));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -609,9 +609,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.ResetPassword] called: {0}, {1}", tenant, email));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -661,9 +661,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.SendUsernameReminder] called: {0}, {1}", tenant, email));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return;
@@ -685,16 +685,16 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ChangeUsername(string tenant, string username, string newUsername)
         {
-            if (SecuritySettings.Instance.EmailIsUsername)
+            if (securitySettings.EmailIsUsername)
             {
                 throw new Exception("EmailIsUsername is enabled in SecuritySettings -- use ChangeEmail APIs instead.");
             }
 
             Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}, {2}", tenant, username, newUsername));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
@@ -727,9 +727,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.ChangeEmailRequest] called: {0}, {1}, {2}", tenant, username, newEmail));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -768,8 +768,8 @@ namespace BrockAllen.MembershipReboot
         {
             return ChangeEmailFromKey(
                 password, key, newEmail,
-                SecuritySettings.Instance.AccountLockoutFailedLoginAttempts,
-                SecuritySettings.Instance.AccountLockoutDuration);
+                securitySettings.AccountLockoutFailedLoginAttempts,
+                securitySettings.AccountLockoutDuration);
         }
 
         public virtual bool ChangeEmailFromKey(
@@ -795,12 +795,12 @@ namespace BrockAllen.MembershipReboot
             var oldEmail = account.Email;
             var result = account.ChangeEmailFromKey(key, newEmail);
 
-            if (result && SecuritySettings.Instance.EmailIsUsername)
+            if (result && securitySettings.EmailIsUsername)
             {
                 Tracing.Warning(String.Format("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, newEmail));
                 account.Username = newEmail;
             }
-
+            
             this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] change email outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
@@ -815,9 +815,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool IsPasswordExpired(string tenant, string username)
         {
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!securitySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = securitySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
@@ -826,7 +826,7 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
-            return account.GetIsPasswordExpired(SecuritySettings.Instance.PasswordResetFrequency);
+            return account.GetIsPasswordExpired(securitySettings.PasswordResetFrequency);
         }
     }
 }
