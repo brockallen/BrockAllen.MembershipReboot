@@ -59,6 +59,8 @@ namespace BrockAllen.MembershipReboot
 
             emailValidator.Add(UserAccountValidation.EmailIsValidFormat);
             emailValidator.Add(UserAccountValidation.EmailMustNotAlreadyExist);
+
+            passwordValidator.Add(UserAccountValidation.PasswordMustBeDifferentThanCurrent);
         }
 
         internal protected void ValidateUsername(UserAccount account, string value)
@@ -297,15 +299,15 @@ namespace BrockAllen.MembershipReboot
             var account = this.userRepository.Create();
             account.Init(tenant, username, password, email);
             
+            ValidateEmail(account, email);
+            ValidateUsername(account, username);
+            ValidatePassword(account, password);
+
             account.IsLoginAllowed = securitySettings.AllowLoginAfterAccountCreation;
             if (!securitySettings.RequireAccountVerification)
             {
                 account.VerifyAccount(account.VerificationKey);
             }
-
-            ValidateEmail(account, email);
-            ValidateUsername(account, username);
-            ValidatePassword(account, password);
 
             this.userRepository.Add(account);
             
@@ -562,11 +564,11 @@ namespace BrockAllen.MembershipReboot
                 tenant = securitySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return;
-            if (String.IsNullOrWhiteSpace(email)) return;
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Invalid email.");
 
             var account = this.GetByEmail(tenant, email);
-            if (account == null) return;
+            if (account == null) throw new ValidationException("Invalid email.");
 
             Tracing.Verbose(String.Format("[UserAccountService.SendUsernameReminder] account located: {0}, {1}", account.Tenant, account.Username));
 

@@ -139,26 +139,6 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        //protected internal virtual bool ChangePassword(string oldPassword, string newPassword, int failedLoginCount, TimeSpan lockoutDuration)
-        //{
-        //    if (Authenticate(oldPassword, failedLoginCount, lockoutDuration))
-        //    {
-        //        if (oldPassword == newPassword)
-        //        {
-        //            Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tenant:user {0}:{1} -- new password same as old password", this.Tenant, this.Username));
-
-        //            throw new ValidationException("The new password must be different than the old password.");
-        //        }
-
-        //        SetPassword(newPassword);
-        //        return true;
-        //    }
-
-        //    Tracing.Verbose(String.Format("[UserAccount.ChangePassword] failed for tentant:username {0}:{1} -- auth failed", this.Tenant, this.Username));
-
-        //    return false;
-        //}
-
         protected internal virtual void SetPassword(string password)
         {
             if (String.IsNullOrWhiteSpace(password))
@@ -336,6 +316,20 @@ namespace BrockAllen.MembershipReboot
             }
 
             return false;
+        }
+
+        protected internal virtual void SendAccountNameReminder()
+        {
+            this.AddEvent(new UserAccountEvents.UsernameReminderRequested { Account = this });
+        }
+
+        protected internal virtual void ChangeUsername(string newUsername)
+        {
+            if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentNullException(newUsername);
+
+            this.Username = newUsername;
+
+            this.AddEvent(new UserAccountEvents.UsernameChanged { Account = this });
         }
 
         protected internal virtual bool ChangeEmailRequest(string newEmail)
@@ -607,20 +601,6 @@ namespace BrockAllen.MembershipReboot
             {
                 return DateTime.UtcNow;
             }
-        }
-
-        protected internal virtual void SendAccountNameReminder()
-        {
-            this.AddEvent(new UserAccountEvents.UsernameReminderRequested { Account = this });
-        }
-
-        protected internal virtual void ChangeUsername(string newUsername)
-        {
-            if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentNullException(newUsername);
-
-            this.Username = newUsername;
-
-            this.AddEvent(new UserAccountEvents.UsernameChanged { Account = this });
         }
     }
 }

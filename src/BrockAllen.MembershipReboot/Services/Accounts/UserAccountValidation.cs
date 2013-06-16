@@ -57,5 +57,19 @@ namespace BrockAllen.MembershipReboot
                 }
                 return null;
             });
+
+        public static readonly IValidator PasswordMustBeDifferentThanCurrent =
+        new DelegateValidator((service, account, value) =>
+        {
+            // Use LastLogin null-check to see if it's a new account
+            // we don't want to run this logic if it's a new account
+            if (account.LastLogin != null && account.VerifyHashedPassword(value))
+            {
+                Tracing.Verbose(String.Format("[UserAccountValidation.PasswordMustBeDifferentThanCurrent] validation failed: {0}, {1}", account.Tenant, account.Username));
+
+                return new ValidationResult("The new password must be different than the old password.");
+            }
+            return null;
+        });
     }
 }
