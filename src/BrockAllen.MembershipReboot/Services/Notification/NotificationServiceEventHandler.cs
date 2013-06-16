@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class NotificationServiceAccountCreatedEventHandler :
+    internal class NotificationServiceAccountCreatedEventHandler :
         IEventHandler<UserAccountEvents.AccountCreated>
     {
         INotificationService notificationService;

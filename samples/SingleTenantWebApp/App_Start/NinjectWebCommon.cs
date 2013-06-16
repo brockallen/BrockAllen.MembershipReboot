@@ -57,8 +57,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                 .To<EFUserAccountRepository>()
                 .InRequestScope();
             
-            kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
-            //kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
+            //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();
+            kernel.Bind<IMessageDelivery>().To<SmtpMessageDelivery>();
             
             //kernel.Bind<IPasswordPolicy>().To<NopPasswordPolicy>();
             kernel.Bind<IPasswordPolicy>().ToMethod(x => new BasicPasswordPolicy { MinLength = 4 });

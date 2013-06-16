@@ -39,14 +39,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ResetPassword(model.Email))
-                    {
-                        return View("ResetSuccess");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Error resetting password. The email might be invalid.");
-                    }
+                    this.userAccountService.ResetPassword(model.Email);
+                    return View("ResetSuccess");
                 }
                 catch (ValidationException ex)
                 {

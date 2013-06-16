@@ -82,7 +82,8 @@ namespace BrockAllen.MembershipReboot
             this.Username = username;
             this.Email = email;
             this.Created = this.UtcNow;
-            this.SetPassword(password);
+            this.HashedPassword = HashPassword(password);
+            this.PasswordChanged = this.Created;
             this.IsAccountVerified = false;
             this.IsLoginAllowed = false;
             this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
@@ -155,7 +156,7 @@ namespace BrockAllen.MembershipReboot
 
             this.AddEvent(new UserAccountEvents.PasswordChanged { Account = this });
         }
-
+        
         protected internal virtual bool IsVerificationKeyStale
         {
             get

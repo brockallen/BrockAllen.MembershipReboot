@@ -416,6 +416,66 @@ namespace BrockAllen.MembershipReboot
             return Authenticate(account, password);
         }
 
+        public virtual bool AuthenticateWithEmail(string email, string password)
+        {
+            return AuthenticateWithEmail(null, email, password);
+        }
+
+        public virtual bool AuthenticateWithEmail(string tenant, string email, string password)
+        {
+            Tracing.Information(String.Format("[UserAccountService.AuthenticateWithEmail] called: {0}, {1}", tenant, email));
+
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(email)) return false;
+            if (String.IsNullOrWhiteSpace(password)) return false;
+
+            var account = this.GetByEmail(tenant, email);
+            if (account == null) return false;
+
+            return Authenticate(account, password);
+        }
+
+        public virtual UserAccount AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password)
+        {
+            return AuthenticateWithUsernameOrEmail(null, userNameOrEmail, password);
+        }
+
+        public virtual UserAccount AuthenticateWithUsernameOrEmail(string tenant, string userNameOrEmail, string password)
+        {
+            Tracing.Verbose(String.Format("[UserAccountService.AuthenticateWithUsernameOrEmail]: {0}, {1}", tenant, userNameOrEmail));
+
+            if (!SecuritySettings.Instance.MultiTenant)
+            {
+                tenant = SecuritySettings.Instance.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (String.IsNullOrWhiteSpace(userNameOrEmail)) return null;
+            if (String.IsNullOrWhiteSpace(password)) return null;
+
+            if (!securitySettings.EmailIsUsername && userNameOrEmail.Contains("@"))
+            {
+                if (AuthenticateWithEmail(tenant, userNameOrEmail, password))
+                {
+                    return GetByEmail(tenant, userNameOrEmail);
+                }
+            }
+            else
+            {
+                if (Authenticate(tenant, userNameOrEmail, password))
+                {
+                    return GetByUsername(tenant, userNameOrEmail);
+                }
+            }
+
+            return null;
+        }
+        
         protected internal virtual bool Authenticate(UserAccount account, string password)
         {
             int failedLoginCount = securitySettings.AccountLockoutFailedLoginAttempts;
