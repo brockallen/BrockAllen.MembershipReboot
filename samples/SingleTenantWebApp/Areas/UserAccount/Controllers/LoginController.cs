@@ -47,10 +47,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (ModelState.IsValid)
             {
-                var account = userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password);
-
-                //if (this.userAccountService.Authenticate(model.Username, model.Password))
-                if (account != null)
+                BrockAllen.MembershipReboot.UserAccount account;
+                if (userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password, out account))
                 {
                     authSvc.SignIn(account);
 

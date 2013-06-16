@@ -396,9 +396,20 @@ namespace BrockAllen.MembershipReboot
         {
             return Authenticate(null, username, password);
         }
-
+        public virtual bool Authenticate(string username, string password, out UserAccount account)
+        {
+            return Authenticate(null, username, password, out account);
+        }
+        
         public virtual bool Authenticate(string tenant, string username, string password)
         {
+            UserAccount account;
+            return Authenticate(tenant, username, password, out account);
+        }
+        public virtual bool Authenticate(string tenant, string username, string password, out UserAccount account)
+        {
+            account = null;
+
             Tracing.Information(String.Format("[UserAccountService.Authenticate] called: {0}, {1}", tenant, username));
 
             if (!securitySettings.MultiTenant)
@@ -410,7 +421,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(password)) return false;
 
-            var account = this.GetByUsername(tenant, username);
+            account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
             return Authenticate(account, password);
@@ -420,9 +431,20 @@ namespace BrockAllen.MembershipReboot
         {
             return AuthenticateWithEmail(null, email, password);
         }
+        public virtual bool AuthenticateWithEmail(string email, string password, out UserAccount account)
+        {
+            return AuthenticateWithEmail(null, email, password, out account);
+        }
 
         public virtual bool AuthenticateWithEmail(string tenant, string email, string password)
         {
+            UserAccount account;
+            return AuthenticateWithEmail(null, email, password, out account);
+        }
+        public virtual bool AuthenticateWithEmail(string tenant, string email, string password, out UserAccount account)
+        {
+            account = null;
+
             Tracing.Information(String.Format("[UserAccountService.AuthenticateWithEmail] called: {0}, {1}", tenant, email));
 
             if (!SecuritySettings.Instance.MultiTenant)
@@ -434,19 +456,21 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(email)) return false;
             if (String.IsNullOrWhiteSpace(password)) return false;
 
-            var account = this.GetByEmail(tenant, email);
+            account = this.GetByEmail(tenant, email);
             if (account == null) return false;
 
             return Authenticate(account, password);
         }
 
-        public virtual UserAccount AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password)
+        public virtual bool AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password, out UserAccount account)
         {
-            return AuthenticateWithUsernameOrEmail(null, userNameOrEmail, password);
+            return AuthenticateWithUsernameOrEmail(null, userNameOrEmail, password, out account);
         }
 
-        public virtual UserAccount AuthenticateWithUsernameOrEmail(string tenant, string userNameOrEmail, string password)
+        public virtual bool AuthenticateWithUsernameOrEmail(string tenant, string userNameOrEmail, string password, out UserAccount account)
         {
+            account = null;
+
             Tracing.Verbose(String.Format("[UserAccountService.AuthenticateWithUsernameOrEmail]: {0}, {1}", tenant, userNameOrEmail));
 
             if (!SecuritySettings.Instance.MultiTenant)
@@ -454,26 +478,18 @@ namespace BrockAllen.MembershipReboot
                 tenant = SecuritySettings.Instance.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return null;
-            if (String.IsNullOrWhiteSpace(userNameOrEmail)) return null;
-            if (String.IsNullOrWhiteSpace(password)) return null;
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(userNameOrEmail)) return false;
+            if (String.IsNullOrWhiteSpace(password)) return false;
 
             if (!securitySettings.EmailIsUsername && userNameOrEmail.Contains("@"))
             {
-                if (AuthenticateWithEmail(tenant, userNameOrEmail, password))
-                {
-                    return GetByEmail(tenant, userNameOrEmail);
-                }
+                return AuthenticateWithEmail(tenant, userNameOrEmail, password, out account);
             }
             else
             {
-                if (Authenticate(tenant, userNameOrEmail, password))
-                {
-                    return GetByUsername(tenant, userNameOrEmail);
-                }
+                return Authenticate(tenant, userNameOrEmail, password, out account);
             }
-
-            return null;
         }
         
         protected internal virtual bool Authenticate(UserAccount account, string password)
