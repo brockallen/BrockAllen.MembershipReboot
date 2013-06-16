@@ -92,7 +92,7 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 Assert.IsFalse(sub.Object.IsAccountVerified);
                 Assert.IsNotNull(sub.Object.VerificationKey);
                 Assert.AreEqual(VerificationKeyPurpose.VerifyAccount, sub.Object.VerificationPurpose);
-                sub.Verify(x => x.SetPassword("pass"));
+                Assert.IsTrue(sub.Object.VerifyHashedPassword("pass"));
             }
         }
 
