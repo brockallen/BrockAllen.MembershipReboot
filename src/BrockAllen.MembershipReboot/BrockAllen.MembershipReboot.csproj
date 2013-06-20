@@ -59,40 +59,6 @@
     <Compile Include="Constants\MembershipRebootConstants.cs" />
     <Compile Include="Extensions\DisposableExtensions.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
-    <Compile Include="Migrations.SqlServer\SqlServerConfig.cs" />
-    <Compile Include="Migrations.SqlCe\SqlCeConfig.cs" />
-    <Compile Include="Migrations.SqlServer\201301101956394_InitialMigration.cs" />
-    <Compile Include="Migrations.SqlServer\201301101956394_InitialMigration.Designer.cs">
-      <DependentUpon>201301101956394_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations.SqlCe\201301101958249_InitialMigration.cs" />
-    <Compile Include="Migrations.SqlCe\201301101958249_InitialMigration.Designer.cs">
-      <DependentUpon>201301101958249_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations.SqlCe\201302251409247_ExpandKeyAndAddAccountCloseFields.cs" />
-    <Compile Include="Migrations.SqlCe\201302251409247_ExpandKeyAndAddAccountCloseFields.Designer.cs">
-      <DependentUpon>201302251409247_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations.SqlServer\201302251410424_ExpandKeyAndAddAccountCloseFields.cs" />
-    <Compile Include="Migrations.SqlServer\201302251410424_ExpandKeyAndAddAccountCloseFields.Designer.cs">
-      <DependentUpon>201302251410424_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations.SqlServer\201304152032598_NameId.cs" />
-    <Compile Include="Migrations.SqlServer\201304152032598_NameId.Designer.cs">
-      <DependentUpon>201304152032598_NameId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations.SqlCe\201304152039342_NameId.cs" />
-    <Compile Include="Migrations.SqlCe\201304152039342_NameId.Designer.cs">
-      <DependentUpon>201304152039342_NameId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations.SqlServer\201304160322055_VerificationPurpose.cs" />
-    <Compile Include="Migrations.SqlServer\201304160322055_VerificationPurpose.Designer.cs">
-      <DependentUpon>201304160322055_VerificationPurpose.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations.SqlCe\201304160324511_VerificationPurpose.cs" />
-    <Compile Include="Migrations.SqlCe\201304160324511_VerificationPurpose.Designer.cs">
-      <DependentUpon>201304160324511_VerificationPurpose.cs</DependentUpon>
-    </Compile>
     <Compile Include="Models\LinkedAccountClaim.cs" />
     <Compile Include="Models\LinkedAccount.cs" />
     <Compile Include="Models\UserAccountEvents.cs" />
@@ -137,41 +103,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Migrations.SqlServer\201301101956394_InitialMigration.resx">
-      <DependentUpon>201301101956394_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlCe\201301101958249_InitialMigration.resx">
-      <DependentUpon>201301101958249_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlCe\201302251409247_ExpandKeyAndAddAccountCloseFields.resx">
-      <DependentUpon>201302251409247_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlServer\201302251410424_ExpandKeyAndAddAccountCloseFields.resx">
-      <DependentUpon>201302251410424_ExpandKeyAndAddAccountCloseFields.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlServer\201304152032598_NameId.resx">
-      <DependentUpon>201304152032598_NameId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlCe\201304152039342_NameId.resx">
-      <DependentUpon>201304152039342_NameId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlServer\201304160322055_VerificationPurpose.resx">
-      <DependentUpon>201304160322055_VerificationPurpose.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations.SqlCe\201304160324511_VerificationPurpose.resx">
-      <DependentUpon>201304160324511_VerificationPurpose.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="license.txt" />
-    <Content Include="Migrations.SqlCe\Sql\201301101958249_InitialMigration.sql" />
-    <Content Include="Migrations.SqlCe\Sql\201302251409247_ExpandKeyAndAddAccountCloseFields.Designer.sql" />
-    <Content Include="Migrations.SqlCe\Sql\201304152039342_NameId.sql" />
-    <Content Include="Migrations.SqlCe\Sql\201304160324511_VerificationPurpose.sql" />
-    <Content Include="Migrations.SqlServer\Sql\201301101956394_InitialMigration.sql" />
-    <Content Include="Migrations.SqlServer\Sql\201302251410424_ExpandKeyAndAddAccountCloseFields.sql" />
-    <Content Include="Migrations.SqlServer\Sql\201304152032598_NameId.sql" />
-    <Content Include="Migrations.SqlServer\Sql\201304160322055_VerificationPurpose.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
