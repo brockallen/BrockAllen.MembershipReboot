@@ -127,9 +127,9 @@
     <Compile Include="Services\Accounts\UserAccountService.cs" />
     <Compile Include="Services\Notification\SmtpNotificationEventHandlers.cs" />
     <Compile Include="Tracing\Tracing.cs" />
-    <Compile Include="Validation\AggregateValidator.cs" />
-    <Compile Include="Validation\DelegateValidator.cs" />
-    <Compile Include="Validation\IValidator.cs" />
+    <Compile Include="Services\Validation\AggregateValidator.cs" />
+    <Compile Include="Services\Validation\DelegateValidator.cs" />
+    <Compile Include="Services\Validation\IValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -12,16 +12,28 @@ namespace BrockAllen.MembershipReboot
         public static string GetApplicationUrl(this HttpContext ctx)
         {
             if (ctx == null) throw new ArgumentNullException("ctx");
-            
-            var request = ctx.Request;
-            
+
+            return new HttpContextWrapper(ctx).GetApplicationUrl();
+        }
+
+        public static string GetApplicationUrl(this HttpContextBase ctx)
+        {
+            if (ctx == null) throw new ArgumentNullException("ctx");
+
+            return ctx.Request.GetApplicationUrl();
+        }
+        
+        public static string GetApplicationUrl(this HttpRequestBase request)
+        {
+            if (request == null) throw new ArgumentNullException("request");
+
             var baseUrl =
                 request.Url.Scheme +
                 "://" +
                 request.Url.Host + (request.Url.Port == 80 ? "" : ":" + request.Url.Port) +
                 request.ApplicationPath;
             if (!baseUrl.EndsWith("/")) baseUrl += "/";
-            
+
             return baseUrl;
         }
     }
