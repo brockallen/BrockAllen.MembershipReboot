@@ -7,27 +7,6 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface IValidator
-    {
-        ValidationResult Validate(UserAccountService service, UserAccount account, string value);
-    }
-
-    public class DelegateValidator : IValidator
-    {
-        Func<UserAccountService, UserAccount, string, ValidationResult> func;
-        public DelegateValidator(Func<UserAccountService, UserAccount, string, ValidationResult> func)
-        {
-            if (func == null) throw new ArgumentNullException("func");
-
-            this.func = func;
-        }
-
-        public ValidationResult Validate(UserAccountService service, UserAccount account, string value)
-        {
-            return func(service, account, value);
-        }
-    }
-
     public class AggregateValidator : List<IValidator>, IValidator
     {
         public ValidationResult Validate(UserAccountService service, UserAccount account, string value)
