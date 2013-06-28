@@ -1,4 +1,9 @@
-﻿using System.Security.Claims;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {

@@ -63,11 +63,11 @@
     <Compile Include="Models\MockUserAccount.cs" />
     <Compile Include="Models\UserAccountTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Accounts\BasicPasswordPolicyTests.cs" />
-    <Compile Include="Services\Accounts\MockUserAccountService.cs" />
-    <Compile Include="Services\Accounts\SecuritySettingsTests.cs" />
-    <Compile Include="Services\Accounts\UserAccountServiceTests.cs" />
-    <Compile Include="Services\Crypto\CryptoHelperTests.cs" />
+    <Compile Include="Accounts\BasicPasswordPolicyTests.cs" />
+    <Compile Include="Accounts\MockUserAccountService.cs" />
+    <Compile Include="Accounts\SecuritySettingsTests.cs" />
+    <Compile Include="Accounts\UserAccountServiceTests.cs" />
+    <Compile Include="Crypto\CryptoHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">

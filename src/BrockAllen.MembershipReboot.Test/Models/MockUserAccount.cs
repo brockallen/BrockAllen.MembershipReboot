@@ -1,4 +1,9 @@
-﻿using Moq;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using Moq;
 using System;
 
 namespace BrockAllen.MembershipReboot.Test.Models

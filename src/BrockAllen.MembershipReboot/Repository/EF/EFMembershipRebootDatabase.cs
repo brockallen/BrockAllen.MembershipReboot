@@ -1,4 +1,9 @@
-﻿using System.Data.Entity;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using System.Data.Entity;
 
 namespace BrockAllen.MembershipReboot
 {
