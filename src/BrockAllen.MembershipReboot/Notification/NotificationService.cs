@@ -194,12 +194,12 @@ Thanks!
         {
             Tracing.Information(String.Format("[NotificationService.SendAccountDelete] {0}, {1}, {2}", user.Tenant, user.Username, user.Email));
 
-            var msg = GetAccountAccountDeleteFormat();
+            var msg = GetAccountDeleteFormat();
             var body = DoTokenReplacement(msg, user);
             DeliverMessage(user, "Account Closed", body);
         }
 
-        protected virtual string GetAccountAccountDeleteFormat()
+        protected virtual string GetAccountDeleteFormat()
         {
             return @"
 This email is to confirm that the account '{username}' has been closed for {applicationName}.
