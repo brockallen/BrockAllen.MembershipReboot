@@ -4,6 +4,12 @@ The BrockAllen.MembershipReboot project is intended as an on-premise user accoun
 
 The most common use case will be to integrate this into an ASP.NET or ASP.NET MVC applcation, though the library can also be used over a network as a service.
 
+## Background
+
+The MembershipReboot project heavily uses claims and some related concepts. If you need a primer before diving in, we suggest the following one-hour video by Dominick Baier: 
+
+[Authentication & Authorization in .NET 4.5 - Claims & Tokens become the standard Model](http://vimeo.com/43549130)
+
 # Getting Started with  MembershipReboot
 
 There is a core project (BrockAllen.MembershipReboot) and a sample application (BrockAllen.MembershipReboot.Mvc) demonstrating proper use.
