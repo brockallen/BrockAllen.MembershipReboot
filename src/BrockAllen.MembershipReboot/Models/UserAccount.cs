@@ -37,6 +37,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual DateTime Created { get; internal set; }
         public virtual DateTime PasswordChanged { get; internal set; }
+        public virtual bool RequiresPasswordReset { get; set; }
 
         public virtual bool IsAccountVerified { get; internal set; }
         public virtual bool IsLoginAllowed { get; set; }
@@ -158,6 +159,7 @@ namespace BrockAllen.MembershipReboot
 
             HashedPassword = HashPassword(password);
             PasswordChanged = UtcNow;
+            RequiresPasswordReset = false;
 
             this.AddEvent(new UserAccountEvents.PasswordChanged { Account = this });
         }
@@ -435,6 +437,8 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool GetIsPasswordExpired(int passwordResetFrequency)
         {
+            if (this.RequiresPasswordReset) return true;
+
             if (passwordResetFrequency <= 0) return false;
 
             var now = this.UtcNow;
