@@ -187,9 +187,7 @@ namespace BrockAllen.MembershipReboot
                 // if they've not yet verified then don't allow changes
                 // instead raise an event as if the account was just created to 
                 // the user re-recieves their notification
-                Tracing.Verbose("[UserAccount.ResetPassword] account not verified -- raising account create to resend notification");
-
-                this.AddEvent(new UserAccountEvents.AccountCreated { Account = this });
+                Tracing.Verbose("[UserAccount.ResetPassword] account not verified");
             }
             else
             {
@@ -204,9 +202,9 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccount.ResetPassword] not creating new verification keys");
                 }
-
-                this.AddEvent(new UserAccountEvents.PasswordResetRequested { Account = this });
             }
+            
+            this.AddEvent(new UserAccountEvents.PasswordResetRequested { Account = this });
         }
 
         protected internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
