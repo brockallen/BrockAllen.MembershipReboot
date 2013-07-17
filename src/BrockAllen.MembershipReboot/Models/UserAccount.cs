@@ -94,7 +94,7 @@ namespace BrockAllen.MembershipReboot
             this.IsLoginAllowed = false;
             this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
 
-            this.AddEvent(new UserAccountEvents.AccountCreated { Account = this });
+            this.AddEvent(new AccountCreatedEvent { Account = this });
         }
 
         internal void SetVerificationKey(VerificationKeyPurpose purpose, string prefix = null)
@@ -141,7 +141,7 @@ namespace BrockAllen.MembershipReboot
             this.IsAccountVerified = true;
             this.ClearVerificationKey();
 
-            this.AddEvent(new UserAccountEvents.AccountVerified { Account = this });
+            this.AddEvent(new AccountVerifiedEvent { Account = this });
 
             return true;
         }
@@ -161,7 +161,7 @@ namespace BrockAllen.MembershipReboot
             PasswordChanged = UtcNow;
             RequiresPasswordReset = false;
 
-            this.AddEvent(new UserAccountEvents.PasswordChanged { Account = this });
+            this.AddEvent(new PasswordChangedEvent { Account = this });
         }
         
         protected internal virtual bool IsVerificationKeyStale
@@ -189,7 +189,8 @@ namespace BrockAllen.MembershipReboot
                 // if they've not yet verified then don't allow changes
                 // instead raise an event as if the account was just created to 
                 // the user re-recieves their notification
-                Tracing.Verbose("[UserAccount.ResetPassword] account not verified");
+                Tracing.Verbose("[UserAccount.ResetPassword] account not verified -- raising account create to resend notification");
+                this.AddEvent(new AccountCreatedEvent { Account = this });
             }
             else
             {
@@ -204,9 +205,8 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccount.ResetPassword] not creating new verification keys");
                 }
+                this.AddEvent(new PasswordResetRequestedEvent { Account = this });
             }
-            
-            this.AddEvent(new UserAccountEvents.PasswordResetRequested { Account = this });
         }
 
         protected internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
@@ -263,8 +263,8 @@ namespace BrockAllen.MembershipReboot
             if (!IsAccountVerified)
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account not verified");
-                
-                this.AddEvent(new UserAccountEvents.AccountNotVerified { Account = this });
+
+                this.AddEvent(new AccountNotVerifiedEvent { Account = this });
                 
                 return false;
             }
@@ -272,8 +272,8 @@ namespace BrockAllen.MembershipReboot
             if (!IsLoginAllowed)
             {
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account not allowed to login");
-                
-                this.AddEvent(new UserAccountEvents.AccountLocked { Account = this });
+
+                this.AddEvent(new AccountLockedEvent { Account = this });
                 
                 return false;
             }
@@ -283,7 +283,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
                 
                 FailedLoginCount++;
-                this.AddEvent(new UserAccountEvents.TooManyRecentPasswordFailures { Account = this });
+                this.AddEvent(new TooManyRecentPasswordFailuresEvent { Account = this });
                 
                 return false;
             }
@@ -295,8 +295,8 @@ namespace BrockAllen.MembershipReboot
 
                 LastLogin = UtcNow;
                 FailedLoginCount = 0;
-                
-                this.AddEvent(new UserAccountEvents.SuccessfulLogin { Account = this });
+
+                this.AddEvent(new SuccessfulLoginEvent { Account = this });
             }
             else
             {
@@ -305,8 +305,8 @@ namespace BrockAllen.MembershipReboot
                 LastFailedLogin = UtcNow;
                 if (FailedLoginCount > 0) FailedLoginCount++;
                 else FailedLoginCount = 1;
-                
-                this.AddEvent(new UserAccountEvents.InvalidPassword { Account = this });
+
+                this.AddEvent(new InvalidPasswordEvent { Account = this });
             }
 
             return valid;
@@ -326,7 +326,7 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void SendAccountNameReminder()
         {
-            this.AddEvent(new UserAccountEvents.UsernameReminderRequested { Account = this });
+            this.AddEvent(new UsernameReminderRequestedEvent { Account = this });
         }
 
         protected internal virtual void ChangeUsername(string newUsername)
@@ -335,7 +335,7 @@ namespace BrockAllen.MembershipReboot
 
             this.Username = newUsername;
 
-            this.AddEvent(new UserAccountEvents.UsernameChanged { Account = this });
+            this.AddEvent(new UsernameChangedEvent { Account = this });
         }
 
         protected internal virtual bool ChangeEmailRequest(string newEmail)
@@ -367,7 +367,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccount.ChangeEmailRequest] not creating a new reset key");
             }
 
-            this.AddEvent(new UserAccountEvents.EmailChangeRequested { Account = this, NewEmail = newEmail });
+            this.AddEvent(new EmailChangeRequestedEvent { Account = this, NewEmail = newEmail });
             
             return true;
         }
@@ -396,7 +396,7 @@ namespace BrockAllen.MembershipReboot
                             this.Email = newEmail;
                             this.ClearVerificationKey();
 
-                            this.AddEvent(new UserAccountEvents.EmailChanged { Account = this, OldEmail=oldEmail });
+                            this.AddEvent(new EmailChangedEvent { Account = this, OldEmail = oldEmail });
 
                             return true;
                         }
@@ -432,7 +432,7 @@ namespace BrockAllen.MembershipReboot
             IsAccountClosed = true;
             AccountClosed = UtcNow;
 
-            this.AddEvent(new UserAccountEvents.AccountClosed { Account = this });
+            this.AddEvent(new AccountClosedEvent { Account = this });
         }
 
         protected internal virtual bool GetIsPasswordExpired(int passwordResetFrequency)

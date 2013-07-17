@@ -18,7 +18,7 @@ namespace BrockAllen.MembershipReboot
             Instance = FromConfig();
         }
 
-        public static SecuritySettings FromConfig()
+        static SecuritySettings FromConfig()
         {
             var instance = new SecuritySettings();
             var configSection = GetConfigSection();

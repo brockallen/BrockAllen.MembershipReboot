@@ -11,33 +11,33 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class UserAccountEvents
+    public abstract class UserAccountEvent : IEvent
     {
-        public abstract class AccountEvent : IEvent
-        {
-            public UserAccount Account { get; set; }
-        }
-
-        public class AccountCreated : AccountEvent { }
-        public class AccountVerified : AccountEvent { }
-        
-        public class PasswordResetRequested : AccountEvent { }
-        public class PasswordChanged : AccountEvent { }
-        public class UsernameReminderRequested : AccountEvent { }
-        public class AccountClosed : AccountEvent { }
-        public class UsernameChanged : AccountEvent { }
-        public class EmailChangeRequested : AccountEvent {
-            public string NewEmail { get; set; }
-        }
-        public class EmailChanged : AccountEvent {
-            public string OldEmail { get; set; }
-        }
-
-        public class SuccessfulLogin : AccountEvent { }
-        public abstract class FailedLogin : AccountEvent { }
-        public class AccountNotVerified : FailedLogin { }
-        public class AccountLocked : FailedLogin { }
-        public class TooManyRecentPasswordFailures : FailedLogin { }
-        public class InvalidPassword : FailedLogin { }
+        public UserAccount Account { get; set; }
     }
+
+    public class AccountCreatedEvent : UserAccountEvent { }
+    public class AccountVerifiedEvent : UserAccountEvent { }
+
+    public class PasswordResetRequestedEvent : UserAccountEvent { }
+    public class PasswordChangedEvent : UserAccountEvent { }
+    public class UsernameReminderRequestedEvent : UserAccountEvent { }
+    public class AccountClosedEvent : UserAccountEvent { }
+    public class UsernameChangedEvent : UserAccountEvent { }
+    public class EmailChangeRequestedEvent : UserAccountEvent
+    {
+        public string NewEmail { get; set; }
+    }
+    public class EmailChangedEvent : UserAccountEvent
+    {
+        public string OldEmail { get; set; }
+    }
+
+    public class SuccessfulLoginEvent : UserAccountEvent { }
+
+    public abstract class FailedLoginEvent : UserAccountEvent { }
+    public class AccountNotVerifiedEvent : FailedLoginEvent { }
+    public class AccountLockedEvent : FailedLoginEvent { }
+    public class TooManyRecentPasswordFailuresEvent : FailedLoginEvent { }
+    public class InvalidPasswordEvent : FailedLoginEvent { }
 }

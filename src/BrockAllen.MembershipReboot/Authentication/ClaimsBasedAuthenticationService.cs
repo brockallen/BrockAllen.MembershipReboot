@@ -48,9 +48,9 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[ClaimsBasedAuthenticationService.Signin] called: {0}, {1}", tenant, username));
 
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!userService.Configuration.SecuritySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = userService.Configuration.SecuritySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
@@ -143,9 +143,9 @@ namespace BrockAllen.MembershipReboot
             string providerAccountID,
             IEnumerable<Claim> claims)
         {
-            if (!SecuritySettings.Instance.MultiTenant)
+            if (!userService.Configuration.SecuritySettings.MultiTenant)
             {
-                tenant = SecuritySettings.Instance.DefaultTenant;
+                tenant = userService.Configuration.SecuritySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");

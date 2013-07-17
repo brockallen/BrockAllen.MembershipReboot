@@ -28,7 +28,7 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         private void InitDatabase()
         {
-            var svc = new UserAccountService(new EFUserAccountRepository(), null, null);
+            var svc = new UserAccountService(new EFUserAccountRepository(SecuritySettings.Instance.ConnectionStringName), null, null);
             if (svc.GetByUsername("admin") == null)
             {
                 var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");

@@ -16,10 +16,10 @@ namespace BrockAllen.MembershipReboot
         protected DbContext db;
         DbSet<T> items;
 
-        public DbContextRepository()
-            : this(new Ctx())
-        {
-        }
+        //public DbContextRepository()
+        //    : this(new Ctx())
+        //{
+        //}
 
         public DbContextRepository(DbContext db)
         {

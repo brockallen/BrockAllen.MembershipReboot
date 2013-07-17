@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace BrockAllen.MembershipReboot
 {
     internal class NotificationServiceAccountCreatedEventHandler :
-        IEventHandler<UserAccountEvents.AccountCreated>
+        IEventHandler<AccountCreatedEvent>
     {
         INotificationService notificationService;
         public NotificationServiceAccountCreatedEventHandler(INotificationService notificationService)
@@ -22,21 +22,21 @@ namespace BrockAllen.MembershipReboot
             this.notificationService = notificationService;
         }
 
-        public void Handle(UserAccountEvents.AccountCreated evt)
+        public void Handle(AccountCreatedEvent evt)
         {
             notificationService.SendAccountCreate(evt.Account);
         }
     }
 
     public class NotificationServiceEventHandler :
-        IEventHandler<UserAccountEvents.AccountVerified>,
-        IEventHandler<UserAccountEvents.PasswordResetRequested>,
-        IEventHandler<UserAccountEvents.PasswordChanged>,
-        IEventHandler<UserAccountEvents.UsernameReminderRequested>,
-        IEventHandler<UserAccountEvents.AccountClosed>,
-        IEventHandler<UserAccountEvents.UsernameChanged>,
-        IEventHandler<UserAccountEvents.EmailChangeRequested>,
-        IEventHandler<UserAccountEvents.EmailChanged>
+        IEventHandler<AccountVerifiedEvent>,
+        IEventHandler<PasswordResetRequestedEvent>,
+        IEventHandler<PasswordChangedEvent>,
+        IEventHandler<UsernameReminderRequestedEvent>,
+        IEventHandler<AccountClosedEvent>,
+        IEventHandler<UsernameChangedEvent>,
+        IEventHandler<EmailChangeRequestedEvent>,
+        IEventHandler<EmailChangedEvent>
     {
         INotificationService notificationService;
         public NotificationServiceEventHandler(INotificationService notificationService)
@@ -46,47 +46,47 @@ namespace BrockAllen.MembershipReboot
             this.notificationService = notificationService;
         }
 
-        public void Handle(UserAccountEvents.AccountCreated evt)
+        public void Handle(AccountCreatedEvent evt)
         {
             notificationService.SendAccountCreate(evt.Account);
         }
 
-        public void Handle(UserAccountEvents.AccountVerified evt)
+        public void Handle(AccountVerifiedEvent evt)
         {
             notificationService.SendAccountVerified(evt.Account);
         }
 
-        public void Handle(UserAccountEvents.PasswordResetRequested evt)
+        public void Handle(PasswordResetRequestedEvent evt)
         {
             notificationService.SendResetPassword(evt.Account);
         }
 
-        public void Handle(UserAccountEvents.PasswordChanged evt)
+        public void Handle(PasswordChangedEvent evt)
         {
             notificationService.SendPasswordChangeNotice(evt.Account);
         }
 
-        public void Handle(UserAccountEvents.UsernameReminderRequested evt)
+        public void Handle(UsernameReminderRequestedEvent evt)
         {
             notificationService.SendAccountNameReminder(evt.Account);
         }
 
-        public void Handle(UserAccountEvents.AccountClosed evt)
+        public void Handle(AccountClosedEvent evt)
         {
             notificationService.SendAccountDelete(evt.Account);
         }
 
-        public void Handle(UserAccountEvents.UsernameChanged evt)
+        public void Handle(UsernameChangedEvent evt)
         {
             notificationService.SendChangeUsernameRequestNotice(evt.Account);
         }
 
-        public void Handle(UserAccountEvents.EmailChangeRequested evt)
+        public void Handle(EmailChangeRequestedEvent evt)
         {
             notificationService.SendChangeEmailRequestNotice(evt.Account, evt.NewEmail);
         }
 
-        public void Handle(UserAccountEvents.EmailChanged evt)
+        public void Handle(EmailChangedEvent evt)
         {
             notificationService.SendEmailChangedNotice(evt.Account, evt.OldEmail);
         }

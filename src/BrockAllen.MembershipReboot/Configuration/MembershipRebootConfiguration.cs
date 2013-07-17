@@ -22,6 +22,23 @@ namespace BrockAllen.MembershipReboot
             this.SecuritySettings = securitySettings;
         }
 
+        public MembershipRebootConfiguration(SecuritySettings securitySettings, IUserAccountRepository userAccountRepository)
+            : this(securitySettings, new DelegateFactory(()=>userAccountRepository))
+        {
+            if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
+        }
+
+        public MembershipRebootConfiguration(IFactory factory)
+            : this(SecuritySettings.Instance, factory)
+        {
+        }
+
+        public MembershipRebootConfiguration(IUserAccountRepository userAccountRepository)
+            : this(new DelegateFactory(() => userAccountRepository))
+        {
+            if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
+        }
+
         public SecuritySettings SecuritySettings { get; private set; }
 
         IFactory factory;
