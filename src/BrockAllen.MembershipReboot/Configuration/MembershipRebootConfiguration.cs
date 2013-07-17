@@ -13,23 +13,22 @@ namespace BrockAllen.MembershipReboot
 {
     public class MembershipRebootConfiguration
     {
-        public MembershipRebootConfiguration()
-            : this(SecuritySettings.Instance, new DefaultFactory())
-        {
-        }
-
         public MembershipRebootConfiguration(SecuritySettings securitySettings, IFactory factory)
         {
-            if (factory == null) throw new ArgumentNullException("factory");
             if (securitySettings == null) throw new ArgumentNullException("securitySettings");
+            if (factory == null) throw new ArgumentNullException("factory");
 
             this.factory = factory;
             this.SecuritySettings = securitySettings;
         }
 
-        IFactory factory;
-        
         public SecuritySettings SecuritySettings { get; private set; }
+
+        IFactory factory;
+        public IUserAccountRepository CreateUserAccountRepository()
+        {
+            return factory.CreateUserAccountRepository();
+        }
 
         AggregateValidator usernameValidators = new AggregateValidator();
         public void RegisterUsernameValidator(params IValidator[] items)
@@ -51,18 +50,6 @@ namespace BrockAllen.MembershipReboot
             emailValidators.AddRange(items);
         }
         public IValidator EmailValidator { get { return emailValidators; } }
-
-        Type userAccountRepositoryType;
-        public void RegisterUserAccountRepository<T>()
-        {
-            userAccountRepositoryType = typeof(T);
-        }
-        
-        public IUserAccountRepository CreateUserAccountRepository()
-        {
-            if (userAccountRepositoryType == null) throw new Exception("UserAccountRepository type not registered");
-            return factory.Create<IUserAccountRepository>(userAccountRepositoryType);
-        }
 
         EventBus eventBus = new EventBus();
         public IEventBus EventBus { get { return eventBus; } }

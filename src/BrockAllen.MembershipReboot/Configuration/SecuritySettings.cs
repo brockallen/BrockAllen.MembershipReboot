@@ -15,6 +15,11 @@ namespace BrockAllen.MembershipReboot
 
         static SecuritySettings()
         {
+            Instance = FromConfig();
+        }
+
+        public static SecuritySettings FromConfig()
+        {
             var instance = new SecuritySettings();
             var configSection = GetConfigSection();
             if (configSection != null)
@@ -25,7 +30,7 @@ namespace BrockAllen.MembershipReboot
                     instance[prop] = val;
                 }
             }
-            Instance = instance;
+            return instance;
         }
 
         public const string SectionName = "membershipReboot";

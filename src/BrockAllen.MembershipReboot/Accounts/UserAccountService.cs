@@ -16,13 +16,15 @@ namespace BrockAllen.MembershipReboot
     {
         IUserAccountRepository userRepository;
         SecuritySettings securitySettings;
-        MembershipRebootConfiguration configuration;
+
         AggregateValidator usernameValidator = new AggregateValidator();
         AggregateValidator emailValidator = new AggregateValidator();
         AggregateValidator passwordValidator = new AggregateValidator();
 
         public UserAccountService(MembershipRebootConfiguration configuration)
         {
+            if (configuration == null) throw new ArgumentNullException("configuration");
+
             InitFromConfiguration(configuration);
         }
 
@@ -34,17 +36,16 @@ namespace BrockAllen.MembershipReboot
         {
             if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
 
-            var config = new MembershipRebootConfiguration();
+            var config = new MembershipRebootConfiguration(SecuritySettings.Instance, new DelegateFactory(()=>userAccountRepository));
             config.FromLegacy(notificationService, passwordPolicy);
             this.InitFromConfiguration(config, userAccountRepository);
         }
 
         void InitFromConfiguration(MembershipRebootConfiguration configuration, IUserAccountRepository userAccountRepository = null)
         {
-            this.configuration = configuration;
             this.userRepository =
                 new UserAccountRepository(
-                    userAccountRepository ?? configuration.CreateUserAccountRepository(), 
+                    configuration.CreateUserAccountRepository(), 
                     configuration.EventBus);
             this.securitySettings = configuration.SecuritySettings;
 

@@ -13,27 +13,35 @@ namespace BrockAllen.MembershipReboot
 {
     public interface IFactory
     {
-        T Create<T>(Type type);
+        IUserAccountRepository CreateUserAccountRepository();
     }
 
-    public class DefaultFactory : IFactory
+    public class ReflectionFactory : IFactory
     {
-        public T Create<T>(Type type)
+        Type type;
+        public ReflectionFactory(Type type)
         {
-            return (T)Activator.CreateInstance(type);
+            this.type = type;
+        }
+
+        public IUserAccountRepository CreateUserAccountRepository()
+        {
+            return (IUserAccountRepository)Activator.CreateInstance(type);
         }
     }
 
     public class DelegateFactory : IFactory
     {
-        Func<Type, object> factoryFunc;
-        public DelegateFactory(Func<Type, object> factoryFunc)
+        Func<IUserAccountRepository> factoryFunc;
+        public DelegateFactory(Func<IUserAccountRepository> factoryFunc)
         {
+            if (factoryFunc == null) throw new ArgumentNullException("factoryFunc");
             this.factoryFunc = factoryFunc;
         }
-        public T Create<T>(Type type)
+
+        public IUserAccountRepository CreateUserAccountRepository()
         {
-            return (T)factoryFunc(type);
+            return this.factoryFunc();
         }
     }
 }
