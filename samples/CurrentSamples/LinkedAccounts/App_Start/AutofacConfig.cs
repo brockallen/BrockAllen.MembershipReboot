@@ -11,42 +11,28 @@ namespace LinkedAccounts
 {
     public class AutofacConfig
     {
+        public static MembershipRebootConfiguration CreateMembershipRebootConfiguration()
+        {
+            var settings = SecuritySettings.Instance;
+            settings.MultiTenant = false;
+
+            var config = new MembershipRebootConfiguration(settings, new DelegateFactory(() => new EFUserAccountRepository(settings.ConnectionStringName)));
+            return config;
+        }
+
         internal static void Register()
         {
+            var config = CreateMembershipRebootConfiguration();
+
             var builder = new ContainerBuilder();
 
             builder.RegisterType<UserAccountService>();
             builder.RegisterType<ClaimsBasedAuthenticationService>();
 
             builder
-                .RegisterType<EFUserAccountRepository>()
+                .Register<EFUserAccountRepository>(x=>new EFUserAccountRepository(config.SecuritySettings.ConnectionStringName))
                 .As<IUserAccountRepository>()
                 .InstancePerHttpRequest();
-            
-            builder.RegisterType<NopMessageDelivery>().As<IMessageDelivery>();
-            //builder.RegisterType<SmtpMessageDelivery>().As<IMessageDelivery>();
-            
-            builder.RegisterType<NopPasswordPolicy>().As<IPasswordPolicy>();
-            //builder.Register<IPasswordPolicy>(x=>new BasicPasswordPolicy { MinLength = 4 });
-
-            builder.RegisterType<NotificationService>().As<INotificationService>();
-
-            builder.Register<ApplicationInformation>(
-                x => 
-                {
-                    // build URL
-                    var baseUrl = HttpContext.Current.GetApplicationUrl();
-
-                    return new ApplicationInformation
-                    {
-                        ApplicationName = "Test",
-                        LoginUrl = baseUrl + "Home/Login/",
-                        VerifyAccountUrl = baseUrl + "Home/Confirm/",
-                        CancelNewAccountUrl = baseUrl + "Home/Cancel/",
-                        ConfirmPasswordResetUrl = baseUrl + "PasswordReset/Confirm/",
-                        ConfirmChangeEmailUrl = baseUrl + "ChangeEmail/Confirm/"
-                    };
-                });
 
             builder.RegisterControllers(typeof(AutofacConfig).Assembly);
             var container = builder.Build();

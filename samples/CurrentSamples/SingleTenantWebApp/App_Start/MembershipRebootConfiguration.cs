@@ -54,14 +54,5 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             
             return config;
         }
-
-        /*
-            kernel
-                .Bind<ApplicationInformation>()
-                .ToMethod(x=>
-                    {
-                       
-                    });
-        */
     }
 }
