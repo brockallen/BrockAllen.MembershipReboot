@@ -15,8 +15,17 @@ namespace BrockAllen.MembershipReboot
     {
         IMessageFormatter messageFormatter;
         IMessageDelivery messageDelivery;
+
+        public EmailEventHandler(IMessageFormatter messageFormatter)
+            : this(messageFormatter, new SmtpMessageDelivery())
+        {
+        }
+        
         public EmailEventHandler(IMessageFormatter messageFormatter, IMessageDelivery messageDelivery)
         {
+            if (messageFormatter == null) throw new ArgumentNullException("messageFormatter");
+            if (messageDelivery == null) throw new ArgumentNullException("messageDelivery");
+
             this.messageFormatter = messageFormatter;
             this.messageDelivery = messageDelivery;
         }
@@ -35,6 +44,11 @@ namespace BrockAllen.MembershipReboot
     public class EmailAccountCreatedEventHandler
         : EmailEventHandler, IEventHandler<AccountCreatedEvent>
     {
+        public EmailAccountCreatedEventHandler(IMessageFormatter messageFormatter)
+            : base(messageFormatter)
+        {
+        }
+        
         public EmailAccountCreatedEventHandler(IMessageFormatter messageFormatter, IMessageDelivery messageDelivery)
             : base(messageFormatter, messageDelivery)
         {
@@ -57,6 +71,10 @@ namespace BrockAllen.MembershipReboot
         IEventHandler<EmailChangeRequestedEvent>,
         IEventHandler<EmailChangedEvent>
     {
+        public EmailAccountEventsHandler(IMessageFormatter messageFormatter)
+            : base(messageFormatter)
+        {
+        }
         public EmailAccountEventsHandler(IMessageFormatter messageFormatter, IMessageDelivery messageDelivery)
             : base(messageFormatter, messageDelivery)
         {
