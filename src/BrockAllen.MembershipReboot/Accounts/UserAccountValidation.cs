@@ -46,7 +46,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose(String.Format("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value));
 
-                    throw new ValidationException("Email is invalid.");
+                    return new ValidationResult("Email is invalid.");
                 }
                 return null;
             });
