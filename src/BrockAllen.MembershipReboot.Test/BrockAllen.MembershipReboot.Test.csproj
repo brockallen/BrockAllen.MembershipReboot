@@ -57,17 +57,22 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Accounts\UserAccountValidationTests.cs" />
+    <Compile Include="Configuration\FactoryTests.cs" />
     <Compile Include="Extensions\ClaimsExtensionsTests.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensionsTests.cs" />
     <Compile Include="Extensions\DisposableExtensionsTests.cs" />
-    <Compile Include="Models\MockUserAccount.cs" />
+    <Compile Include="MockUserAccount.cs" />
     <Compile Include="Models\UserAccountTests.cs" />
+    <Compile Include="Notification\EmailEventHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Accounts\BasicPasswordPolicyTests.cs" />
-    <Compile Include="Accounts\MockUserAccountService.cs" />
-    <Compile Include="Accounts\SecuritySettingsTests.cs" />
+    <Compile Include="Accounts\Deprecated\BasicPasswordPolicyTests.cs" />
+    <Compile Include="MockUserAccountService.cs" />
+    <Compile Include="Configuration\SecuritySettingsTests.cs" />
     <Compile Include="Accounts\UserAccountServiceTests.cs" />
     <Compile Include="Crypto\CryptoHelperTests.cs" />
+    <Compile Include="Validation\AggregateValidatorTests.cs" />
+    <Compile Include="Validation\DelegateValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">

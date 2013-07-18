@@ -6,18 +6,21 @@
 using System.Linq;
 using Moq;
 
-namespace BrockAllen.MembershipReboot.Test.Accounts
+namespace BrockAllen.MembershipReboot.Test
 {
     public class MockUserAccountService
     {
+        public SecuritySettings SecuritySettings { get; set; }
+        public MembershipRebootConfiguration Configuration { get; set; }
         public Mock<IUserAccountRepository> UserAccountRepository { get; set; }
-        public Mock<INotificationService> NotificationService { get; set; }
-        public Mock<IPasswordPolicy> PasswordPolicy { get; set; }
 
         public MockUserAccountService()
         {
             this.UserAccountRepository = new Mock<IUserAccountRepository>();
             this.UserAccountRepository.Setup(x => x.Create()).Returns(new UserAccount());
+
+            this.SecuritySettings = new SecuritySettings();
+            Configuration = new MembershipRebootConfiguration(this.SecuritySettings, this.UserAccountRepository.Object);
         }
 
         Mock<UserAccountService> svc;
@@ -34,7 +37,7 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
             {
                 if (svc == null)
                 {
-                    svc = new Mock<UserAccountService>(UserAccountRepository.Object, NotificationService != null ? NotificationService.Object : null, PasswordPolicy != null ? PasswordPolicy.Object : null);
+                    svc = new Mock<UserAccountService>(this.Configuration);
                     svc.CallBase = true;
                 }
                 return svc;
@@ -44,6 +47,10 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
         internal void MockUserAccounts(params UserAccount[] accounts)
         {
             this.UserAccountRepository.Setup(x => x.GetAll()).Returns(accounts.AsQueryable());
+        }
+        internal void MockUserAccounts(params MockUserAccount[] mocks)
+        {
+            MockUserAccounts(mocks.Select(x => x.Object).ToArray());
         }
     }
 }
