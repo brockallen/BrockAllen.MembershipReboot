@@ -12,10 +12,53 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
+    class GenericMethodActionBuilder<TargetBase, ParamBase>
+    {
+        Dictionary<Type, Action<TargetBase, ParamBase>> actionCache = new Dictionary<Type, Action<TargetBase, ParamBase>>();
+
+        Type targetType;
+        string method;
+        public GenericMethodActionBuilder(Type targetType, string method)
+        {
+            this.targetType = targetType;
+            this.method = method;
+        }
+
+        public Action<TargetBase, ParamBase> GetAction(ParamBase paramInstance)
+        {
+            var paramType = paramInstance.GetType();
+
+            if (!actionCache.ContainsKey(paramType))
+            {
+                actionCache.Add(paramType, BuildActionForMethod(paramType, method));
+            }
+
+            return actionCache[paramType];
+        }
+
+        private Action<TargetBase, ParamBase> BuildActionForMethod(Type paramType, string method)
+        {
+            var handlerType = targetType.MakeGenericType(paramType);
+
+            var ehParam = Expression.Parameter(typeof(TargetBase));
+            var evtParam = Expression.Parameter(typeof(ParamBase));
+            var invocationExpression =
+                Expression.Lambda(
+                    Expression.Block(
+                        Expression.Call(
+                            Expression.Convert(ehParam, handlerType),
+                            handlerType.GetMethod(method),
+                            Expression.Convert(evtParam, paramType))),
+                    ehParam, evtParam);
+
+            return (Action<TargetBase, ParamBase>)invocationExpression.Compile();
+        }
+    }
+
     public class EventBus : List<IEventHandler>, IEventBus
     {
         Dictionary<Type, IEnumerable<IEventHandler>> handlerCache = new Dictionary<Type, IEnumerable<IEventHandler>>();
-        Dictionary<Type, Action<IEventHandler, IEvent>> actionCache = new Dictionary<Type, Action<IEventHandler, IEvent>>();
+        GenericMethodActionBuilder<IEventHandler, IEvent> actions = new GenericMethodActionBuilder<IEventHandler, IEvent>(typeof(IEventHandler<>), "Handle");
 
         public void RaiseEvent(IEvent evt)
         {
@@ -29,32 +72,7 @@ namespace BrockAllen.MembershipReboot
 
         Action<IEventHandler, IEvent> GetAction(IEvent evt)
         {
-            var eventType = evt.GetType();
-
-            if (!actionCache.ContainsKey(eventType))
-            {
-                actionCache.Add(eventType, BuildHandlerInvocation(eventType));
-            }
-
-            return actionCache[eventType];
-        }
-
-        private Action<IEventHandler, IEvent> BuildHandlerInvocation(Type eventType)
-        {
-            var handlerType = typeof(IEventHandler<>).MakeGenericType(eventType);
-
-            var ehParam = Expression.Parameter(typeof(IEventHandler));
-            var evtParam = Expression.Parameter(typeof(IEvent));
-            var invocationExpression =
-                Expression.Lambda(
-                    Expression.Block(
-                        Expression.Call(
-                            Expression.Convert(ehParam, handlerType),
-                            handlerType.GetMethod("Handle"),
-                            Expression.Convert(evtParam, eventType))),
-                    ehParam, evtParam);
-
-            return (Action<IEventHandler, IEvent>)invocationExpression.Compile();
+            return actions.GetAction(evt);
         }
 
         private IEnumerable<IEventHandler> GetHandlers(IEvent evt)
