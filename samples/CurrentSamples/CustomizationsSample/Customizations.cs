@@ -93,7 +93,7 @@ namespace BrockAllen.MembershipReboot.Mvc
         }
     }
 
-    public class NotifcyAccountOwnerWhenTooManyFailedLoginAttempts
+    public class NotifyAccountOwnerWhenTooManyFailedLoginAttempts
         : IEventHandler<TooManyRecentPasswordFailuresEvent>
     {
         public void Handle(TooManyRecentPasswordFailuresEvent evt)
