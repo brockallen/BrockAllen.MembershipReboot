@@ -21,6 +21,7 @@ namespace BrockAllen.MembershipReboot
         Type type;
         public ReflectionFactory(Type type)
         {
+            if (type == null) throw new ArgumentNullException("type");
             this.type = type;
         }
 

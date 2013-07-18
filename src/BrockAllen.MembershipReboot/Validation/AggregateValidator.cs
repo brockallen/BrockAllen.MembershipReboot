@@ -16,6 +16,9 @@ namespace BrockAllen.MembershipReboot
     {
         public ValidationResult Validate(UserAccountService service, UserAccount account, string value)
         {
+            if (service == null) throw new ArgumentNullException("service");
+            if (account == null) throw new ArgumentNullException("account");
+            
             var list = new List<ValidationResult>();
             foreach (var item in this)
             {
