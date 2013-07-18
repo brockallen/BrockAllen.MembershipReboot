@@ -66,10 +66,11 @@
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Notification\IMessageFormatter.cs" />
     <Compile Include="Notification\Email\EmailMessageFormatter.cs" />
-    <Compile Include="Repository\EF\DbContextRepository`2.cs" />
-    <Compile Include="Repository\EF\EFMembershipRebootDatabase.cs" />
-    <Compile Include="Repository\EF\EFUserAccountRepository.cs" />
+    <Compile Include="Repository\EF\DbContextRepository`1.cs" />
+    <Compile Include="Repository\EF\DefaultMembershipRebootDatabase.cs" />
+    <Compile Include="Repository\EF\DbContextUserAccountRepository`1.cs" />
     <Compile Include="Repository\EventBusRepository.cs" />
+    <Compile Include="Repository\EventBusUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Accounts\Deprecated\BasicPasswordPolicy.cs" />
     <Compile Include="Accounts\UserAccountValidation.cs" />

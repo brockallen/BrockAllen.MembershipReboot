@@ -26,7 +26,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var settings = SecuritySettings.Instance;
             settings.MultiTenant = false;
             
-            var config = new MembershipRebootConfiguration(settings, new DelegateFactory(()=>new EFUserAccountRepository(settings.ConnectionStringName)));
+            var config = new MembershipRebootConfiguration(settings, new DelegateFactory(()=>new DefaultUserAccountRepository(settings.ConnectionStringName)));
             config.RegisterPasswordValidator(new PasswordValidator());
             var delivery = new SmtpMessageDelivery();
             var formatter = new EmailMessageFormatter(new Lazy<ApplicationInformation>(() =>

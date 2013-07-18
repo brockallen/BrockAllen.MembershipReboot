@@ -19,7 +19,7 @@ namespace LinkedAccounts
             builder.RegisterType<ClaimsBasedAuthenticationService>();
 
             builder
-                .RegisterType<EFUserAccountRepository>()
+                .RegisterType<DefaultUserAccountRepository>()
                 .As<IUserAccountRepository>()
                 .InstancePerHttpRequest();
             

@@ -14,7 +14,7 @@ namespace BrockAllen.MembershipReboot.Mvc
     {
         protected void Application_Start()
         {
-            Database.SetInitializer<EFMembershipRebootDatabase>(new CreateDatabaseIfNotExists<EFMembershipRebootDatabase>());
+            Database.SetInitializer<DefaultMembershipRebootDatabase>(new CreateDatabaseIfNotExists<DefaultMembershipRebootDatabase>());
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
 
             AreaRegistration.RegisterAllAreas();
@@ -28,7 +28,7 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         private void InitDatabase()
         {
-            var svc = new UserAccountService(new MembershipRebootConfiguration(new EFUserAccountRepository(SecuritySettings.Instance.ConnectionStringName)));
+            var svc = new UserAccountService(new MembershipRebootConfiguration(new DefaultUserAccountRepository(SecuritySettings.Instance.ConnectionStringName)));
             if (svc.GetByUsername("admin") == null)
             {
                 var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");

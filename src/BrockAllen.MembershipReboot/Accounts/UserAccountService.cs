@@ -38,7 +38,7 @@ namespace BrockAllen.MembershipReboot
             this.Configuration = configuration;
 
             this.userRepository =
-                new UserAccountRepository(
+                new EventBusUserAccountRepository(
                     configuration.CreateUserAccountRepository(),
                     configuration.EventBus);
 

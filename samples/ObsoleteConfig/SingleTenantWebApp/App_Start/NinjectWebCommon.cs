@@ -54,7 +54,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         {
             kernel
                 .Bind<IUserAccountRepository>()
-                .ToMethod<EFUserAccountRepository>(ctx=>new EFUserAccountRepository(SecuritySettings.Instance.ConnectionStringName))
+                .ToMethod<DefaultUserAccountRepository>(ctx => new DefaultUserAccountRepository(SecuritySettings.Instance.ConnectionStringName))
                 .InRequestScope();
             
             //kernel.Bind<IMessageDelivery>().To<NopMessageDelivery>();

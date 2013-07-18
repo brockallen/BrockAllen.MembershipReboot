@@ -13,6 +13,18 @@ namespace BrockAllen.MembershipReboot
 {
     public class MembershipRebootConfiguration
     {
+        public MembershipRebootConfiguration(SecuritySettings securitySettings, Func<IUserAccountRepository> factoryFunc)
+            : this(securitySettings, new DelegateFactory(factoryFunc))
+        {
+            if (factoryFunc == null) throw new ArgumentNullException("factoryFunc");
+        }
+        
+        public MembershipRebootConfiguration(Func<IUserAccountRepository> factoryFunc)
+            : this(new DelegateFactory(factoryFunc))
+        {
+            if (factoryFunc == null) throw new ArgumentNullException("factoryFunc");
+        }
+
         public MembershipRebootConfiguration(SecuritySettings securitySettings, IFactory factory)
         {
             if (securitySettings == null) throw new ArgumentNullException("securitySettings");

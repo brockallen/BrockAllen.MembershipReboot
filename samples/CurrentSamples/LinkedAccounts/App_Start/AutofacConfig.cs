@@ -16,7 +16,7 @@ namespace LinkedAccounts
             var settings = SecuritySettings.Instance;
             settings.MultiTenant = false;
 
-            var config = new MembershipRebootConfiguration(settings, new DelegateFactory(() => new EFUserAccountRepository(settings.ConnectionStringName)));
+            var config = new MembershipRebootConfiguration(settings, new DelegateFactory(() => new DefaultUserAccountRepository(settings.ConnectionStringName)));
             return config;
         }
 
@@ -30,7 +30,7 @@ namespace LinkedAccounts
             builder.RegisterType<ClaimsBasedAuthenticationService>();
 
             builder
-                .Register<EFUserAccountRepository>(x=>new EFUserAccountRepository(config.SecuritySettings.ConnectionStringName))
+                .Register<DefaultUserAccountRepository>(x=>new DefaultUserAccountRepository(config.SecuritySettings.ConnectionStringName))
                 .As<IUserAccountRepository>()
                 .InstancePerHttpRequest();
 
