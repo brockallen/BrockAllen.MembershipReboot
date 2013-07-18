@@ -128,8 +128,7 @@ namespace BrockAllen.MembershipReboot
         }
 
         const string ResourcePathTemplate = "BrockAllen.MembershipReboot.Notification.Email.EmailTemplates.{0}.txt";
-
-        protected virtual string LoadTemplate(string name)
+        string LoadTemplate(string name)
         {
             name = String.Format(ResourcePathTemplate, name);
             
