@@ -256,69 +256,81 @@ namespace BrockAllen.MembershipReboot.Test.Models
         [TestClass]
         public class ResetPassword
         {
-            //[TestMethod]
-            //public void AccountNotVerified_ReturnsFail()
-            //{
-            //    var subject = new UserAccount();
-            //    subject.IsAccountVerified = false;
-            //    var result = subject.ResetPassword();
-            //    Assert.IsFalse(result);
-            //}
+            [TestMethod]
+            public void AccountNotVerified_RaisesAccountCreatedEvent()
+            {
+                var acct = new MockUserAccount();
 
-            //[TestMethod]
-            //public void AccountVerified_ReturnsSuccess()
-            //{
-            //    var subject = new UserAccount();
-            //    subject.IsAccountVerified = true;
-            //    var result = subject.ResetPassword();
-            //    Assert.IsTrue(result);
-            //}
+                acct.Object.ResetPassword();
 
-            //[TestMethod]
-            //public void AccountVerified_VerificationKeyStale_VerificationKeyReset()
-            //{
-            //    var subject = new MockUserAccount();
-            //    subject.Object.IsAccountVerified = true;
-            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(true);
-            //    subject.Setup(x => x.GenerateSalt()).Returns("salt");
-            //    var result = subject.Object.ResetPassword();
-            //    Assert.AreEqual("salt", subject.Object.VerificationKey);
-            //}
+                var es = acct.Object as IEventSource;
+                Assert.IsTrue(es.Events.Where(x => x is AccountCreatedEvent).Any());
+            }
+            
+            [TestMethod]
+            public void AccountVerified_RaisesPasswordResetRequestedEvent()
+            {
+                var acct = new MockUserAccount();
+                acct.VerifyAccount();
 
-            //[TestMethod]
-            //public void AccountVerified_VerificationKeyNotStale_VerificationKeyNotReset()
-            //{
-            //    var subject = new MockUserAccount();
-            //    subject.Object.IsAccountVerified = true;
-            //    subject.Object.VerificationKey = "key";
-            //    subject.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
-            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
-            //    var result = subject.Object.ResetPassword();
-            //    Assert.AreEqual("key", subject.Object.VerificationKey);
-            //}
+                acct.Object.ResetPassword();
 
-            //[TestMethod]
-            //public void AccountVerified_VerificationKeyStale_VerificationKeySentReset()
-            //{
-            //    var subject = new MockUserAccount();
-            //    subject.Object.IsAccountVerified = true;
-            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(true);
-            //    var now = new DateTime(2000, 2, 3);
-            //    subject.Setup(x => x.UtcNow).Returns(now);
-            //    var result = subject.Object.ResetPassword();
-            //    Assert.AreEqual(now, subject.Object.VerificationKeySent);
-            //}
-            //[TestMethod]
-            //public void AccountVerified_VerificationKeyNotStale_VerificationKeySentNotReset()
-            //{
-            //    var subject = new MockUserAccount();
-            //    subject.Object.IsAccountVerified = true;
-            //    subject.Setup(x => x.IsVerificationKeyStale).Returns(false);
-            //    var now = new DateTime(2000, 2, 3);
-            //    subject.Object.VerificationKeySent = now;
-            //    var result = subject.Object.ResetPassword();
-            //    Assert.AreEqual(now, subject.Object.VerificationKeySent);
-            //}
+                var es = acct.Object as IEventSource;
+                Assert.IsTrue(es.Events.Where(x => x is PasswordResetRequestedEvent).Any());
+            }
+
+            [TestMethod]
+            public void VerificationKeyIsNull_SetsVerificationKey()
+            {
+                var acct = new MockUserAccount();
+                acct.VerifyAccount();
+                
+                acct.Object.ResetPassword();
+
+                Assert.IsNotNull(acct.Object.VerificationKey);
+                Assert.AreEqual(VerificationKeyPurpose.ChangePassword, acct.Object.VerificationPurpose);
+            }
+            [TestMethod]
+            public void VerificationKeyIsOld_SetsVerificationKey()
+            {
+                var acct = new MockUserAccount();
+                acct.Object.IsAccountVerified = true;
+                acct.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
+                acct.Object.VerificationKeySent = DateTime.Now.AddYears(-1);
+                acct.Object.VerificationKey = "foo";
+                
+                acct.Object.ResetPassword();
+
+                Assert.AreNotEqual("foo", acct.Object.VerificationKey);
+                Assert.IsNotNull(acct.Object.VerificationKey);
+                Assert.AreEqual(VerificationKeyPurpose.ChangePassword, acct.Object.VerificationPurpose);
+            }
+            [TestMethod]
+            public void VerificationPurposeNotChangePassword_CallsSetVerificationKey()
+            {
+                var acct = new MockUserAccount();
+                acct.Object.IsAccountVerified = true;
+                acct.Object.SetVerificationKey(VerificationKeyPurpose.ChangeEmail);
+
+                acct.Object.ResetPassword();
+
+                Assert.IsNotNull(acct.Object.VerificationKey);
+                Assert.AreEqual(VerificationKeyPurpose.ChangePassword, acct.Object.VerificationPurpose);
+            }
+
+            [TestMethod]
+            public void VerificationNotStale_DoesNotCallsSetVerificationKey()
+            {
+                var acct = new MockUserAccount();
+                acct.Object.IsAccountVerified = true;
+                acct.Object.SetVerificationKey(VerificationKeyPurpose.ChangePassword);
+                acct.Object.VerificationKey = "foo";
+
+                acct.Object.ResetPassword();
+
+                Assert.AreEqual("foo", acct.Object.VerificationKey);
+                Assert.AreEqual(VerificationKeyPurpose.ChangePassword, acct.Object.VerificationPurpose);
+            }
         }
 
         [TestClass]

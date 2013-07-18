@@ -196,7 +196,7 @@ namespace BrockAllen.MembershipReboot
             {
                 // if there's no current key, or if there is a key but 
                 // it's older than one day, create a new reset key
-                if (IsVerificationKeyStale)
+                if (IsVerificationKeyStale || VerificationKeyPurpose.ChangePassword != this.VerificationPurpose)
                 {
                     Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
                     this.SetVerificationKey(VerificationKeyPurpose.ChangePassword);
