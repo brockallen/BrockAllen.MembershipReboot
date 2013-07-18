@@ -51,7 +51,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                 config.AddEventHandler(new EmailAccountCreatedEventHandler(formatter, delivery));
             }
             config.AddEventHandler(new EmailAccountEventsHandler(formatter, delivery));
-            
+            config.AddEventHandler(new AuthenticationAuditEventHandler());
+
             return config;
         }
     }
