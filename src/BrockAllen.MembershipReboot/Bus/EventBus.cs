@@ -30,13 +30,13 @@ namespace BrockAllen.MembershipReboot
 
             if (!actionCache.ContainsKey(paramType))
             {
-                actionCache.Add(paramType, BuildActionForMethod(paramType, method));
+                actionCache.Add(paramType, BuildActionForMethod(paramType));
             }
 
             return actionCache[paramType];
         }
 
-        private Action<TargetBase, ParamBase> BuildActionForMethod(Type paramType, string method)
+        private Action<TargetBase, ParamBase> BuildActionForMethod(Type paramType)
         {
             var handlerType = targetType.MakeGenericType(paramType);
 
