@@ -1,0 +1,7 @@
+﻿This email is to confirm that your username has been changed for your account with {applicationName}.
+
+New Username: {username}
+
+Thanks!
+
+{emailSignature}

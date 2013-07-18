@@ -1,0 +1,13 @@
+﻿This email is to confirm an email change for your account with {applicationName}.
+
+Username: {username}
+Old Email: {oldEmail}
+New Email: {newEmail}
+
+Please click here to confirm your email change request:
+
+{confirmChangeEmailUrl}
+
+Thanks!
+
+{emailSignature}

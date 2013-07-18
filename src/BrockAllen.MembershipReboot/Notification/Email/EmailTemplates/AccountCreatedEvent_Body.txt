@@ -1,0 +1,15 @@
+﻿You (or someone) requested an account to be created with {applicationName}.
+
+Username: {username}
+
+Please click here to confirm your request so you can login: 
+
+{confirmAccountCreateUrl}
+
+If you did not create this account click here to cancel this request:
+
+{cancelNewAccountUrl}
+
+Thanks!
+
+{emailSignature}

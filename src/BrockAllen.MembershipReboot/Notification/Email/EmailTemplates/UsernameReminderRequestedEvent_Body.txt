@@ -1,0 +1,11 @@
+﻿You (or someone else) requested a reminder for your username from {applicationName}.
+
+Username: {username}
+
+You can click here to login:
+
+{loginUrl}
+
+Thanks!
+
+{emailSignature}

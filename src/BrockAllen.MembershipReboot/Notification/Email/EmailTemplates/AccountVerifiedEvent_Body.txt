@@ -1,0 +1,11 @@
+﻿Your account has been verified with {applicationName}.
+
+Username: {username}
+
+You can now login at this address:
+
+{loginUrl}
+
+Thanks!
+
+{emailSignature}
