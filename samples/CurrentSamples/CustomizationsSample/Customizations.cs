@@ -109,5 +109,27 @@ namespace BrockAllen.MembershipReboot.Mvc
         }
     }
 
+    // customize default email messages
+    public class CustomEmailMessageFormatter : EmailMessageFormatter
+    {
+        public CustomEmailMessageFormatter(Lazy<ApplicationInformation> info)
+            : base(info)
+        {
+        }
 
+        protected override string GetBody(UserAccountEvent evt)
+        {
+            if (evt is AccountVerifiedEvent)
+            {
+                return "your account was verified with " + this.ApplicationInformation.ApplicationName + ". good for you.";
+            }
+
+            if (evt is AccountClosedEvent)
+            {
+                return FormatValue(evt, "your account was closed with {applicationName}. good riddance.");
+            }
+
+            return base.GetBody(evt);
+        }
+    }
 }

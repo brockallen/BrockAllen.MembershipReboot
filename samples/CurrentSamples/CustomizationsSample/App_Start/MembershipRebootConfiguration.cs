@@ -28,8 +28,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             
             var config = new MembershipRebootConfiguration(settings, ()=>new CustomRepository());
             config.RegisterPasswordValidator(new PasswordValidator());
+
             var delivery = new SmtpMessageDelivery();
-            var formatter = new EmailMessageFormatter(new Lazy<ApplicationInformation>(() =>
+            var formatter = new CustomEmailMessageFormatter(new Lazy<ApplicationInformation>(() =>
             {
                 // build URL
                 var baseUrl = HttpContext.Current.GetApplicationUrl();
@@ -46,6 +47,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                     ConfirmChangeEmailUrl = baseUrl + "ChangeEmail/Confirm/"
                 };
             }));
+
             if (settings.RequireAccountVerification)
             {
                 config.AddEventHandler(new EmailAccountCreatedEventHandler(formatter, delivery));
