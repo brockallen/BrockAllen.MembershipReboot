@@ -6,6 +6,7 @@ using System.Web;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {
+    // this shows the extensibility point of being able to use a custom database/dbcontext
     public class SomeOtherEntity
     {
         public int ID { get; set; }
@@ -54,6 +55,7 @@ namespace BrockAllen.MembershipReboot.Mvc
         //}
     }
 
+    // this shows the extensibility point of being notified of account activity
     public class AuthenticationAuditEventHandler :
         IEventHandler<SuccessfulLoginEvent>,
         IEventHandler<FailedLoginEvent>
@@ -90,4 +92,22 @@ namespace BrockAllen.MembershipReboot.Mvc
             }
         }
     }
+
+    public class NotifcyAccountOwnerWhenTooManyFailedLoginAttempts
+        : IEventHandler<TooManyRecentPasswordFailuresEvent>
+    {
+        public void Handle(TooManyRecentPasswordFailuresEvent evt)
+        {
+            var smtp = new SmtpMessageDelivery();
+            var msg = new Message
+            {
+                To = evt.Account.Email,
+                Subject = "Your Account",
+                Body = "It seems someone has tried to login too many times to your account. It's currently locked. Blah, blah..."
+            };
+            smtp.Send(msg);
+        }
+    }
+
+
 }
