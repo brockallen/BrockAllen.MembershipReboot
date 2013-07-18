@@ -107,6 +107,24 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="license.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountClosedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\PasswordChangedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\PasswordResetRequestedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\UsernameChangedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\UsernameReminderRequestedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\EmailChangeRequestedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\EmailChangedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\PasswordChangedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\UsernameReminderRequestedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountClosedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\EmailChangeRequestedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\EmailChangedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\UsernameChangedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\PasswordResetRequestedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountVerifiedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountVerifiedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Body.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
