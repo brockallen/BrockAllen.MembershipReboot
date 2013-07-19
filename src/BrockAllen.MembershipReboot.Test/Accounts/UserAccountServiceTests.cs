@@ -79,6 +79,18 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Object.ValidateUsername(new MockUserAccount().Object, "foo");
                 Assert.IsTrue(wasCalled);
             }
+            
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void ValidatorFailure_Throws()
+            {
+                var mockVal = new Mock<IValidator>();
+                mockVal.Setup(x => x.Validate(It.IsAny<UserAccountService>(), It.IsAny<UserAccount>(), It.IsAny<String>())).Returns(new ValidationResult("error"));
+                var sub = new MockUserAccountService();
+                sub.Configuration.RegisterUsernameValidator(mockVal.Object);
+
+                sub.Object.ValidateUsername(new MockUserAccount().Object, "foo");
+            }
         }
         [TestClass]
         public class ValidateEmail
@@ -97,6 +109,18 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Object.ValidateEmail(new MockUserAccount().Object, "foo@foo.com");
                 Assert.IsTrue(wasCalled);
             }
+
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void ValidatorFailure_Throws()
+            {
+                var mockVal = new Mock<IValidator>();
+                mockVal.Setup(x => x.Validate(It.IsAny<UserAccountService>(), It.IsAny<UserAccount>(), It.IsAny<String>())).Returns(new ValidationResult("error"));
+                var sub = new MockUserAccountService();
+                sub.Configuration.RegisterEmailValidator(mockVal.Object);
+                
+                sub.Object.ValidateEmail(new MockUserAccount().Object, "foo@foo.com");
+            }
         }
         [TestClass]
         public class ValidatePassword
@@ -114,6 +138,17 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                     }));
                 sub.Object.ValidatePassword(new MockUserAccount().Object, "foo");
                 Assert.IsTrue(wasCalled);
+            }
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void ValidatorFailure_Throws()
+            {
+                var mockVal = new Mock<IValidator>();
+                mockVal.Setup(x => x.Validate(It.IsAny<UserAccountService>(), It.IsAny<UserAccount>(), It.IsAny<String>())).Returns(new ValidationResult("error"));
+                var sub = new MockUserAccountService();
+                sub.Configuration.RegisterPasswordValidator(mockVal.Object);
+
+                sub.Object.ValidatePassword(new MockUserAccount().Object, "foo");
             }
         }
 
@@ -296,7 +331,7 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
         public class GetByID
         {
             [TestMethod]
-            public void CallsRepositoryGetAndReturnsAccount()
+            public void GuidParam_CallsRepositoryGetAndReturnsAccount()
             {
                 var sub = new MockUserAccountService();
                 var ua = new UserAccount();
@@ -304,6 +339,26 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 var result = sub.Object.GetByID(a);
                 sub.UserAccountRepository.Verify(x => x.Get(a));
                 Assert.AreSame(ua, result);
+            }
+
+            [TestMethod]
+            public void StringParam_CallsRepositoryGetAndReturnsAccount()
+            {
+                var sub = new MockUserAccountService();
+                var ua = new UserAccount();
+                sub.UserAccountRepository.Setup(x => x.Get(a)).Returns(ua);
+                var result = sub.Object.GetByID(a.ToString());
+                sub.UserAccountRepository.Verify(x => x.Get(a));
+                Assert.AreSame(ua, result);
+            }
+            [TestMethod]
+            public void BadStringParam_ReturnsNull()
+            {
+                var sub = new MockUserAccountService();
+                var ua = new UserAccount();
+                sub.UserAccountRepository.Setup(x => x.Get(a)).Returns(ua);
+                var result = sub.Object.GetByID("not a guid");
+                Assert.IsNull(result);
             }
         }
 
@@ -1514,18 +1569,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
                 sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
-            //[TestMethod]
-            //public void UserAccountChangeEmailFromKeyFail_SendEmailChangedNoticeNotCalled()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var account = new MockUserAccount();
-            //    sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-            //    sub.Mock.Setup(x => x.Authenticate(It.IsAny<UserAccount>(), It.IsAny<string>())).Returns(true);
-            //    account.Setup(x => x.ChangeEmailFromKey(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
-            //    sub.Object.ChangeEmailFromKey("pass", "key", "email@test.com");
-            //    sub.NotificationService.Verify(x => x.SendEmailChangedNotice(It.IsAny<UserAccount>(), It.IsAny<string>()), Times.Never());
-            //}
 
             [TestMethod]
             public void EmailIsUsername_AllowEmailChangeWhenEmailIsUsername_WhenSuccess_UpdatesUsername()
