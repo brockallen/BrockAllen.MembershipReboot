@@ -1279,59 +1279,54 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
         [TestClass]
         public class SendUsernameReminder
         {
+            [TestMethod]
+            public void NoTenantParam_PassesNullTenant()
+            {
+                var sub = new MockUserAccountService();
+                try
+                {
+                    sub.Object.SendUsernameReminder("email");
+                }
+                catch { }
+                sub.Mock.Verify(x => x.SendUsernameReminder(null, "email"));
+            }
 
-            //[TestMethod]
-            //public void NoTenantParam_PassesNullTenant()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    try
-            //    {
-            //        sub.Object.SendUsernameReminder("email");
-            //    }
-            //    catch { }
-            //    sub.Mock.Verify(x => x.SendUsernameReminder(null, "email"));
-            //}
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentNullException))]
+            public void MultiTenantEnabled_NullTenantParam_DoesNotSendAccountNameReminder()
+            {
+                var sub = new MockUserAccountService();
+                sub.SecuritySettings.MultiTenant = true;
 
-            //[TestMethod]
-            //public void MultiTenantEnabled_NullTenantParam_DoesNotSendAccountNameReminder()
-            //{
-            //    sub.SecuritySettings.MultiTenant = true;
+                sub.Object.SendUsernameReminder(null, "email");
+            }
 
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    sub.Object.SendUsernameReminder(null, "email");
-            //    sub.NotificationService.Verify(x => x.SendAccountNameReminder(It.IsAny<UserAccount>()), Times.Never());
-            //}
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void NullEmailParam_DoesNotSendAccountNameReminder()
+            {
+                var sub = new MockUserAccountService();
+                sub.Object.SendUsernameReminder(null);
+            }
 
-            //[TestMethod]
-            //public void NullEmailParam_DoesNotSendAccountNameReminder()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    sub.Object.SendUsernameReminder(null);
-            //    sub.NotificationService.Verify(x => x.SendAccountNameReminder(It.IsAny<UserAccount>()), Times.Never());
-            //}
+            [TestMethod]
+            [ExpectedException(typeof(ValidationException))]
+            public void NoAccountFound_DoesNotSendAccountNameReminder()
+            {
+                var sub = new MockUserAccountService();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
+                sub.Object.SendUsernameReminder("email");
+            }
 
-            //[TestMethod]
-            //public void NoAccountFound_DoesNotSendAccountNameReminder()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns((UserAccount)null);
-            //    sub.Object.SendUsernameReminder("email");
-            //    sub.NotificationService.Verify(x => x.SendAccountNameReminder(It.IsAny<UserAccount>()), Times.Never());
-            //}
-            //[TestMethod]
-            //public void AccountFound_DoesNotSendAccountNameReminder()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    UserAccount account = new UserAccount();
-            //    sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account);
-            //    sub.Object.SendUsernameReminder("email");
-            //    sub.NotificationService.Verify(x => x.SendAccountNameReminder(account));
-            //}
+            [TestMethod]
+            public void AccountFound_DoesNotSendAccountNameReminder()
+            {
+                var sub = new MockUserAccountService();
+                MockUserAccount account = new MockUserAccount();
+                sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
+                sub.Object.SendUsernameReminder("email");
+                account.Verify(x => x.SendAccountNameReminder());
+            }
         }
 
         [TestClass]

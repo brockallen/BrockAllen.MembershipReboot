@@ -673,7 +673,7 @@ namespace BrockAllen.MembershipReboot
                 tenant = SecuritySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentNullException("tenant");
             if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Invalid email.");
 
             var account = this.GetByEmail(tenant, email);
