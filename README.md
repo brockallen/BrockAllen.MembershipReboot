@@ -11,6 +11,7 @@ Some of the features of MembershipReboot are:
 * extensible email verification for account activity
 * extensible username, password and email validation
 * extensible account audit support
+* account linking with external identity providers (enterprise or social)
 * proper password storage (via PBKDF2)
 	* configurable iterations
 	* defaults to OWASP recommendations for iterations (e.g. 64K in year 2012)
