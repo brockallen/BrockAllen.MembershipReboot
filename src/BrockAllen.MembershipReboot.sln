@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5AE0A7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Test", "BrockAllen.MembershipReboot.Test\BrockAllen.MembershipReboot.Test.csproj", "{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Extensions", "BrockAllen.MembershipReboot.Extensions\BrockAllen.MembershipReboot.Extensions.csproj", "{74224972-4DE3-46B2-AC6E-F8C507464E81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74224972-4DE3-46B2-AC6E-F8C507464E81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74224972-4DE3-46B2-AC6E-F8C507464E81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74224972-4DE3-46B2-AC6E-F8C507464E81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74224972-4DE3-46B2-AC6E-F8C507464E81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
