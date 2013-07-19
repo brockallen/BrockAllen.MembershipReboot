@@ -556,7 +556,6 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) throw new ValidationException("Invalid username.");
             if (String.IsNullOrWhiteSpace(newPassword)) throw new ValidationException("Invalid newPassword.");
 
-            //ValidatePassword(tenant, username, newPassword);
             var account = this.GetByUsername(tenant, username);
             if (account == null) throw new ValidationException("Invalid username.");
 
