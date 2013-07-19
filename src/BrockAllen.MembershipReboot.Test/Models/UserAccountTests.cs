@@ -176,6 +176,17 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 Assert.AreEqual("test1", subject.VerificationKey);
                 Assert.AreEqual(sent, subject.VerificationKeySent);
             }
+
+            [TestMethod]
+            public void VerificationPurposeIsNotVerifyAccount_Fails()
+            {
+                var sub = new MockUserAccount("t1", "user", "pass", "email");
+                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangePassword;
+                
+                var result = sub.Object.VerifyAccount(sub.Object.VerificationKey);
+
+                Assert.IsFalse(result);
+            }
         }
 
         [TestClass]
@@ -676,6 +687,8 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 var sub = new UserAccount();
                 var result = sub.ChangeEmailRequest("");
             }
+
+
             //[Ignore]
             //[TestMethod]
             //[ExpectedException(typeof(ValidationException))]
@@ -1356,6 +1369,58 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 subject.Object.PasswordChanged = now.AddDays(-40);
                 Assert.IsTrue(subject.Object.GetIsPasswordExpired(30));
             }
+        }
+
+        [TestClass]
+        public class SendAccountNameReminder
+        {
+            [TestMethod]
+            public void RaisesUsernameReminderRequestedEvent()
+            {
+                var ua = new UserAccount();
+                
+                ua.SendAccountNameReminder();
+                
+                IEventSource es = ua as IEventSource;
+                Assert.IsTrue(es.Events.Any(x => x is UsernameReminderRequestedEvent));
+            }
+        }
+
+        [TestClass]
+        public class ChangeUsername
+        {
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentNullException))]
+            public void NewUsernameIsNull_Throws()
+            {
+                var sub = new UserAccount();
+                
+                sub.ChangeUsername(null);
+            }
+
+            [TestMethod]
+            public void RaisesUsernameChangedEvent()
+            {
+                var ua = new UserAccount();
+
+                ua.ChangeUsername("foo");
+
+                IEventSource es = ua as IEventSource;
+                Assert.IsTrue(es.Events.Any(x => x is UsernameChangedEvent));
+            }
+            
+            [TestMethod]
+            public void NameIsAssigned()
+            {
+                var ua = new UserAccount();
+                ua.Username = "bar";
+
+                ua.ChangeUsername("foo");
+
+                Assert.AreEqual("foo", ua.Username);
+            }
+
+
         }
     }
 }
