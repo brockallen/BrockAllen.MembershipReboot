@@ -63,6 +63,61 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
         }
 
         [TestClass]
+        public class ValidateUsername
+        {
+            [TestMethod]
+            public void CallsAllValidators()
+            {
+                bool wasCalled = false;
+                var sub = new MockUserAccountService();
+                sub.Configuration.RegisterUsernameValidator(
+                    new DelegateValidator((svc, ua, val) =>
+                    {
+                        wasCalled = true;
+                        return null;
+                    }));
+                sub.Object.ValidateUsername(new MockUserAccount().Object, "foo");
+                Assert.IsTrue(wasCalled);
+            }
+        }
+        [TestClass]
+        public class ValidateEmail
+        {
+            [TestMethod]
+            public void CallsAllValidators()
+            {
+                bool wasCalled = false;
+                var sub = new MockUserAccountService();
+                sub.Configuration.RegisterEmailValidator(
+                    new DelegateValidator((svc, ua, val) =>
+                    {
+                        wasCalled = true;
+                        return null;
+                    }));
+                sub.Object.ValidateEmail(new MockUserAccount().Object, "foo@foo.com");
+                Assert.IsTrue(wasCalled);
+            }
+        }
+        [TestClass]
+        public class ValidatePassword
+        {
+            [TestMethod]
+            public void CallsAllValidators()
+            {
+                bool wasCalled = false;
+                var sub = new MockUserAccountService();
+                sub.Configuration.RegisterPasswordValidator(
+                    new DelegateValidator((svc, ua, val) =>
+                    {
+                        wasCalled = true;
+                        return null;
+                    }));
+                sub.Object.ValidatePassword(new MockUserAccount().Object, "foo");
+                Assert.IsTrue(wasCalled);
+            }
+        }
+
+        [TestClass]
         public class GetAll
         {
             [TestMethod]
@@ -506,16 +561,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Object.CreateAccount("tenant", "user", "pass", "");
             }
 
-            //[TestMethod]
-            //[ExpectedException(typeof(ValidationException))]
-            //public void WithPasswordPolicy_PasswordNotValid_Throws()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.PasswordPolicy = new Mock<IPasswordPolicy>();
-            //    sub.PasswordPolicy.Setup(x => x.ValidatePassword(It.IsAny<string>())).Returns(false);
-            //    sub.Object.CreateAccount("user", "pass", "email@test.com");
-            //}
-
             [TestMethod]
             [ExpectedException(typeof(ValidationException))]
             public void InvalidEmail_Throws()
@@ -599,27 +644,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 Assert.AreEqual("email@test.com", result.Email);
             }
 
-            //[TestMethod]
-            //public void RequireAccountVerification_NotificationServiceSendAccountCreateIsCalled()
-            //{
-            //    sub.SecuritySettings.RequireAccountVerification = true;
-
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
-            //    sub.NotificationService.Verify(x => x.SendAccountCreate(result));
-            //}
-            //[TestMethod]
-            //public void DoNotRequireAccountVerification_NotificationServiceSendAccountVerifiedIsCalled()
-            //{
-            //    sub.SecuritySettings.RequireAccountVerification = false;
-
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var result = sub.Object.CreateAccount("user", "pass", "email@test.com");
-            //    sub.NotificationService.Verify(x => x.SendAccountVerified(result));
-            //}
-
             [TestMethod]
             public void IsAccountVerified_SetProperly()
             {
@@ -679,35 +703,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
         }
 
         [TestClass]
-        public class ValidatePassword
-        {
-            //[TestMethod]
-            //public void NoPasswordPolicy_NoThrow()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.Object.ValidatePassword("ten", "user", "pass");
-            //}
-
-            //[TestMethod]
-            //public void PasswordPolicy_Passes_NoThrow()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.PasswordPolicy = new Mock<IPasswordPolicy>();
-            //    sub.PasswordPolicy.Setup(x => x.ValidatePassword(It.IsAny<string>())).Returns(true);
-            //    sub.Object.ValidatePassword("ten", "user", "pass");
-            //}
-            //[TestMethod]
-            //[ExpectedException(typeof(ValidationException))]
-            //public void PasswordPolicy_DoesntPass_Throws()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.PasswordPolicy = new Mock<IPasswordPolicy>();
-            //    sub.PasswordPolicy.Setup(x => x.ValidatePassword(It.IsAny<string>())).Returns(false);
-            //    sub.Object.ValidatePassword("ten", "user", "pass");
-            //}
-        }
-
-        [TestClass]
         public class VerifyAccount
         {
             [TestMethod]
@@ -749,20 +744,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 account.Setup(x => x.VerifyAccount(It.IsAny<string>())).Returns(false);
                 Assert.IsFalse(sub.Object.VerifyAccount("key"));
             }
-
-            //[TestMethod]
-            //public void VerifyFails_DoesNotCallNotificationService()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var account = new MockUserAccount();
-            //    sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-            //    account.Setup(x => x.VerifyAccount(It.IsAny<string>())).Returns(false);
-
-            //    sub.Object.VerifyAccount("key");
-
-            //    sub.NotificationService.Verify(x => x.SendAccountVerified(It.IsAny<UserAccount>()), Times.Never());
-            //}
         }
 
         [TestClass]
@@ -927,16 +908,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 account.Verify(x => x.CloseAccount());
                 sub.UserAccountRepository.Verify(x => x.Update(account.Object));
             }
-            //[TestMethod]
-            //public void CallsSendAccountDelete()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var account = new UserAccount();
-            //    sub.Object.DeleteAccount(account);
-
-            //    sub.NotificationService.Verify(x => x.SendAccountDelete(account));
-            //}
         }
 
         [TestClass]
@@ -1064,19 +1035,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Object.SetPassword("user", null);
             }
 
-            //[TestMethod]
-            //public void ValidatePassCalled()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    try
-            //    {
-            //        sub.Object.SetPassword("user", "pass");
-            //    }
-            //    catch { }
-
-            //    sub.Mock.Verify(x => x.ValidatePassword(It.IsAny<UserAccount>(), "pass"));
-            //}
-
             [TestMethod]
             [ExpectedException(typeof(ValidationException))]
             public void NoUser_Throws()
@@ -1103,16 +1061,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Object.SetPassword("user", "pass");
                 sub.UserAccountRepository.Verify(x => x.Update(user.Object));
             }
-            //[TestMethod]
-            //public void NotificationServicedCalled()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var user = new MockUserAccount(sub.SecuritySettings.DefaultTenant, "user", "foo", "user@foo.com");
-            //    sub.MockUserAccounts(user.Object);
-            //    sub.Object.SetPassword("user", "pass");
-            //    sub.NotificationService.Verify(x => x.SendPasswordChangeNotice(user.Object));
-            //}
         }
 
         [TestClass]
@@ -1151,14 +1099,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 var sub = new MockUserAccountService();
                 Assert.IsFalse(sub.Object.ChangePassword("user", "old", null));
             }
-            //[TestMethod]
-            //[ExpectedException(typeof(ValidationException))]
-            //public void ValidatePasswordFails_Throws()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.Mock.Setup(x => x.ValidatePassword(It.IsAny<UserAccount>(), It.IsAny<string>())).Throws(new ValidationException());
-            //    sub.Object.ChangePassword("user", "old", "new");
-            //}
             [TestMethod]
             public void NoAccountFound_ReturnsFail()
             {
@@ -1246,42 +1186,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Object.ResetPassword("email");
             }
 
-            //[TestMethod]
-            //[ExpectedException(typeof(ValidationException))]
-            //public void AccountNotVerified_Throws()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    var account = new MockUserAccount();
-            //    sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-            //    account.Object.IsAccountVerified = false;
-            //    sub.Object.ResetPassword("email");
-            //}
-
-            //[TestMethod]
-            //public void AccountNotVerified_SendAccountCreateCalled()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var account = new MockUserAccount();
-            //    sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-            //    account.Object.IsAccountVerified = false;
-            //    sub.Object.ResetPassword("email");
-            //    sub.NotificationService.Verify(x => x.SendAccountCreate(account.Object));
-            //}
-            //[TestMethod]
-            //public void AccountNotVerified_DoNotRequireAccountVerification_SendAccountCreateNotCalled()
-            //{
-            //    sub.SecuritySettings.RequireAccountVerification = false;
-
-            //    var sub = new MockUserAccountService();
-            //    sub.NotificationService = new Mock<INotificationService>();
-            //    var account = new MockUserAccount();
-            //    sub.Mock.Setup(x => x.GetByEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(account.Object);
-            //    account.Object.IsAccountVerified = false;
-            //    sub.Object.ResetPassword("email");
-            //    sub.NotificationService.Verify(x => x.SendAccountCreate(It.IsAny<UserAccount>()), Times.Never());
-            //}
-
             [TestMethod]
             public void AccountVerified_UserAccountResetPasswordCalled()
             {
@@ -1326,16 +1230,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
                 sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns((UserAccount)null);
                 Assert.IsFalse(sub.Object.ChangePasswordFromResetKey("key", "new"));
             }
-            //[TestMethod]
-            //[ExpectedException(typeof(ValidationException))]
-            //public void PasswordValidationFails_Throws()
-            //{
-            //    var sub = new MockUserAccountService();
-            //    var account = new MockUserAccount();
-            //    sub.Mock.Setup(x => x.GetByVerificationKey(It.IsAny<string>())).Returns(account.Object);
-            //    sub.Mock.Setup(x => x.ValidatePassword(It.IsAny<UserAccount>(), It.IsAny<string>())).Throws(new ValidationException());
-            //    sub.Object.ChangePasswordFromResetKey("key", "new");
-            //}
             [TestMethod]
             public void ChangePasswordFromResetKeyCalledOnUserAccount()
             {
@@ -1385,6 +1279,7 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
         [TestClass]
         public class SendUsernameReminder
         {
+
             //[TestMethod]
             //public void NoTenantParam_PassesNullTenant()
             //{
