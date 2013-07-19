@@ -59,7 +59,7 @@ and
 MembershipReboot allows for some flexibility in how it manages user accounts via its SecuritySettings class. It has these properties:
 
 * ConnectionStringName (string)
-	* the connection string to if using the default database
+	* the connection string to use if using the default database
 * MultiTenant (bool)
 	* if the deployment is to support multi-tenant
 * DefaultTenant (string)
