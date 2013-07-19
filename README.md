@@ -1,22 +1,35 @@
 # What is MembershipReboot
 
-The BrockAllen.MembershipReboot project is intended as an on-premise user account and identity management library. It has nothing to do with the ASP.NET Membership Provider (but was inspired by it). MembershipReboot is claims-aware and uses password stretching for proper password storage.
+The MembershipReboot project is intended as a user account and identity management library. It has nothing to do with the ASP.NET Membership Provider (but was inspired by it).
 
-The most common use case will be to integrate this into an ASP.NET or ASP.NET MVC applcation, though the library can also be used over a network as a service.
+MembershipReboot was initiated due to frustrations with the built-in ASP.NET Membership system. The goals are to improve upon and provide missing features from ASP.NET Membership.
 
-## Background
+Some of the features of MembershipReboot are:
 
-The MembershipReboot project heavily uses claims and some related concepts. If you need a primer before diving in, we suggest the following one-hour video by Dominick Baier: 
+* multi-tenant account management
+* claims-based identity management
+* extensible email verification for account activity
+* extensible username, password and email validation
+* extensible account audit support
+* proper password storage (via PBKDF2)
+	* configurable iterations
+	* defaults to OWASP recommendations for iterations (e.g. 64K in year 2012)
+
+The most common use case will be to integrate this into an ASP.NET or ASP.NET MVC application, though the library can also be used over a network as a service.
+
+# Getting Started with MembershipReboot
+
+There is a core project (BrockAllen.MembershipReboot), a unit test project and several sample applications demonstrating various use-cases. The best way to see MembershipReboot in action is to start with the SingleTenantWebApp sample in BrockAllen.MembershipReboot\samples\CurrentSamples.
+
+## MembershipReboot, Claims and Windows Identity Foundation (WIF)
+
+MembershipReboot is intended to support modern identity management, thus it heavily uses claims and some related concepts based upon Windows Identity Foundation in .NET 4.5. If you need a primer before diving in, we suggest the following one-hour video by Dominick Baier: 
 
 [Authentication & Authorization in .NET 4.5 - Claims & Tokens become the standard Model](http://vimeo.com/43549130)
 
-# Getting Started with  MembershipReboot
-
-There is a core project (BrockAllen.MembershipReboot) and a sample application (BrockAllen.MembershipReboot.Mvc) demonstrating proper use.
-
 ## WIF Configuration
 
-The sample application's Web.config shows proper configuration of WIF which includes both of the following:
+The sample application's web.config shows proper configuration of WIF which includes both of the following:
 
 ```xml
   <configSections>
@@ -40,18 +53,41 @@ and
   </system.webServer>
 ```
 
-## Username Configuration
+## MembershipReboot Configuration
 
-Some applications will want to have a username that is distinct from an email address, but others will want to combine these. This can be configured by setting the _EmailIsUsername_ configuration value in Web.config. 
-This value is later picked up within https://github.com/brockallen/BrockAllen.MembershipReboot/blob/master/BrockAllen.MembershipReboot/Services/Accounts/SecuritySettings.cs in the following code:
+MembershipReboot allows for some flexibility in how it manages user accounts via its SecuritySettings class. It has these properties:
 
-```C#
-  EmailIsUsername = GetAppSettings("EmailIsUsername", false);
-```
+* ConnectionStringName (string)
+	* the connection string to if using the default database
+* MultiTenant (bool)
+	* if the deployment is to support multi-tenant
+* DefaultTenant (string)
+	* the default tenant to use if one is not provided in the various APIs
+* EmailIsUsername (bool)
+	* is the identifier used for authentication intended to be an email address
+* UsernamesUniqueAcrossTenants
+	* even in a multi-tenant scenario, usernames must be unique
+* RequireAccountVerification (bool)
+	* requires a user's email address to be verified before then can login
+* AllowLoginAfterAccountCreation (bool)
+	* can a user login after account creation, or must they be approved first
+* AccountLockoutFailedLoginAttempts (integer)
+	* number of failed login attempts before the account is locked out
+* AccountLockoutDuration (TimeSpan)
+	* duration an account is locked out when the AccountLockoutFailedLoginAttempts is met
+* AllowAccountDeletion (bool)
+	* allow permanent account deletion in the database (or just use a "closed" flag)
+* PasswordHashingIterationCount (integer)
+	* number of iterations used in password storage
+	* if not specified, then the OWASP recommondations are used (dynamically based upon the current year)
+* PasswordResetFrequency (integer)
+	* frequency (in number of days) a user must change their password
+
+These settings are configurable in a .config file or in code. See the samples for examples.
 
 ## Email Configuration
 
-Here is an example configuration for email to use the www.sendgrid.com service:
+The default configuration uses the .NET SMTP configuration to send emails. To run the samples you must configure your own SMTP settings. Here is an example configuration for email to use the www.sendgrid.com service:
 
 ```XML
   <system.net>
@@ -73,12 +109,4 @@ Here is an example configuration for email to use the www.sendgrid.com service:
 
 ## Database Configuration
 
-The samples use Entity Framework. You don't need to.
-
-You can also add claims directly to the database. For example:
-
-```SQL
-  INSERT INTO UserClaims (Type, Value, User_UserName)
-  VALUES ('http://schemas.microsoft.com/ws/2008/06/identity/claims/role', 'Developer', 'billw')
-```
-
+The samples use Entiy Framework and SQL Server Compact. You don't need to and can configure your own repository (such as SQL Azure, or even a NoSql database). See the samples for an example.
