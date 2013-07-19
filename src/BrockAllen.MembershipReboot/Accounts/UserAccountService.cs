@@ -589,8 +589,6 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(oldPassword)) return false;
             if (String.IsNullOrWhiteSpace(newPassword)) return false;
 
-            //ValidatePassword(tenant, username, newPassword);
-
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
@@ -648,7 +646,6 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangePasswordFromResetKey] account located: {0}, {1}", account.Tenant, account.Username));
 
-            //ValidatePassword(account.Tenant, account.Username, newPassword);
             ValidatePassword(account, newPassword);
 
             var result = account.ChangePasswordFromResetKey(key, newPassword);
@@ -712,11 +709,6 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ValidationException("Invalid account");
 
             ValidateUsername(account, newUsername);
-            //if (UsernameExists(tenant, newUsername))
-            //{
-            //    Tracing.Information(String.Format("[UserAccountService.ChangeUsername] failed because new username already in use: {0}, {1}, {2}", tenant, username, newUsername));
-            //    throw new ValidationException("Username is already in use.");
-            //}
 
             Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
 
@@ -742,27 +734,12 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(newEmail)) return false;
 
-            //EmailAddressAttribute validator = new EmailAddressAttribute();
-            //if (!validator.IsValid(newEmail))
-            //{
-            //    Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] email validation failed: {0}, {1}, {2}", tenant, username, newEmail));
-
-            //    throw new ValidationException("Email is invalid.");
-            //}
-
             var account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] account located: {0}, {1}", account.Tenant, account.Username));
 
             ValidateEmail(account, newEmail);
-
-            //if (EmailExists(tenant, newEmail))
-            //{
-            //    Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] Email already exists: {0}, {1}, new email: {2}", tenant, username, newEmail));
-
-            //    throw new ValidationException("Email already in use.");
-            //}
 
             var result = account.ChangeEmailRequest(newEmail);
             this.userRepository.Update(account);
