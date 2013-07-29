@@ -7,6 +7,7 @@ Some of the features of MembershipReboot are:
 * multi-tenant account management
 * flexible account storage design (relational or object)
 * user identities modeled with claims
+* support for account registration, password reset, etc.
 * extensible email verification for accounts
 * customizable username, password and email validation
 * extensible notification system for account updates (e.g. for auditing)
