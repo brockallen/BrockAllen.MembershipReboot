@@ -4,13 +4,14 @@ The MembershipReboot project is intended as a user account and identity manageme
 
 Some of the features of MembershipReboot are:
 
-* multi-tenant account management
-* flexible account storage design (relational or object)
-* user identities modeled with claims
+* single- or multi-tenant account management
+* flexible account storage design (relational/SQL or object/NoSql)
+* claims-aware user identities
 * support for account registration, email verification, password reset, etc.
+* account lockout for multiple failed login attempts (password guessing)
 * extensible templating for email notifications
 * customizable username, password and email validation
-* extensible notification system for account activity and updates (e.g. for auditing)
+* notification system for account activity and updates (e.g. for auditing)
 * account linking with external identity providers (enterprise or social)
 * proper password storage (via PBKDF2)
 	* configurable iterations
