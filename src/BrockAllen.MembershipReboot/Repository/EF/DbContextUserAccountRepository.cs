@@ -4,6 +4,7 @@
  */
 
 using System.Data.Entity;
+
 namespace BrockAllen.MembershipReboot
 {
     public class DbContextUserAccountRepository<Ctx>
