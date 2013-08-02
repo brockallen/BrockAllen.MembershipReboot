@@ -3,7 +3,6 @@
  * see license.txt
  */
 
-
 namespace BrockAllen.MembershipReboot
 {
     public class Message

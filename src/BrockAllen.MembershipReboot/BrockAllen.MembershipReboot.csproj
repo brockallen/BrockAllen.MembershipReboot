@@ -66,9 +66,9 @@
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Notification\IMessageFormatter.cs" />
     <Compile Include="Notification\Email\EmailMessageFormatter.cs" />
-    <Compile Include="Repository\EF\DbContextRepository`1.cs" />
+    <Compile Include="Repository\EF\DbContextRepository.cs" />
     <Compile Include="Repository\EF\DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Repository\EF\DbContextUserAccountRepository`1.cs" />
+    <Compile Include="Repository\EF\DbContextUserAccountRepository.cs" />
     <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\EventBusUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
