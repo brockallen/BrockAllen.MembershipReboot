@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
@@ -82,6 +83,12 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult TwoFactorAuthLogin(string button, TwoFactorAuthInputModel model)
         {
+            if (!User.HasUserID())
+            {
+                // if the temp cookie is expired, then make the login again
+                return RedirectToAction("Index");
+            }
+
             if (button == "signin")
             {
                 if (ModelState.IsValid)

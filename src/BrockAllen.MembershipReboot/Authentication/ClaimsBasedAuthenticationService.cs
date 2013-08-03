@@ -15,7 +15,7 @@ namespace BrockAllen.MembershipReboot
 {
     public class ClaimsBasedAuthenticationService : IDisposable
     {
-        static readonly TimeSpan TwoFactorAuthTokenLifetime = TimeSpan.FromMinutes(15);
+        static readonly TimeSpan TwoFactorAuthTokenLifetime = TimeSpan.FromMinutes(30);
 
         UserAccountService userService;
 
@@ -175,7 +175,7 @@ namespace BrockAllen.MembershipReboot
             var ci = new ClaimsIdentity(claims); // no auth type param so user will not be actually authenticated
             var cp = new ClaimsPrincipal(ci);
 
-            IssueCookie(cp);
+            IssueCookie(cp, TwoFactorAuthTokenLifetime, false);
         }
 
         public void SignInWithLinkedAccount(
