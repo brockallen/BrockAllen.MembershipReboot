@@ -427,6 +427,8 @@ namespace BrockAllen.MembershipReboot
         {
             if (MobilePhoneNumber != null)
             {
+                this.ClearMobileAuthCode();
+                this.DisableTwoFactorAuthentication();
                 this.MobilePhoneNumber = null;
                 this.AddEvent(new MobilePhoneRemovedEvent { Account = this });
             }
@@ -436,8 +438,11 @@ namespace BrockAllen.MembershipReboot
         {
             if (!String.IsNullOrWhiteSpace(this.MobilePhoneNumber))
             {
-                this.UseTwoFactorAuth = true;
-                this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
+                if (this.UseTwoFactorAuth == false)
+                {
+                    this.UseTwoFactorAuth = true;
+                    this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
+                }
                 return true;
             }
             return false;
@@ -619,6 +624,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccount.CloseAccount] called on: {0}, {1}", Tenant, Username));
 
             this.ClearVerificationKey();
+            this.ClearMobileAuthCode();
             IsLoginAllowed = false;
             IsAccountClosed = true;
             AccountClosed = UtcNow;
