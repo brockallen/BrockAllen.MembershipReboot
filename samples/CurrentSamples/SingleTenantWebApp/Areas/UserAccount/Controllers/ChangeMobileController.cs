@@ -33,22 +33,37 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Index(ChangeMobileRequestInputModel model)
+        public ActionResult Index(string button, ChangeMobileRequestInputModel model)
         {
-            if (ModelState.IsValid)
+            if (button == "change")
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    if (this.userAccountService.ChangeMobilePhoneRequest(User.Identity.Name, model.NewMobilePhone))
+                    try
                     {
-                        return View("ChangeRequestSuccess", (object)model.NewMobilePhone);
-                    }
+                        if (this.userAccountService.ChangeMobilePhoneRequest(User.Identity.Name, model.NewMobilePhone))
+                        {
+                            return View("ChangeRequestSuccess", (object)model.NewMobilePhone);
+                        }
 
-                    ModelState.AddModelError("", "Error requesting mobile phone number change.");
+                        ModelState.AddModelError("", "Error requesting mobile phone number change.");
+                    }
+                    catch (ValidationException ex)
+                    {
+                        ModelState.AddModelError("", ex.Message);
+                    }
                 }
-                catch (ValidationException ex)
+            }
+
+            if (button == "remove")
+            {
+                if (this.userAccountService.RemoveMobilePhone(User.GetUserID()))
                 {
-                    ModelState.AddModelError("", ex.Message);
+                    return View("Success");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Error removing the mobile phone");
                 }
             }
 

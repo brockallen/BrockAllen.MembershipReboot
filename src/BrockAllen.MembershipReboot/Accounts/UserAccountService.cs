@@ -825,6 +825,19 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
+        public virtual bool RemoveMobilePhone(Guid accountID)
+        {
+            var account = this.GetByID(accountID);
+            if (account != null)
+            {
+                account.ClearMobilePhoneNumber();
+                this.userRepository.Update(account);
+                return true;
+            }
+
+            return false;
+        }
+
         public virtual bool ChangeMobilePhoneRequest(string username, string newMobilePhoneNumber)
         {
             return ChangeMobilePhoneRequest(null, username, newMobilePhoneNumber);

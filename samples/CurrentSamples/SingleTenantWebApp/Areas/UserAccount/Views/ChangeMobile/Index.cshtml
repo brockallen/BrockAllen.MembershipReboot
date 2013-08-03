@@ -17,11 +17,11 @@
         @Html.EditorForModel()
 
         <div class="buttons">
-            <button>Change Mobile Phone Number</button>
+            <button name="button" value="change">Change Mobile Phone Number</button>
+            <button name="button" value="remove" class="disable">Remove Mobile Phone Number</button>
         </div>
     </fieldset>
 }
-
 
 @using (Html.BeginForm("Confirm", "ChangeMobile"))
 {
