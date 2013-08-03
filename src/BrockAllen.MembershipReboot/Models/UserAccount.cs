@@ -155,6 +155,17 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
+        protected internal virtual bool CancelNewAccount(string key)
+        {
+            if (this.IsAccountVerified) return false;
+            if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount) return false;
+            if (this.VerificationKey != key) return false;
+            
+            this.CloseAccount();
+
+            return true;
+        }
+
         protected internal virtual void SetPassword(string password)
         {
             if (String.IsNullOrWhiteSpace(password))
@@ -362,28 +373,26 @@ namespace BrockAllen.MembershipReboot
             this.MobilePurpose = null;
         }
         
-        protected internal virtual bool RequestChangeMobilePhoneNumber(string newMobilePhoneNumber)
+        protected internal virtual void RequestChangeMobilePhoneNumber(string newMobilePhoneNumber)
         {
             if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
             {
                 throw new ValidationException("Mobile Phone Number required.");
             }
 
-            if (this.MobilePhoneNumber != newMobilePhoneNumber)
+            if (this.MobilePhoneNumber == newMobilePhoneNumber)
             {
-                if (this.IsMobileCodeStale ||
-                    this.MobilePurpose != MobileCodePurpose.VerifyMobile)
-                {
-                    this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, newMobilePhoneNumber, false);
-                    this.SetMobileCode(MobileCodePurpose.VerifyMobile);
-                }
-
-                this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber });
-                
-                return true;
+                throw new ValidationException("Mobile phone number must be different then the current.");
             }
-            
-            return false;
+
+            if (this.IsMobileCodeStale ||
+                this.MobilePurpose != MobileCodePurpose.VerifyMobile)
+            {
+                this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, newMobilePhoneNumber, false);
+                this.SetMobileCode(MobileCodePurpose.VerifyMobile);
+            }
+
+            this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber });
         }
 
         protected internal virtual bool ConfirmMobilePhoneNumberFromCode(string code)
@@ -434,18 +443,18 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected internal virtual bool EnableTwoFactorAuthentication()
+        protected internal virtual void EnableTwoFactorAuthentication()
         {
-            if (!String.IsNullOrWhiteSpace(this.MobilePhoneNumber))
+            if (String.IsNullOrWhiteSpace(this.MobilePhoneNumber))
             {
-                if (this.UseTwoFactorAuth == false)
-                {
-                    this.UseTwoFactorAuth = true;
-                    this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
-                }
-                return true;
+                throw new ValidationException("Register a mobile phone number to enable two factor authentication.");
             }
-            return false;
+            
+            if (this.UseTwoFactorAuth == false)
+            {
+                this.UseTwoFactorAuth = true;
+                this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
+            }
         }
 
         protected internal virtual void DisableTwoFactorAuthentication()
@@ -534,7 +543,7 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new UsernameChangedEvent { Account = this });
         }
 
-        protected internal virtual bool ChangeEmailRequest(string newEmail)
+        protected internal virtual void ChangeEmailRequest(string newEmail)
         {
             if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
@@ -542,7 +551,7 @@ namespace BrockAllen.MembershipReboot
             if (!this.IsAccountVerified)
             {
                 Tracing.Verbose("[UserAccount.ChangeEmailRequest] failed -- account not verified");
-                return false;
+                throw new Exception("Account not verified");
             }
 
             var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
@@ -564,17 +573,11 @@ namespace BrockAllen.MembershipReboot
             }
 
             this.AddEvent(new EmailChangeRequestedEvent { Account = this, NewEmail = newEmail });
-            
-            return true;
         }
 
         protected internal virtual bool ChangeEmailFromKey(string key, string newEmail)
         {
-            if (String.IsNullOrWhiteSpace(key))
-            {
-                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- no key");
-                return false;
-            }
+            if (String.IsNullOrWhiteSpace(key)) throw new ValidationException("Invalid key."); 
             if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
             // only honor resets within the past day
@@ -625,13 +628,18 @@ namespace BrockAllen.MembershipReboot
 
             this.ClearVerificationKey();
             this.ClearMobileAuthCode();
+
             IsLoginAllowed = false;
-            IsAccountClosed = true;
-            AccountClosed = UtcNow;
 
-            this.AddEvent(new AccountClosedEvent { Account = this });
+            if (!IsAccountClosed)
+            {
+                IsAccountClosed = true;
+                AccountClosed = UtcNow;
+                
+                this.AddEvent(new AccountClosedEvent { Account = this });
+            }
         }
-
+        
         protected internal virtual bool GetIsPasswordExpired(int passwordResetFrequency)
         {
             if (this.RequiresPasswordReset) return true;

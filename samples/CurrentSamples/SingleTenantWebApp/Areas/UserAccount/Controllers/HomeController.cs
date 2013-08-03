@@ -52,8 +52,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
             // since we've changed the claims, we need to re-issue the cookie that
             // contains the claims.
-            authSvc.SignIn(User.Identity.Name);
-
+            authSvc.SignIn(account);
 
             return RedirectToAction("Index");
         }

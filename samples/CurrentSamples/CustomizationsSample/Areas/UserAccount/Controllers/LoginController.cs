@@ -52,9 +52,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     authSvc.SignIn(account);
 
-                    //authSvc.SignIn(model.Username);
-
-                    if (userAccountService.IsPasswordExpired(model.Username))
+                    if (userAccountService.IsPasswordExpired(account))
                     {
                         return RedirectToAction("Index", "ChangePassword");
                     }

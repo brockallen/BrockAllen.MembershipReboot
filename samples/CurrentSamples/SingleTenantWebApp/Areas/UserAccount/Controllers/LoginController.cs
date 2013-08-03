@@ -58,7 +58,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                         return View("TwoFactorAuth");
                     }
                     
-                    if (userAccountService.IsPasswordExpired(account.Username))
+                    if (userAccountService.IsPasswordExpired(account))
                     {
                         return RedirectToAction("Index", "ChangePassword");
                     }
@@ -98,7 +98,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     {
                         authSvc.SignIn(account);
 
-                        if (userAccountService.IsPasswordExpired(account.Username))
+                        if (userAccountService.IsPasswordExpired(account))
                         {
                             return RedirectToAction("Index", "ChangePassword");
                         }

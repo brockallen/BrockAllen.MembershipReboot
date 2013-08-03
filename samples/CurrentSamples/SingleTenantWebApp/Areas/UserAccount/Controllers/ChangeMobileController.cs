@@ -41,12 +41,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     try
                     {
-                        if (this.userAccountService.ChangeMobilePhoneRequest(User.Identity.Name, model.NewMobilePhone))
-                        {
-                            return View("ChangeRequestSuccess", (object)model.NewMobilePhone);
-                        }
-
-                        ModelState.AddModelError("", "Error requesting mobile phone number change.");
+                        this.userAccountService.ChangeMobilePhoneRequest(User.GetUserID(), model.NewMobilePhone);
+                        return View("ChangeRequestSuccess", (object)model.NewMobilePhone);
                     }
                     catch (ValidationException ex)
                     {
@@ -57,14 +53,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
             if (button == "remove")
             {
-                if (this.userAccountService.RemoveMobilePhone(User.GetUserID()))
-                {
-                    return View("Success");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Error removing the mobile phone");
-                }
+                this.userAccountService.RemoveMobilePhone(User.GetUserID());
+                return View("Success");
             }
 
             return View("Index", model);
@@ -78,11 +68,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ChangeMobileFromCode(this.User.Identity.Name, model.Code))
+                    if (this.userAccountService.ChangeMobilePhoneFromCode(this.User.GetUserID(), model.Code))
                     {
                         // since the mobile had changed, reissue the 
                         // cookie with the updated claims
-                        authSvc.SignIn(this.User.Identity.Name);
+                        authSvc.SignIn(User.GetUserID());
 
                         return View("Success");
                     }

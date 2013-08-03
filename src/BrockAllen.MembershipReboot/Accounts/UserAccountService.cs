@@ -200,19 +200,6 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual UserAccount GetByID(string id)
-        {
-            Guid guid;
-            if (Guid.TryParse(id, out guid))
-            {
-                return GetByID(guid);
-            }
-
-            Tracing.Verbose(String.Format("[UserAccountService.GetByID] failed to parse string into guid: {0}", id));
-
-            return null;
-        }
-
         public virtual UserAccount GetByID(Guid id)
         {
             var account = this.userRepository.Get(id);
@@ -371,57 +358,41 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose(String.Format("[UserAccountService.CancelNewAccount] account located: {0}, {1}", account.Tenant, account.Username));
 
-            if (account.IsAccountVerified) return false;
-            if (account.VerificationPurpose != VerificationKeyPurpose.VerifyAccount) return false;
-            if (account.VerificationKey != key) return false;
-
-            Tracing.Verbose(String.Format("[UserAccountService.CancelNewAccount] deleting account: {0}, {1}", account.Tenant, account.Username));
-
-            DeleteAccount(account);
-
-            return true;
-        }
-
-        public virtual bool DeleteAccount(string username)
-        {
-            return DeleteAccount(null, username);
-        }
-
-        public virtual bool DeleteAccount(string tenant, string username)
-        {
-            Tracing.Information(String.Format("[UserAccountService.DeleteAccount] called: {0}, {1}", tenant, username));
-
-            if (!SecuritySettings.MultiTenant)
+            if (account.CancelNewAccount(key))
             {
-                tenant = SecuritySettings.DefaultTenant;
+                Tracing.Verbose(String.Format("[UserAccountService.CancelNewAccount] account cancelled: {0}, {1}", account.Tenant, account.Username));
+
+                DeleteAccount(account);
+
+                return true;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(username)) return false;
+            return false;
+        }
 
-            var account = this.GetByUsername(tenant, username);
-            if (account == null) return false;
+        public virtual void DeleteAccount(Guid accountID)
+        {
+            Tracing.Information(String.Format("[UserAccountService.DeleteAccount] called: {0}", accountID));
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             DeleteAccount(account);
-
-            return true;
         }
 
         protected internal virtual void DeleteAccount(UserAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
 
+            Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] marking account as closed: {0}, {1}", account.Tenant, account.Username));
+
             account.CloseAccount();
+            userRepository.Update(account);
 
             if (SecuritySettings.AllowAccountDeletion || !account.IsAccountVerified)
             {
                 Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] removing account record: {0}, {1}", account.Tenant, account.Username));
                 this.userRepository.Remove(account);
-            }
-            else
-            {
-                Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] marking account closed: {0}, {1}", account.Tenant, account.Username));
-                this.userRepository.Update(account);
             }
         }
 
@@ -538,115 +509,95 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
-        public bool EnableTwoFactorAuthentication(Guid accountID)
+        public virtual bool AuthenticateWithCode(Guid accountID, string code)
         {
-            return ConfigureTwoFactorAuthentication(accountID, true);
+            UserAccount account;
+            return AuthenticateWithCode(accountID, code, out account);
         }
-        public void DisableTwoFactorAuthentication(Guid accountID)
+
+        public virtual bool AuthenticateWithCode(Guid accountID, string code, out UserAccount account)
         {
-            ConfigureTwoFactorAuthentication(accountID, false);
+            account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            var result = account.VerifyTwoFactorAuthCode(code);
+            this.userRepository.Update(account);
+
+            return result;
         }
         
-        bool ConfigureTwoFactorAuthentication(Guid accountID, bool enable)
+        public virtual void EnableTwoFactorAuthentication(Guid accountID)
         {
+            Tracing.Information(String.Format("[UserAccountService.EnableTwoFactorAuthentication] called: {0}", accountID));
+
             var account = this.GetByID(accountID);
-            if (account == null) return false;
-
-            try
-            {
-                if (enable)
-                {
-                    return account.EnableTwoFactorAuthentication();
-                }
-                else
-                {
-                    account.DisableTwoFactorAuthentication();
-                    return true;
-                }
-            }
-            finally
-            {
-                this.userRepository.Update(account);
-            }
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+            
+            account.EnableTwoFactorAuthentication();
+            this.userRepository.Update(account);
         }
 
-        public void SendTwoFactorAuthenticationCode(Guid accountID)
+        public virtual void DisableTwoFactorAuthentication(Guid accountID)
         {
+            Tracing.Information(String.Format("[UserAccountService.DisableTwoFactorAuthentication] called: {0}", accountID));
+
             var account = this.GetByID(accountID);
-            if (account != null)
-            {
-                account.RequestTwoFactorAuthCode();
-                userRepository.Update(account);
-            }
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            account.DisableTwoFactorAuthentication();
+            this.userRepository.Update(account);
         }
 
-        public virtual void SetPassword(string username, string newPassword)
+        public virtual void SendTwoFactorAuthenticationCode(Guid accountID)
         {
-            SetPassword(null, username, newPassword);
+            Tracing.Information(String.Format("[UserAccountService.SendTwoFactorAuthenticationCode] called: {0}", accountID));
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+            
+            account.RequestTwoFactorAuthCode();
+            userRepository.Update(account);
         }
 
-        public virtual void SetPassword(string tenant, string username, string newPassword)
+        public virtual void SetPassword(Guid accountID, string newPassword)
         {
-            Tracing.Information(String.Format("[UserAccountService.SetPassword] called: {0}, {1}", tenant, username));
+            Tracing.Information(String.Format("[UserAccountService.SetPassword] called: {0}", accountID));
 
-            if (!SecuritySettings.MultiTenant)
-            {
-                tenant = SecuritySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException("Invalid tenant.");
-            if (String.IsNullOrWhiteSpace(username)) throw new ValidationException("Invalid username.");
             if (String.IsNullOrWhiteSpace(newPassword)) throw new ValidationException("Invalid newPassword.");
 
-            var account = this.GetByUsername(tenant, username);
-            if (account == null) throw new ValidationException("Invalid username.");
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             ValidatePassword(account, newPassword);
 
-            Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}, {1}", tenant, username));
+            Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}", accountID));
 
             account.SetPassword(newPassword);
             this.userRepository.Update(account);
         }
 
-        public virtual bool ChangePassword(string username, string oldPassword, string newPassword)
+        public virtual void ChangePassword(Guid accountID, string oldPassword, string newPassword)
         {
-            return ChangePassword(null, username, oldPassword, newPassword);
-        }
+            Tracing.Information(String.Format("[UserAccountService.ChangePassword] called: {0}", accountID));
 
-        public virtual bool ChangePassword(
-            string tenant, string username,
-            string oldPassword, string newPassword)
-        {
-            Tracing.Information(String.Format("[UserAccountService.ChangePassword] called: {0}, {1}", tenant, username));
+            if (String.IsNullOrWhiteSpace(oldPassword)) throw new ValidationException("Invalid old password.");
+            if (String.IsNullOrWhiteSpace(newPassword)) throw new ValidationException("Invalid new password.");
 
-            if (!SecuritySettings.MultiTenant)
-            {
-                tenant = SecuritySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(username)) return false;
-            if (String.IsNullOrWhiteSpace(oldPassword)) return false;
-            if (String.IsNullOrWhiteSpace(newPassword)) return false;
-
-            var account = this.GetByUsername(tenant, username);
-            if (account == null) return false;
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             ValidatePassword(account, newPassword);
 
             if (!Authenticate(account, oldPassword))
             {
                 Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change failed: {0}, {1}", account.Tenant, account.Username));
-                return false;
+                throw new ValidationException("Invalid old password.");
             }
 
             account.SetPassword(newPassword);
             this.userRepository.Update(account);
             
             Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change successful: {0}, {1}", account.Tenant, account.Username));
-
-            return true;
         }
 
         public virtual void ResetPassword(string email)
@@ -667,7 +618,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Invalid email.");
 
             var account = this.GetByEmail(tenant, email);
-            if (account == null) throw new ValidationException("Invalid account.");
+            if (account == null) throw new ValidationException("Invalid email.");
 
             account.ResetPassword();
             this.userRepository.Update(account);
@@ -677,10 +628,7 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information(String.Format("[UserAccountService.ChangePasswordFromResetKey] called: {0}", key));
 
-            if (String.IsNullOrWhiteSpace(key))
-            {
-                return false;
-            }
+            if (String.IsNullOrWhiteSpace(key)) return false;
 
             var account = this.GetByVerificationKey(key);
             if (account == null) return false;
@@ -723,89 +671,63 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Update(account);
         }
 
-        public virtual void ChangeUsername(string username, string newUsername)
-        {
-            ChangeUsername(null, username, newUsername);
-        }
-
-        public virtual void ChangeUsername(string tenant, string username, string newUsername)
+        public virtual void ChangeUsername(Guid accountID, string newUsername)
         {
             if (SecuritySettings.EmailIsUsername)
             {
                 throw new Exception("EmailIsUsername is enabled in SecuritySettings -- use ChangeEmail APIs instead.");
             }
 
-            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}, {2}", tenant, username, newUsername));
+            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}", accountID, newUsername));
 
-            if (!SecuritySettings.MultiTenant)
-            {
-                tenant = SecuritySettings.DefaultTenant;
-            }
+            if (String.IsNullOrWhiteSpace(newUsername)) throw new ValidationException("Invalid username.");
 
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
-            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
-            if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentException("newUsername");
-
-            var account = GetByUsername(tenant, username);
-            if (account == null) throw new ValidationException("Invalid account");
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             ValidateUsername(account, newUsername);
 
-            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}, {2}", tenant, username, newUsername));
+            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}", accountID, newUsername));
 
             account.ChangeUsername(newUsername);
             this.userRepository.Update(account);
         }
 
-        public virtual bool ChangeEmailRequest(string username, string newEmail)
+        public virtual void ChangeEmailRequest(Guid accountID, string newEmail)
         {
-            return ChangeEmailRequest(null, username, newEmail);
-        }
+            Tracing.Information(String.Format("[UserAccountService.ChangeEmailRequest] called: {0}, {1}", accountID, newEmail));
 
-        public virtual bool ChangeEmailRequest(string tenant, string username, string newEmail)
-        {
-            Tracing.Information(String.Format("[UserAccountService.ChangeEmailRequest] called: {0}, {1}, {2}", tenant, username, newEmail));
+            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
-            if (!SecuritySettings.MultiTenant)
-            {
-                tenant = SecuritySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(username)) return false;
-            if (String.IsNullOrWhiteSpace(newEmail)) return false;
-
-            var account = this.GetByUsername(tenant, username);
-            if (account == null) return false;
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] account located: {0}, {1}", account.Tenant, account.Username));
 
             ValidateEmail(account, newEmail);
 
-            var result = account.ChangeEmailRequest(newEmail);
+            account.ChangeEmailRequest(newEmail);
             this.userRepository.Update(account);
 
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] change request outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
-
-            return result;
+            Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] change request successful: {0}, {1}", account.Tenant, account.Username));
         }
 
-        public virtual bool ChangeEmailFromKey(string password, string key, string newEmail)
+        public virtual bool ChangeEmailFromKey(Guid accountID, string password, string key, string newEmail)
         {
-            Tracing.Information(String.Format("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}", key, newEmail));
+            Tracing.Information(String.Format("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}, {2}", accountID, key, newEmail));
 
-            if (String.IsNullOrWhiteSpace(password)) return false;
-            if (String.IsNullOrWhiteSpace(key)) return false;
-            if (String.IsNullOrWhiteSpace(newEmail)) return false;
+            if (String.IsNullOrWhiteSpace(password)) throw new ValidationException("Invalid password.");
+            if (String.IsNullOrWhiteSpace(key)) throw new ValidationException("Invalid key.");
+            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
 
-            var account = this.GetByVerificationKey(key);
-            if (account == null) return false;
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] account located: {0}, {1}", account.Tenant, account.Username));
 
             if (!Authenticate(account, password))
             {
-                return false;
+                throw new ValidationException("Invalid password.");
             }
 
             ValidateEmail(account, newEmail);
@@ -825,70 +747,40 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
-        public virtual bool RemoveMobilePhone(Guid accountID)
+        public virtual void RemoveMobilePhone(Guid accountID)
         {
             var account = this.GetByID(accountID);
-            if (account != null)
-            {
-                account.ClearMobilePhoneNumber();
-                this.userRepository.Update(account);
-                return true;
-            }
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            return false;
+            account.ClearMobilePhoneNumber();
+            this.userRepository.Update(account);
         }
 
-        public virtual bool ChangeMobilePhoneRequest(string username, string newMobilePhoneNumber)
+        public virtual void ChangeMobilePhoneRequest(Guid accountID, string newMobilePhoneNumber)
         {
-            return ChangeMobilePhoneRequest(null, username, newMobilePhoneNumber);
-        }
+            Tracing.Information(String.Format("[UserAccountService.ChangeMobilePhoneRequest] called: {0}, {1}", accountID, newMobilePhoneNumber));
 
-        public virtual bool ChangeMobilePhoneRequest(string tenant, string username, string newMobilePhoneNumber)
-        {
-            Tracing.Information(String.Format("[UserAccountService.ChangeMobilePhoneRequest] called: {0}, {1}, {2}", tenant, username, newMobilePhoneNumber));
+            if (String.IsNullOrWhiteSpace(newMobilePhoneNumber)) throw new ValidationException("Invalid Phone Number.");
 
-            if (!SecuritySettings.MultiTenant)
-            {
-                tenant = SecuritySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(username)) return false;
-            if (String.IsNullOrWhiteSpace(newMobilePhoneNumber)) return false;
-
-            var account = this.GetByUsername(tenant, username);
-            if (account == null) return false;
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] account located: {0}, {1}", account.Tenant, account.Username));
 
-            var result = account.RequestChangeMobilePhoneNumber(newMobilePhoneNumber);
+            account.RequestChangeMobilePhoneNumber(newMobilePhoneNumber);
             this.userRepository.Update(account);
 
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] change request outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
-
-            return result;
+            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] change request successful: {0}, {1}", account.Tenant, account.Username));
         }
 
-        public virtual bool ChangeMobileFromCode(string username, string code)
+        public virtual bool ChangeMobilePhoneFromCode(Guid accountID, string code)
         {
-            return ChangeMobileFromCode(null, username, code);
-        }
+            Tracing.Information(String.Format("[UserAccountService.ChangeMobileFromCode] called: {0}", accountID));
 
-        public virtual bool ChangeMobileFromCode(string tenant, string username, string code)
-        {
-            Tracing.Information(String.Format("[UserAccountService.ChangeMobileFromCode] called: {0}, {1}", tenant, username));
-
-            if (!SecuritySettings.MultiTenant)
-            {
-                tenant = SecuritySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(code)) return false;
 
-            var account = this.GetByUsername(tenant, username);
-            if (account == null) return false;
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeMobileFromCode] account located: {0}, {1}", account.Tenant, account.Username));
 
@@ -899,47 +791,20 @@ namespace BrockAllen.MembershipReboot
             
             return result;
         }
-        
-        public virtual bool IsPasswordExpired(string username)
+
+        public virtual bool IsPasswordExpired(Guid accountID)
         {
-            return IsPasswordExpired(null, username);
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            return IsPasswordExpired(account);
         }
-
-        public virtual bool IsPasswordExpired(string tenant, string username)
+        
+        public virtual bool IsPasswordExpired(UserAccount account)
         {
-            if (!SecuritySettings.MultiTenant)
-            {
-                tenant = SecuritySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
-            if (String.IsNullOrWhiteSpace(username)) return false;
-
-            var account = this.GetByUsername(tenant, username);
-            if (account == null) return false;
+            if (account == null) throw new ArgumentNullException("account");
 
             return account.GetIsPasswordExpired(SecuritySettings.PasswordResetFrequency);
-        }
-    
-        public virtual bool AuthenticateWithCode(Guid accountID, string code)
-        {
-            UserAccount account;
-            return AuthenticateWithCode(accountID, code, out account);
-        }
-
-        public virtual bool AuthenticateWithCode(Guid accountID, string code, out UserAccount account)
-        {
-            account = this.GetByID(accountID);
-            if (account == null) return false;
-
-            try
-            {
-                return account.VerifyTwoFactorAuthCode(code);
-            }
-            finally
-            {
-                this.userRepository.Update(account);
-            }
         }
     }
 }

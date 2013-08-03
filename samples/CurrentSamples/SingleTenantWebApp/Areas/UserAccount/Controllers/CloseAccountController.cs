@@ -38,11 +38,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.DeleteAccount(User.Identity.Name))
-                    {
-                        return RedirectToAction("Index", "Logout");
-                    }
-                    ModelState.AddModelError("", "Error closing your account");
+                    this.userAccountService.DeleteAccount(User.GetUserID());
+                    return RedirectToAction("Index", "Logout");
                 }
                 catch (ValidationException ex)
                 {

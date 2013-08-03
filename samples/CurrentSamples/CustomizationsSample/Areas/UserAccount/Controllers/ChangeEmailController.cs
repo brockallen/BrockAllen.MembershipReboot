@@ -43,12 +43,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ChangeEmailRequest(User.Identity.Name, model.NewEmail))
-                    {
-                        return View("ChangeRequestSuccess", (object)model.NewEmail);
-                    }
-
-                    ModelState.AddModelError("", "Error requesting email change.");
+                    this.userAccountService.ChangeEmailRequest(User.GetUserID(), model.NewEmail);
+                    return View("ChangeRequestSuccess", (object)model.NewEmail);
                 }
                 catch (ValidationException ex)
                 {
@@ -74,12 +70,12 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ChangeEmailFromKey(model.Password, model.Key, model.NewEmail))
+                    if (this.userAccountService.ChangeEmailFromKey(User.GetUserID(), model.Password, model.Key, model.NewEmail))
                     {
                         // since we've changed the email, we need to re-issue the cookie that
                         // contains the claims.
                         var account = this.userAccountService.GetByEmail(model.NewEmail);
-                        authSvc.SignIn(account.Username);
+                        authSvc.SignIn(account);
                         return View("Success");
                     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -14,7 +15,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             this.userAccountService = userAccountService;
         }
-        
+
         public ActionResult Index()
         {
             var acct = userAccountService.GetByUsername(this.User.Identity.Name);
@@ -25,20 +26,32 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Enable()
         {
-            if (this.userAccountService.EnableTwoFactorAuthentication(this.User.GetUserID()))
+            try
             {
+                this.userAccountService.EnableTwoFactorAuthentication(this.User.GetUserID());
                 return View("Success");
             }
-
-            return View("Fail");
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View("Index");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Disable()
         {
-            this.userAccountService.DisableTwoFactorAuthentication(this.User.GetUserID());
-            return View("Success");
+            try
+            {
+                this.userAccountService.DisableTwoFactorAuthentication(this.User.GetUserID());
+                return View("Success");
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View("Index");
         }
     }
 }

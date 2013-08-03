@@ -138,7 +138,7 @@ namespace LinkedAccounts.Controllers
 
         public ActionResult CloseAccount()
         {
-            this.userAccountService.DeleteAccount(User.Identity.Name);
+            this.userAccountService.DeleteAccount(User.GetUserID());
             this.AuthenticationService.SignOut();
             return RedirectToAction("Index");
         }

@@ -39,14 +39,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword))
-                    {
-                        return View("Success");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Error changing password");
-                    }
+                    this.userAccountService.ChangePassword(User.GetUserID(), model.OldPassword, model.NewPassword);
+                    return View("Success");
                 }
                 catch (ValidationException ex)
                 {

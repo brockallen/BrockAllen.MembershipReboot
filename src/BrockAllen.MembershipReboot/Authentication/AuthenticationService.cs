@@ -154,7 +154,7 @@ namespace BrockAllen.MembershipReboot
             if (user.Identity.IsAuthenticated)
             {
                 // already logged in, so use the current user's account
-                account = this.userService.GetByID(user.Claims.GetValue(ClaimTypes.NameIdentifier));
+                account = this.userService.GetByID(user.GetUserID());
             }
             else
             {

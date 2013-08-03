@@ -34,9 +34,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var emailFormatter = new EmailMessageFormatter(appinfo);
             if (settings.RequireAccountVerification)
             {
-                config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
+                //config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
             }
-            config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+            //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
             config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
             
             return config;
