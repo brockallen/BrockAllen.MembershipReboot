@@ -15,6 +15,12 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserAccountService : IDisposable
     {
+        protected internal enum AuthenticationPurpose
+        {
+            SignIn = 1,
+            VerifyPassword = 2
+        }
+
         public MembershipRebootConfiguration Configuration { get; set; }
         
         SecuritySettings SecuritySettings
@@ -428,7 +434,7 @@ namespace BrockAllen.MembershipReboot
             account = this.GetByUsername(tenant, username);
             if (account == null) return false;
 
-            return Authenticate(account, password);
+            return Authenticate(account, password, AuthenticationPurpose.SignIn);
         }
 
         public virtual bool AuthenticateWithEmail(string email, string password)
@@ -463,7 +469,7 @@ namespace BrockAllen.MembershipReboot
             account = this.GetByEmail(tenant, email);
             if (account == null) return false;
 
-            return Authenticate(account, password);
+            return Authenticate(account, password, AuthenticationPurpose.SignIn);
         }
 
         public virtual bool AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password, out UserAccount account)
@@ -496,12 +502,18 @@ namespace BrockAllen.MembershipReboot
             }
         }
         
-        protected internal virtual bool Authenticate(UserAccount account, string password)
+        protected internal virtual bool Authenticate(UserAccount account, string password, AuthenticationPurpose purpose)
         {
             int failedLoginCount = SecuritySettings.AccountLockoutFailedLoginAttempts;
             TimeSpan lockoutDuration = SecuritySettings.AccountLockoutDuration;
 
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
+            if (result && 
+                purpose == AuthenticationPurpose.SignIn && 
+                account.UseTwoFactorAuth)
+            {
+                result = account.RequestTwoFactorAuthCode();
+            }
             this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.Authenticate] authentication outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful Login" : "Failed Login"));
@@ -588,7 +600,7 @@ namespace BrockAllen.MembershipReboot
 
             ValidatePassword(account, newPassword);
 
-            if (!Authenticate(account, oldPassword))
+            if (!Authenticate(account, oldPassword, AuthenticationPurpose.VerifyPassword))
             {
                 Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change failed: {0}, {1}", account.Tenant, account.Username));
                 throw new ValidationException("Invalid old password.");
@@ -725,7 +737,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] account located: {0}, {1}", account.Tenant, account.Username));
 
-            if (!Authenticate(account, password))
+            if (!Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
             {
                 throw new ValidationException("Invalid password.");
             }

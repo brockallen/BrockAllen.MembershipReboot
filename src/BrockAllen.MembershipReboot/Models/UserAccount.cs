@@ -157,9 +157,20 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool CancelNewAccount(string key)
         {
-            if (this.IsAccountVerified) return false;
-            if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount) return false;
-            if (this.VerificationKey != key) return false;
+            if (this.IsAccountVerified)
+            {
+                return false;
+            }
+
+            if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount)
+            {
+                return false;
+            }
+
+            if (this.VerificationKey != key)
+            {
+                return false;
+            }
             
             this.CloseAccount();
 
@@ -317,11 +328,6 @@ namespace BrockAllen.MembershipReboot
                 FailedLoginCount = 0;
 
                 this.AddEvent(new SuccessfulPasswordLoginEvent { Account = this });
-
-                if (this.UseTwoFactorAuth)
-                {
-                    valid = RequestTwoFactorAuthCode();
-                }
             }
             else
             {
@@ -349,16 +355,6 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        public bool RequiresTwoFactorAuthCodeToSignIn
-        {
-            get
-            {
-                return 
-                    this.UseTwoFactorAuth &&
-                    this.MobilePurpose == MobileCodePurpose.Authentication;
-            }
-        }
-
         void SetMobileCode(MobileCodePurpose purpose)
         {
             this.MobileCode = CryptoHelper.GenerateNumericCode(MobileCodeLength);
@@ -371,6 +367,24 @@ namespace BrockAllen.MembershipReboot
             this.MobileCode = null;
             this.MobileCodeSent = null;
             this.MobilePurpose = null;
+        }
+        
+        protected virtual bool IsMobileCodeStale
+        {
+            get
+            {
+                if (this.MobileCodeSent == null)
+                {
+                    return true;
+                }
+
+                if (this.MobileCodeSent < UtcNow.AddMinutes(-MobileCodeStaleDurationMinutes))
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
         
         protected internal virtual void RequestChangeMobilePhoneNumber(string newMobilePhoneNumber)
@@ -461,12 +475,27 @@ namespace BrockAllen.MembershipReboot
         {
             if (UseTwoFactorAuth)
             {
+                if (this.MobilePurpose == MobileCodePurpose.Authentication)
+                {
+                    this.ClearMobileAuthCode();
+                }
+
                 this.UseTwoFactorAuth = false;
                 this.AddEvent(new TwoFactorAuthenticationDisabledEvent { Account = this });
             }
         }
-        
-        protected internal virtual bool RequestTwoFactorAuthCode(bool forceNewCode = false)
+
+        public bool RequiresTwoFactorAuthCodeToSignIn
+        {
+            get
+            {
+                return
+                    this.UseTwoFactorAuth &&
+                    this.MobilePurpose == MobileCodePurpose.Authentication;
+            }
+        }
+
+        protected internal virtual bool RequestTwoFactorAuthCode()
         {
             if (this.UseTwoFactorAuth &&
                 this.IsAccountVerified &&
@@ -475,8 +504,7 @@ namespace BrockAllen.MembershipReboot
                 !String.IsNullOrWhiteSpace(MobilePhoneNumber))
             {
                 if (this.IsMobileCodeStale || 
-                    this.MobilePurpose != MobileCodePurpose.Authentication ||
-                    forceNewCode)
+                    this.MobilePurpose != MobileCodePurpose.Authentication)
                 {
                     SetMobileCode(MobileCodePurpose.Authentication);
                 }
@@ -509,24 +537,6 @@ namespace BrockAllen.MembershipReboot
             }
 
             return false;
-        }
-
-        protected virtual bool IsMobileCodeStale
-        {
-            get
-            {
-                if (this.MobileCodeSent == null)
-                {
-                    return true;
-                }
-
-                if (this.MobileCodeSent < UtcNow.AddMinutes(-MobileCodeStaleDurationMinutes))
-                {
-                    return true;
-                }
-
-                return false;
-            }
         }
 
         protected internal virtual void SendAccountNameReminder()

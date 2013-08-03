@@ -53,7 +53,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     authSvc.SignIn(account);
 
-                    if (account.UseTwoFactorAuth)
+                    if (account.RequiresTwoFactorAuthCodeToSignIn)
                     {
                         return View("TwoFactorAuth");
                     }
