@@ -338,6 +338,16 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
+        public bool RequiresTwoFactorAuthCodeToSignIn
+        {
+            get
+            {
+                return 
+                    this.UseTwoFactorAuth &&
+                    this.MobilePurpose == MobileCodePurpose.Authentication;
+            }
+        }
+
         void SetMobileCode(MobileCodePurpose purpose)
         {
             this.MobileCode = CryptoHelper.GenerateNumericCode(MobileCodeLength);
@@ -442,7 +452,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
         
-        protected virtual bool RequestTwoFactorAuthCode(bool forceNewCode = false)
+        protected internal virtual bool RequestTwoFactorAuthCode(bool forceNewCode = false)
         {
             if (this.UseTwoFactorAuth &&
                 this.IsAccountVerified &&
@@ -457,7 +467,7 @@ namespace BrockAllen.MembershipReboot
                     SetMobileCode(MobileCodePurpose.Authentication);
                 }
 
-                SendTwoFactorAuthCode();
+                this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this });
 
                 return true;
             }
@@ -465,19 +475,12 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        protected internal virtual void SendTwoFactorAuthCode()
-        {
-            if (this.MobileCode != null)
-            {
-                this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this });
-            }
-        }
-
         protected internal virtual bool VerifyTwoFactorAuthCode(string code)
         {
             if (code == null) return false;
 
-            if (this.IsAccountVerified &&
+            if (this.UseTwoFactorAuth && 
+                this.IsAccountVerified &&
                 this.IsLoginAllowed &&
                 !this.IsAccountClosed &&
                 !IsMobileCodeStale &&

@@ -67,6 +67,8 @@
     <Compile Include="Models\UserClaim.cs" />
     <Compile Include="Notification\IMessageFormatter.cs" />
     <Compile Include="Notification\Email\EmailMessageFormatter.cs" />
+    <Compile Include="Notification\SMS\SmsNotificationEventHandler.cs" />
+    <Compile Include="Notification\SMS\SmsMessageFormatter.cs" />
     <Compile Include="Repository\EF\DbContextRepository`1.cs" />
     <Compile Include="Repository\EF\DefaultMembershipRebootDatabase.cs" />
     <Compile Include="Repository\EF\DbContextUserAccountRepository`1.cs" />
@@ -108,6 +110,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="license.txt" />
+    <EmbeddedResource Include="Notification\SMS\SmsTemplates\Code.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountClosedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\PasswordChangedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\PasswordResetRequestedEvent_Subject.txt" />

@@ -85,20 +85,11 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Login not allowed for this account");
             }
 
-            if (account.UseTwoFactorAuth)
+            if (account.RequiresTwoFactorAuthCodeToSignIn)
             {
-                Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.SignIn] detected account requires two factor auth: {0}", account.ID));
-
-                if (!String.IsNullOrWhiteSpace(account.MobileCode))
-                {
-                    Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.SignIn] two factor auth code not empty -- need to issue partial login cookie: {0}", account.ID));
-                    IssuePartialSignInCookieForTwoFactorAuth(account);
-                    return;
-                }
-                else
-                {
-                    Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.SignIn] two factor auth not empty -- proceeding with normal login cookie: {0}", account.ID));
-                }
+                Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.SignIn] detected account requires two factor auth code to sign in: {0}", account.ID));
+                IssuePartialSignInCookieForTwoFactorAuth(account);
+                return;
             }
 
             // gather claims

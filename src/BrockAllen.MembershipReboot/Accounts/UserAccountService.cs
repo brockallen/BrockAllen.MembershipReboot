@@ -575,7 +575,7 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account != null)
             {
-                account.SendTwoFactorAuthCode();
+                account.RequestTwoFactorAuthCode();
                 userRepository.Update(account);
             }
         }

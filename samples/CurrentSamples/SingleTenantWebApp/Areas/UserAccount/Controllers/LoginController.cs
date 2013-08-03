@@ -80,31 +80,39 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult TwoFactorAuthLogin(TwoFactorAuthInputModel model)
+        public ActionResult TwoFactorAuthLogin(string button, TwoFactorAuthInputModel model)
         {
-            if (ModelState.IsValid)
+            if (button == "signin")
             {
-                BrockAllen.MembershipReboot.UserAccount account;
-                if (userAccountService.AuthenticateWithCode(this.User.GetUserID(), model.Code, out account))
+                if (ModelState.IsValid)
                 {
-                    authSvc.SignIn(account);
-
-                    if (userAccountService.IsPasswordExpired(account.Username))
+                    BrockAllen.MembershipReboot.UserAccount account;
+                    if (userAccountService.AuthenticateWithCode(this.User.GetUserID(), model.Code, out account))
                     {
-                        return RedirectToAction("Index", "ChangePassword");
-                    }
+                        authSvc.SignIn(account);
 
-                    if (Url.IsLocalUrl(model.ReturnUrl))
+                        if (userAccountService.IsPasswordExpired(account.Username))
+                        {
+                            return RedirectToAction("Index", "ChangePassword");
+                        }
+
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
                     {
-                        return Redirect(model.ReturnUrl);
+                        ModelState.AddModelError("", "Invalid Code");
                     }
-
-                    return RedirectToAction("Index", "Home");
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Invalid Code");
-                }
+            }
+            
+            if (button == "resend")
+            {
+                this.userAccountService.SendTwoFactorAuthenticationCode(this.User.GetUserID());
             }
 
             return View("TwoFactorAuth", model);
