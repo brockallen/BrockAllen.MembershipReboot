@@ -4,8 +4,8 @@
  */
 
 using System;
-using System.Linq;
 using System.Configuration;
+using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {

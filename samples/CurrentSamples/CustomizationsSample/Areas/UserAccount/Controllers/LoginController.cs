@@ -1,5 +1,5 @@
-﻿using System.Web.Mvc;
-using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {

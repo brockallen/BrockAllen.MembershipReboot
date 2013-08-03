@@ -4,11 +4,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
-using System.Linq;
 using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot

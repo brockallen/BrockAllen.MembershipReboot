@@ -3,9 +3,9 @@
  * see license.txt
  */
 
+using BrockAllen.MembershipReboot.Helpers;
 using System;
 using System.Linq;
-using BrockAllen.MembershipReboot.Helpers;
 
 namespace BrockAllen.MembershipReboot
 {
