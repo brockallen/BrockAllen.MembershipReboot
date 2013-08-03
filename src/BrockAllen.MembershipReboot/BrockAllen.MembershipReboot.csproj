@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\IFactory.cs" />
     <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
     <Compile Include="Configuration\MembershipRebootConfigurationExtensions.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="Crypto\System.Web.Helpers.Crypto.cs" />
     <Compile Include="Crypto\CryptoHelper.cs" />
     <Compile Include="Configuration\ApplicationInformation.cs" />
-    <Compile Include="Authentication\ClaimsBasedAuthenticationService.cs" />
+    <Compile Include="Authentication\SamAuthenticationService.cs" />
     <Compile Include="Accounts\Deprecated\IPasswordPolicy.cs" />
     <Compile Include="Notification\Deprecated\INotificationService.cs" />
     <Compile Include="Notification\Message.cs" />

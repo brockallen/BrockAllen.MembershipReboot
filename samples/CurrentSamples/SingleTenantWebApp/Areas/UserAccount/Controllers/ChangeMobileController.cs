@@ -8,9 +8,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     public class ChangeMobileController : Controller
     {
         UserAccountService userAccountService;
-        ClaimsBasedAuthenticationService authSvc;
+        AuthenticationService authSvc;
 
-        public ChangeMobileController(UserAccountService userAccountService, ClaimsBasedAuthenticationService authSvc)
+        public ChangeMobileController(UserAccountService userAccountService, AuthenticationService authSvc)
         {
             this.userAccountService = userAccountService;
             this.authSvc = authSvc;

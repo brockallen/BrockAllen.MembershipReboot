@@ -38,14 +38,14 @@ namespace LinkedAccounts.Controllers
             //    "4L08bE3WM8Ra4rRNMv3N--un5YOBr4gx");
         }
 
-        ClaimsBasedAuthenticationService claimsBasedAuthenticationService;
+        AuthenticationService AuthenticationService;
         UserAccountService userAccountService;
 
         public HomeController(
-            ClaimsBasedAuthenticationService claimsBasedAuthenticationService,
+            AuthenticationService AuthenticationService,
             UserAccountService userAccountService)
         {
-            this.claimsBasedAuthenticationService = claimsBasedAuthenticationService;
+            this.AuthenticationService = AuthenticationService;
             this.userAccountService = userAccountService;
         }
 
@@ -53,8 +53,8 @@ namespace LinkedAccounts.Controllers
         {
             if (disposing)
             {
-                this.claimsBasedAuthenticationService.TryDispose();
-                this.claimsBasedAuthenticationService = null;
+                this.AuthenticationService.TryDispose();
+                this.AuthenticationService = null;
                 this.userAccountService.TryDispose();
                 this.userAccountService = null;
             }
@@ -71,7 +71,7 @@ namespace LinkedAccounts.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                claimsBasedAuthenticationService.SignOut();
+                AuthenticationService.SignOut();
             }
             return RedirectToAction("Index");
         }
@@ -92,7 +92,7 @@ namespace LinkedAccounts.Controllers
                     var claims = result.Claims;
                     var id = claims.GetValue(ClaimTypes.NameIdentifier);
 
-                    this.claimsBasedAuthenticationService.SignInWithLinkedAccount(provider, id, claims);
+                    this.AuthenticationService.SignInWithLinkedAccount(provider, id, claims);
 
                     if (result.ReturnUrl != null)
                     {
@@ -139,7 +139,7 @@ namespace LinkedAccounts.Controllers
         public ActionResult CloseAccount()
         {
             this.userAccountService.DeleteAccount(User.Identity.Name);
-            this.claimsBasedAuthenticationService.SignOut();
+            this.AuthenticationService.SignOut();
             return RedirectToAction("Index");
         }
     }

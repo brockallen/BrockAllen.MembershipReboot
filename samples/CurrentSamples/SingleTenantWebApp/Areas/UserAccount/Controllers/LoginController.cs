@@ -8,11 +8,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     public class LoginController : Controller
     {
         UserAccountService userAccountService;
-        ClaimsBasedAuthenticationService authSvc;
+        AuthenticationService authSvc;
 
         public LoginController(
             UserAccountService userService, 
-            ClaimsBasedAuthenticationService authSvc)
+            AuthenticationService authSvc)
         {
             this.userAccountService = userService;
             this.authSvc = authSvc;

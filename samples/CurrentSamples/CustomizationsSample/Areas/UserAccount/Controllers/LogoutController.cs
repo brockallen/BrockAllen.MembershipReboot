@@ -4,8 +4,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class LogoutController : Controller
     {
-        ClaimsBasedAuthenticationService authSvc;
-        public LogoutController(ClaimsBasedAuthenticationService authSvc)
+        AuthenticationService authSvc;
+        public LogoutController(AuthenticationService authSvc)
         {
             this.authSvc = authSvc;
         }

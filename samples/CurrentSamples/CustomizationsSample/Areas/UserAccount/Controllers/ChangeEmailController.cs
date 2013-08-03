@@ -8,10 +8,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     public class ChangeEmailController : Controller
     {
         UserAccountService userAccountService;
-        ClaimsBasedAuthenticationService authSvc;
+        AuthenticationService authSvc;
 
         public ChangeEmailController(
-            UserAccountService userAccountService, ClaimsBasedAuthenticationService authSvc)
+            UserAccountService userAccountService, AuthenticationService authSvc)
         {
             this.userAccountService = userAccountService;
             this.authSvc = authSvc;

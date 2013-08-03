@@ -27,7 +27,7 @@ namespace LinkedAccounts
             var builder = new ContainerBuilder();
 
             builder.RegisterType<UserAccountService>();
-            builder.RegisterType<ClaimsBasedAuthenticationService>();
+            builder.RegisterType<SamAuthenticationService>().As<AuthenticationService>();
 
             builder
                 .Register<DefaultUserAccountRepository>(x=>new DefaultUserAccountRepository(config.SecuritySettings.ConnectionStringName))

@@ -13,13 +13,13 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class ClaimsBasedAuthenticationService : IDisposable
+    public abstract class AuthenticationService : IDisposable
     {
         static readonly TimeSpan TwoFactorAuthTokenLifetime = TimeSpan.FromMinutes(30);
 
         UserAccountService userService;
 
-        public ClaimsBasedAuthenticationService(UserAccountService userService)
+        public AuthenticationService(UserAccountService userService)
         {
             this.userService = userService;
         }
@@ -32,6 +32,8 @@ namespace BrockAllen.MembershipReboot
                 this.userService = null;
             }
         }
+
+        protected abstract void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null);
 
         public virtual void SignIn(Guid userID)
         {
@@ -48,7 +50,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignIn(string tenant, string username)
         {
-            Tracing.Information(String.Format("[ClaimsBasedAuthenticationService.Signin] called: {0}, {1}", tenant, username));
+            Tracing.Information(String.Format("[AuthenticationService.Signin] called: {0}, {1}", tenant, username));
 
             if (!userService.Configuration.SecuritySettings.MultiTenant)
             {
@@ -87,7 +89,7 @@ namespace BrockAllen.MembershipReboot
 
             if (account.RequiresTwoFactorAuthCodeToSignIn)
             {
-                Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.SignIn] detected account requires two factor auth code to sign in: {0}", account.ID));
+                Tracing.Verbose(String.Format("[AuthenticationService.SignIn] detected account requires two factor auth code to sign in: {0}", account.ID));
                 IssuePartialSignInCookieForTwoFactorAuth(account);
                 return;
             }
@@ -107,7 +109,7 @@ namespace BrockAllen.MembershipReboot
             cp = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager.Authenticate(String.Empty, cp);
 
             // issue cookie
-            IssueCookie(cp);
+            IssueToken(cp);
         }
 
         private static List<Claim> GetBasicClaims(UserAccount account, string method)
@@ -132,50 +134,19 @@ namespace BrockAllen.MembershipReboot
             return claims;
         }
 
-        void IssueCookie(ClaimsPrincipal principal)
-        {
-            var handler = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)] as SessionSecurityTokenHandler;
-            if (handler == null)
-            {
-                Tracing.Verbose("[ClaimsBasedAuthenticationService.Signin] SessionSecurityTokenHandler is not configured");
-                throw new Exception("SessionSecurityTokenHandler is not configured and it needs to be.");
-            }
-            
-            IssueCookie(principal, handler.TokenLifetime, FederatedAuthentication.FederationConfiguration.WsFederationConfiguration.PersistentCookiesOnPassiveRedirects);
-        }
-
-        void IssueCookie(ClaimsPrincipal principal, TimeSpan tokenLifetime, bool persistentCookie)
-        {
-            if (principal == null) throw new ArgumentNullException("principal");
-
-            var sam = FederatedAuthentication.SessionAuthenticationModule;
-            if (sam == null)
-            {
-                Tracing.Verbose("[ClaimsBasedAuthenticationService.Signin] SessionAuthenticationModule is not configured");
-                throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
-            }
-
-            var token = new SessionSecurityToken(principal, tokenLifetime);
-            token.IsPersistent = persistentCookie;
-            token.IsReferenceMode = sam.IsReferenceMode;
-
-            sam.WriteSessionTokenToCookie(token);
-
-            Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.WriteCookie] cookie issued: {0}", principal.Claims.GetValue(ClaimTypes.NameIdentifier)));
-        }
-
+        
         private void IssuePartialSignInCookieForTwoFactorAuth(UserAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
 
-            Tracing.Verbose(String.Format("[ClaimsBasedAuthenticationService.IssuePartialSignInCookieForTwoFactorAuth] Account ID: {0}", account.ID));
+            Tracing.Verbose(String.Format("[AuthenticationService.IssuePartialSignInCookieForTwoFactorAuth] Account ID: {0}", account.ID));
 
             var claims = GetBasicClaims(account, AuthenticationMethods.Password);
 
             var ci = new ClaimsIdentity(claims); // no auth type param so user will not be actually authenticated
             var cp = new ClaimsPrincipal(ci);
 
-            IssueCookie(cp, TwoFactorAuthTokenLifetime, false);
+            IssueToken(cp, TwoFactorAuthTokenLifetime, false);
         }
 
         public void SignInWithLinkedAccount(
@@ -256,13 +227,13 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignOut()
         {
-            Tracing.Information(String.Format("[ClaimsBasedAuthenticationService.SignOut] called: {0}", ClaimsPrincipal.Current.Claims.GetValue(ClaimTypes.NameIdentifier)));
+            Tracing.Information(String.Format("[AuthenticationService.SignOut] called: {0}", ClaimsPrincipal.Current.Claims.GetValue(ClaimTypes.NameIdentifier)));
 
             // clear cookie
             var sam = FederatedAuthentication.SessionAuthenticationModule;
             if (sam == null)
             {
-                Tracing.Verbose("[ClaimsBasedAuthenticationService.Signout] SessionAuthenticationModule is not configured");
+                Tracing.Verbose("[AuthenticationService.Signout] SessionAuthenticationModule is not configured");
                 throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
             }
 

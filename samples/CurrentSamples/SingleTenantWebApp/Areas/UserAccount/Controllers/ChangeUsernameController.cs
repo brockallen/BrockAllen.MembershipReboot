@@ -8,10 +8,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     public class ChangeUsernameController : Controller
     {
         UserAccountService userAccountService;
-        ClaimsBasedAuthenticationService authSvc;
+        AuthenticationService authSvc;
 
         public ChangeUsernameController(
-            UserAccountService userAccountService, ClaimsBasedAuthenticationService authSvc)
+            UserAccountService userAccountService, AuthenticationService authSvc)
         {
             this.userAccountService = userAccountService;
             this.authSvc = authSvc;
