@@ -61,6 +61,7 @@
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Models\LinkedAccountClaim.cs" />
     <Compile Include="Models\LinkedAccount.cs" />
+    <Compile Include="Models\MobileCodePurpose.cs" />
     <Compile Include="Models\UserAccountEvents.cs" />
     <Compile Include="Models\VerificationKeyPurpose.cs" />
     <Compile Include="Models\UserClaim.cs" />

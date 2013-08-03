@@ -1,0 +1,37 @@
+﻿@model BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.ChangeMobileRequestInputModel
+
+@{
+    ViewBag.Title = "Change Mobile Phone Number";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary("Error")
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>@ViewBag.Title</legend>
+
+        @Html.EditorForModel()
+
+        <div class="buttons">
+            <button>Change Mobile Phone Number</button>
+        </div>
+    </fieldset>
+}
+
+
+@using (Html.BeginForm("Confirm", "ChangeMobile"))
+{
+    @Html.AntiForgeryToken()
+    <fieldset>
+        <legend>Verify Mobile Code</legend>
+        <p>
+            <label for="code">Code</label>
+            <input id="code" name="code" />
+        </p>
+        <p class="buttons"><button>Submit</button></p>
+    </fieldset>
+}

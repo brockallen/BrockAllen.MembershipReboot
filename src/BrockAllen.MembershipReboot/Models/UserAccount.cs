@@ -14,6 +14,8 @@ namespace BrockAllen.MembershipReboot
     public class UserAccount : IEventSource
     {
         internal const int VerificationKeyStaleDurationDays = 1;
+        internal const int MobileCodeLength = 6;
+        internal const int MobileCodeStaleDurationMinutes = 10;
 
         internal protected UserAccount()
         {
@@ -38,6 +40,12 @@ namespace BrockAllen.MembershipReboot
         public virtual DateTime Created { get; internal set; }
         public virtual DateTime PasswordChanged { get; internal set; }
         public virtual bool RequiresPasswordReset { get; set; }
+        
+        public virtual bool UseTwoFactorAuth { get; internal set; }
+        public virtual string MobileCode { get; internal set; }
+        public virtual DateTime? MobileCodeSent { get; internal set; }
+        public virtual MobileCodePurpose? MobilePurpose { get; set; }
+        public virtual string MobilePhoneNumber { get; internal set; }
 
         public virtual bool IsAccountVerified { get; internal set; }
         public virtual bool IsLoginAllowed { get; set; }
@@ -97,9 +105,10 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new AccountCreatedEvent { Account = this });
         }
 
-        internal void SetVerificationKey(VerificationKeyPurpose purpose, string prefix = null)
+        internal void SetVerificationKey(VerificationKeyPurpose purpose, string prefix = null, bool generateSalt = true)
         {
-            var key = prefix + StripUglyBase64(this.GenerateSalt());
+            var key = prefix;
+            if (generateSalt) key += StripUglyBase64(this.GenerateSalt());
             this.VerificationKey = key;
             this.VerificationPurpose = purpose;
             this.VerificationKeySent = UtcNow;
@@ -296,7 +305,12 @@ namespace BrockAllen.MembershipReboot
                 LastLogin = UtcNow;
                 FailedLoginCount = 0;
 
-                this.AddEvent(new SuccessfulLoginEvent { Account = this });
+                this.AddEvent(new SuccessfulPasswordLoginEvent { Account = this });
+
+                if (this.UseTwoFactorAuth)
+                {
+                    valid = RequestTwoFactorAuthCode();
+                }
             }
             else
             {
@@ -322,6 +336,180 @@ namespace BrockAllen.MembershipReboot
             }
 
             return false;
+        }
+
+        void SetMobileCode(MobileCodePurpose purpose)
+        {
+            this.MobileCode = CryptoHelper.GenerateNumericCode(MobileCodeLength);
+            this.MobileCodeSent = UtcNow;
+            this.MobilePurpose = purpose;
+        }
+
+        void ClearMobileAuthCode()
+        {
+            this.MobileCode = null;
+            this.MobileCodeSent = null;
+            this.MobilePurpose = null;
+        }
+        
+        protected internal virtual bool RequestChangeMobilePhoneNumber(string newMobilePhoneNumber)
+        {
+            if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
+            {
+                throw new ValidationException("Mobile Phone Number required.");
+            }
+
+            if (this.MobilePhoneNumber != newMobilePhoneNumber)
+            {
+                if (this.IsMobileCodeStale ||
+                    this.MobilePurpose != MobileCodePurpose.VerifyMobile)
+                {
+                    this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, newMobilePhoneNumber, false);
+                    this.SetMobileCode(MobileCodePurpose.VerifyMobile);
+                }
+
+                this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber });
+                
+                return true;
+            }
+            
+            return false;
+        }
+
+        protected internal virtual bool ConfirmMobilePhoneNumberFromCode(string code)
+        {
+            if (String.IsNullOrWhiteSpace(code))
+            {
+                return false;
+            }
+
+            if (this.MobilePurpose != MobileCodePurpose.VerifyMobile)
+            {
+                return false;
+            }
+            
+            if (this.VerificationPurpose != VerificationKeyPurpose.ChangeMobile)
+            {
+                return false;
+            }
+
+            if (this.IsMobileCodeStale)
+            {
+                return false;
+            }
+
+            if (code != this.MobileCode)
+            {
+                return false;
+            }
+
+            this.MobilePhoneNumber = this.VerificationKey;
+
+            this.ClearVerificationKey();
+            this.ClearMobileAuthCode();
+
+            this.AddEvent(new MobilePhoneChangedEvent { Account = this });
+
+            return true;
+        }
+
+        protected internal virtual void ClearMobilePhoneNumber()
+        {
+            if (MobilePhoneNumber != null)
+            {
+                this.MobilePhoneNumber = null;
+                this.AddEvent(new MobilePhoneRemovedEvent { Account = this });
+            }
+        }
+
+        protected internal virtual bool EnableTwoFactorAuthentication()
+        {
+            if (!String.IsNullOrWhiteSpace(this.MobilePhoneNumber))
+            {
+                this.UseTwoFactorAuth = true;
+                this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
+                return true;
+            }
+            return false;
+        }
+
+        protected internal virtual void DisableTwoFactorAuthentication()
+        {
+            if (UseTwoFactorAuth)
+            {
+                this.UseTwoFactorAuth = false;
+                this.AddEvent(new TwoFactorAuthenticationDisabledEvent { Account = this });
+            }
+        }
+        
+        protected virtual bool RequestTwoFactorAuthCode(bool forceNewCode = false)
+        {
+            if (this.UseTwoFactorAuth &&
+                this.IsAccountVerified &&
+                this.IsLoginAllowed &&
+                !this.IsAccountClosed && 
+                !String.IsNullOrWhiteSpace(MobilePhoneNumber))
+            {
+                if (this.IsMobileCodeStale || 
+                    this.MobilePurpose != MobileCodePurpose.Authentication ||
+                    forceNewCode)
+                {
+                    SetMobileCode(MobileCodePurpose.Authentication);
+                }
+
+                SendTwoFactorAuthCode();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        protected internal virtual void SendTwoFactorAuthCode()
+        {
+            if (this.MobileCode != null)
+            {
+                this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this });
+            }
+        }
+
+        protected internal virtual bool VerifyTwoFactorAuthCode(string code)
+        {
+            if (code == null) return false;
+
+            if (this.IsAccountVerified &&
+                this.IsLoginAllowed &&
+                !this.IsAccountClosed &&
+                !IsMobileCodeStale &&
+                this.MobilePurpose == MobileCodePurpose.Authentication &&
+                code == this.MobileCode)
+            {
+                this.ClearMobileAuthCode();
+
+                this.AddEvent(new SuccessfulTwoFactorAuthLoginEvent { Account = this });
+
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual bool IsMobileCodeStale
+        {
+            get
+            {
+                if (this.MobileCodeSent == null)
+                {
+                    return true;
+                }
+
+                if (this.MobileCodeSent < UtcNow.AddMinutes(-MobileCodeStaleDurationMinutes))
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         protected internal virtual void SendAccountNameReminder()
@@ -445,7 +633,6 @@ namespace BrockAllen.MembershipReboot
             var last = this.PasswordChanged;
             return last.AddDays(passwordResetFrequency) <= now;
         }
-
         public virtual bool HasClaim(string type)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");

@@ -52,23 +52,22 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     authSvc.SignIn(account);
 
-                    //authSvc.SignIn(model.Username);
-
-                    if (userAccountService.IsPasswordExpired(model.Username))
+                    if (account.UseTwoFactorAuth)
+                    {
+                        return View("TwoFactorAuth");
+                    }
+                    
+                    if (userAccountService.IsPasswordExpired(account.Username))
                     {
                         return RedirectToAction("Index", "ChangePassword");
                     }
-                    else
+                    
+                    if (Url.IsLocalUrl(model.ReturnUrl))
                     {
-                        if (Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            return Redirect(model.ReturnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
+                        return Redirect(model.ReturnUrl);
                     }
+                    
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
@@ -77,6 +76,38 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TwoFactorAuthLogin(TwoFactorAuthInputModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                BrockAllen.MembershipReboot.UserAccount account;
+                if (userAccountService.AuthenticateWithCode(this.User.GetUserID(), model.Code, out account))
+                {
+                    authSvc.SignIn(account);
+
+                    if (userAccountService.IsPasswordExpired(account.Username))
+                    {
+                        return RedirectToAction("Index", "ChangePassword");
+                    }
+
+                    if (Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid Code");
+                }
+            }
+
+            return View("TwoFactorAuth", model);
         }
     }
 }

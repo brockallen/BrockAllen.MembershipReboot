@@ -538,6 +538,48 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
+        public bool EnableTwoFactorAuthentication(Guid accountID)
+        {
+            return ConfigureTwoFactorAuthentication(accountID, true);
+        }
+        public void DisableTwoFactorAuthentication(Guid accountID)
+        {
+            ConfigureTwoFactorAuthentication(accountID, false);
+        }
+        
+        bool ConfigureTwoFactorAuthentication(Guid accountID, bool enable)
+        {
+            var account = this.GetByID(accountID);
+            if (account == null) return false;
+
+            try
+            {
+                if (enable)
+                {
+                    return account.EnableTwoFactorAuthentication();
+                }
+                else
+                {
+                    account.DisableTwoFactorAuthentication();
+                    return true;
+                }
+            }
+            finally
+            {
+                this.userRepository.Update(account);
+            }
+        }
+
+        public void SendTwoFactorAuthenticationCode(Guid accountID)
+        {
+            var account = this.GetByID(accountID);
+            if (account != null)
+            {
+                account.SendTwoFactorAuthCode();
+                userRepository.Update(account);
+            }
+        }
+
         public virtual void SetPassword(string username, string newPassword)
         {
             SetPassword(null, username, newPassword);
@@ -783,6 +825,68 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
+        public virtual bool ChangeMobilePhoneRequest(string username, string newMobilePhoneNumber)
+        {
+            return ChangeMobilePhoneRequest(null, username, newMobilePhoneNumber);
+        }
+
+        public virtual bool ChangeMobilePhoneRequest(string tenant, string username, string newMobilePhoneNumber)
+        {
+            Tracing.Information(String.Format("[UserAccountService.ChangeMobilePhoneRequest] called: {0}, {1}, {2}", tenant, username, newMobilePhoneNumber));
+
+            if (!SecuritySettings.MultiTenant)
+            {
+                tenant = SecuritySettings.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+            if (String.IsNullOrWhiteSpace(newMobilePhoneNumber)) return false;
+
+            var account = this.GetByUsername(tenant, username);
+            if (account == null) return false;
+
+            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] account located: {0}, {1}", account.Tenant, account.Username));
+
+            var result = account.RequestChangeMobilePhoneNumber(newMobilePhoneNumber);
+            this.userRepository.Update(account);
+
+            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] change request outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
+
+            return result;
+        }
+
+        public virtual bool ChangeMobileFromCode(string username, string code)
+        {
+            return ChangeMobileFromCode(null, username, code);
+        }
+
+        public virtual bool ChangeMobileFromCode(string tenant, string username, string code)
+        {
+            Tracing.Information(String.Format("[UserAccountService.ChangeMobileFromCode] called: {0}, {1}", tenant, username));
+
+            if (!SecuritySettings.MultiTenant)
+            {
+                tenant = SecuritySettings.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (String.IsNullOrWhiteSpace(username)) return false;
+            if (String.IsNullOrWhiteSpace(code)) return false;
+
+            var account = this.GetByUsername(tenant, username);
+            if (account == null) return false;
+
+            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobileFromCode] account located: {0}, {1}", account.Tenant, account.Username));
+
+            var result = account.ConfirmMobilePhoneNumberFromCode(code);
+            this.userRepository.Update(account);
+
+            Tracing.Warning(String.Format("[UserAccountService.ChangeMobileFromCode] outcome: {0}, {1}, {2}", account.Tenant, account.Username, result));
+            
+            return result;
+        }
+        
         public virtual bool IsPasswordExpired(string username)
         {
             return IsPasswordExpired(null, username);
@@ -802,6 +906,27 @@ namespace BrockAllen.MembershipReboot
             if (account == null) return false;
 
             return account.GetIsPasswordExpired(SecuritySettings.PasswordResetFrequency);
+        }
+    
+        public virtual bool AuthenticateWithCode(Guid accountID, string code)
+        {
+            UserAccount account;
+            return AuthenticateWithCode(accountID, code, out account);
+        }
+
+        public virtual bool AuthenticateWithCode(Guid accountID, string code, out UserAccount account)
+        {
+            account = this.GetByID(accountID);
+            if (account == null) return false;
+
+            try
+            {
+                return account.VerifyTwoFactorAuthCode(code);
+            }
+            finally
+            {
+                this.userRepository.Update(account);
+            }
         }
     }
 }

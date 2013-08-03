@@ -18,6 +18,21 @@ namespace BrockAllen.MembershipReboot
         {
             return Crypto.Hash(value);
         }
+
+        internal static string GenerateNumericCode(int digits)
+        {
+            // 18 is good size for a long
+            if (digits > 18) digits = 18;
+            if (digits <= 0) digits = 6;
+            
+            var bytes = Crypto.GenerateSaltInternal(sizeof(long));
+            var val = BitConverter.ToInt64(bytes, 0);
+            var mod = (int)Math.Pow(10, digits);
+            val %= mod;
+            val = Math.Abs(val);
+            
+            return val.ToString("D" + digits);
+        }
         
         internal static string GenerateSalt()
         {

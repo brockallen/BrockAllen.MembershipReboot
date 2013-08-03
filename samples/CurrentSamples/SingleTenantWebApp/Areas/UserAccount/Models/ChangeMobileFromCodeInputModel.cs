@@ -1,16 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
 {
-    public class LoginInputModel
+    public class ChangeEmailFromKeyInputModel
     {
-        [Required]
-        [Display(Name="Username or Email")]
-        public string Username { get; set; }
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        [ScaffoldColumn(false)]
-        public string ReturnUrl { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string NewEmail { get; set; }
+
+        [HiddenInput]
+        public string Key { get; set; }
     }
 }

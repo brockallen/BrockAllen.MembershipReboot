@@ -1,0 +1,33 @@
+﻿@model BrockAllen.MembershipReboot.UserAccount
+
+@{
+    ViewBag.Title = "Two Factor Auth";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (Model.MobilePhoneNumber == null)
+{
+    <p>
+        You do not have a mobile phone registered. Please do 
+        so if you would like to enable two factor authentication.
+    </p>
+}
+else
+{
+    if (Model.UseTwoFactorAuth)
+    {
+        using(Html.BeginForm("Disable", "TwoFactorAuth"))
+        {
+            @Html.AntiForgeryToken()
+            <button>Disable</button>
+        }
+    }
+    else
+    {
+        using(Html.BeginForm("Enable", "TwoFactorAuth"))
+        {
+            @Html.AntiForgeryToken()
+            <button>Enable</button>
+        }
+    }
+}

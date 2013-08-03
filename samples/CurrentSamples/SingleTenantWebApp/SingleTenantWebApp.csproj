@@ -151,6 +151,7 @@
     <Compile Include="Areas\UserAccount\Controllers\ChangePasswordController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\CloseAccountController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangeUsernameController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\ChangeMobileController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LoginController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\LogoutController.cs" />
@@ -158,11 +159,15 @@
     <Compile Include="Areas\UserAccount\Controllers\ChangeEmailController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\RegisterController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\SendUsernameReminderController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\TwoFactorAuthController.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeEmailRequestInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeEmailFromKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordFromResetKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeUsernameInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangeMobileRequestInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangeMobileFromCodeInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\TwoFactorAuthInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\LoginInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\PasswordResetInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\RegisterInputModel.cs" />
@@ -205,6 +210,14 @@
     <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\Object.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeUsername\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeUsername\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeMobile\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeMobile\ChangeRequestSuccess.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeMobile\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeMobile\Confirm.cshtml" />
+    <Content Include="Areas\UserAccount\Views\TwoFactorAuth\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\TwoFactorAuth\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\TwoFactorAuth\Fail.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Login\TwoFactorAuth.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>
