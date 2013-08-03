@@ -14,6 +14,7 @@ namespace BrockAllen.MembershipReboot
     {
         VerifyAccount = 1,
         ChangePassword = 2,
-        ChangeEmail = 3
+        ChangeEmail = 3,
+        ChangeMobile = 4
     }
 }

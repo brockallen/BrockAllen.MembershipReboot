@@ -1,0 +1,25 @@
+﻿@model string
+
+@{
+    ViewBag.Title = "ChangeRequestSuccess";
+}
+
+<h2>Success</h2>
+<p>
+    You should recieve a SMS message shortly at @Model.
+    It will contain the code to enter into the confirmation area below.
+</p>
+
+@using (Html.BeginForm("Confirm", "ChangeMobile"))
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>Confirm</legend>
+        <p>
+            <label for="code">Code</label>
+            <input id="code" name="code" />
+        </p>
+        <p class="buttons"><button>Submit</button></p>
+    </fieldset>
+}
