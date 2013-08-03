@@ -87,10 +87,13 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 
         protected override void SendSms(Message message)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", BasicAuthToken);
-            var result = client.PostAsync(Url, GetBody(message)).Result;
-            result.EnsureSuccessStatusCode();
+            if (!String.IsNullOrWhiteSpace(sid))
+            {
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", BasicAuthToken);
+                var result = client.PostAsync(Url, GetBody(message)).Result;
+                result.EnsureSuccessStatusCode();
+            }
         }
     }
 }
