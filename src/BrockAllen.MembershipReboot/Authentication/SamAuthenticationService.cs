@@ -29,7 +29,7 @@ namespace BrockAllen.MembershipReboot
                 var handler = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)] as SessionSecurityTokenHandler;
                 if (handler == null)
                 {
-                    Tracing.Verbose("[SamAuthenticationService.IssueCookie] SessionSecurityTokenHandler is not configured");
+                    Tracing.Verbose("[SamAuthenticationService.IssueToken] SessionSecurityTokenHandler is not configured");
                     throw new Exception("SessionSecurityTokenHandler is not configured and it needs to be.");
                 }
                 
@@ -44,7 +44,7 @@ namespace BrockAllen.MembershipReboot
             var sam = FederatedAuthentication.SessionAuthenticationModule;
             if (sam == null)
             {
-                Tracing.Verbose("[SamAuthenticationService.IssueCookie] SessionAuthenticationModule is not configured");
+                Tracing.Verbose("[SamAuthenticationService.IssueToken] SessionAuthenticationModule is not configured");
                 throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
             }
 
@@ -54,7 +54,19 @@ namespace BrockAllen.MembershipReboot
             
             sam.WriteSessionTokenToCookie(token);
 
-            Tracing.Verbose(String.Format("[SamAuthenticationService.IssueCookie] cookie issued: {0}", principal.Claims.GetValue(ClaimTypes.NameIdentifier)));
+            Tracing.Verbose(String.Format("[SamAuthenticationService.IssueToken] cookie issued: {0}", principal.Claims.GetValue(ClaimTypes.NameIdentifier)));
+        }
+
+        protected override void RevokeToken()
+        {
+            var sam = FederatedAuthentication.SessionAuthenticationModule;
+            if (sam == null)
+            {
+                Tracing.Verbose("[SamAuthenticationService.RevokeToken] SessionAuthenticationModule is not configured");
+                throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
+            }
+
+            sam.SignOut();
         }
     }
 }

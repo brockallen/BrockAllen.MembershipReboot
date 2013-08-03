@@ -34,35 +34,12 @@ namespace BrockAllen.MembershipReboot
         }
 
         protected abstract void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null);
+        protected abstract void RevokeToken();
 
         public virtual void SignIn(Guid userID)
         {
             var account = this.userService.GetByID(userID);
             if (account == null) throw new ArgumentException("Invalid userID");
-
-            SignIn(account, AuthenticationMethods.Password);
-        }
-
-        public virtual void SignIn(string username)
-        {
-            SignIn((string)null, username);
-        }
-
-        public virtual void SignIn(string tenant, string username)
-        {
-            Tracing.Information(String.Format("[AuthenticationService.Signin] called: {0}, {1}", tenant, username));
-
-            if (!userService.Configuration.SecuritySettings.MultiTenant)
-            {
-                tenant = userService.Configuration.SecuritySettings.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
-            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentException("username");
-
-            // find user
-            var account = this.userService.GetByUsername(tenant, username);
-            if (account == null) throw new ArgumentException("Invalid username");
 
             SignIn(account, AuthenticationMethods.Password);
         }
@@ -90,7 +67,7 @@ namespace BrockAllen.MembershipReboot
             if (account.RequiresTwoFactorAuthCodeToSignIn)
             {
                 Tracing.Verbose(String.Format("[AuthenticationService.SignIn] detected account requires two factor auth code to sign in: {0}", account.ID));
-                IssuePartialSignInCookieForTwoFactorAuth(account);
+                IssuePartialSignInTokenForTwoFactorAuth(account, method);
                 return;
             }
 
@@ -134,14 +111,13 @@ namespace BrockAllen.MembershipReboot
             return claims;
         }
 
-        
-        private void IssuePartialSignInCookieForTwoFactorAuth(UserAccount account)
+        private void IssuePartialSignInTokenForTwoFactorAuth(UserAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 
             Tracing.Verbose(String.Format("[AuthenticationService.IssuePartialSignInCookieForTwoFactorAuth] Account ID: {0}", account.ID));
 
-            var claims = GetBasicClaims(account, AuthenticationMethods.Password);
+            var claims = GetBasicClaims(account, method);
 
             var ci = new ClaimsIdentity(claims); // no auth type param so user will not be actually authenticated
             var cp = new ClaimsPrincipal(ci);
@@ -230,14 +206,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information(String.Format("[AuthenticationService.SignOut] called: {0}", ClaimsPrincipal.Current.Claims.GetValue(ClaimTypes.NameIdentifier)));
 
             // clear cookie
-            var sam = FederatedAuthentication.SessionAuthenticationModule;
-            if (sam == null)
-            {
-                Tracing.Verbose("[AuthenticationService.Signout] SessionAuthenticationModule is not configured");
-                throw new Exception("SessionAuthenticationModule is not configured and it needs to be.");
-            }
-
-            sam.SignOut();
+            RevokeToken();
         }
     }
 }
