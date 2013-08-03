@@ -3,11 +3,12 @@
  * see license.txt
  */
 
+
 namespace BrockAllen.MembershipReboot
 {
-    public enum MobileCodePurpose
+    public enum AuthenticationPurpose
     {
-        VerifyMobile = 1,
-        Authentication = 2
+        SignIn = 1,
+        VerifyPassword = 2
     }
 }

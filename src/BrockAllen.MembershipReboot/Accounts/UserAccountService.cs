@@ -12,12 +12,6 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserAccountService : IDisposable
     {
-        protected internal enum AuthenticationPurpose
-        {
-            SignIn = 1,
-            VerifyPassword = 2
-        }
-
         public MembershipRebootConfiguration Configuration { get; set; }
         
         SecuritySettings SecuritySettings

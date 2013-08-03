@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accounts\AuthenticationPurpose.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\IFactory.cs" />
     <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
