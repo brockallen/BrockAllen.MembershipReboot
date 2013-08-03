@@ -6,6 +6,7 @@
 
 @if (User.Identity.IsAuthenticated)
 {
+    <h2>Signed In</h2>
     using (Html.BeginForm())
     {
         <fieldset>
@@ -21,15 +22,18 @@
             <p><button>Save Changes</button></p>
         </fieldset>
     }
-    
-    <h3>Your Claims</h3>
-    <dl>
-        @foreach (var claim in System.Security.Claims.ClaimsPrincipal.Current.Claims)
-        {
-            <dt>@claim.Type</dt>
-            <dd>@claim.Value</dd>
-            <dd>@claim.Issuer</dd>
-        }
-    </dl>
-
 }
+else
+{
+    <h2>Not Signed In</h2>
+}
+
+<h3>Your Claims</h3>
+<dl>
+    @foreach (var claim in System.Security.Claims.ClaimsPrincipal.Current.Claims)
+    {
+        <dt>@claim.Type</dt>
+        <dd>@claim.Value</dd>
+        <dd>@claim.Issuer</dd>
+    }
+</dl>

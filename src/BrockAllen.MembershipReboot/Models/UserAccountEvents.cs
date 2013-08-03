@@ -33,7 +33,21 @@ namespace BrockAllen.MembershipReboot
         public string OldEmail { get; set; }
     }
 
-    public class SuccessfulLoginEvent : UserAccountEvent { }
+    public class MobilePhoneChangeRequestedEvent : UserAccountEvent
+    {
+        public string NewMobilePhoneNumber { get; set; }
+    }
+    public class MobilePhoneChangedEvent : UserAccountEvent { }
+    public class MobilePhoneRemovedEvent : UserAccountEvent { }
+    
+    public class TwoFactorAuthenticationEnabledEvent : UserAccountEvent { }
+    public class TwoFactorAuthenticationDisabledEvent : UserAccountEvent { }
+
+    public class TwoFactorAuthenticationCodeNotificationEvent : UserAccountEvent { }
+
+    public abstract class SuccessfulLoginEvent : UserAccountEvent { }
+    public class SuccessfulPasswordLoginEvent : SuccessfulLoginEvent { }
+    public class SuccessfulTwoFactorAuthLoginEvent : SuccessfulLoginEvent { }
 
     public abstract class FailedLoginEvent : UserAccountEvent { }
     public class AccountNotVerifiedEvent : FailedLoginEvent { }

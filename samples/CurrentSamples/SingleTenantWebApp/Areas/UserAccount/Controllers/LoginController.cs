@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
@@ -52,23 +53,22 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     authSvc.SignIn(account);
 
-                    //authSvc.SignIn(model.Username);
-
-                    if (userAccountService.IsPasswordExpired(model.Username))
+                    if (account.UseTwoFactorAuth)
+                    {
+                        return View("TwoFactorAuth");
+                    }
+                    
+                    if (userAccountService.IsPasswordExpired(account.Username))
                     {
                         return RedirectToAction("Index", "ChangePassword");
                     }
-                    else
+                    
+                    if (Url.IsLocalUrl(model.ReturnUrl))
                     {
-                        if (Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            return Redirect(model.ReturnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
+                        return Redirect(model.ReturnUrl);
                     }
+                    
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
@@ -77,6 +77,52 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TwoFactorAuthLogin(string button, TwoFactorAuthInputModel model)
+        {
+            if (!User.HasUserID())
+            {
+                // if the temp cookie is expired, then make the login again
+                return RedirectToAction("Index");
+            }
+
+            if (button == "signin")
+            {
+                if (ModelState.IsValid)
+                {
+                    BrockAllen.MembershipReboot.UserAccount account;
+                    if (userAccountService.AuthenticateWithCode(this.User.GetUserID(), model.Code, out account))
+                    {
+                        authSvc.SignIn(account);
+
+                        if (userAccountService.IsPasswordExpired(account.Username))
+                        {
+                            return RedirectToAction("Index", "ChangePassword");
+                        }
+
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Invalid Code");
+                    }
+                }
+            }
+            
+            if (button == "resend")
+            {
+                this.userAccountService.SendTwoFactorAuthenticationCode(this.User.GetUserID());
+            }
+
+            return View("TwoFactorAuth", model);
         }
     }
 }

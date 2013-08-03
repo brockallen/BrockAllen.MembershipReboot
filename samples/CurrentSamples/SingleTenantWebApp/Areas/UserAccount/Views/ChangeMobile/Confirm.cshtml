@@ -1,0 +1,20 @@
+﻿@model BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.ChangeMobileFromCodeInputModel
+
+@{
+    ViewBag.Title = "Confirm Mobile Code";
+}
+
+@using (Html.BeginForm("Confirm", "ChangeMobile"))
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+    @Html.ValidationSummary()
+        <legend>Confirm</legend>
+        <p>
+            <label for="code">Code</label>
+            <input id="code" name="code" />
+        </p>
+        <p class="buttons"><button>Submit</button></p>
+    </fieldset>
+}
