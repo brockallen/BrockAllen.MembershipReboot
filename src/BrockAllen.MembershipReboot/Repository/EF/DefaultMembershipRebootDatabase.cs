@@ -20,13 +20,14 @@ namespace BrockAllen.MembershipReboot
         }
 
         public DbSet<UserAccount> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
     }
 
     public class DefaultUserAccountRepository
         : DbContextUserAccountRepository<DefaultMembershipRebootDatabase>
     {
         public DefaultUserAccountRepository()
-            :this(SecuritySettings.Instance.ConnectionStringName)
+            : this(SecuritySettings.Instance.ConnectionStringName)
         {
         }
 
@@ -36,6 +37,25 @@ namespace BrockAllen.MembershipReboot
         }
 
         public DefaultUserAccountRepository(DefaultMembershipRebootDatabase ctx)
+            : base(ctx)
+        {
+        }
+    }
+
+    public class DefaultRoleRepository
+        : DbContextRoleRepository<DefaultMembershipRebootDatabase>
+    {
+        public DefaultRoleRepository()
+            : this(SecuritySettings.Instance.ConnectionStringName)
+        {
+        }
+
+        public DefaultRoleRepository(string name)
+            : this(new DefaultMembershipRebootDatabase(name))
+        {
+        }
+
+        public DefaultRoleRepository(DefaultMembershipRebootDatabase ctx)
             : base(ctx)
         {
         }
