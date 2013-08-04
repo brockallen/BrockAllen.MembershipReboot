@@ -11,7 +11,7 @@ namespace BrockAllen.MembershipReboot
         ITwoFactorAuthenticationPolicy,
         IEventHandler<SuccessfulTwoFactorAuthCodeLoginEvent>
     {
-        const string CookieBasedTwoFactorAuthPolicyCookieName = "cbtfap";
+        const string CookieBasedTwoFactorAuthPolicyCookieName = "mr.cbtfap";
 
         protected abstract bool HasCookie(string name, string value);
         protected abstract void IssueCookie(string name, string value);
