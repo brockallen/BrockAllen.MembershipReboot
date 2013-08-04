@@ -1,6 +1,6 @@
 # What is MembershipReboot
 
-The MembershipReboot project is intended as a user account, identity management and authentication library. It has nothing to do with the ASP.NET Membership Provider (but was inspired by it). MembershipReboot was initiated due to [frustrations](http://brockallen.com/2012/06/04/membership-is-not-the-same-as-forms-authentication/) with the built-in ASP.NET Membership system. The goals are to improve upon and provide missing features from ASP.NET Membership.
+The MembershipReboot project is intended as a user account, identity management and authentication library. It has nothing to do with the ASP.NET Membership Provider (but was inspired by it). MembershipReboot was initiated due to [frustrations](http://brockallen.com/2012/06/04/membership-is-not-the-same-as-forms-authentication/) with the built-in ASP.NET Membership system. The goals are to improve upon and provide missing features from ASP.NET Membership. MembershipReboot is designed to encapsulate the important security logic, while leaving most of the other aspects of account management either configurable or extensible for application developers to customize as needed.
 
 Some of the features of MembershipReboot are:
 
