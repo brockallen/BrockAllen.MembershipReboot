@@ -131,10 +131,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void Update(UserAccount account)
         {
-            account.LastUpdated = account.UtcNow;
             this.userRepository.Update(account);
         }
-        
+
         public virtual IQueryable<UserAccount> GetAll()
         {
             return GetAll(null);
@@ -342,7 +341,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccountService.VerifyAccount] account located: {0}, {1}", account.Tenant, account.Username));
 
             var result = account.VerifyAccount(key);
-            Update(account);
+            this.userRepository.Update(account);
             
             return result;
         }
@@ -385,7 +384,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] marking account as closed: {0}, {1}", account.Tenant, account.Username));
 
             account.CloseAccount();
-            Update(account);
+            userRepository.Update(account);
 
             if (SecuritySettings.AllowAccountDeletion || !account.IsAccountVerified)
             {
@@ -516,7 +515,7 @@ namespace BrockAllen.MembershipReboot
                     result = account.RequestTwoFactorAuthCode();
                 }
             }
-            Update(account);
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.Authenticate] authentication outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful Login" : "Failed Login"));
 
@@ -535,7 +534,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             var result = account.VerifyTwoFactorAuthCode(code);
-            Update(account);
+            this.userRepository.Update(account);
 
             return result;
         }
@@ -548,7 +547,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
             
             account.EnableTwoFactorAuthentication();
-            Update(account);
+            this.userRepository.Update(account);
         }
 
         public virtual void DisableTwoFactorAuthentication(Guid accountID)
@@ -559,7 +558,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             account.DisableTwoFactorAuthentication();
-            Update(account);
+            this.userRepository.Update(account);
         }
 
         public virtual void SendTwoFactorAuthenticationCode(Guid accountID)
@@ -570,7 +569,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
             
             account.RequestTwoFactorAuthCode();
-            Update(account);
+            userRepository.Update(account);
         }
 
         public virtual void SetPassword(Guid accountID, string newPassword)
@@ -587,7 +586,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}", accountID));
 
             account.SetPassword(newPassword);
-            Update(account);
+            this.userRepository.Update(account);
         }
 
         public virtual void ChangePassword(Guid accountID, string oldPassword, string newPassword)
@@ -609,7 +608,7 @@ namespace BrockAllen.MembershipReboot
             }
 
             account.SetPassword(newPassword);
-            Update(account);
+            this.userRepository.Update(account);
             
             Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change successful: {0}, {1}", account.Tenant, account.Username));
         }
@@ -635,7 +634,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ValidationException("Invalid email.");
 
             account.ResetPassword();
-            Update(account);
+            this.userRepository.Update(account);
         }
 
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
@@ -652,7 +651,7 @@ namespace BrockAllen.MembershipReboot
             ValidatePassword(account, newPassword);
 
             var result = account.ChangePasswordFromResetKey(key, newPassword);
-            Update(account);
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangePasswordFromResetKey] change password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
 
@@ -682,7 +681,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccountService.SendUsernameReminder] account located: {0}, {1}", account.Tenant, account.Username));
 
             account.SendAccountNameReminder();
-            Update(account);
+            this.userRepository.Update(account);
         }
 
         public virtual void ChangeUsername(Guid accountID, string newUsername)
@@ -704,7 +703,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}", accountID, newUsername));
 
             account.ChangeUsername(newUsername);
-            Update(account);
+            this.userRepository.Update(account);
         }
 
         public virtual void ChangeEmailRequest(Guid accountID, string newEmail)
@@ -721,7 +720,7 @@ namespace BrockAllen.MembershipReboot
             ValidateEmail(account, newEmail);
 
             account.ChangeEmailRequest(newEmail);
-            Update(account);
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] change request successful: {0}, {1}", account.Tenant, account.Username));
         }
@@ -754,7 +753,7 @@ namespace BrockAllen.MembershipReboot
                 account.Username = newEmail;
             }
             
-            Update(account);
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] change email outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
 
@@ -767,7 +766,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             account.ClearMobilePhoneNumber();
-            Update(account);
+            this.userRepository.Update(account);
         }
 
         public virtual void ChangeMobilePhoneRequest(Guid accountID, string newMobilePhoneNumber)
@@ -782,7 +781,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] account located: {0}, {1}", account.Tenant, account.Username));
 
             account.RequestChangeMobilePhoneNumber(newMobilePhoneNumber);
-            Update(account);
+            this.userRepository.Update(account);
 
             Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] change request successful: {0}, {1}", account.Tenant, account.Username));
         }
@@ -799,7 +798,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose(String.Format("[UserAccountService.ChangeMobileFromCode] account located: {0}, {1}", account.Tenant, account.Username));
 
             var result = account.ConfirmMobilePhoneNumberFromCode(code);
-            Update(account);
+            this.userRepository.Update(account);
 
             Tracing.Warning(String.Format("[UserAccountService.ChangeMobileFromCode] outcome: {0}, {1}, {2}", account.Tenant, account.Username, result));
             
