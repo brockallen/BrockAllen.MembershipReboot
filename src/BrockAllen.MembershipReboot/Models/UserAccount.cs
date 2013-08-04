@@ -38,6 +38,7 @@ namespace BrockAllen.MembershipReboot
         public virtual string Email { get; internal set; }
 
         public virtual DateTime Created { get; internal set; }
+        public virtual DateTime LastUpdated { get; internal set; }
         public virtual DateTime PasswordChanged { get; internal set; }
         public virtual bool RequiresPasswordReset { get; set; }
         
@@ -96,6 +97,7 @@ namespace BrockAllen.MembershipReboot
             this.Username = username;
             this.Email = email;
             this.Created = this.UtcNow;
+            this.LastUpdated = this.Created;
             this.HashedPassword = HashPassword(password);
             this.PasswordChanged = this.Created;
             this.IsAccountVerified = false;
