@@ -36,6 +36,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             }
             //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
             config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
+
+            config.ConfigureAspNetCookieBasedTwoFactorAuthPolicy();
             
             return config;
         }

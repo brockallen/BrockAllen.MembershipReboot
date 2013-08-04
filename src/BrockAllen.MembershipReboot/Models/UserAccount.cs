@@ -531,7 +531,7 @@ namespace BrockAllen.MembershipReboot
             {
                 this.ClearMobileAuthCode();
 
-                this.AddEvent(new SuccessfulTwoFactorAuthLoginEvent { Account = this });
+                this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent { Account = this });
 
                 return true;
             }

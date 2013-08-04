@@ -54,6 +54,10 @@
     <Compile Include="Accounts\AuthenticationPurpose.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\IFactory.cs" />
+    <Compile Include="Extensions\ConfigurationExtensions.cs" />
+    <Compile Include="TwoFactorAuthPolicy\AspNetCookieBasedTwoFactorAuthPolicy.cs" />
+    <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
+    <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />
     <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
     <Compile Include="Configuration\MembershipRebootConfigurationExtensions.cs" />
     <Compile Include="Extensions\ClaimsExtensions.cs" />

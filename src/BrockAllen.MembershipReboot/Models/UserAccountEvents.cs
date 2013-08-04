@@ -42,7 +42,7 @@ namespace BrockAllen.MembershipReboot
 
     public abstract class SuccessfulLoginEvent : UserAccountEvent { }
     public class SuccessfulPasswordLoginEvent : SuccessfulLoginEvent { }
-    public class SuccessfulTwoFactorAuthLoginEvent : SuccessfulLoginEvent { }
+    public class SuccessfulTwoFactorAuthCodeLoginEvent : SuccessfulLoginEvent { }
 
     public abstract class FailedLoginEvent : UserAccountEvent { }
     public class AccountNotVerifiedEvent : FailedLoginEvent { }

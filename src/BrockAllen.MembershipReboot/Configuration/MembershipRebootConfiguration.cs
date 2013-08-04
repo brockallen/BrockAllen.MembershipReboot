@@ -4,6 +4,8 @@
  */
 
 using System;
+using System.Linq;
+using System.Web;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -82,5 +84,7 @@ namespace BrockAllen.MembershipReboot
         {
             eventBus.AddRange(handlers);
         }
+
+        public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
     }
 }

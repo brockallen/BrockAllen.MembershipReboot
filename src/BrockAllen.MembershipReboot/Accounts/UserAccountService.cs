@@ -503,7 +503,17 @@ namespace BrockAllen.MembershipReboot
                 purpose == AuthenticationPurpose.SignIn && 
                 account.UseTwoFactorAuth)
             {
-                result = account.RequestTwoFactorAuthCode();
+                bool shouldRequestTwoFactorAuthCode = true;
+                if (this.Configuration.TwoFactorAuthenticationPolicy != null)
+                {
+                    shouldRequestTwoFactorAuthCode = this.Configuration.TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth(account);
+                }
+
+                if (shouldRequestTwoFactorAuthCode)
+                {
+                    Tracing.Verbose(String.Format("[UserAccountService.Authenticate] requesting 2fa code: {0}, {1}", account.Tenant, account.Username));
+                    result = account.RequestTwoFactorAuthCode();
+                }
             }
             this.userRepository.Update(account);
 
