@@ -3,17 +3,10 @@ using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
 {
-    public class ChangeEmailFromKeyInputModel
+    public class ChangeMobileFromCodeInputModel
     {
         [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-
-        [Required]
-        [EmailAddress]
-        public string NewEmail { get; set; }
-
-        [HiddenInput]
-        public string Key { get; set; }
+        public string Code { get; set; }
     }
+    
 }

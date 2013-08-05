@@ -1,10 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
 {
-    public class ChangeMobileFromCodeInputModel
+    public class ChangeEmailFromKeyInputModel
     {
         [Required]
-        public string Code { get; set; }
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string NewEmail { get; set; }
+
+        [HiddenInput]
+        public string Key { get; set; }
     }
 }
