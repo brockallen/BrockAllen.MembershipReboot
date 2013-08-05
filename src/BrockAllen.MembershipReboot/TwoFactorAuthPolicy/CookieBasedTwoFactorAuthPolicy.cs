@@ -18,7 +18,7 @@ namespace BrockAllen.MembershipReboot
 
         string GetCookieValue(UserAccount account)
         {
-            return CryptoHelper.Hash(account.ID.ToString() + account.HashedPassword);
+            return CryptoHelper.Hash(account.ID.ToString(), account.HashedPassword);
         }
 
         public bool RequestRequiresTwoFactorAuth(UserAccount account)
