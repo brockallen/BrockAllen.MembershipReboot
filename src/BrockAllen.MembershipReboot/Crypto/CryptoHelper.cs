@@ -34,6 +34,21 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
+        internal static string Hash(string value, string key)
+        {
+            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentNullException("value");
+            if (String.IsNullOrWhiteSpace(key)) throw new ArgumentNullException("key");
+
+            var valueBytes = System.Text.Encoding.UTF8.GetBytes(key);
+            var keyBytes = System.Text.Encoding.UTF8.GetBytes(key);
+
+            var alg = new System.Security.Cryptography.HMACSHA512(keyBytes);
+            var hash = alg.ComputeHash(valueBytes);
+
+            var result = Crypto.BinaryToHex(hash);
+            return result;
+        }
+
         internal static string GenerateNumericCode(int digits)
         {
             // 18 is good size for a long
