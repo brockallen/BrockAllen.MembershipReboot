@@ -184,6 +184,10 @@ namespace BrockAllen.MembershipReboot
                         throw new ValidationException("Can't login with this provider because the email is already associated with another account. Please login with your local account and then associate the provider.");
                     }
 
+                    // auto-gen a password, they can always reset it later if they want to use the password feature
+                    // this is slightly dangerous if we don't do email account verification, so if email account
+                    // verification is disabled then we need to be very confident that the external provider has
+                    // provided us with a verified email
                     var pwd = CryptoHelper.GenerateSalt();
                     account = this.userService.CreateAccount(tenant, name, pwd, email);
                 }

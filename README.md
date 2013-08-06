@@ -16,7 +16,7 @@ Some of the features of MembershipReboot are:
 * proper password storage (via PBKDF2)
 	* configurable iterations
 	* defaults to OWASP recommendations for iterations (e.g. 64K in year 2012)
-* Two factor authentication support via mobile phone SMS messages
+* two factor authentication support via mobile phone SMS messages
 
 The most common use case will be to integrate this into an ASP.NET or ASP.NET MVC application, though the library can also be used over a network as a service.
 
