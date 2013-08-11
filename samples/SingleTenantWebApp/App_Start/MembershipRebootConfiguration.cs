@@ -10,33 +10,21 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         public static MembershipRebootConfiguration Create()
         {
             var settings = SecuritySettings.Instance;
-            var config = new MembershipRebootConfiguration(settings, new DelegateFactory(()=>new DefaultUserAccountRepository(settings.ConnectionStringName)));
+            var config = new MembershipRebootConfiguration(settings, ()=>new DefaultUserAccountRepository(settings.ConnectionStringName));
 
-            var appinfo = new Lazy<ApplicationInformation>(() =>
-            {
-                // build URL
-                var baseUrl = HttpContext.Current.GetApplicationUrl();
-                // area name
-                baseUrl += "UserAccount/";
-
-                return new ApplicationInformation
-                {
-                    ApplicationName = "Test",
-                    LoginUrl = baseUrl + "Login",
-                    VerifyAccountUrl = baseUrl + "Register/Confirm/",
-                    CancelNewAccountUrl = baseUrl + "Register/Cancel/",
-                    ConfirmPasswordResetUrl = baseUrl + "PasswordReset/Confirm/",
-                    ConfirmChangeEmailUrl = baseUrl + "ChangeEmail/Confirm/"
-                };
-            });
+            var appinfo = new AspNetApplicationInformation("Test", null,
+                "UserAccount/Login", 
+                "UserAccount/Register/Confirm/",
+                "UserAccount/Register/Cancel/",
+                "UserAccount/PasswordReset/Confirm/",
+                "UserAccount/ChangeEmail/Confirm/");
             var emailFormatter = new EmailMessageFormatter(appinfo);
             if (settings.RequireAccountVerification)
             {
-                //config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
+                config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
             }
-            //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+            config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
             config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
-
             config.ConfigureAspNetCookieBasedTwoFactorAuthPolicy();
             
             return config;
@@ -49,7 +37,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         const string token = "";
         const string fromPhone = "";
         
-        public TwilloSmsEventHandler(Lazy<ApplicationInformation> appInfo)
+        public TwilloSmsEventHandler(ApplicationInformation appInfo)
             : base(new SmsMessageFormatter(appInfo))
         {
         }
