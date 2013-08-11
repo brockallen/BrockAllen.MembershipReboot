@@ -9,7 +9,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
     {
         public static MembershipRebootConfiguration Create()
         {
-            var settings = SecuritySettings.Instance;
+            var settings = SecuritySettings.FromConfiguration();
             var config = new MembershipRebootConfiguration(settings);
 
             var appinfo = new AspNetApplicationInformation("Test", null,
