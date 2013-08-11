@@ -28,6 +28,11 @@ namespace BrockAllen.MembershipReboot
         Lazy<AggregateValidator> emailValidator;
         Lazy<AggregateValidator> passwordValidator;
 
+        public UserAccountService()
+            : this(new MembershipRebootConfiguration())
+        {
+        }
+
         public UserAccountService(MembershipRebootConfiguration configuration)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
@@ -67,30 +72,6 @@ namespace BrockAllen.MembershipReboot
                 val.Add(configuration.PasswordValidator);
                 return val;
             });
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public UserAccountService(IUserAccountRepository userAccountRepository, INotificationService notificationService, IPasswordPolicy passwordPolicy)
-            : this(ConfigFromDeprecatedInterfaces(userAccountRepository, notificationService, passwordPolicy))
-        {
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public UserAccountService(IUserAccountRepository userAccountRepository)
-            : this(userAccountRepository, null, null)
-        {
-        }
-
-        static MembershipRebootConfiguration ConfigFromDeprecatedInterfaces(
-            IUserAccountRepository userAccountRepository,
-            INotificationService notificationService,
-            IPasswordPolicy passwordPolicy)
-        {
-            if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
-
-            var config = new MembershipRebootConfiguration(SecuritySettings.Instance, new DelegateFactory(() => userAccountRepository));
-            config.FromLegacy(notificationService, passwordPolicy);
-            return config;
         }
 
         internal protected void ValidateUsername(UserAccount account, string value)

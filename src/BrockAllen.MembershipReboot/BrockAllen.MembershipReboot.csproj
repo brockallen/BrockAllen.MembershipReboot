@@ -62,7 +62,6 @@
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />
     <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
-    <Compile Include="Configuration\MembershipRebootConfigurationExtensions.cs" />
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Constants\MembershipRebootConstants.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\EventBusUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
-    <Compile Include="Accounts\Deprecated\BasicPasswordPolicy.cs" />
     <Compile Include="Accounts\UserAccountValidation.cs" />
     <Compile Include="Bus\EventBus.cs" />
     <Compile Include="Bus\Events.cs" />
@@ -92,18 +90,12 @@
     <Compile Include="Crypto\CryptoHelper.cs" />
     <Compile Include="Configuration\ApplicationInformation.cs" />
     <Compile Include="Authentication\SamAuthenticationService.cs" />
-    <Compile Include="Accounts\Deprecated\IPasswordPolicy.cs" />
-    <Compile Include="Notification\Deprecated\INotificationService.cs" />
     <Compile Include="Notification\Message.cs" />
     <Compile Include="Notification\IMessageDelivery.cs" />
-    <Compile Include="Notification\Deprecated\NopMessageDelivery.cs" />
-    <Compile Include="Accounts\Deprecated\NopPasswordPolicy.cs" />
-    <Compile Include="Notification\Deprecated\NotificationService.cs" />
     <Compile Include="Repository\IUserAccountRepository.cs" />
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\SecuritySettings.cs" />
-    <Compile Include="Notification\Deprecated\NotificationServiceEventHandler.cs" />
     <Compile Include="Notification\Email\SmtpMessageDelivery.cs" />
     <Compile Include="Accounts\UserAccountService.cs" />
     <Compile Include="Notification\Email\EmailNotificationEventHandlers.cs" />

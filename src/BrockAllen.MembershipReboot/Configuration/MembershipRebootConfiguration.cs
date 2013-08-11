@@ -11,6 +11,11 @@ namespace BrockAllen.MembershipReboot
 {
     public class MembershipRebootConfiguration
     {
+        public MembershipRebootConfiguration()
+            : this(SecuritySettings.Instance, ()=>new DefaultUserAccountRepository())
+        {
+        }
+
         public MembershipRebootConfiguration(SecuritySettings securitySettings, Func<IUserAccountRepository> factoryFunc)
             : this(securitySettings, new DelegateFactory(factoryFunc))
         {
