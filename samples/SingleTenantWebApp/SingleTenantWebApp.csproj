@@ -276,7 +276,7 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">
+    <ProjectReference Include="..\..\src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">
       <Project>{a33fe01f-ae9b-4bde-b521-ab13916b1cfa}</Project>
       <Name>BrockAllen.MembershipReboot</Name>
     </ProjectReference>
