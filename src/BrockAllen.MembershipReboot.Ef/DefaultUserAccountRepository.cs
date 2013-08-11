@@ -15,12 +15,7 @@ namespace BrockAllen.MembershipReboot.Ef
         }
 
         public DefaultUserAccountRepository(string name)
-            : this(new DefaultMembershipRebootDatabase(name))
-        {
-        }
-
-        public DefaultUserAccountRepository(DefaultMembershipRebootDatabase ctx)
-            : base(ctx)
+            : base(new DefaultMembershipRebootDatabase(name))
         {
         }
     }

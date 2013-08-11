@@ -37,11 +37,10 @@ namespace LinkedAccounts.Controllers
         UserAccountService userAccountService;
 
         public HomeController(
-            AuthenticationService AuthenticationService,
-            UserAccountService userAccountService)
+            AuthenticationService AuthenticationService)
         {
             this.AuthenticationService = AuthenticationService;
-            this.userAccountService = userAccountService;
+            this.userAccountService = AuthenticationService.UserAccountService;
         }
 
         protected override void Dispose(bool disposing)
@@ -50,8 +49,6 @@ namespace LinkedAccounts.Controllers
             {
                 this.AuthenticationService.TryDispose();
                 this.AuthenticationService = null;
-                this.userAccountService.TryDispose();
-                this.userAccountService = null;
             }
 
             base.Dispose(disposing);
