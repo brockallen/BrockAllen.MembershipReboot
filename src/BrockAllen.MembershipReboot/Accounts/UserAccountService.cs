@@ -29,19 +29,28 @@ namespace BrockAllen.MembershipReboot
         Lazy<AggregateValidator> passwordValidator;
 
         public UserAccountService()
-            : this(new MembershipRebootConfiguration())
+            : this(new MembershipRebootConfiguration(), new DefaultUserAccountRepository())
+        {
+        }
+        public UserAccountService(MembershipRebootConfiguration configuration)
+            : this(configuration, new DefaultUserAccountRepository())
+        {
+        }
+        public UserAccountService(IUserAccountRepository userRepository)
+            : this(new MembershipRebootConfiguration(), userRepository)
         {
         }
 
-        public UserAccountService(MembershipRebootConfiguration configuration)
+        public UserAccountService(MembershipRebootConfiguration configuration, IUserAccountRepository userRepository)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
+            if (userRepository == null) throw new ArgumentNullException("userRepository");
             
             this.Configuration = configuration;
 
             this.userRepository =
                 new EventBusUserAccountRepository(
-                    configuration.CreateUserAccountRepository(),
+                    userRepository,
                     configuration.EventBus);
 
             this.usernameValidator = new Lazy<AggregateValidator>(()=>

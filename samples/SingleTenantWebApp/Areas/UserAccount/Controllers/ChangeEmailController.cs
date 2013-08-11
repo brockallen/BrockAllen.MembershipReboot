@@ -10,10 +10,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         UserAccountService userAccountService;
         AuthenticationService authSvc;
 
-        public ChangeEmailController(
-            UserAccountService userAccountService, AuthenticationService authSvc)
+        public ChangeEmailController(AuthenticationService authSvc)
         {
-            this.userAccountService = userAccountService;
+            this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;
         }
 
@@ -21,8 +20,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (disposing)
             {
-                this.userAccountService.TryDispose();
-                this.userAccountService = null;
                 this.authSvc.TryDispose();
                 this.authSvc = null;
             }

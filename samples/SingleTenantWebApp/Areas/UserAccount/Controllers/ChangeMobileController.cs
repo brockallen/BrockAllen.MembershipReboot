@@ -10,9 +10,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         UserAccountService userAccountService;
         AuthenticationService authSvc;
 
-        public ChangeMobileController(UserAccountService userAccountService, AuthenticationService authSvc)
+        public ChangeMobileController(AuthenticationService authSvc)
         {
-            this.userAccountService = userAccountService;
+            this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;
         }
 
@@ -20,8 +20,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (disposing)
             {
-                this.userAccountService.TryDispose();
-                this.userAccountService = null;
+                this.authSvc.TryDispose();
+                this.authSvc = null;
             }
             base.Dispose(disposing);
         }

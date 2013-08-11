@@ -24,7 +24,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var settings = SecuritySettings.Instance;
             settings.MultiTenant = false;
             
-            var config = new MembershipRebootConfiguration(settings, ()=>new CustomRepository());
+            var config = new MembershipRebootConfiguration(settings);
             config.RegisterPasswordValidator(new PasswordValidator());
 
             var delivery = new SmtpMessageDelivery();

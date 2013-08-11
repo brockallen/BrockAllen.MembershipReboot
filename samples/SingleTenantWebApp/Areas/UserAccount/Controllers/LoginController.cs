@@ -9,11 +9,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         UserAccountService userAccountService;
         AuthenticationService authSvc;
 
-        public LoginController(
-            UserAccountService userService, 
-            AuthenticationService authSvc)
+        public LoginController(AuthenticationService authSvc)
         {
-            this.userAccountService = userService;
+            this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;
         }
 
@@ -21,12 +19,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (disposing)
             {
-                if (this.userAccountService != null)
-                {
-                    this.userAccountService.Dispose();
-                    this.userAccountService = null;
-                }
-                
                 if (this.authSvc != null)
                 {
                     this.authSvc.Dispose();

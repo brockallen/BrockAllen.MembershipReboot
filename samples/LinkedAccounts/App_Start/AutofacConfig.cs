@@ -12,7 +12,7 @@ namespace LinkedAccounts
             var settings = SecuritySettings.Instance;
             settings.MultiTenant = false;
 
-            var config = new MembershipRebootConfiguration(settings, new DelegateFactory(() => new DefaultUserAccountRepository(settings.ConnectionStringName)));
+            var config = new MembershipRebootConfiguration(settings);
             return config;
         }
 
@@ -23,8 +23,8 @@ namespace LinkedAccounts
             var builder = new ContainerBuilder();
 
             builder.RegisterType<UserAccountService>();
+            builder.RegisterInstance<MembershipRebootConfiguration>(config);
             builder.RegisterType<SamAuthenticationService>().As<AuthenticationService>();
-
             builder
                 .Register<DefaultUserAccountRepository>(x=>new DefaultUserAccountRepository(config.SecuritySettings.ConnectionStringName))
                 .As<IUserAccountRepository>()

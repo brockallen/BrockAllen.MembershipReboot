@@ -12,6 +12,10 @@ namespace BrockAllen.MembershipReboot
 {
     public class SamAuthenticationService : AuthenticationService
     {
+        public SamAuthenticationService()
+            : this(new UserAccountService())
+        {
+        }
         public SamAuthenticationService(UserAccountService userService)
             : base(userService)
         {

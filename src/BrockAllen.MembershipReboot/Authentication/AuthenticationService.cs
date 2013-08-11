@@ -17,19 +17,19 @@ namespace BrockAllen.MembershipReboot
     {
         static readonly TimeSpan TwoFactorAuthTokenLifetime = TimeSpan.FromMinutes(30);
 
-        UserAccountService userService;
+        public UserAccountService UserAccountService { get; set; }
 
         public AuthenticationService(UserAccountService userService)
         {
-            this.userService = userService;
+            this.UserAccountService = userService;
         }
 
         public void Dispose()
         {
-            if (this.userService != null)
+            if (this.UserAccountService != null)
             {
-                this.userService.Dispose();
-                this.userService = null;
+                this.UserAccountService.Dispose();
+                this.UserAccountService = null;
             }
         }
 
@@ -38,7 +38,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignIn(Guid userID)
         {
-            var account = this.userService.GetByID(userID);
+            var account = this.UserAccountService.GetByID(userID);
             if (account == null) throw new ArgumentException("Invalid userID");
 
             SignIn(account, AuthenticationMethods.Password);
@@ -139,9 +139,9 @@ namespace BrockAllen.MembershipReboot
             string providerAccountID,
             IEnumerable<Claim> claims)
         {
-            if (!userService.Configuration.SecuritySettings.MultiTenant)
+            if (!UserAccountService.Configuration.SecuritySettings.MultiTenant)
             {
-                tenant = userService.Configuration.SecuritySettings.DefaultTenant;
+                tenant = UserAccountService.Configuration.SecuritySettings.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");
@@ -154,12 +154,12 @@ namespace BrockAllen.MembershipReboot
             if (user.Identity.IsAuthenticated)
             {
                 // already logged in, so use the current user's account
-                account = this.userService.GetByID(user.GetUserID());
+                account = this.UserAccountService.GetByID(user.GetUserID());
             }
             else
             {
                 // see if there's already an account mapped to this provider
-                account = this.userService.GetByLinkedAccount(tenant, providerName, providerAccountID);
+                account = this.UserAccountService.GetByLinkedAccount(tenant, providerName, providerAccountID);
                 if (account == null)
                 {
                     // no account associated, so create one
@@ -173,13 +173,13 @@ namespace BrockAllen.MembershipReboot
                     // guess at a name to use
                     var name = claims.GetValue(ClaimTypes.Name);
                     if (name == null ||
-                        this.userService.UsernameExists(tenant, name))
+                        this.UserAccountService.UsernameExists(tenant, name))
                     {
                         name = email;
                     }
 
                     // check to see if email already exists
-                    if (this.userService.EmailExists(tenant, email))
+                    if (this.UserAccountService.EmailExists(tenant, email))
                     {
                         throw new ValidationException("Can't login with this provider because the email is already associated with another account. Please login with your local account and then associate the provider.");
                     }
@@ -189,7 +189,7 @@ namespace BrockAllen.MembershipReboot
                     // verification is disabled then we need to be very confident that the external provider has
                     // provided us with a verified email
                     var pwd = CryptoHelper.GenerateSalt();
-                    account = this.userService.CreateAccount(tenant, name, pwd, email);
+                    account = this.UserAccountService.CreateAccount(tenant, name, pwd, email);
                 }
             }
 
@@ -197,7 +197,7 @@ namespace BrockAllen.MembershipReboot
 
             // add/update the provider with this account
             account.AddOrUpdateLinkedAccount(providerName, providerAccountID, claims);
-            this.userService.Update(account);
+            this.UserAccountService.Update(account);
 
             // signin from the account
             // if we want to include the provider's claims, then perhaps this

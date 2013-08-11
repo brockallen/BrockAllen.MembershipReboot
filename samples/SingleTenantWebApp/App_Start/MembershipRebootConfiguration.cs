@@ -10,7 +10,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         public static MembershipRebootConfiguration Create()
         {
             var settings = SecuritySettings.Instance;
-            var config = new MembershipRebootConfiguration(settings, ()=>new DefaultUserAccountRepository(settings.ConnectionStringName));
+            var config = new MembershipRebootConfiguration(settings);
 
             var appinfo = new AspNetApplicationInformation("Test", null,
                 "UserAccount/Login", 
