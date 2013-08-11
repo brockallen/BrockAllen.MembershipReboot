@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrockAllen.MembershipReboot.Ef;
+using System;
 using System.Data.Entity;
 using System.Web;
 

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Integration.Mvc;
 using BrockAllen.MembershipReboot;
+using BrockAllen.MembershipReboot.Ef;
 using System.Web.Mvc;
 
 namespace LinkedAccounts
@@ -26,7 +27,7 @@ namespace LinkedAccounts
             builder.RegisterInstance<MembershipRebootConfiguration>(config);
             builder.RegisterType<SamAuthenticationService>().As<AuthenticationService>();
             builder
-                .Register<DefaultUserAccountRepository>(x=>new DefaultUserAccountRepository(config.SecuritySettings.ConnectionStringName))
+                .Register<DefaultUserAccountRepository>(x=>new DefaultUserAccountRepository())
                 .As<IUserAccountRepository>()
                 .InstancePerHttpRequest();
 

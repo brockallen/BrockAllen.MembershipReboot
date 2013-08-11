@@ -7,7 +7,7 @@ using System;
 using System.Data.Entity;
 using System.Linq;
 
-namespace BrockAllen.MembershipReboot
+namespace BrockAllen.MembershipReboot.Ef
 {
     public class DbContextRepository<T> : IRepository<T>, IDisposable
         where T : class

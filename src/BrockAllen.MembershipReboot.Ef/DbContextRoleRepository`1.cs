@@ -4,7 +4,7 @@
  */
 
 using System.Data.Entity;
-namespace BrockAllen.MembershipReboot
+namespace BrockAllen.MembershipReboot.Ef
 {
     public class DbContextRoleRepository<Ctx>
            : DbContextRepository<Role>, IRoleRepository

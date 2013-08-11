@@ -4,6 +4,7 @@
 namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     using BrockAllen.MembershipReboot;
+    using BrockAllen.MembershipReboot.Ef;
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
     using Ninject;
     using Ninject.Web.Common;
@@ -54,7 +55,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         {
             var config = MembershipRebootConfig.Create();
             kernel.Bind<MembershipRebootConfiguration>().ToConstant(config);
-            kernel.Bind<IUserAccountRepository>().ToMethod(ctx=>new DefaultUserAccountRepository(config.SecuritySettings.ConnectionStringName));
+            kernel.Bind<IUserAccountRepository>().ToMethod(ctx=>new DefaultUserAccountRepository());
             kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();
         }
     }

@@ -28,14 +28,6 @@ namespace BrockAllen.MembershipReboot
         Lazy<AggregateValidator> emailValidator;
         Lazy<AggregateValidator> passwordValidator;
 
-        public UserAccountService()
-            : this(new MembershipRebootConfiguration(), new DefaultUserAccountRepository())
-        {
-        }
-        public UserAccountService(MembershipRebootConfiguration configuration)
-            : this(configuration, new DefaultUserAccountRepository())
-        {
-        }
         public UserAccountService(IUserAccountRepository userRepository)
             : this(new MembershipRebootConfiguration(), userRepository)
         {

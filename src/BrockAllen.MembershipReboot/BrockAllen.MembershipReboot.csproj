@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -57,7 +54,6 @@
     <Compile Include="Configuration\IFactory.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Models\Role.cs" />
-    <Compile Include="Repository\EF\DbContextRoleRepository`1.cs" />
     <Compile Include="Repository\IRoleRepository.cs" />
     <Compile Include="TwoFactorAuthPolicy\AspNetCookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
@@ -78,9 +74,6 @@
     <Compile Include="Notification\Email\EmailMessageFormatter.cs" />
     <Compile Include="Notification\SMS\SmsNotificationEventHandler.cs" />
     <Compile Include="Notification\SMS\SmsMessageFormatter.cs" />
-    <Compile Include="Repository\EF\DbContextRepository`1.cs" />
-    <Compile Include="Repository\EF\DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Repository\EF\DbContextUserAccountRepository`1.cs" />
     <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\EventBusUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
@@ -107,7 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

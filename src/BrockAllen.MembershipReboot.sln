@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5AE0A7
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

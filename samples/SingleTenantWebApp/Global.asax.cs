@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot.Mvc.App_Start;
+﻿using BrockAllen.MembershipReboot.Ef;
+using BrockAllen.MembershipReboot.Mvc.App_Start;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Web.Helpers;
@@ -28,7 +29,7 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         private void InitDatabase()
         {
-            using (var svc = new UserAccountService(new MembershipRebootConfiguration(), new DefaultUserAccountRepository(SecuritySettings.Instance.ConnectionStringName)))
+            using (var svc = new UserAccountService(new DefaultUserAccountRepository()))
             {
                 if (svc.GetByUsername("admin") == null)
                 {

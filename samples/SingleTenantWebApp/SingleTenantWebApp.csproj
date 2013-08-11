@@ -276,6 +276,10 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj">
+      <Project>{453c8a9d-72aa-4f8d-9354-8b0f57f2b58a}</Project>
+      <Name>BrockAllen.MembershipReboot.Ef</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">
       <Project>{a33fe01f-ae9b-4bde-b521-ab13916b1cfa}</Project>
       <Name>BrockAllen.MembershipReboot</Name>

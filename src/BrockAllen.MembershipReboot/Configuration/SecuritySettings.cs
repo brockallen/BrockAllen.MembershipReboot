@@ -40,7 +40,6 @@ namespace BrockAllen.MembershipReboot
             return (SecuritySettings)System.Configuration.ConfigurationManager.GetSection(SectionName);
         }
 
-        private const string CONNECTIONSTRINGNAME = "connectionStringName";
         private const string MULTITENANT = "multiTenant";
         private const string DEFAULTTENANT = "defaultTenant";
         private const string EMAILISUSERNAME = "emailIsUsername";
@@ -52,13 +51,6 @@ namespace BrockAllen.MembershipReboot
         private const string ALLOWACCOUNTDELETION = "allowAccountDeletion";
         private const string PASSWORDHASHINGITERATIONCOUNT = "passwordHashingIterationCount";
         private const string PASSWORDRESETFREQUENCY = "passwordResetFrequency";
-
-        [ConfigurationProperty(CONNECTIONSTRINGNAME, DefaultValue = "MembershipReboot")]
-        public string ConnectionStringName
-        {
-            get { return (string)this[CONNECTIONSTRINGNAME]; }
-            set { this[CONNECTIONSTRINGNAME] = value; }
-        }
 
         [ConfigurationProperty(MULTITENANT, DefaultValue = false)]
         public bool MultiTenant
