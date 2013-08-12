@@ -227,6 +227,7 @@
     <Content Include="Areas\UserAccount\Views\Login\CertificateLogin.cshtml" />
     <Content Include="Areas\UserAccount\Views\Certificate\Index.cshtml" />
     <None Include="Content\Site.less" />
+    <Content Include="configuring_client_certs_readme.txt" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>
     </Content>

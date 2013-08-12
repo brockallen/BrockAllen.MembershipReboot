@@ -136,7 +136,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="App_Data\brock.cer" />
-    <Content Include="readme.txt" />
+    <Content Include="configuring_client_certs_readme.txt" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
