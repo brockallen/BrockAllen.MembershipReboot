@@ -22,6 +22,7 @@ namespace BrockAllen.MembershipReboot
         {
             this.Claims = new HashSet<UserClaim>();
             this.LinkedAccounts = new HashSet<LinkedAccount>();
+            this.Certificates = new HashSet<UserCertificate>();
         }
 
         [Key]
