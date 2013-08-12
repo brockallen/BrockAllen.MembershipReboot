@@ -7,6 +7,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -229,6 +230,36 @@ namespace BrockAllen.MembershipReboot
             if (account == null)
             {
                 Tracing.Verbose(String.Format("[UserAccountService.GetByLinkedAccount] failed to locate by provider: {0}, id: {1}", provider, id));
+            }
+            return account;
+        }
+
+        public virtual UserAccount GetByCertificate(string thumbprint)
+        {
+            return GetByCertificate(null, thumbprint);
+        }
+
+        public virtual UserAccount GetByCertificate(string tenant, string thumbprint)
+        {
+            if (!SecuritySettings.MultiTenant)
+            {
+                tenant = SecuritySettings.DefaultTenant;
+            }
+
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (String.IsNullOrWhiteSpace(thumbprint)) return null;
+
+            var query =
+                from u in userRepository.GetAll()
+                where u.Tenant == tenant
+                from c in u.Certificates
+                where c.Thumbprint == thumbprint
+                select u;
+
+            var account = query.SingleOrDefault();
+            if (account == null)
+            {
+                Tracing.Verbose(String.Format("[UserAccountService.GetByCertificate] failed to locate by thumbprint: {0}, {1}", tenant, thumbprint));
             }
             return account;
         }
@@ -517,6 +548,25 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             var result = account.VerifyTwoFactorAuthCode(code);
+            Update(account);
+
+            return result;
+        }
+        
+        public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate)
+        {
+            UserAccount account;
+            return AuthenticateWithCertificate(certificate, out account);
+        }
+
+        public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate, out UserAccount account)
+        {
+            certificate.Validate();
+
+            account = this.GetByCertificate(certificate.Thumbprint);
+            if (account == null) return false;
+
+            var result = account.Authenticate(certificate);
             Update(account);
 
             return result;

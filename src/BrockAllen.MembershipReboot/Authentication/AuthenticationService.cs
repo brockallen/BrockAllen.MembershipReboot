@@ -107,6 +107,9 @@ namespace BrockAllen.MembershipReboot
             {
                 claims.Add(new Claim(ClaimTypes.MobilePhone, account.MobilePhoneNumber));
             }
+            var x509 = from c in account.Certificates
+                       select new Claim(ClaimTypes.X500DistinguishedName, c.Subject);
+            claims.AddRange(x509);
 
             return claims;
         }

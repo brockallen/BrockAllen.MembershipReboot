@@ -115,5 +115,18 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
             return View("TwoFactorAuth", model);
         }
+
+        public ActionResult LoginWithCertificate()
+        {
+            if (Request.ClientCertificate != null)
+            {
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "No certificate provided");
+            }
+            return View();
+        }
     }
 }
