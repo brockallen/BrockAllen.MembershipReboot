@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -61,6 +62,8 @@ namespace BrockAllen.MembershipReboot
         public virtual string VerificationKey { get; internal set; }
         public virtual VerificationKeyPurpose? VerificationPurpose { get; set; }
         public virtual DateTime? VerificationKeySent { get; internal set; }
+
+        public virtual byte[] X509Certificate { get; internal set; }
 
         [Required]
         [StringLength(200)]
@@ -195,6 +198,23 @@ namespace BrockAllen.MembershipReboot
             RequiresPasswordReset = false;
 
             this.AddEvent(new PasswordChangedEvent { Account = this });
+        }
+        
+        protected internal virtual void SetCertificate(X509Certificate2 certificate)
+        {
+            if (certificate == null || certificate.Handle == IntPtr.Zero || 
+                UtcNow < certificate.NotBefore || UtcNow < certificate.NotAfter)
+            {
+                Tracing.Verbose("[UserAccount.SetCertificate] failed -- no cert provided");
+
+                throw new ValidationException("Invalid certificate");
+            }
+
+            Tracing.Verbose("[UserAccount.SetCertificate] setting new cert");
+
+            this.X509Certificate = certificate.RawData;
+
+            this.AddEvent(new CertificateChangedEvent { Account = this });
         }
         
         protected internal virtual bool IsVerificationKeyStale
