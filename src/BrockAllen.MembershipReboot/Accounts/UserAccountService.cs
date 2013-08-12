@@ -114,6 +114,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void Update(UserAccount account)
         {
+            account.LastUpdated = account.UtcNow;
             this.userRepository.Update(account);
         }
         
