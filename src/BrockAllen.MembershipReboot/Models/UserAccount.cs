@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -67,6 +68,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual ICollection<UserClaim> Claims { get; internal set; }
         public virtual ICollection<LinkedAccount> LinkedAccounts { get; internal set; }
+        public virtual ICollection<UserCertificate> Certificates { get; internal set; }
         
         List<IEvent> events = new List<IEvent>();
         IEnumerable<IEvent> IEventSource.Events
@@ -352,6 +354,32 @@ namespace BrockAllen.MembershipReboot
                 return LastFailedLogin >= UtcNow.Subtract(lockoutDuration);
             }
 
+            return false;
+        }
+
+        protected internal virtual bool Authenticate(X509Certificate2 certificate)
+        {
+            certificate.Validate();
+
+            if (certificate.NotBefore < UtcNow && UtcNow < certificate.NotAfter)
+            {
+                var match = this.Certificates.FirstOrDefault(x => x.Thumbprint.Equals(certificate.Thumbprint, StringComparison.OrdinalIgnoreCase));
+                if (match != null)
+                {
+                    this.AddEvent(new SuccessfulCertificateLoginEvent { Account = this, UserCertificate = match, Certificate = certificate });
+                    return true;
+                }
+                else
+                {
+                    Tracing.Verbose("[UserAccount.Authenticate] failed -- no thumbprint match");
+                }
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccount.Authenticate] failed -- invalid dates");
+            }
+
+            this.AddEvent(new InvalidCertificateEvent { Account = this, Certificate = certificate });
             return false;
         }
 
@@ -783,6 +811,39 @@ namespace BrockAllen.MembershipReboot
             if (linked != null)
             {
                 this.LinkedAccounts.Remove(linked);
+            }
+        }
+
+        public virtual void AddCertificate(X509Certificate2 certificate)
+        {
+            certificate.Validate();
+            RemoveCertificate(certificate);
+            AddCertificate(certificate.Thumbprint, certificate.Subject);
+        }
+        
+        public virtual void AddCertificate(string thumbprint, string subject)
+        {
+            if (String.IsNullOrWhiteSpace(thumbprint)) throw new ArgumentNullException("thumbprint");
+            if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException("subject");
+
+            this.Certificates.Add(new UserCertificate { User = this, Thumbprint = thumbprint, Subject = subject });
+        }
+
+        public virtual void RemoveCertificate(X509Certificate2 certificate)
+        {
+            if (certificate == null) throw new ArgumentNullException("certificate");
+            if (certificate.Handle == IntPtr.Zero) throw new ArgumentException("Invalid certificate");
+
+            RemoveCertificate(certificate.Thumbprint);
+        }
+        public virtual void RemoveCertificate(string thumbprint)
+        {
+            if (String.IsNullOrWhiteSpace(thumbprint)) throw new ArgumentNullException("thumbprint");
+
+            var certs = this.Certificates.Where(x => x.Thumbprint.Equals(thumbprint, StringComparison.OrdinalIgnoreCase)).ToArray();
+            foreach (var cert in certs)
+            {
+                this.Certificates.Remove(cert);
             }
         }
 

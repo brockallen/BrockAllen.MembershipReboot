@@ -11,51 +11,18 @@ namespace BrockAllen.MembershipReboot
 {
     public class MembershipRebootConfiguration
     {
-        public MembershipRebootConfiguration(SecuritySettings securitySettings, Func<IUserAccountRepository> factoryFunc)
-            : this(securitySettings, new DelegateFactory(factoryFunc))
+        public MembershipRebootConfiguration()
+            : this(SecuritySettings.Instance)
         {
-            if (factoryFunc == null) throw new ArgumentNullException("factoryFunc");
-        }
-        
-        public MembershipRebootConfiguration(Func<IUserAccountRepository> factoryFunc)
-            : this(new DelegateFactory(factoryFunc))
-        {
-            if (factoryFunc == null) throw new ArgumentNullException("factoryFunc");
         }
 
-        public MembershipRebootConfiguration(SecuritySettings securitySettings, IFactory factory)
+        public MembershipRebootConfiguration(SecuritySettings securitySettings)
         {
             if (securitySettings == null) throw new ArgumentNullException("securitySettings");
-            if (factory == null) throw new ArgumentNullException("factory");
-
-            this.factory = factory;
             this.SecuritySettings = securitySettings;
         }
 
-        public MembershipRebootConfiguration(SecuritySettings securitySettings, IUserAccountRepository userAccountRepository)
-            : this(securitySettings, new DelegateFactory(()=>userAccountRepository))
-        {
-            if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
-        }
-
-        public MembershipRebootConfiguration(IFactory factory)
-            : this(SecuritySettings.Instance, factory)
-        {
-        }
-
-        public MembershipRebootConfiguration(IUserAccountRepository userAccountRepository)
-            : this(new DelegateFactory(() => userAccountRepository))
-        {
-            if (userAccountRepository == null) throw new ArgumentNullException("userAccountRepository");
-        }
-
         public SecuritySettings SecuritySettings { get; private set; }
-
-        IFactory factory;
-        public IUserAccountRepository CreateUserAccountRepository()
-        {
-            return factory.CreateUserAccountRepository();
-        }
 
         AggregateValidator usernameValidators = new AggregateValidator();
         public void RegisterUsernameValidator(params IValidator[] items)

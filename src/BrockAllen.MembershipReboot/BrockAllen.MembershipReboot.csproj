@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -53,13 +50,16 @@
   <ItemGroup>
     <Compile Include="Accounts\AuthenticationPurpose.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
-    <Compile Include="Configuration\IFactory.cs" />
+    <Compile Include="Configuration\AspNetApplicationInformation.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
+    <Compile Include="Extensions\X509Certificate2Extensions.cs" />
+    <Compile Include="Models\Role.cs" />
+    <Compile Include="Models\UserCertificate.cs" />
+    <Compile Include="Repository\IRoleRepository.cs" />
     <Compile Include="TwoFactorAuthPolicy\AspNetCookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />
     <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
-    <Compile Include="Configuration\MembershipRebootConfigurationExtensions.cs" />
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Constants\MembershipRebootConstants.cs" />
@@ -75,13 +75,9 @@
     <Compile Include="Notification\Email\EmailMessageFormatter.cs" />
     <Compile Include="Notification\SMS\SmsNotificationEventHandler.cs" />
     <Compile Include="Notification\SMS\SmsMessageFormatter.cs" />
-    <Compile Include="Repository\EF\DbContextRepository`1.cs" />
-    <Compile Include="Repository\EF\DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Repository\EF\DbContextUserAccountRepository`1.cs" />
     <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\EventBusUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
-    <Compile Include="Accounts\Deprecated\BasicPasswordPolicy.cs" />
     <Compile Include="Accounts\UserAccountValidation.cs" />
     <Compile Include="Bus\EventBus.cs" />
     <Compile Include="Bus\Events.cs" />
@@ -89,18 +85,12 @@
     <Compile Include="Crypto\CryptoHelper.cs" />
     <Compile Include="Configuration\ApplicationInformation.cs" />
     <Compile Include="Authentication\SamAuthenticationService.cs" />
-    <Compile Include="Accounts\Deprecated\IPasswordPolicy.cs" />
-    <Compile Include="Notification\Deprecated\INotificationService.cs" />
     <Compile Include="Notification\Message.cs" />
     <Compile Include="Notification\IMessageDelivery.cs" />
-    <Compile Include="Notification\Deprecated\NopMessageDelivery.cs" />
-    <Compile Include="Accounts\Deprecated\NopPasswordPolicy.cs" />
-    <Compile Include="Notification\Deprecated\NotificationService.cs" />
     <Compile Include="Repository\IUserAccountRepository.cs" />
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\SecuritySettings.cs" />
-    <Compile Include="Notification\Deprecated\NotificationServiceEventHandler.cs" />
     <Compile Include="Notification\Email\SmtpMessageDelivery.cs" />
     <Compile Include="Accounts\UserAccountService.cs" />
     <Compile Include="Notification\Email\EmailNotificationEventHandlers.cs" />
@@ -111,7 +101,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

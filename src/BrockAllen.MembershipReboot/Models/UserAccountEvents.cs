@@ -4,6 +4,7 @@
  */
 
 
+using System.Security.Cryptography.X509Certificates;
 namespace BrockAllen.MembershipReboot
 {
     public abstract class UserAccountEvent : IEvent
@@ -16,6 +17,7 @@ namespace BrockAllen.MembershipReboot
 
     public class PasswordResetRequestedEvent : UserAccountEvent { }
     public class PasswordChangedEvent : UserAccountEvent { }
+    public class CertificateChangedEvent : UserAccountEvent { }
     public class UsernameReminderRequestedEvent : UserAccountEvent { }
     public class AccountClosedEvent : UserAccountEvent { }
     public class UsernameChangedEvent : UserAccountEvent { }
@@ -42,6 +44,10 @@ namespace BrockAllen.MembershipReboot
 
     public abstract class SuccessfulLoginEvent : UserAccountEvent { }
     public class SuccessfulPasswordLoginEvent : SuccessfulLoginEvent { }
+    public class SuccessfulCertificateLoginEvent : SuccessfulLoginEvent {
+        public UserCertificate UserCertificate { get; set; }
+        public X509Certificate2 Certificate { get; set; }
+    }
     public class SuccessfulTwoFactorAuthCodeLoginEvent : SuccessfulLoginEvent { }
 
     public abstract class FailedLoginEvent : UserAccountEvent { }
@@ -49,4 +55,7 @@ namespace BrockAllen.MembershipReboot
     public class AccountLockedEvent : FailedLoginEvent { }
     public class TooManyRecentPasswordFailuresEvent : FailedLoginEvent { }
     public class InvalidPasswordEvent : FailedLoginEvent { }
+    public class InvalidCertificateEvent : FailedLoginEvent {
+        public X509Certificate2 Certificate { get; set; }
+    }
 }
