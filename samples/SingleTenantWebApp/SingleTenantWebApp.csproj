@@ -16,7 +16,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44302</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -68,6 +68,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.identitymodel.services" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.13.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Net.Http.2.2.13\lib\net45\System.Net.Http.Extensions.dll</HintPath>
@@ -153,6 +155,7 @@
     <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\CertificateController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangePasswordController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\CloseAccountController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangeUsernameController.cs" />
@@ -220,9 +223,9 @@
     <Content Include="Areas\UserAccount\Views\ChangeMobile\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeMobile\Confirm.cshtml" />
     <Content Include="Areas\UserAccount\Views\TwoFactorAuth\Index.cshtml" />
-    <Content Include="Areas\UserAccount\Views\TwoFactorAuth\Success.cshtml" />
-    <Content Include="Areas\UserAccount\Views\TwoFactorAuth\Fail.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Login\TwoFactorAuth.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Login\TwoFactorAuthCodeLogin.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Login\CertificateLogin.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Certificate\Index.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>

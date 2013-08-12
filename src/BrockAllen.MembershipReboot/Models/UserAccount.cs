@@ -546,6 +546,14 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
+        public bool RequiresTwoFactorAuthToSignIn
+        {
+            get
+            {
+                return this.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.None;
+            }
+        }
+
         public bool RequiresTwoFactorCertificateToSignIn
         {
             get

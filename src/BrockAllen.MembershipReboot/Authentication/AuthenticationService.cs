@@ -64,9 +64,9 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Login not allowed for this account");
             }
 
-            if (account.RequiresTwoFactorAuthCodeToSignIn)
+            if (account.RequiresTwoFactorAuthToSignIn)
             {
-                Tracing.Verbose(String.Format("[AuthenticationService.SignIn] detected account requires two factor auth code to sign in: {0}", account.ID));
+                Tracing.Verbose(String.Format("[AuthenticationService.SignIn] detected account requires two factor to sign in: {0}", account.ID));
                 IssuePartialSignInTokenForTwoFactorAuth(account, method);
                 return;
             }

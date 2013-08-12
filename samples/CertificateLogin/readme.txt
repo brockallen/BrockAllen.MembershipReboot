@@ -10,3 +10,9 @@ the element (around line 81 in my config):
 <section name="access" overrideModeDefault="Deny" />
 
 and changing overrideModeDefault to "Allow".
+
+Also, if you're using self-signed certs for testing you will also need to configure your 
+web server as described in this article:
+
+http://www.aspnetwiki.com/configuring-iis-7-with-self-signed-server-and-client-certifi
+

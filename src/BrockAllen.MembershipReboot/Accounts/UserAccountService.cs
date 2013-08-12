@@ -564,7 +564,7 @@ namespace BrockAllen.MembershipReboot
 
             return result;
         }
-        
+
         public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate)
         {
             UserAccount account;
@@ -577,6 +577,27 @@ namespace BrockAllen.MembershipReboot
 
             account = this.GetByCertificate(certificate.Thumbprint);
             if (account == null) return false;
+
+            var result = account.Authenticate(certificate);
+            Update(account);
+
+            return result;
+        }
+
+        public virtual bool AuthenticateWithCertificate(Guid accountID, X509Certificate2 certificate)
+        {
+            UserAccount account;
+            return AuthenticateWithCertificate(accountID, certificate, out account);
+        }
+
+        public virtual bool AuthenticateWithCertificate(Guid accountID, X509Certificate2 certificate, out UserAccount account)
+        {
+            Tracing.Information(String.Format("[UserAccountService.AuthenticateWithCertificate] called for userID: {0}", accountID));
+            
+            certificate.Validate();
+
+            account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
 
             var result = account.Authenticate(certificate);
             Update(account);

@@ -28,7 +28,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         public ActionResult Index()
         {
-            return View("Index");
+            var acct = this.authSvc.UserAccountService.GetByID(User.GetUserID());
+            return View("Index", new ChangeMobileRequestInputModel {Current = acct.MobilePhoneNumber });
         }
 
         [HttpPost]
@@ -57,6 +58,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 return View("Success");
             }
 
+            var acct = this.authSvc.UserAccountService.GetByID(User.GetUserID());
+            model.Current = acct.MobilePhoneNumber;
             return View("Index", model);
         }
 

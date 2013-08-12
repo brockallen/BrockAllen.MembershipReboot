@@ -14,40 +14,29 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         public ActionResult Index()
         {
-            var acct = userAccountService.GetByUsername(this.User.Identity.Name);
+            var acct = userAccountService.GetByID(this.User.GetUserID());
             return View(acct);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Enable()
+        public ActionResult Index(TwoFactorAuthMode mode)
         {
             try
             {
-                this.userAccountService.EnableTwoFactorAuthentication(this.User.GetUserID());
-                return View("Success");
+                this.userAccountService.ConfigureTwoFactorAuthentication(this.User.GetUserID(), mode);
+                
+                ViewData["Message"] = "Update Success";
+                
+                var acct = userAccountService.GetByID(this.User.GetUserID());
+                return View("Index", acct);
             }
             catch (ValidationException ex)
             {
                 ModelState.AddModelError("", ex.Message);
             }
-            return View("Index");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Disable()
-        {
-            try
-            {
-                this.userAccountService.DisableTwoFactorAuthentication(this.User.GetUserID());
-                return View("Success");
-            }
-            catch (ValidationException ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-            }
-            return View("Index");
+            
+            return View("Index", userAccountService.GetByID(this.User.GetUserID()));
         }
     }
 }

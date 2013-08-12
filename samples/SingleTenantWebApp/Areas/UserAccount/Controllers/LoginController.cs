@@ -1,4 +1,7 @@
 ﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens;
+using System.Security.Cryptography.X509Certificates;
 using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
@@ -46,7 +49,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
                     if (account.RequiresTwoFactorAuthCodeToSignIn)
                     {
-                        return View("TwoFactorAuth");
+                        return View("TwoFactorAuthCodeLogin");
+                    }
+                    if (account.RequiresTwoFactorCertificateToSignIn)
+                    {
+                        return RedirectToAction("CertificateLogin");
                     }
                     
                     if (userAccountService.IsPasswordExpired(account))
@@ -72,7 +79,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult TwoFactorAuthLogin(string button, TwoFactorAuthInputModel model)
+        public ActionResult TwoFactorAuthCodeLogin(string button, TwoFactorAuthInputModel model)
         {
             if (!User.HasUserID())
             {
@@ -113,19 +120,39 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 this.userAccountService.SendTwoFactorAuthenticationCode(this.User.GetUserID());
             }
 
-            return View("TwoFactorAuth", model);
+            return View("TwoFactorAuthCodeLogin", model);
         }
 
-        public ActionResult LoginWithCertificate()
+        public ActionResult CertificateLogin()
         {
-            if (Request.ClientCertificate != null)
+            if (Request.ClientCertificate != null && 
+                Request.ClientCertificate.IsPresent && 
+                Request.ClientCertificate.IsValid)
             {
+                try
+                {
+                    var cert = new X509Certificate2(Request.ClientCertificate.Certificate);
+                    BrockAllen.MembershipReboot.UserAccount account;
+                    if (this.authSvc.UserAccountService.AuthenticateWithCertificate(User.GetUserID(), cert, out account))
+                    {
+                        this.authSvc.SignIn(account, AuthenticationMethods.X509);
 
+                        if (userAccountService.IsPasswordExpired(account))
+                        {
+                            return RedirectToAction("Index", "ChangePassword");
+                        }
+
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    ModelState.AddModelError("", "Invalid login");
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
             }
-            else
-            {
-                ModelState.AddModelError("", "No certificate provided");
-            }
+            
             return View();
         }
     }
