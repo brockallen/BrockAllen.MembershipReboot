@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,7 +12,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class UserAccountService : IDisposable
+    public class UserAccountService : 
+        IDisposable,
+        IEventHandler<CertificateAddedEvent>
     {
         public MembershipRebootConfiguration Configuration { get; set; }
         
@@ -41,10 +44,11 @@ namespace BrockAllen.MembershipReboot
             
             this.Configuration = configuration;
 
-            this.userRepository =
-                new EventBusUserAccountRepository(
-                    userRepository,
-                    configuration.EventBus);
+            var validationEventBus = new EventBus();
+            validationEventBus.Add(this);
+            this.userRepository = new EventBusUserAccountRepository(userRepository,
+                new AggregateEventBus { validationEventBus, configuration.ValidationBus },
+                configuration.EventBus);
 
             this.usernameValidator = new Lazy<AggregateValidator>(()=>
             {
@@ -873,6 +877,21 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
 
             return account.GetIsPasswordExpired(SecuritySettings.PasswordResetFrequency);
+        }
+
+        public void Handle(CertificateAddedEvent evt)
+        {
+            if (evt == null) throw new ArgumentNullException("event");
+            if (evt.Account == null) throw new ArgumentNullException("account");
+            if (evt.Certificate == null) throw new ArgumentNullException("certificate");
+
+            var account = evt.Account;
+            var otherAccount = GetByCertificate(account.Tenant, evt.Certificate.Thumbprint);
+            if (otherAccount != null && otherAccount.ID != account.ID)
+            {
+                Tracing.Verbose(String.Format("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username));
+                throw new ValidationException("That certificate is already in use by a different account.");
+            }
         }
     }
 }

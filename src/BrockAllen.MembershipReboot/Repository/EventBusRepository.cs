@@ -12,14 +12,27 @@ namespace BrockAllen.MembershipReboot
         where T : class, IEventSource
     {
         IRepository<T> inner;
+        IEventBus validationBus;
         IEventBus eventBus;
-        public EventBusRepository(IRepository<T> inner, IEventBus eventBus)
+
+        public EventBusRepository(IRepository<T> inner, IEventBus validationBus, IEventBus eventBus)
         {
             if (inner == null) throw new ArgumentNullException("inner");
+            if (validationBus == null) throw new ArgumentNullException("validationBus");
             if (eventBus == null) throw new ArgumentNullException("eventBus");
 
             this.inner = inner;
+            this.validationBus = validationBus;
             this.eventBus = eventBus;
+        }
+
+        private void RaiseValidation(IEventSource source)
+        {
+            if (source == null) throw new ArgumentNullException("source");
+            foreach (var evt in source.Events)
+            {
+                this.validationBus.RaiseEvent(evt);
+            }
         }
 
         private void RaiseEvents(IEventSource source)
@@ -29,6 +42,7 @@ namespace BrockAllen.MembershipReboot
             {
                 this.eventBus.RaiseEvent(evt);
             }
+
             source.Clear();
         }
 
@@ -49,18 +63,21 @@ namespace BrockAllen.MembershipReboot
 
         public void Add(T item)
         {
+            RaiseValidation(item);
             inner.Add(item);
             RaiseEvents(item);
         }
 
         public void Remove(T item)
         {
+            RaiseValidation(item);
             inner.Remove(item);
             RaiseEvents(item);
         }
 
         public void Update(T item)
         {
+            RaiseValidation(item);
             inner.Update(item);
             RaiseEvents(item);
         }
@@ -68,11 +85,6 @@ namespace BrockAllen.MembershipReboot
         public void Dispose()
         {
             if (inner.TryDispose()) inner = null;
-            if (eventBus is IDisposable)
-            {
-                ((IDisposable)eventBus).Dispose();
-                eventBus = null;
-            }
         }
     }
 }

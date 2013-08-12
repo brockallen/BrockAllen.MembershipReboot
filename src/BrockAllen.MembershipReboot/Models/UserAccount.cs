@@ -897,7 +897,9 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(thumbprint)) throw new ArgumentNullException("thumbprint");
             if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException("subject");
 
-            this.Certificates.Add(new UserCertificate { User = this, Thumbprint = thumbprint, Subject = subject });
+            var cert = new UserCertificate { User = this, Thumbprint = thumbprint, Subject = subject };
+            this.Certificates.Add(cert);
+            this.AddEvent(new CertificateAddedEvent { Account = this, Certificate = cert });
         }
 
         public virtual void RemoveCertificate(X509Certificate2 certificate)

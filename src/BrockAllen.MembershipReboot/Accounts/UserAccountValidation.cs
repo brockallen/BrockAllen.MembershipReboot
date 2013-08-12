@@ -60,7 +60,7 @@ namespace BrockAllen.MembershipReboot
             });
 
         public static readonly IValidator PasswordMustBeDifferentThanCurrent =
-        new DelegateValidator((service, account, value) =>
+            new DelegateValidator((service, account, value) =>
         {
             // Use LastLogin null-check to see if it's a new account
             // we don't want to run this logic if it's a new account

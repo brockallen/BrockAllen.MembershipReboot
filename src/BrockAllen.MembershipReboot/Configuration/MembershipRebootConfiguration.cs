@@ -51,7 +51,14 @@ namespace BrockAllen.MembershipReboot
         {
             eventBus.AddRange(handlers);
         }
-
+        
+        EventBus validationBus = new EventBus();
+        public IEventBus ValidationBus { get { return validationBus; } }
+        public void AddValidationHandler(params IEventHandler[] handlers)
+        {
+            validationBus.AddRange(handlers);
+        }
+        
         public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
     }
 }
