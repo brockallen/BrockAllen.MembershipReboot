@@ -133,7 +133,22 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 {
                     var cert = new X509Certificate2(Request.ClientCertificate.Certificate);
                     BrockAllen.MembershipReboot.UserAccount account;
-                    if (this.authSvc.UserAccountService.AuthenticateWithCertificate(User.GetUserID(), cert, out account))
+
+                    var result = false;
+                    // we're allowing the use of certs for login and for two factor auth. normally you'd 
+                    // do only one or the other, but for the sake of the sample we're allowing both.
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        // this is when we're doing cert logins for two factor auth
+                        result = this.authSvc.UserAccountService.AuthenticateWithCertificate(User.GetUserID(), cert, out account);
+                    }
+                    else
+                    {
+                        // this is when we're just doing certs to login (so no two factor auth)
+                        result = this.authSvc.UserAccountService.AuthenticateWithCertificate(cert, out account);
+                    }
+
+                    if (result)
                     {
                         this.authSvc.SignIn(account, AuthenticationMethods.X509);
 
