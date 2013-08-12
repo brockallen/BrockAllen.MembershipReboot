@@ -5,9 +5,10 @@
 
 namespace BrockAllen.MembershipReboot
 {
-    public enum MobileCodePurpose
+    public enum TwoFactorAuthMode
     {
-        VerifyMobile = 1,
-        Authentication = 2
+        None = 0,
+        Mobile = 1,
+        Certificate = 2
     }
 }

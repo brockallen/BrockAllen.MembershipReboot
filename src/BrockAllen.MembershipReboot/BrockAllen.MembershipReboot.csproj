@@ -53,6 +53,7 @@
     <Compile Include="Configuration\AspNetApplicationInformation.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
+    <Compile Include="Models\TwoFactorAuthMode.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\UserCertificate.cs" />
     <Compile Include="Repository\IRoleRepository.cs" />
@@ -67,7 +68,6 @@
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Models\LinkedAccountClaim.cs" />
     <Compile Include="Models\LinkedAccount.cs" />
-    <Compile Include="Models\MobileCodePurpose.cs" />
     <Compile Include="Models\UserAccountEvents.cs" />
     <Compile Include="Models\VerificationKeyPurpose.cs" />
     <Compile Include="Models\UserClaim.cs" />

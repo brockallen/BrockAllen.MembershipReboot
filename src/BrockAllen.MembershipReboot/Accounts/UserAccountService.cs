@@ -515,18 +515,30 @@ namespace BrockAllen.MembershipReboot
             var result = account.Authenticate(password, failedLoginCount, lockoutDuration);
             if (result && 
                 purpose == AuthenticationPurpose.SignIn && 
-                account.UseTwoFactorAuth)
+                account.AccountTwoFactorAuthMode != TwoFactorAuthMode.None)
             {
+                Tracing.Verbose(String.Format("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username));
+                
                 bool shouldRequestTwoFactorAuthCode = true;
                 if (this.Configuration.TwoFactorAuthenticationPolicy != null)
                 {
                     shouldRequestTwoFactorAuthCode = this.Configuration.TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth(account);
+                    Tracing.Verbose(String.Format("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth called, result: {0}", shouldRequestTwoFactorAuthCode));
                 }
 
                 if (shouldRequestTwoFactorAuthCode)
                 {
-                    Tracing.Verbose(String.Format("[UserAccountService.Authenticate] requesting 2fa code: {0}, {1}", account.Tenant, account.Username));
-                    result = account.RequestTwoFactorAuthCode();
+                    if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
+                    {
+                        Tracing.Verbose(String.Format("[UserAccountService.Authenticate] requesting 2fa certificate: {0}, {1}", account.Tenant, account.Username));
+                        result = account.RequestTwoFactorAuthCertificate();
+                    }
+
+                    if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
+                    {
+                        Tracing.Verbose(String.Format("[UserAccountService.Authenticate] requesting 2fa mobile code: {0}, {1}", account.Tenant, account.Username));
+                        result = account.RequestTwoFactorAuthCode();
+                    }
                 }
             }
             Update(account);
@@ -572,25 +584,14 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
         
-        public virtual void EnableTwoFactorAuthentication(Guid accountID)
+        public virtual void ConfigureTwoFactorAuthentication(Guid accountID, TwoFactorAuthMode mode)
         {
-            Tracing.Information(String.Format("[UserAccountService.EnableTwoFactorAuthentication] called: {0}", accountID));
-
-            var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID");
-            
-            account.EnableTwoFactorAuthentication();
-            Update(account);
-        }
-
-        public virtual void DisableTwoFactorAuthentication(Guid accountID)
-        {
-            Tracing.Information(String.Format("[UserAccountService.DisableTwoFactorAuthentication] called: {0}", accountID));
+            Tracing.Information(String.Format("[UserAccountService.ConfigureTwoFactorAuthentication] called: {0}", accountID));
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            account.DisableTwoFactorAuthentication();
+            account.ConfigureTwoFactorAuthentication(mode);
             Update(account);
         }
 
