@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accounts\AuthenticationPurpose.cs" />
+    <Compile Include="Accounts\UserAccountValidator.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\AspNetApplicationInformation.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
