@@ -110,6 +110,24 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new AccountCreatedEvent { Account = this });
         }
 
+        protected internal virtual bool IsVerificationKeyStale
+        {
+            get
+            {
+                if (VerificationKeySent == null)
+                {
+                    return true;
+                }
+
+                if (this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDurationDays))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         internal void SetVerificationKey(VerificationKeyPurpose purpose, string prefix = null, bool generateSalt = true)
         {
             var key = prefix;
@@ -146,6 +164,12 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
+            if (IsVerificationKeyStale)
+            {
+                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- verification key stale");
+                return false;
+            }
+
             if (this.VerificationKey != key)
             {
                 Tracing.Verbose("[UserAccount.VerifyAccount] failed -- verification key doesn't match");
@@ -164,19 +188,28 @@ namespace BrockAllen.MembershipReboot
         {
             if (this.IsAccountVerified)
             {
+                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- account already verified");
                 return false;
             }
 
             if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount)
             {
+                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- key purpose invalid");
+                return false;
+            }
+
+            if (IsVerificationKeyStale)
+            {
+                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- verification key stale");
                 return false;
             }
 
             if (this.VerificationKey != key)
             {
+                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- verification key doesn't match");
                 return false;
             }
-            
+
             this.CloseAccount();
 
             return true;
@@ -199,29 +232,17 @@ namespace BrockAllen.MembershipReboot
 
             this.AddEvent(new PasswordChangedEvent { Account = this });
         }
-        
-        protected internal virtual bool IsVerificationKeyStale
-        {
-            get
-            {
-                if (VerificationKeySent == null)
-                {
-                    return true;
-                }
-
-                if (this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDurationDays))
-                {
-                    return true;
-                }
-
-                return false;
-            }
-        }
 
         protected internal virtual void ResetPassword()
         {
             if (!this.IsAccountVerified)
             {
+                if (IsVerificationKeyStale)
+                {
+                    Tracing.Verbose("[UserAccount.ResetPassword] creating new verification key because existing one is stale");
+                    this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
+                }
+
                 // if they've not yet verified then don't allow changes
                 // instead raise an event as if the account was just created to 
                 // the user re-recieves their notification
