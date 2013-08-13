@@ -4,13 +4,18 @@
  */
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BrockAllen.MembershipReboot
 {
     public class GroupChild
     {
-        public int ID { get; set; }
-        public Guid Parent { get; set; }
-        public Guid Group { get; set; }
+        [Key]
+        [Column(Order=1)]
+        public Guid ParentID { get; set; }
+        [Key]
+        [Column(Order = 2)]
+        public Guid GroupID { get; set; }
     }
 }
