@@ -105,7 +105,7 @@ namespace BrockAllen.MembershipReboot
             var query =
                 from g in this.groupRepository.GetAll()
                 from c in g.Children
-                where c.GroupID == childGroupID
+                where c.ChildGroupID == childGroupID
                 select g;
             foreach (var group in query.ToArray())
             {

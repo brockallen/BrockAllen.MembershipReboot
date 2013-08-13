@@ -54,16 +54,20 @@ namespace BrockAllen.MembershipReboot
 
         internal void AddChild(Guid childGroupID)
         {
-            var child = this.Children.SingleOrDefault(x => x.GroupID == childGroupID);
+            if (this.ID == childGroupID) return;
+
+            var child = this.Children.SingleOrDefault(x => x.ChildGroupID == childGroupID);
             if (child == null)
             {
-                this.Children.Add(new GroupChild { ParentID = this.ID, GroupID = childGroupID });
+                this.Children.Add(new GroupChild { GroupID = this.ID, ChildGroupID = childGroupID });
             }
         }
         
         internal void RemoveChild(Guid childGroupID)
         {
-            var child = this.Children.SingleOrDefault(x => x.GroupID == childGroupID);
+            if (this.ID == childGroupID) return;
+
+            var child = this.Children.SingleOrDefault(x => x.ChildGroupID == childGroupID);
             if (child != null)
             {
                 this.Children.Remove(child);
