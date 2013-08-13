@@ -20,6 +20,6 @@ namespace BrockAllen.MembershipReboot.Ef
         }
 
         public DbSet<UserAccount> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
+        public DbSet<Group> Groups { get; set; }
     }
 }

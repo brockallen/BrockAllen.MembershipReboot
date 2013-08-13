@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizationsSample", "Cus
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "..\src\BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groups", "Groups\Groups.csproj", "{45982329-4823-4D78-B03B-85E58BA47608}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45982329-4823-4D78-B03B-85E58BA47608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45982329-4823-4D78-B03B-85E58BA47608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45982329-4823-4D78-B03B-85E58BA47608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45982329-4823-4D78-B03B-85E58BA47608}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

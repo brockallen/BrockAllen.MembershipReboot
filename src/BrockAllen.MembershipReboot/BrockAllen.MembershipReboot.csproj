@@ -55,9 +55,9 @@
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Models\TwoFactorAuthMode.cs" />
-    <Compile Include="Models\Role.cs" />
+    <Compile Include="Models\Group.cs" />
     <Compile Include="Models\UserCertificate.cs" />
-    <Compile Include="Repository\IRoleRepository.cs" />
+    <Compile Include="Repository\IGroupRepository.cs" />
     <Compile Include="TwoFactorAuthPolicy\AspNetCookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />

@@ -3,7 +3,6 @@
  * see license.txt
  */
 
-using System.Data.Entity;
 
 namespace BrockAllen.MembershipReboot.Ef
 {

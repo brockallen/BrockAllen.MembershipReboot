@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BrockAllen.MembershipReboot.Group>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Roles</h2>
+@if(Model.Any())
+{
+<ul>
+    @foreach (var grp in Model)
+    {
+        <li>@using(Html.BeginForm("Delete", "Home"))
+            {
+                <input name="id" type="hidden"value="@grp.ID"  />
+                <button>delete</button>
+            }
+            @grp.Name (@grp.Tenant)
+        </li>
+    }
+</ul>
+}
+else
+{
+    <p>No Groups Defined</p>
+}
+
+@using (Html.BeginForm("Add", "Home"))
+{
+    <fieldset>
+        <legend>New Group</legend>
+        <p>
+            <label>Name</label>
+            <input name="name" />
+        </p>
+        <p>
+            <button>Create</button>
+        </p>
+    </fieldset>
+}

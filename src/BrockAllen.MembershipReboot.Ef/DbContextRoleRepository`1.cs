@@ -7,7 +7,7 @@ using System.Data.Entity;
 namespace BrockAllen.MembershipReboot.Ef
 {
     public class DbContextRoleRepository<Ctx>
-           : DbContextRepository<Role>, IRoleRepository
+           : DbContextRepository<Group>, IGroupRepository
         where Ctx : DbContext, new()
     {
         public DbContextRoleRepository()

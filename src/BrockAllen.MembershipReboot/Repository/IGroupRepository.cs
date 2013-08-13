@@ -5,7 +5,7 @@
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface IRoleRepository : IRepository<Role>
+    public interface IGroupRepository : IRepository<Group>
     {
     }
 }
