@@ -41,12 +41,4 @@ namespace BrockAllen.MembershipReboot
 
         public ICollection<GroupChild> Children { get; set; }
     }
-
-    public class GroupChild
-    {
-        public int ID { get; set; }
-        public Guid Parent { get; set; }
-        public Guid Group { get; set; }
-    }
-
 }
