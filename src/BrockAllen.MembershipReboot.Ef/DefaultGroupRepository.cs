@@ -6,14 +6,14 @@
 
 namespace BrockAllen.MembershipReboot.Ef
 {
-    public class DefaultRoleRepository
-        : DbContextRoleRepository<DefaultMembershipRebootDatabase>
+    public class DefaultGroupRepository
+        : DbContextGroupRepository<DefaultMembershipRebootDatabase>
     {
-        public DefaultRoleRepository()
+        public DefaultGroupRepository()
         {
         }
 
-        public DefaultRoleRepository(string name)
+        public DefaultGroupRepository(string name)
             : base(new DefaultMembershipRebootDatabase(name))
         {
         }

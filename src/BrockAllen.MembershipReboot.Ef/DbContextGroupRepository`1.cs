@@ -6,15 +6,15 @@
 using System.Data.Entity;
 namespace BrockAllen.MembershipReboot.Ef
 {
-    public class DbContextRoleRepository<Ctx>
+    public class DbContextGroupRepository<Ctx>
            : DbContextRepository<Group>, IGroupRepository
         where Ctx : DbContext, new()
     {
-        public DbContextRoleRepository()
+        public DbContextGroupRepository()
             : this(new Ctx())
         {
         }
-        public DbContextRoleRepository(Ctx ctx)
+        public DbContextGroupRepository(Ctx ctx)
             : base(ctx)
         {
         }

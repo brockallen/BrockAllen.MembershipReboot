@@ -68,9 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultUserAccountRepository.cs" />
-    <Compile Include="DefaultRoleRepository.cs" />
+    <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DbContextRepository`1.cs" />
-    <Compile Include="DbContextRoleRepository`1.cs" />
+    <Compile Include="DbContextGroupRepository`1.cs" />
     <Compile Include="DbContextUserAccountRepository`1.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

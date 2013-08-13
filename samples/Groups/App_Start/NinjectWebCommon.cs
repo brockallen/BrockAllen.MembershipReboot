@@ -53,7 +53,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<IGroupRepository>().ToMethod(ctx=>new DefaultRoleRepository());
+            kernel.Bind<IGroupRepository>().ToMethod(ctx=>new DefaultGroupRepository());
         }
     }
 }
