@@ -48,15 +48,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Accounts\AuthenticationPurpose.cs" />
-    <Compile Include="Accounts\UserAccountValidator.cs" />
+    <Compile Include="AccountService\AuthenticationPurpose.cs" />
+    <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\AspNetApplicationInformation.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
-    <Compile Include="Models\TwoFactorAuthMode.cs" />
-    <Compile Include="Models\Group.cs" />
-    <Compile Include="Models\UserCertificate.cs" />
+    <Compile Include="Account\TwoFactorAuthMode.cs" />
+    <Compile Include="Groups\Group.cs" />
+    <Compile Include="Account\UserCertificate.cs" />
+    <Compile Include="Groups\GroupChild.cs" />
+    <Compile Include="Groups\GroupService.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
     <Compile Include="TwoFactorAuthPolicy\AspNetCookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
@@ -67,11 +69,11 @@
     <Compile Include="Constants\MembershipRebootConstants.cs" />
     <Compile Include="Extensions\DisposableExtensions.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
-    <Compile Include="Models\LinkedAccountClaim.cs" />
-    <Compile Include="Models\LinkedAccount.cs" />
-    <Compile Include="Models\UserAccountEvents.cs" />
-    <Compile Include="Models\VerificationKeyPurpose.cs" />
-    <Compile Include="Models\UserClaim.cs" />
+    <Compile Include="Account\LinkedAccountClaim.cs" />
+    <Compile Include="Account\LinkedAccount.cs" />
+    <Compile Include="Account\UserAccountEvents.cs" />
+    <Compile Include="Account\VerificationKeyPurpose.cs" />
+    <Compile Include="Account\UserClaim.cs" />
     <Compile Include="Notification\IMessageFormatter.cs" />
     <Compile Include="Notification\Email\EmailMessageFormatter.cs" />
     <Compile Include="Notification\SMS\SmsNotificationEventHandler.cs" />
@@ -79,7 +81,7 @@
     <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\EventBusUserAccountRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
-    <Compile Include="Accounts\UserAccountValidation.cs" />
+    <Compile Include="AccountService\UserAccountValidation.cs" />
     <Compile Include="Bus\EventBus.cs" />
     <Compile Include="Bus\Events.cs" />
     <Compile Include="Crypto\System.Web.Helpers.Crypto.cs" />
@@ -89,11 +91,11 @@
     <Compile Include="Notification\Message.cs" />
     <Compile Include="Notification\IMessageDelivery.cs" />
     <Compile Include="Repository\IUserAccountRepository.cs" />
-    <Compile Include="Models\UserAccount.cs" />
+    <Compile Include="Account\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\SecuritySettings.cs" />
     <Compile Include="Notification\Email\SmtpMessageDelivery.cs" />
-    <Compile Include="Accounts\UserAccountService.cs" />
+    <Compile Include="AccountService\UserAccountService.cs" />
     <Compile Include="Notification\Email\EmailNotificationEventHandlers.cs" />
     <Compile Include="Tracing\Tracing.cs" />
     <Compile Include="Validation\AggregateValidator.cs" />
