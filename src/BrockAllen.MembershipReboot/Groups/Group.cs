@@ -20,8 +20,10 @@ namespace BrockAllen.MembershipReboot
         protected internal virtual void Init(string tenant, string name)
         {
             if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException("Tenant is required");
-            if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("Name is required");
-            
+            if (String.IsNullOrWhiteSpace(name)) throw new ValidationException("Name is required");
+
+            if (this.ID != Guid.Empty) throw new Exception("Can't call Init if Group is already assigned an ID");
+
             this.ID = Guid.NewGuid();
             this.Tenant = tenant;
             this.Name = name;
