@@ -1,5 +1,6 @@
 ﻿using BrockAllen.MembershipReboot;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -7,35 +8,64 @@ namespace RolesAdmin.Controllers
 {
     public class HomeController : Controller
     {
-        IGroupRepository groupRepository;
-        public HomeController(IGroupRepository groupRepository)
+        GroupService groupSvc;
+        public HomeController(GroupService groupSvc)
         {
-            this.groupRepository = groupRepository;
+            this.groupSvc = groupSvc;
         }
 
         public ActionResult Index()
         {
-            var roles = groupRepository.GetAll().ToArray();
-            return View(roles);
+            var groups = groupSvc.GetAll();
+            return View("Index", groups);
         }
 
         [HttpPost]
         public ActionResult Add(string name)
         {
-            var role = new Group(name);
-            groupRepository.Add(role);
-            return RedirectToAction("Index");
+            try
+            {
+                groupSvc.Create(name);
+                return RedirectToAction("Index");
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            var groups = groupSvc.GetAll();
+            return View("Index", groups);
         }
-        
+
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
-            var grp = groupRepository.Get(id);
-            if (grp != null)
+            try
             {
-                groupRepository.Remove(grp);
+                groupSvc.Delete(id);
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            var groups = groupSvc.GetAll();
+            return View("Index", groups);
+        }
+
+        [HttpPost]
+        public ActionResult ChangeName(Guid id, string name)
+        {
+            try
+            {
+                groupSvc.ChangeName(id, name);
+                return RedirectToAction("Index");
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            var groups = groupSvc.GetAll();
+            return View("Index", groups);
         }
     }
 }

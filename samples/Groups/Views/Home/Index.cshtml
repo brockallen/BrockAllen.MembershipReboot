@@ -5,6 +5,9 @@
 }
 
 <h2>Roles</h2>
+
+@Html.ValidationSummary()
+
 @if(Model.Any())
 {
 <ul>
@@ -15,7 +18,14 @@
                 <input name="id" type="hidden"value="@grp.ID"  />
                 <button>delete</button>
             }
-            @grp.Name (@grp.Tenant)
+            <label>Name:</label> @grp.Name (<label>Tenant:</label> @grp.Tenant)
+            @using(Html.BeginForm("ChangeName", "Home"))
+            {
+                <input name="id" type="hidden"value="@grp.ID"  />
+                <label>New Name:</label>
+                <input name="name" />
+                <button>change</button>
+            }
         </li>
     }
 </ul>

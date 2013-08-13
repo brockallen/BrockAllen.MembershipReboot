@@ -21,6 +21,9 @@ section {
 form {
   display: inline;
 }
+label {
+  font-weight: bold;
+}
 /* Styles for basic forms
 -----------------------------------------------------------*/
 fieldset {
