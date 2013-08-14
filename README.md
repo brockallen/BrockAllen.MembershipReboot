@@ -6,6 +6,7 @@ Some of the features of MembershipReboot are:
 
 * single- or multi-tenant account management
 * flexible account storage design (relational/SQL or object/NoSql)
+	* samples using both EF and RavenDB
 * claims-aware user identities
 * support for account registration, email verification, password reset, etc.
 * account lockout for multiple failed login attempts (password guessing)
