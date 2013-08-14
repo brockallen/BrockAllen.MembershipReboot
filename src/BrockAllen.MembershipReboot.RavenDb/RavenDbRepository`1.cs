@@ -26,7 +26,7 @@ namespace BrockAllen.MembershipReboot.RavenDb
             items = documentSession.Query<T>();
         }
 
-        void CheckDisposed()
+        protected void CheckDisposed()
         {
             if (documentStore == null || documentSession == null)
             {

@@ -8,11 +8,11 @@ using Raven.Client.Document;
 
 namespace BrockAllen.MembershipReboot.RavenDb
 {
-    public class DefaultMembershipRebootDatabase
+    public class RavenMembershipRebootDatabase
     {
         public IDocumentStore DocumentStore { get; private set; }
 
-        public DefaultMembershipRebootDatabase(string connectionStringName)
+        public RavenMembershipRebootDatabase(string connectionStringName)
         {
             DocumentStore = new DocumentStore
                 {
@@ -20,7 +20,7 @@ namespace BrockAllen.MembershipReboot.RavenDb
                 }.Initialize();
         }
 
-        public DefaultMembershipRebootDatabase(IDocumentStore documentStore)
+        public RavenMembershipRebootDatabase(IDocumentStore documentStore)
         {
             DocumentStore = documentStore;
         }

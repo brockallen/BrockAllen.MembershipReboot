@@ -51,9 +51,9 @@
     <Compile Include="RavenDbGroupRepository`1.cs" />
     <Compile Include="RavenDbRepository`1.cs" />
     <Compile Include="RavenDbUserAccountRepository`1.cs" />
-    <Compile Include="DefaultGroupRepository.cs" />
-    <Compile Include="DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="DefaultUserAccountRepository.cs" />
+    <Compile Include="RavenGroupRepository.cs" />
+    <Compile Include="RavenMembershipRebootDatabase.cs" />
+    <Compile Include="RavenUserAccountRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
