@@ -11,7 +11,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var settings = SecuritySettings.FromConfiguration();
             var config = new MembershipRebootConfiguration(settings);
 
-            var appinfo = new AspNetApplicationInformation("Test", null,
+            var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
                 "UserAccount/Login", 
                 "UserAccount/Register/Confirm/",
                 "UserAccount/Register/Cancel/",

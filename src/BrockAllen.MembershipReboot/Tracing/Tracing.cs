@@ -15,17 +15,43 @@ namespace BrockAllen.MembershipReboot
         {
             TraceEvent(TraceEventType.Start, message, false);
         }
+        [DebuggerStepThrough]
+        public static void Start(string message, params object[] args)
+        {
+            Start(String.Format(message, args));
+        }
 
         [DebuggerStepThrough]
         public static void Stop(string message)
         {
             TraceEvent(TraceEventType.Stop, message, false);
         }
+        [DebuggerStepThrough]
+        public static void Stop(string message, params object[] args)
+        {
+            Stop(String.Format(message, args));
+        }
 
+        [DebuggerStepThrough]
+        public static void Verbose(string message)
+        {
+            TraceEvent(TraceEventType.Verbose, message, false);
+        }
+        [DebuggerStepThrough]
+        public static void Verbose(string message, params object[] args)
+        {
+            Verbose(String.Format(message, args));
+        }
+        
         [DebuggerStepThrough]
         public static void Information(string message)
         {
             TraceEvent(TraceEventType.Information, message, false);
+        }
+        [DebuggerStepThrough]
+        public static void Information(string message, params object[] args)
+        {
+            Information(String.Format(message, args));
         }
 
         [DebuggerStepThrough]
@@ -33,17 +59,21 @@ namespace BrockAllen.MembershipReboot
         {
             TraceEvent(TraceEventType.Warning, message, false);
         }
+        [DebuggerStepThrough]
+        public static void Warning(string message, params object[] args)
+        {
+            Warning(String.Format(message, args));
+        }
 
         [DebuggerStepThrough]
         public static void Error(string message)
         {
             TraceEvent(TraceEventType.Error, message, false);
         }
-
         [DebuggerStepThrough]
-        public static void Verbose(string message)
+        public static void Error(string message, params object[] args)
         {
-            TraceEvent(TraceEventType.Verbose, message, false);
+            Error(String.Format(message, args));
         }
 
         [DebuggerStepThrough]

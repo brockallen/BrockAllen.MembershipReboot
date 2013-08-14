@@ -28,7 +28,7 @@ namespace BrockAllen.MembershipReboot
             var otherAccount = userAccountService.GetByCertificate(account.Tenant, evt.Certificate.Thumbprint);
             if (otherAccount != null && otherAccount.ID != account.ID)
             {
-                Tracing.Verbose(String.Format("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username));
+                Tracing.Verbose("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
                 throw new ValidationException("That certificate is already in use by a different account.");
             }
         }

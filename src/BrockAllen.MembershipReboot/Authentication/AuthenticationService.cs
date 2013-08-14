@@ -66,7 +66,7 @@ namespace BrockAllen.MembershipReboot
 
             if (account.RequiresTwoFactorAuthToSignIn)
             {
-                Tracing.Verbose(String.Format("[AuthenticationService.SignIn] detected account requires two factor to sign in: {0}", account.ID));
+                Tracing.Verbose("[AuthenticationService.SignIn] detected account requires two factor to sign in: {0}", account.ID);
                 IssuePartialSignInTokenForTwoFactorAuth(account, method);
                 return;
             }
@@ -118,7 +118,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (account == null) throw new ArgumentNullException("account");
 
-            Tracing.Verbose(String.Format("[AuthenticationService.IssuePartialSignInCookieForTwoFactorAuth] Account ID: {0}", account.ID));
+            Tracing.Verbose("[AuthenticationService.IssuePartialSignInCookieForTwoFactorAuth] Account ID: {0}", account.ID);
 
             var claims = GetBasicClaims(account, method);
 
@@ -210,7 +210,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignOut()
         {
-            Tracing.Information(String.Format("[AuthenticationService.SignOut] called: {0}", ClaimsPrincipal.Current.Claims.GetValue(ClaimTypes.NameIdentifier)));
+            Tracing.Information("[AuthenticationService.SignOut] called: {0}", ClaimsPrincipal.Current.Claims.GetValue(ClaimTypes.NameIdentifier));
 
             // clear cookie
             RevokeToken();

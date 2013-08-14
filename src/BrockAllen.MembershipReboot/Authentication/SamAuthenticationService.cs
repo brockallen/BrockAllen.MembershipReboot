@@ -51,7 +51,7 @@ namespace BrockAllen.MembershipReboot
             
             sam.WriteSessionTokenToCookie(token);
 
-            Tracing.Verbose(String.Format("[SamAuthenticationService.IssueToken] cookie issued: {0}", principal.Claims.GetValue(ClaimTypes.NameIdentifier)));
+            Tracing.Verbose("[SamAuthenticationService.IssueToken] cookie issued: {0}", principal.Claims.GetValue(ClaimTypes.NameIdentifier));
         }
 
         protected override void RevokeToken()

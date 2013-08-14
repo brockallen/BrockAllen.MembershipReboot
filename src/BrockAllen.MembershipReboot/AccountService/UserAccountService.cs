@@ -114,6 +114,14 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void Update(UserAccount account)
         {
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.Update] called -- failed null account");
+                throw new ArgumentNullException("account");
+            }
+
+            Tracing.Information("[UserAccountService.Update] called for account: {0}", account.ID);
+
             account.LastUpdated = account.UtcNow;
             this.userRepository.Update(account);
         }
@@ -127,6 +135,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.GetAll] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
@@ -144,6 +153,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.GetByUsername] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
@@ -153,7 +163,7 @@ namespace BrockAllen.MembershipReboot
             var account = userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).SingleOrDefault();
             if (account == null)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.GetByUsername] failed to locate account: {0}, {1}", tenant, username));
+                Tracing.Warning("[UserAccountService.GetByUsername] failed to locate account: {0}, {1}", tenant, username);
             }
             return account;
         }
@@ -167,6 +177,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.GetByEmail] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
@@ -176,7 +187,7 @@ namespace BrockAllen.MembershipReboot
             var account = userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).SingleOrDefault();
             if (account == null)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.GetByEmail] failed to locate account: {0}, {1}", tenant, email));
+                Tracing.Warning("[UserAccountService.GetByEmail] failed to locate account: {0}, {1}", tenant, email);
             }
             return account;
         }
@@ -186,7 +197,7 @@ namespace BrockAllen.MembershipReboot
             var account = this.userRepository.Get(id);
             if (account == null)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.GetByID] failed to locate account: {0}", id));
+                Tracing.Warning("[UserAccountService.GetByID] failed to locate account: {0}", id);
             }
             return account;
         }
@@ -198,7 +209,7 @@ namespace BrockAllen.MembershipReboot
             var account = userRepository.GetAll().Where(x => x.VerificationKey == key).SingleOrDefault();
             if (account == null)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.GetByVerificationKey] failed to locate account: {0}", key));
+                Tracing.Warning("[UserAccountService.GetByVerificationKey] failed to locate account: {0}", key);
             }
             return account;
         }
@@ -212,6 +223,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.GetByLinkedAccount] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
@@ -229,7 +241,7 @@ namespace BrockAllen.MembershipReboot
             var account = query.SingleOrDefault();
             if (account == null)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.GetByLinkedAccount] failed to locate by provider: {0}, id: {1}", provider, id));
+                Tracing.Warning("[UserAccountService.GetByLinkedAccount] failed to locate by tenant: {0}, provider: {1}, id: {2}", tenant, provider, id);
             }
             return account;
         }
@@ -243,6 +255,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.GetByCertificate] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
@@ -259,7 +272,7 @@ namespace BrockAllen.MembershipReboot
             var account = query.SingleOrDefault();
             if (account == null)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.GetByCertificate] failed to locate by thumbprint: {0}, {1}", tenant, thumbprint));
+                Tracing.Warning("[UserAccountService.GetByCertificate] failed to locate by certificate thumbprint: {0}, {1}", tenant, thumbprint);
             }
             return account;
         }
@@ -281,6 +294,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (!SecuritySettings.MultiTenant)
                 {
+                    Tracing.Verbose("[UserAccountService.UsernameExists] applying default tenant");
                     tenant = SecuritySettings.DefaultTenant;
                 }
 
@@ -299,6 +313,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.EmailExists] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
@@ -315,17 +330,19 @@ namespace BrockAllen.MembershipReboot
 
         public virtual UserAccount CreateAccount(string tenant, string username, string password, string email)
         {
-            Tracing.Information(String.Format("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email));
-
             if (SecuritySettings.EmailIsUsername)
             {
+                Tracing.Verbose("[UserAccountService.CreateAccount] applying email is username");
                 username = email;
             }
 
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.CreateAccount] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
+
+            Tracing.Information("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email);
 
             var account = this.userRepository.Create();
             account.Init(tenant, username, password, email);
@@ -334,11 +351,16 @@ namespace BrockAllen.MembershipReboot
             ValidateUsername(account, username);
             ValidatePassword(account, password);
 
+            Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.AllowLoginAfterAccountCreation is set to: {0}", SecuritySettings.AllowLoginAfterAccountCreation);
             account.IsLoginAllowed = SecuritySettings.AllowLoginAfterAccountCreation;
+            
             if (!SecuritySettings.RequireAccountVerification)
             {
+                Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.RequireAccountVerification is false, so marking account as verified");
                 account.VerifyAccount(account.VerificationKey);
             }
+
+            Tracing.Verbose("[UserAccountService.CreateAccount] success");
 
             this.userRepository.Add(account);
             
@@ -347,43 +369,40 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool VerifyAccount(string key)
         {
-            Tracing.Information(String.Format("[UserAccountService.VerifyAccount] called: {0}", key));
+            Tracing.Information("[UserAccountService.VerifyAccount] called: {0}", key);
 
             var account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
-            Tracing.Verbose(String.Format("[UserAccountService.VerifyAccount] account located: {0}, {1}", account.Tenant, account.Username));
-
             var result = account.VerifyAccount(key);
             Update(account);
-            
+
+            Tracing.Verbose("[UserAccountService.VerifyAccount] result: {0}", result);
+
             return result;
         }
 
         public virtual bool CancelNewAccount(string key)
         {
-            Tracing.Information(String.Format("[UserAccountService.CancelNewAccount] called: {0}", key));
+            Tracing.Information("[UserAccountService.CancelNewAccount] called: {0}", key);
 
             var account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
-            Tracing.Verbose(String.Format("[UserAccountService.CancelNewAccount] account located: {0}, {1}", account.Tenant, account.Username));
-
             if (account.CancelNewAccount(key))
             {
-                Tracing.Verbose(String.Format("[UserAccountService.CancelNewAccount] account cancelled: {0}, {1}", account.Tenant, account.Username));
-
+                Tracing.Verbose("[UserAccountService.CancelNewAccount] account cancelled");
                 DeleteAccount(account);
-
                 return true;
             }
 
+            Tracing.Verbose("[UserAccountService.CancelNewAccount] account not cancelled");
             return false;
         }
 
         public virtual void DeleteAccount(Guid accountID)
         {
-            Tracing.Information(String.Format("[UserAccountService.DeleteAccount] called: {0}", accountID));
+            Tracing.Information("[UserAccountService.DeleteAccount] called: {0}", accountID);
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
@@ -395,14 +414,14 @@ namespace BrockAllen.MembershipReboot
         {
             if (account == null) throw new ArgumentNullException("account");
 
-            Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] marking account as closed: {0}, {1}", account.Tenant, account.Username));
+            Tracing.Verbose("[UserAccountService.DeleteAccount] marking account as closed: {0}", account.ID);
 
             account.CloseAccount();
             Update(account);
 
             if (SecuritySettings.AllowAccountDeletion || !account.IsAccountVerified)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.DeleteAccount] removing account record: {0}, {1}", account.Tenant, account.Username));
+                Tracing.Verbose("[UserAccountService.DeleteAccount] removing account record: {0}", account.ID);
                 this.userRepository.Remove(account);
             }
         }
@@ -425,13 +444,14 @@ namespace BrockAllen.MembershipReboot
         {
             account = null;
 
-            Tracing.Information(String.Format("[UserAccountService.Authenticate] called: {0}, {1}", tenant, username));
-
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.Authenticate] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
-            
+
+            Tracing.Information("[UserAccountService.Authenticate] called: {0}, {1}", tenant, username);
+
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(password)) return false;
@@ -460,12 +480,13 @@ namespace BrockAllen.MembershipReboot
         {
             account = null;
 
-            Tracing.Information(String.Format("[UserAccountService.AuthenticateWithEmail] called: {0}, {1}", tenant, email));
-
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.AuthenticateWithEmail] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
+
+            Tracing.Information("[UserAccountService.AuthenticateWithEmail] called: {0}, {1}", tenant, email);
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(email)) return false;
@@ -486,12 +507,13 @@ namespace BrockAllen.MembershipReboot
         {
             account = null;
 
-            Tracing.Verbose(String.Format("[UserAccountService.AuthenticateWithUsernameOrEmail]: {0}, {1}", tenant, userNameOrEmail));
-
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.AuthenticateWithUsernameOrEmail] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
+
+            Tracing.Information("[UserAccountService.AuthenticateWithUsernameOrEmail] called {0}, {1}", tenant, userNameOrEmail);
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(userNameOrEmail)) return false;
@@ -499,16 +521,20 @@ namespace BrockAllen.MembershipReboot
 
             if (!SecuritySettings.EmailIsUsername && userNameOrEmail.Contains("@"))
             {
+                Tracing.Verbose("[UserAccountService.AuthenticateWithUsernameOrEmail] email detected");
                 return AuthenticateWithEmail(tenant, userNameOrEmail, password, out account);
             }
             else
             {
+                Tracing.Verbose("[UserAccountService.AuthenticateWithUsernameOrEmail] username detected");
                 return Authenticate(tenant, userNameOrEmail, password, out account);
             }
         }
         
         protected internal virtual bool Authenticate(UserAccount account, string password, AuthenticationPurpose purpose)
         {
+            Tracing.Verbose("[UserAccountService.Authenticate] for account: {0}", account.ID);
+            
             int failedLoginCount = SecuritySettings.AccountLockoutFailedLoginAttempts;
             TimeSpan lockoutDuration = SecuritySettings.AccountLockoutDuration;
 
@@ -517,33 +543,34 @@ namespace BrockAllen.MembershipReboot
                 purpose == AuthenticationPurpose.SignIn && 
                 account.AccountTwoFactorAuthMode != TwoFactorAuthMode.None)
             {
-                Tracing.Verbose(String.Format("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username));
+                Tracing.Verbose("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username);
                 
                 bool shouldRequestTwoFactorAuthCode = true;
                 if (this.Configuration.TwoFactorAuthenticationPolicy != null)
                 {
                     shouldRequestTwoFactorAuthCode = this.Configuration.TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth(account);
-                    Tracing.Verbose(String.Format("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth called, result: {0}", shouldRequestTwoFactorAuthCode));
+                    Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth called, result: {0}", shouldRequestTwoFactorAuthCode);
                 }
 
                 if (shouldRequestTwoFactorAuthCode)
                 {
                     if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
                     {
-                        Tracing.Verbose(String.Format("[UserAccountService.Authenticate] requesting 2fa certificate: {0}, {1}", account.Tenant, account.Username));
+                        Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa certificate: {0}, {1}", account.Tenant, account.Username);
                         result = account.RequestTwoFactorAuthCertificate();
                     }
 
                     if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
                     {
-                        Tracing.Verbose(String.Format("[UserAccountService.Authenticate] requesting 2fa mobile code: {0}, {1}", account.Tenant, account.Username));
+                        Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa mobile code: {0}, {1}", account.Tenant, account.Username);
                         result = account.RequestTwoFactorAuthCode();
                     }
                 }
             }
+
             Update(account);
 
-            Tracing.Verbose(String.Format("[UserAccountService.Authenticate] authentication outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful Login" : "Failed Login"));
+            Tracing.Verbose("[UserAccountService.Authenticate] authentication outcome: {0}", result ? "Successful Login" : "Failed Login");
 
             return result;
         }
@@ -556,11 +583,15 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool AuthenticateWithCode(Guid accountID, string code, out UserAccount account)
         {
+            Tracing.Information("[UserAccountService.AuthenticateWithCode] called {0}", accountID);
+
             account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             var result = account.VerifyTwoFactorAuthCode(code);
             Update(account);
+
+            Tracing.Verbose("[UserAccountService.AuthenticateWithCode] result {0}", result);
 
             return result;
         }
@@ -573,6 +604,8 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate, out UserAccount account)
         {
+            Tracing.Information("[UserAccountService.AuthenticateWithCertificate] called");
+
             certificate.Validate();
 
             account = this.GetByCertificate(certificate.Thumbprint);
@@ -580,6 +613,8 @@ namespace BrockAllen.MembershipReboot
 
             var result = account.Authenticate(certificate);
             Update(account);
+
+            Tracing.Verbose("[UserAccountService.AuthenticateWithCertificate] result {0}", result);
 
             return result;
         }
@@ -592,7 +627,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool AuthenticateWithCertificate(Guid accountID, X509Certificate2 certificate, out UserAccount account)
         {
-            Tracing.Information(String.Format("[UserAccountService.AuthenticateWithCertificate] called for userID: {0}", accountID));
+            Tracing.Information("[UserAccountService.AuthenticateWithCertificate] called for userID: {0}", accountID);
             
             certificate.Validate();
 
@@ -602,12 +637,14 @@ namespace BrockAllen.MembershipReboot
             var result = account.Authenticate(certificate);
             Update(account);
 
+            Tracing.Verbose("[UserAccountService.AuthenticateWithCertificate] result: {0}", result);
+            
             return result;
         }
         
         public virtual void ConfigureTwoFactorAuthentication(Guid accountID, TwoFactorAuthMode mode)
         {
-            Tracing.Information(String.Format("[UserAccountService.ConfigureTwoFactorAuthentication] called: {0}", accountID));
+            Tracing.Information("[UserAccountService.ConfigureTwoFactorAuthentication] called: {0}", accountID);
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
@@ -618,7 +655,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SendTwoFactorAuthenticationCode(Guid accountID)
         {
-            Tracing.Information(String.Format("[UserAccountService.SendTwoFactorAuthenticationCode] called: {0}", accountID));
+            Tracing.Information("[UserAccountService.SendTwoFactorAuthenticationCode] called: {0}", accountID);
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
@@ -629,16 +666,18 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SetPassword(Guid accountID, string newPassword)
         {
-            Tracing.Information(String.Format("[UserAccountService.SetPassword] called: {0}", accountID));
+            Tracing.Information("[UserAccountService.SetPassword] called: {0}", accountID);
 
-            if (String.IsNullOrWhiteSpace(newPassword)) throw new ValidationException("Invalid newPassword.");
+            if (String.IsNullOrWhiteSpace(newPassword))
+            {
+                Tracing.Error("[UserAccountService.SetPassword] failed -- null newPassword");
+                throw new ValidationException("Invalid newPassword.");
+            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             ValidatePassword(account, newPassword);
-
-            Tracing.Information(String.Format("[UserAccountService.SetPassword] setting new password for: {0}", accountID));
 
             account.SetPassword(newPassword);
             Update(account);
@@ -646,10 +685,18 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ChangePassword(Guid accountID, string oldPassword, string newPassword)
         {
-            Tracing.Information(String.Format("[UserAccountService.ChangePassword] called: {0}", accountID));
+            Tracing.Information("[UserAccountService.ChangePassword] called: {0}", accountID);
 
-            if (String.IsNullOrWhiteSpace(oldPassword)) throw new ValidationException("Invalid old password.");
-            if (String.IsNullOrWhiteSpace(newPassword)) throw new ValidationException("Invalid new password.");
+            if (String.IsNullOrWhiteSpace(oldPassword))
+            {
+                Tracing.Error("[UserAccountService.ChangePassword] failed -- null oldPassword");
+                throw new ValidationException("Invalid old password.");
+            }
+            if (String.IsNullOrWhiteSpace(newPassword))
+            {
+                Tracing.Error("[UserAccountService.ChangePassword] failed -- null newPassword");
+                throw new ValidationException("Invalid new password.");
+            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
@@ -658,14 +705,12 @@ namespace BrockAllen.MembershipReboot
 
             if (!Authenticate(account, oldPassword, AuthenticationPurpose.VerifyPassword))
             {
-                Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change failed: {0}, {1}", account.Tenant, account.Username));
+                Tracing.Error("[UserAccountService.ChangePassword] failed -- failed authN");
                 throw new ValidationException("Invalid old password.");
             }
 
             account.SetPassword(newPassword);
             Update(account);
-            
-            Tracing.Verbose(String.Format("[UserAccountService.ChangePassword] password change successful: {0}, {1}", account.Tenant, account.Username));
         }
 
         public virtual void ResetPassword(string email)
@@ -675,15 +720,24 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ResetPassword(string tenant, string email)
         {
-            Tracing.Information(String.Format("[UserAccountService.ResetPassword] called: {0}, {1}", tenant, email));
-
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.ResetPassword] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException("Invalid tenant.");
-            if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Invalid email.");
+            Tracing.Information("[UserAccountService.ResetPassword] called: {0}, {1}", tenant, email);
+
+            if (String.IsNullOrWhiteSpace(tenant))
+            {
+                Tracing.Error("[UserAccountService.ResetPassword] failed -- null tenant");
+                throw new ValidationException("Invalid tenant.");
+            }
+            if (String.IsNullOrWhiteSpace(email))
+            {
+                Tracing.Error("[UserAccountService.ResetPassword] failed -- null email");
+                throw new ValidationException("Invalid email.");
+            }
 
             var account = this.GetByEmail(tenant, email);
             if (account == null) throw new ValidationException("Invalid email.");
@@ -694,21 +748,23 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
-            Tracing.Information(String.Format("[UserAccountService.ChangePasswordFromResetKey] called: {0}", key));
+            Tracing.Information("[UserAccountService.ChangePasswordFromResetKey] called: {0}", key);
 
-            if (String.IsNullOrWhiteSpace(key)) return false;
+            if (String.IsNullOrWhiteSpace(key))
+            {
+                Tracing.Error("[UserAccountService.ChangePasswordFromResetKey] failed -- null key");
+                return false;
+            }
 
             var account = this.GetByVerificationKey(key);
             if (account == null) return false;
-
-            Tracing.Verbose(String.Format("[UserAccountService.ChangePasswordFromResetKey] account located: {0}, {1}", account.Tenant, account.Username));
 
             ValidatePassword(account, newPassword);
 
             var result = account.ChangePasswordFromResetKey(key, newPassword);
             Update(account);
 
-            Tracing.Verbose(String.Format("[UserAccountService.ChangePasswordFromResetKey] change password outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
+            Tracing.Verbose("[UserAccountService.ChangePasswordFromResetKey] result: {0}", result);
 
             return result;
         }
@@ -720,20 +776,27 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SendUsernameReminder(string tenant, string email)
         {
-            Tracing.Information(String.Format("[UserAccountService.SendUsernameReminder] called: {0}, {1}", tenant, email));
-
             if (!SecuritySettings.MultiTenant)
             {
+                Tracing.Verbose("[UserAccountService.SendUsernameReminder] applying default tenant");
                 tenant = SecuritySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentNullException("tenant");
-            if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Invalid email.");
+            Tracing.Information("[UserAccountService.SendUsernameReminder] called: {0}, {1}", tenant, email);
+
+            if (String.IsNullOrWhiteSpace(tenant))
+            {
+                Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- null tenant");
+                throw new ArgumentNullException("tenant");
+            }
+            if (String.IsNullOrWhiteSpace(email))
+            {
+                Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- null email");
+                throw new ValidationException("Invalid email.");
+            }
 
             var account = this.GetByEmail(tenant, email);
             if (account == null) throw new ValidationException("Invalid email.");
-
-            Tracing.Verbose(String.Format("[UserAccountService.SendUsernameReminder] account located: {0}, {1}", account.Tenant, account.Username));
 
             account.SendAccountNameReminder();
             Update(account);
@@ -741,21 +804,24 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ChangeUsername(Guid accountID, string newUsername)
         {
+            Tracing.Information("[UserAccountService.ChangeUsername] called: {0}", accountID);
+
             if (SecuritySettings.EmailIsUsername)
             {
+                Tracing.Error("[UserAccountService.ChangeUsername] failed -- SecuritySettings.EmailIsUsername is true, use ChangeEmail API instead");
                 throw new Exception("EmailIsUsername is enabled in SecuritySettings -- use ChangeEmail APIs instead.");
             }
 
-            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] called: {0}, {1}", accountID, newUsername));
-
-            if (String.IsNullOrWhiteSpace(newUsername)) throw new ValidationException("Invalid username.");
+            if (String.IsNullOrWhiteSpace(newUsername))
+            {
+                Tracing.Error("[UserAccountService.ChangeUsername] failed -- null newUsername");
+                throw new ValidationException("Invalid username.");
+            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             ValidateUsername(account, newUsername);
-
-            Tracing.Information(String.Format("[UserAccountService.ChangeUsername] changing username: {0}, {1}", accountID, newUsername));
 
             account.ChangeUsername(newUsername);
             Update(account);
@@ -763,60 +829,72 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ChangeEmailRequest(Guid accountID, string newEmail)
         {
-            Tracing.Information(String.Format("[UserAccountService.ChangeEmailRequest] called: {0}, {1}", accountID, newEmail));
+            Tracing.Information("[UserAccountService.ChangeEmailRequest] called: {0}, {1}", accountID, newEmail);
 
-            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
+            if (String.IsNullOrWhiteSpace(newEmail))
+            {
+                Tracing.Error("[UserAccountService.ChangeEmailRequest] failed -- null newEmail");
+                throw new ValidationException("Invalid email.");
+            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
-
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] account located: {0}, {1}", account.Tenant, account.Username));
 
             ValidateEmail(account, newEmail);
 
             account.ChangeEmailRequest(newEmail);
             Update(account);
-
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailRequest] change request successful: {0}, {1}", account.Tenant, account.Username));
         }
 
         public virtual bool ChangeEmailFromKey(Guid accountID, string password, string key, string newEmail)
         {
-            Tracing.Information(String.Format("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}, {2}", accountID, key, newEmail));
+            Tracing.Information("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}", accountID, newEmail);
 
-            if (String.IsNullOrWhiteSpace(password)) throw new ValidationException("Invalid password.");
-            if (String.IsNullOrWhiteSpace(key)) throw new ValidationException("Invalid key.");
-            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- null password");
+                throw new ValidationException("Invalid password.");
+            }
+            if (String.IsNullOrWhiteSpace(key))
+            {
+                Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- null key");
+                throw new ValidationException("Invalid key.");
+            }
+            if (String.IsNullOrWhiteSpace(newEmail))
+            {
+                Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- null newEmail");
+                throw new ValidationException("Invalid email.");
+            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] account located: {0}, {1}", account.Tenant, account.Username));
-
             if (!Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
             {
+                Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- authN failed");
                 throw new ValidationException("Invalid password.");
             }
 
             ValidateEmail(account, newEmail);
 
             var result = account.ChangeEmailFromKey(key, newEmail);
-
             if (result && SecuritySettings.EmailIsUsername)
             {
-                Tracing.Warning(String.Format("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, newEmail));
+                Tracing.Verbose("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, newEmail);
                 account.Username = newEmail;
             }
             
             Update(account);
 
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeEmailFromKey] change email outcome: {0}, {1}, {2}", account.Tenant, account.Username, result ? "Successful" : "Failed"));
+            Tracing.Verbose("[UserAccountService.ChangeEmailFromKey] result: {0}", result);
 
             return result;
         }
 
         public virtual void RemoveMobilePhone(Guid accountID)
         {
+            Tracing.Information("[UserAccountService.RemoveMobilePhone] called: {0}", accountID);
+
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
@@ -826,36 +904,38 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ChangeMobilePhoneRequest(Guid accountID, string newMobilePhoneNumber)
         {
-            Tracing.Information(String.Format("[UserAccountService.ChangeMobilePhoneRequest] called: {0}, {1}", accountID, newMobilePhoneNumber));
+            Tracing.Information("[UserAccountService.ChangeMobilePhoneRequest] called: {0}, {1}", accountID, newMobilePhoneNumber);
 
-            if (String.IsNullOrWhiteSpace(newMobilePhoneNumber)) throw new ValidationException("Invalid Phone Number.");
+            if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
+            {
+                Tracing.Error("[UserAccountService.ChangeMobilePhoneRequest] failed -- null newMobilePhoneNumber");
+                throw new ValidationException("Invalid Phone Number.");
+            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] account located: {0}, {1}", account.Tenant, account.Username));
-
             account.RequestChangeMobilePhoneNumber(newMobilePhoneNumber);
             Update(account);
-
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobilePhoneRequest] change request successful: {0}, {1}", account.Tenant, account.Username));
         }
 
         public virtual bool ChangeMobilePhoneFromCode(Guid accountID, string code)
         {
-            Tracing.Information(String.Format("[UserAccountService.ChangeMobileFromCode] called: {0}", accountID));
+            Tracing.Information("[UserAccountService.ChangeMobileFromCode] called: {0}", accountID);
 
-            if (String.IsNullOrWhiteSpace(code)) return false;
+            if (String.IsNullOrWhiteSpace(code))
+            {
+                Tracing.Error("[UserAccountService.ChangeMobileFromCode] failed -- null code");
+                return false;
+            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            Tracing.Verbose(String.Format("[UserAccountService.ChangeMobileFromCode] account located: {0}, {1}", account.Tenant, account.Username));
-
             var result = account.ConfirmMobilePhoneNumberFromCode(code);
             Update(account);
 
-            Tracing.Warning(String.Format("[UserAccountService.ChangeMobileFromCode] outcome: {0}, {1}, {2}", account.Tenant, account.Username, result));
+            Tracing.Verbose("[UserAccountService.ChangeMobileFromCode] result: {0}", result);
             
             return result;
         }

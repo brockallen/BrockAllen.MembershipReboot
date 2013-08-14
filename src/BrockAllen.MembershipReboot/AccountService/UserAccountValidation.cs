@@ -15,7 +15,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (value.Contains("@"))
                 {
-                    Tracing.Verbose(String.Format("[UserAccountValidation.UsernameDoesNotContainAtSign] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value));
+                    Tracing.Verbose("[UserAccountValidation.UsernameDoesNotContainAtSign] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
                     return new ValidationResult("Username cannot contain the '@' character.");
                 }
@@ -27,7 +27,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (service.UsernameExists(account.Tenant, value))
                 {
-                    Tracing.Verbose(String.Format("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value));
+                    Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
                     return new ValidationResult("Username already in use.");
                 }
@@ -40,7 +40,7 @@ namespace BrockAllen.MembershipReboot
                 EmailAddressAttribute validator = new EmailAddressAttribute();
                 if (!validator.IsValid(value))
                 {
-                    Tracing.Verbose(String.Format("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value));
+                    Tracing.Verbose("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
                     return new ValidationResult("Email is invalid.");
                 }
@@ -52,7 +52,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (service.EmailExists(account.Tenant, value))
                 {
-                    Tracing.Verbose(String.Format("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value));
+                    Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
                     
                     return new ValidationResult("Email already in use.");
                 }
@@ -66,7 +66,7 @@ namespace BrockAllen.MembershipReboot
             // we don't want to run this logic if it's a new account
             if (account.LastLogin != null && account.VerifyHashedPassword(value))
             {
-                Tracing.Verbose(String.Format("[UserAccountValidation.PasswordMustBeDifferentThanCurrent] validation failed: {0}, {1}", account.Tenant, account.Username));
+                Tracing.Verbose("[UserAccountValidation.PasswordMustBeDifferentThanCurrent] validation failed: {0}, {1}", account.Tenant, account.Username);
 
                 return new ValidationResult("The new password must be different than the old password.");
             }

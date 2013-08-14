@@ -89,12 +89,34 @@ namespace BrockAllen.MembershipReboot
 
         internal protected virtual void Init(string tenant, string username, string password, string email)
         {
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentNullException("tenant");
-            if (String.IsNullOrWhiteSpace(username)) throw new ValidationException("Username is required.");
-            if (String.IsNullOrWhiteSpace(password)) throw new ValidationException("Password is required.");
-            if (String.IsNullOrWhiteSpace(email)) throw new ValidationException("Email is required.");
+            Tracing.Information("[UserAccount.Init] called");
 
-            if (this.ID != Guid.Empty) throw new Exception("Can't call Init if UserAccount is already assigned an ID");
+            if (String.IsNullOrWhiteSpace(tenant))
+            {
+                Tracing.Error("[UserAccount.Init] failed -- no tenant");
+                throw new ArgumentNullException("tenant");
+            }
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                Tracing.Error("[UserAccount.Init] failed -- no username");
+                throw new ValidationException("Username is required.");
+            }
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccount.Init] failed -- no password");
+                throw new ValidationException("Password is required.");
+            }
+            if (String.IsNullOrWhiteSpace(email))
+            {
+                Tracing.Error("[UserAccount.Init] failed -- no email");
+                throw new ValidationException("Email is required.");
+            }
+
+            if (this.ID != Guid.Empty)
+            {
+                Tracing.Error("[UserAccount.Init] failed -- ID already assigned");
+                throw new Exception("Can't call Init if UserAccount is already assigned an ID");
+            }
 
             this.ID = Guid.NewGuid();
             this.Tenant = tenant;
@@ -149,35 +171,39 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool VerifyAccount(string key)
         {
+            Tracing.Information("[UserAccount.VerifyAccount] called for accountID: {0}", this.ID);
+
             if (String.IsNullOrWhiteSpace(key))
             {
-                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- no key");
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- no key");
                 return false;
             }
 
             if (IsAccountVerified)
             {
-                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- account already verified");
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- account already verified");
                 return false;
             }
 
             if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount)
             {
-                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- verification purpose invalid");
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- verification purpose invalid");
                 return false;
             }
 
             if (IsVerificationKeyStale)
             {
-                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- verification key stale");
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- verification key stale");
                 return false;
             }
 
             if (this.VerificationKey != key)
             {
-                Tracing.Verbose("[UserAccount.VerifyAccount] failed -- verification key doesn't match");
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- verification key doesn't match");
                 return false;
             }
+
+            Tracing.Verbose("[UserAccount.VerifyAccount] succeeded");
 
             this.IsAccountVerified = true;
             this.ClearVerificationKey();
@@ -189,30 +215,34 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool CancelNewAccount(string key)
         {
+            Tracing.Information("[UserAccount.CancelNewAccount] called for accountID: {0}", this.ID);
+
             if (this.IsAccountVerified)
             {
-                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- account already verified");
+                Tracing.Error("[UserAccount.CancelNewAccount] failed -- account already verified");
                 return false;
             }
 
             if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount)
             {
-                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- key purpose invalid");
+                Tracing.Error("[UserAccount.CancelNewAccount] failed -- key purpose invalid");
                 return false;
             }
 
             if (IsVerificationKeyStale)
             {
-                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- verification key stale");
+                Tracing.Error("[UserAccount.CancelNewAccount] failed -- verification key stale");
                 return false;
             }
 
             if (this.VerificationKey != key)
             {
-                Tracing.Verbose("[UserAccount.CancelNewAccount] failed -- verification key doesn't match");
+                Tracing.Error("[UserAccount.CancelNewAccount] failed -- verification key doesn't match");
                 return false;
             }
 
+            Tracing.Verbose("[UserAccount.CancelNewAccount] succeeded (closing account)");
+            
             this.CloseAccount();
 
             return true;
@@ -220,10 +250,11 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void SetPassword(string password)
         {
+            Tracing.Information("[UserAccount.SetPassword] called for accountID: {0}", this.ID);
+
             if (String.IsNullOrWhiteSpace(password))
             {
-                Tracing.Verbose("[UserAccount.SetPassword] failed -- no password provided");
-
+                Tracing.Error("[UserAccount.SetPassword] failed -- no password provided");
                 throw new ValidationException("Invalid password");
             }
 
@@ -238,6 +269,8 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void ResetPassword()
         {
+            Tracing.Information("[UserAccount.ResetPassword] called for accountID: {0}", this.ID);
+
             if (!this.IsAccountVerified)
             {
                 if (IsVerificationKeyStale)
@@ -261,47 +294,50 @@ namespace BrockAllen.MembershipReboot
                     Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
                     this.SetVerificationKey(VerificationKeyPurpose.ChangePassword);
                 }
-                else
-                {
-                    Tracing.Verbose("[UserAccount.ResetPassword] not creating new verification keys");
-                }
+                
+                Tracing.Verbose("[UserAccount.ResetPassword] account verified -- raising event to send reset notification");
+                
                 this.AddEvent(new PasswordResetRequestedEvent { Account = this });
             }
         }
 
         protected internal virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
+            Tracing.Information("[UserAccount.ChangePasswordFromResetKey] called for accountID: {0}", this.ID);
+
             if (String.IsNullOrWhiteSpace(key))
             {
-                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- no key");
+                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- no key");
                 return false;
             }
 
             if (!this.IsAccountVerified)
             {
-                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- account not verified");
+                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- account not verified");
                 return false;
             }
 
             // if the key is too old don't honor it
             if (IsVerificationKeyStale)
             {
-                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- verification key too old");
+                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- verification key too old");
                 return false;
             }
 
             if (this.VerificationPurpose != VerificationKeyPurpose.ChangePassword)
             {
-                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- invalid verification key purpose");
+                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- invalid verification key purpose");
                 return false;
             }
 
             // check if key matches
             if (this.VerificationKey != key)
             {
-                Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] failed -- verification keys don't match");
+                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- verification keys don't match");
                 return false;
             }
+
+            Tracing.Verbose("[UserAccount.ChangePasswordFromResetKey] success");
 
             this.ClearVerificationKey();
             this.SetPassword(newPassword);
@@ -311,36 +347,39 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool Authenticate(string password, int failedLoginCount, TimeSpan lockoutDuration)
         {
+            Tracing.Information("[UserAccount.Authenticate] called for accountID: {0}", this.ID);
+
             if (failedLoginCount <= 0) throw new ArgumentException("failedLoginCount");
 
             if (String.IsNullOrWhiteSpace(password))
             {
-                Tracing.Verbose("[UserAccount.Authenticate] failed -- no password");
-
+                Tracing.Error("[UserAccount.Authenticate] failed -- no password");
                 return false;
             }
 
             if (!IsAccountVerified)
             {
-                Tracing.Verbose("[UserAccount.Authenticate] failed -- account not verified");
-
+                Tracing.Error("[UserAccount.Authenticate] failed -- account not verified");
                 this.AddEvent(new AccountNotVerifiedEvent { Account = this });
-
                 return false;
             }
 
+            if (IsAccountClosed)
+            {
+                Tracing.Error("[UserAccount.Authenticate] failed -- account closed");
+                return false;
+            }
+            
             if (!IsLoginAllowed)
             {
-                Tracing.Verbose("[UserAccount.Authenticate] failed -- account not allowed to login");
-
+                Tracing.Error("[UserAccount.Authenticate] failed -- account not allowed to login");
                 this.AddEvent(new AccountLockedEvent { Account = this });
-
                 return false;
             }
 
             if (HasTooManyRecentPasswordFailures(failedLoginCount, lockoutDuration))
             {
-                Tracing.Verbose("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
+                Tracing.Error("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
 
                 FailedLoginCount++;
                 this.AddEvent(new TooManyRecentPasswordFailuresEvent { Account = this });
@@ -360,7 +399,7 @@ namespace BrockAllen.MembershipReboot
             }
             else
             {
-                Tracing.Verbose("[UserAccount.Authenticate] failed -- invalid password");
+                Tracing.Error("[UserAccount.Authenticate] failed -- invalid password");
 
                 LastFailedLogin = UtcNow;
                 if (FailedLoginCount > 0) FailedLoginCount++;
@@ -386,36 +425,35 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool Authenticate(X509Certificate2 certificate)
         {
-            Tracing.Verbose(String.Format("[UserAccount.Authenticate] certificate auth called for account ID: {0}", this.ID));
+            Tracing.Information("[UserAccount.Authenticate] certificate auth called for account ID: {0}", this.ID);
             
             certificate.Validate();
 
-            if (certificate.NotBefore < UtcNow && UtcNow < certificate.NotAfter)
+            Tracing.Verbose("[UserAccount.Authenticate] cert: {0}", certificate.Thumbprint);
+
+            if (!(certificate.NotBefore < UtcNow && UtcNow < certificate.NotAfter))
             {
-                var match = this.Certificates.FirstOrDefault(x => x.Thumbprint.Equals(certificate.Thumbprint, StringComparison.OrdinalIgnoreCase));
-                if (match != null)
-                {
-                    this.LastLogin = UtcNow;
-                    this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
-
-                    this.AddEvent(new SuccessfulCertificateLoginEvent { Account = this, UserCertificate = match, Certificate = certificate });
-
-                    Tracing.Verbose(String.Format("[UserAccount.Authenticate] success with cert: {0}", this.ID, match.Thumbprint));
-
-                    return true;
-                }
-                else
-                {
-                    Tracing.Verbose("[UserAccount.Authenticate] failed -- no thumbprint match");
-                }
-            }
-            else
-            {
-                Tracing.Verbose("[UserAccount.Authenticate] failed -- invalid dates");
+                Tracing.Error("[UserAccount.Authenticate] failed -- invalid certificate dates");
+                this.AddEvent(new InvalidCertificateEvent { Account = this, Certificate = certificate });
+                return false;
             }
 
-            this.AddEvent(new InvalidCertificateEvent { Account = this, Certificate = certificate });
-            return false;
+            var match = this.Certificates.FirstOrDefault(x => x.Thumbprint.Equals(certificate.Thumbprint, StringComparison.OrdinalIgnoreCase));
+            if (match == null)
+            {
+                Tracing.Error("[UserAccount.Authenticate] failed -- no certificate thumbprint match");
+                this.AddEvent(new InvalidCertificateEvent { Account = this, Certificate = certificate });
+                return false;
+            }
+
+            Tracing.Verbose("[UserAccount.Authenticate] success");
+
+            this.LastLogin = UtcNow;
+            this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
+
+            this.AddEvent(new SuccessfulCertificateLoginEvent { Account = this, UserCertificate = match, Certificate = certificate });
+
+            return true;
         }
 
         void IssueMobileCode()
@@ -450,48 +488,64 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void RequestChangeMobilePhoneNumber(string newMobilePhoneNumber)
         {
+            Tracing.Information("[UserAccount.RequestChangeMobilePhoneNumber] called for accountID: {0}", this.ID);
+
             if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
             {
+                Tracing.Error("[UserAccount.RequestChangeMobilePhoneNumber] invalid mobile phone");
                 throw new ValidationException("Mobile Phone Number required.");
             }
 
             if (this.MobilePhoneNumber == newMobilePhoneNumber)
             {
+                Tracing.Error("[UserAccount.RequestChangeMobilePhoneNumber] mobile phone same as current");
                 throw new ValidationException("Mobile phone number must be different then the current.");
             }
 
             if (this.IsMobileCodeStale ||
                 this.VerificationPurpose != VerificationKeyPurpose.ChangeMobile)
             {
+                Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] setting new verification key and mobile code");
+                
                 this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, newMobilePhoneNumber, false);
                 this.IssueMobileCode();
             }
+
+            Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] success");
 
             this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber });
         }
 
         protected internal virtual bool ConfirmMobilePhoneNumberFromCode(string code)
         {
+            Tracing.Information("[UserAccount.ConfirmMobilePhoneNumberFromCode] called for accountID: {0}", this.ID);
+            
             if (String.IsNullOrWhiteSpace(code))
             {
+                Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- no code");
                 return false;
             }
 
             if (this.VerificationPurpose != VerificationKeyPurpose.ChangeMobile)
             {
+                Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- invalid verification key purpose");
                 return false;
             }
 
             if (this.IsMobileCodeStale)
             {
+                Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- stale mobile code");
                 return false;
             }
 
             if (code != this.MobileCode)
             {
+                Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- codes don't match");
                 return false;
             }
 
+            Tracing.Verbose("[UserAccount.ConfirmMobilePhoneNumberFromCode] success");
+            
             this.MobilePhoneNumber = this.VerificationKey;
 
             this.ClearVerificationKey();
@@ -504,45 +558,64 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void ClearMobilePhoneNumber()
         {
-            if (!String.IsNullOrWhiteSpace(MobilePhoneNumber))
+            Tracing.Information("[UserAccount.ClearMobilePhoneNumber] called for accountID: {0}", this.ID);
+
+            if (this.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
             {
-                this.ClearMobileAuthCode();
-                this.MobilePhoneNumber = null;
-                if (this.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
-                {
-                    this.ConfigureTwoFactorAuthentication(TwoFactorAuthMode.None);
-                }
-                this.AddEvent(new MobilePhoneRemovedEvent { Account = this });
+                Tracing.Verbose("[UserAccount.ClearMobilePhoneNumber] disabling two factor auth");
+                this.ConfigureTwoFactorAuthentication(TwoFactorAuthMode.None);
             }
+
+            if (String.IsNullOrWhiteSpace(MobilePhoneNumber))
+            {
+                Tracing.Warning("[UserAccount.ClearMobilePhoneNumber] nothing to do -- no mobile associated with account");
+                return;
+            }
+
+            Tracing.Verbose("[UserAccount.ClearMobilePhoneNumber] success");
+
+            this.ClearMobileAuthCode();
+            this.MobilePhoneNumber = null;
+
+            this.AddEvent(new MobilePhoneRemovedEvent { Account = this });
         }
 
         protected internal virtual void ConfigureTwoFactorAuthentication(TwoFactorAuthMode mode)
         {
-            if (this.AccountTwoFactorAuthMode != mode)
+            Tracing.Information("[UserAccount.ConfigureTwoFactorAuthentication] called for accountID: {0}, mode: {1}", this.ID, mode);
+
+            if (this.AccountTwoFactorAuthMode == mode)
             {
-                if (mode == TwoFactorAuthMode.Mobile &&
-                    String.IsNullOrWhiteSpace(this.MobilePhoneNumber))
-                {
-                    throw new ValidationException("Register a mobile phone number to enable mobile two factor authentication.");
-                }
-                
-                if (mode == TwoFactorAuthMode.Certificate &&
-                    !this.Certificates.Any())
-                {
-                    throw new ValidationException("Add a client certificate to enable certificate two factor authentication.");
-                }
+                Tracing.Warning("[UserAccount.ConfigureTwoFactorAuthentication] nothing to do -- mode is same as current value");
+                return;
+            }
 
-                this.ClearMobileAuthCode();
-                this.AccountTwoFactorAuthMode = mode;
+            if (mode == TwoFactorAuthMode.Mobile &&
+                String.IsNullOrWhiteSpace(this.MobilePhoneNumber))
+            {
+                Tracing.Error("[UserAccount.ConfigureTwoFactorAuthentication] failed -- mobile requested but no mobile phone for account");
+                throw new ValidationException("Register a mobile phone number to enable mobile two factor authentication.");
+            }
 
-                if (mode == TwoFactorAuthMode.None)
-                {
-                    this.AddEvent(new TwoFactorAuthenticationDisabledEvent { Account = this });
-                }
-                else
-                {
-                    this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
-                }
+            if (mode == TwoFactorAuthMode.Certificate &&
+                !this.Certificates.Any())
+            {
+                Tracing.Error("[UserAccount.ConfigureTwoFactorAuthentication] failed -- certificate requested but no certificates for account");
+                throw new ValidationException("Add a client certificate to enable certificate two factor authentication.");
+            }
+
+            this.ClearMobileAuthCode();
+            this.AccountTwoFactorAuthMode = mode;
+
+            if (mode == TwoFactorAuthMode.None)
+            {
+                Tracing.Verbose("[UserAccount.ConfigureTwoFactorAuthentication] success -- two factor auth disabled");
+                this.AddEvent(new TwoFactorAuthenticationDisabledEvent { Account = this });
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccount.ConfigureTwoFactorAuthentication] success -- two factor auth enabled, mode: ", mode);
+                this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
             }
         }
 
@@ -566,17 +639,43 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool RequestTwoFactorAuthCertificate()
         {
-            if (this.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate &&
-                this.IsAccountVerified &&
-                this.IsLoginAllowed &&
-                !this.IsAccountClosed &&
-                this.Certificates.Any())
+            Tracing.Information("[UserAccount.RequestTwoFactorAuthCertificate] called for accountID: {0}", this.ID);
+
+            if (!this.IsAccountVerified)
             {
-                this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Certificate;
-                return true;
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCertificate] failed -- account not verified");
+                return false;
             }
 
-            return false;
+            if (this.IsAccountClosed)
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCertificate] failed -- account closed");
+                return false;
+            }
+
+            if (!this.IsLoginAllowed)
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCertificate] failed -- login not allowed");
+                return false;
+            }
+
+            if (this.AccountTwoFactorAuthMode != TwoFactorAuthMode.Certificate)
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCertificate] failed -- current auth mode is not certificate");
+                return false;
+            }
+
+            if (!this.Certificates.Any())
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCertificate] failed -- no certificates");
+                return false;
+            }
+            
+            Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCertificate] success");
+
+            this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Certificate;
+
+            return true;
         }
 
         public bool RequiresTwoFactorAuthCodeToSignIn
@@ -591,60 +690,135 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool RequestTwoFactorAuthCode()
         {
-            if (this.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile &&
-                this.IsAccountVerified &&
-                this.IsLoginAllowed &&
-                !this.IsAccountClosed &&
-                !String.IsNullOrWhiteSpace(MobilePhoneNumber))
+            Tracing.Information("[UserAccount.RequestTwoFactorAuthCode] called for accountID: {0}", this.ID);
+
+            if (!this.IsAccountVerified)
             {
-                if (this.IsMobileCodeStale ||
-                    this.VerificationPurpose == VerificationKeyPurpose.ChangeMobile)
-                {
-                    this.IssueMobileCode();
-                }
-
-                this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Mobile;
-
-                this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this });
-
-                return true;
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCode] failed -- account not verified");
+                return false;
             }
 
-            return false;
+            if (this.IsAccountClosed)
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCode] failed -- account closed");
+                return false;
+            }
+
+            if (!this.IsLoginAllowed)
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCode] failed -- login not allowed");
+                return false;
+            } 
+            
+            if (this.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCode] failed -- AccountTwoFactorAuthMode not mobile");
+                return false;
+            }
+
+            if (String.IsNullOrWhiteSpace(MobilePhoneNumber))
+            {
+                Tracing.Error("[UserAccount.RequestTwoFactorAuthCode] failed -- empty MobilePhoneNumber");
+                return false;
+            }
+
+            if (this.IsMobileCodeStale ||
+                this.VerificationPurpose == VerificationKeyPurpose.ChangeMobile)
+            {
+                Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] new mobile code issued");
+                this.IssueMobileCode();
+            }
+
+            Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] success");
+
+            this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Mobile;
+
+            this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this });
+
+            return true;
         }
 
         protected internal virtual bool VerifyTwoFactorAuthCode(string code)
         {
-            if (code == null) return false;
+            Tracing.Information("[UserAccount.VerifyTwoFactorAuthCode] called for accountID: {0}", this.ID);
 
-            if (this.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile &&
-                this.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile &&
-                this.IsAccountVerified &&
-                this.IsLoginAllowed &&
-                !this.IsAccountClosed &&
-                !IsMobileCodeStale &&
-                code == this.MobileCode)
+            if (code == null)
             {
-                this.LastLogin = UtcNow;
-                this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
-                this.ClearMobileAuthCode();
-
-                this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent { Account = this });
-
-                return true;
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed - null code");
+                return false;
             }
 
-            return false;
+            if (!this.IsAccountVerified)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- account not verified");
+                return false;
+            }
+
+            if (this.IsAccountClosed)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- account closed");
+                return false;
+            }
+
+            if (!this.IsLoginAllowed)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- login not allowed");
+                return false;
+            }
+            
+            if (this.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- two factor auth mode not mobile");
+                return false;
+            }
+
+            if (this.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- current auth status not mobile");
+                return false;
+            }
+
+            if (IsMobileCodeStale)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- mobile code stale");
+                return false;
+            }
+            
+            if (code != this.MobileCode)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- codes don't match");
+                return false;
+            }
+
+            Tracing.Verbose("[UserAccount.VerifyTwoFactorAuthCode] success");
+
+            this.LastLogin = UtcNow;
+            this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
+            this.ClearMobileAuthCode();
+
+            this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent { Account = this });
+
+            return true;
         }
 
         protected internal virtual void SendAccountNameReminder()
         {
+            Tracing.Information("[UserAccount.SendAccountNameReminder] called for accountID: {0}", this.ID);
+
             this.AddEvent(new UsernameReminderRequestedEvent { Account = this });
         }
 
         protected internal virtual void ChangeUsername(string newUsername)
         {
-            if (String.IsNullOrWhiteSpace(newUsername)) throw new ArgumentNullException(newUsername);
+            Tracing.Information("[UserAccount.ChangeUsername] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(newUsername))
+            {
+                Tracing.Error("[UserAccount.ChangeUsername] failed -- invalid newUsername");
+                throw new ArgumentNullException(newUsername);
+            }
+            
+            Tracing.Verbose("[UserAccount.ChangeUsername] success");
 
             this.Username = newUsername;
 
@@ -653,12 +827,18 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void ChangeEmailRequest(string newEmail)
         {
-            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
+            Tracing.Information("[UserAccount.ChangeEmailRequest] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(newEmail))
+            {
+                Tracing.Error("[UserAccount.ChangeEmailRequest] failed -- invalid newEmail");
+                throw new ValidationException("Invalid email.");
+            }
 
             // if they've not yet verified then fail
             if (!this.IsAccountVerified)
             {
-                Tracing.Verbose("[UserAccount.ChangeEmailRequest] failed -- account not verified");
+                Tracing.Error("[UserAccount.ChangeEmailRequest] failed -- account not verified");
                 throw new Exception("Account not verified");
             }
 
@@ -675,64 +855,68 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccount.ChangeEmailRequest] creating a new reset key");
                 this.SetVerificationKey(VerificationKeyPurpose.ChangeEmail, emailHash);
             }
-            else
-            {
-                Tracing.Verbose("[UserAccount.ChangeEmailRequest] not creating a new reset key");
-            }
 
+            Tracing.Verbose("[UserAccount.ChangeEmailRequest] success");
+            
             this.AddEvent(new EmailChangeRequestedEvent { Account = this, NewEmail = newEmail });
         }
 
         protected internal virtual bool ChangeEmailFromKey(string key, string newEmail)
         {
-            if (String.IsNullOrWhiteSpace(key)) throw new ValidationException("Invalid key.");
-            if (String.IsNullOrWhiteSpace(newEmail)) throw new ValidationException("Invalid email.");
+            Tracing.Information("[UserAccount.ChangeEmailFromKey] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(key))
+            {
+                Tracing.Error("[UserAccount.ChangeEmailFromKey] failed -- invalid key");
+                throw new ValidationException("Invalid key.");
+            }
+            if (String.IsNullOrWhiteSpace(newEmail))
+            {
+                Tracing.Error("[UserAccount.ChangeEmailFromKey] failed -- invalid email");
+                throw new ValidationException("Invalid email.");
+            }
 
             // only honor resets within the past day
-            if (!IsVerificationKeyStale)
-            {
-                if (this.VerificationPurpose == VerificationKeyPurpose.ChangeEmail)
-                {
-                    if (key == this.VerificationKey)
-                    {
-                        var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
-                        var emailHash = StripUglyBase64(Hash(lowerEmail));
-                        if (this.VerificationKey.StartsWith(emailHash))
-                        {
-                            var oldEmail = this.Email;
-                            this.Email = newEmail;
-                            this.ClearVerificationKey();
-
-                            this.AddEvent(new EmailChangedEvent { Account = this, OldEmail = oldEmail });
-
-                            return true;
-                        }
-                        else
-                        {
-                            Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- email in key doesn't match email in verification key");
-                        }
-                    }
-                    else
-                    {
-                        Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification keys don't match");
-                    }
-                }
-                else
-                {
-                    Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- invalid purpose");
-                }
-            }
-            else
+            if (IsVerificationKeyStale)
             {
                 Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification key is stale");
+                return false;
             }
 
-            return false;
+            if (this.VerificationPurpose != VerificationKeyPurpose.ChangeEmail)
+            {
+                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- invalid purpose");
+                return false;
+            }
+
+            if (key != this.VerificationKey)
+            {
+                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification keys don't match");
+                return false;
+            }
+
+            var lowerEmail = newEmail.ToLower(new System.Globalization.CultureInfo("tr-TR", false));
+            var emailHash = StripUglyBase64(Hash(lowerEmail));
+            if (!this.VerificationKey.StartsWith(emailHash))
+            {
+                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- email in key doesn't match email in verification key");
+                return false;
+            }
+            
+            Tracing.Verbose("[UserAccount.ChangeEmailFromKey] success");
+
+            var oldEmail = this.Email;
+            this.Email = newEmail;
+            this.ClearVerificationKey();
+
+            this.AddEvent(new EmailChangedEvent { Account = this, OldEmail = oldEmail });
+
+            return true;
         }
 
         protected internal virtual void CloseAccount()
         {
-            Tracing.Verbose(String.Format("[UserAccount.CloseAccount] called on: {0}, {1}", Tenant, Username));
+            Tracing.Information("[UserAccount.CloseAccount] called for accountID: {0}", this.ID);
 
             this.ClearVerificationKey();
             this.ClearMobileAuthCode();
@@ -742,10 +926,16 @@ namespace BrockAllen.MembershipReboot
 
             if (!IsAccountClosed)
             {
+                Tracing.Verbose("[UserAccount.CloseAccount] success");
+
                 IsAccountClosed = true;
                 AccountClosed = UtcNow;
 
                 this.AddEvent(new AccountClosedEvent { Account = this });
+            }
+            else
+            {
+                Tracing.Warning("[UserAccount.CloseAccount] account already closed");
             }
         }
 
@@ -799,13 +989,21 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void AddClaim(string type, string value)
         {
-            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
-            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
+            Tracing.Information("[UserAccount.AddClaim] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(type))
+            {
+                Tracing.Error("[UserAccount.AddClaim] failed -- null type");
+                throw new ArgumentException("type");
+            }
+            if (String.IsNullOrWhiteSpace(value))
+            {
+                Tracing.Error("[UserAccount.AddClaim] failed -- null value");
+                throw new ArgumentException("value");
+            }
 
             if (!this.HasClaim(type, value))
             {
-                Tracing.Verbose(String.Format("[UserAccount.AddClaim] {0}, {1}, {2}, {3}", Tenant, Username, type, value));
-
                 this.Claims.Add(
                     new UserClaim
                     {
@@ -817,7 +1015,13 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void RemoveClaim(string type)
         {
-            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
+            Tracing.Information("[UserAccount.RemoveClaim] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(type))
+            {
+                Tracing.Error("[UserAccount.RemoveClaim] failed -- null type");
+                throw new ArgumentException("type");
+            }
 
             var claimsToRemove =
                 from claim in this.Claims
@@ -825,15 +1029,24 @@ namespace BrockAllen.MembershipReboot
                 select claim;
             foreach (var claim in claimsToRemove.ToArray())
             {
-                Tracing.Verbose(String.Format("[UserAccount.RemoveClaim] {0}, {1}, {2}, {3}", Tenant, Username, type, claim.Value));
                 this.Claims.Remove(claim);
             }
         }
 
         public virtual void RemoveClaim(string type, string value)
         {
-            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
-            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException("value");
+            Tracing.Information("[UserAccount.RemoveClaim] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(type))
+            {
+                Tracing.Error("[UserAccount.RemoveClaim] failed -- null type");
+                throw new ArgumentException("type");
+            }
+            if (String.IsNullOrWhiteSpace(value))
+            {
+                Tracing.Error("[UserAccount.RemoveClaim] failed -- null value");
+                throw new ArgumentException("value");
+            }
 
             var claimsToRemove =
                 from claim in this.Claims
@@ -841,7 +1054,6 @@ namespace BrockAllen.MembershipReboot
                 select claim;
             foreach (var claim in claimsToRemove.ToArray())
             {
-                Tracing.Verbose(String.Format("[UserAccount.RemoveClaim] {0}, {1}, {2}, {3}", Tenant, Username, type, value));
                 this.Claims.Remove(claim);
             }
         }
@@ -853,8 +1065,18 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void AddOrUpdateLinkedAccount(string provider, string id, IEnumerable<Claim> claims = null)
         {
-            if (String.IsNullOrWhiteSpace(provider)) throw new ArgumentNullException("provider");
-            if (String.IsNullOrWhiteSpace(id)) throw new ArgumentNullException("id");
+            Tracing.Information("[UserAccount.AddOrUpdateLinkedAccount] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(provider))
+            {
+                Tracing.Error("[UserAccount.AddOrUpdateLinkedAccount] failed -- null provider");
+                throw new ArgumentNullException("provider");
+            }
+            if (String.IsNullOrWhiteSpace(id))
+            {
+                Tracing.Error("[UserAccount.AddOrUpdateLinkedAccount] failed -- null id");
+                throw new ArgumentNullException("id");
+            }
 
             var linked = GetLinkedAccount(provider, id);
             if (linked == null)
@@ -865,13 +1087,21 @@ namespace BrockAllen.MembershipReboot
                     ProviderAccountID = id
                 };
                 this.LinkedAccounts.Add(linked);
+
+                Tracing.Verbose("[UserAccount.AddOrUpdateLinkedAccount] linked account added");
             }
             UpdateLinkedAccount(linked, claims);
         }
 
         protected virtual void UpdateLinkedAccount(LinkedAccount account, IEnumerable<Claim> claims = null)
         {
-            if (account == null) throw new ArgumentNullException("account");
+            Tracing.Information("[UserAccount.UpdateLinkedAccount] called for accountID: {0}", this.ID);
+
+            if (account == null)
+            {
+                Tracing.Error("[UserAccount.UpdateLinkedAccount] failed -- null account");
+                throw new ArgumentNullException("account");
+            }
 
             account.LastLogin = UtcNow;
             account.UpdateClaims(claims);
@@ -879,6 +1109,8 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void RemoveLinkedAccount(string provider, string id)
         {
+            Tracing.Information("[UserAccount.RemoveLinkedAccount] called for accountID: {0}", this.ID);
+
             var linked = GetLinkedAccount(provider, id);
             if (linked != null)
             {
@@ -888,30 +1120,59 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void AddCertificate(X509Certificate2 certificate)
         {
+            Tracing.Information("[UserAccount.AddCertificate] called for accountID: {0}", this.ID);
+
             certificate.Validate();
             RemoveCertificate(certificate);
             AddCertificate(certificate.Thumbprint, certificate.Subject);
         }
         public virtual void AddCertificate(string thumbprint, string subject)
         {
-            if (String.IsNullOrWhiteSpace(thumbprint)) throw new ArgumentNullException("thumbprint");
-            if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException("subject");
+            Tracing.Information("[UserAccount.AddCertificate] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(thumbprint))
+            {
+                Tracing.Error("[UserAccount.AddCertificate] failed -- null thumbprint");
+                throw new ArgumentNullException("thumbprint");
+            }
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                Tracing.Error("[UserAccount.AddCertificate] failed -- null subject");
+                throw new ArgumentNullException("subject");
+            }
 
             var cert = new UserCertificate { User = this, Thumbprint = thumbprint, Subject = subject };
             this.Certificates.Add(cert);
+            
             this.AddEvent(new CertificateAddedEvent { Account = this, Certificate = cert });
         }
 
         public virtual void RemoveCertificate(X509Certificate2 certificate)
         {
-            if (certificate == null) throw new ArgumentNullException("certificate");
-            if (certificate.Handle == IntPtr.Zero) throw new ArgumentException("Invalid certificate");
+            Tracing.Information("[UserAccount.RemoveCertificate] called for accountID: {0}", this.ID);
+
+            if (certificate == null)
+            {
+                Tracing.Error("[UserAccount.RemoveCertificate] failed -- null certificate");
+                throw new ArgumentNullException("certificate");
+            }
+            if (certificate.Handle == IntPtr.Zero)
+            {
+                Tracing.Error("[UserAccount.RemoveCertificate] failed -- invalid certificate handle");
+                throw new ArgumentException("Invalid certificate");
+            }
 
             RemoveCertificate(certificate.Thumbprint);
         }
         public virtual void RemoveCertificate(string thumbprint)
         {
-            if (String.IsNullOrWhiteSpace(thumbprint)) throw new ArgumentNullException("thumbprint");
+            Tracing.Information("[UserAccount.RemoveCertificate] called for accountID: {0}", this.ID);
+
+            if (String.IsNullOrWhiteSpace(thumbprint))
+            {
+                Tracing.Error("[UserAccount.RemoveCertificate] failed -- no thumbprint");
+                throw new ArgumentNullException("thumbprint");
+            }
 
             var certs = this.Certificates.Where(x => x.Thumbprint.Equals(thumbprint, StringComparison.OrdinalIgnoreCase)).ToArray();
             foreach (var cert in certs)
@@ -922,6 +1183,7 @@ namespace BrockAllen.MembershipReboot
             if (!this.Certificates.Any() &&
                 this.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
             {
+                Tracing.Verbose("[UserAccount.RemoveCertificate] last cert removed, disabling two factor auth");
                 this.ConfigureTwoFactorAuthentication(TwoFactorAuthMode.None);
             }
         }
