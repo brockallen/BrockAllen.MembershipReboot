@@ -13,7 +13,7 @@ Some of the features of MembershipReboot are:
 * customizable username, password and email validation
 * notification system for account activity and updates (e.g. for auditing)
 * account linking with external identity providers (enterprise or social)
-* certificate based authentication
+* supports certificate based authentication
 * proper password storage (via PBKDF2)
 	* configurable iterations
 	* defaults to OWASP recommendations for iterations (e.g. 64K in year 2012)
