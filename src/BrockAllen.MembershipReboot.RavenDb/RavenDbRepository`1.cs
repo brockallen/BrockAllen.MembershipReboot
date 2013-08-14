@@ -13,7 +13,7 @@ using Raven.Client.Linq;
 namespace BrockAllen.MembershipReboot.RavenDb
 {
     public class RavenDbRepository<T> : IRepository<T>, IDisposable
-        where T : class
+        where T : class, new()
     {
         private readonly IDocumentStore documentStore;
         private readonly IDocumentSession documentSession;
@@ -40,16 +40,16 @@ namespace BrockAllen.MembershipReboot.RavenDb
             return items;
         }
 
-        T IRepository<T>.Get(params object[] keys)
+        public virtual T Get(params object[] keys)
         {
             CheckDisposed();
-            return items.SingleOrDefault(T => T.In(keys));
+            return items.SingleOrDefault(x => x.In(keys));
         }
 
         T IRepository<T>.Create()
         {
             CheckDisposed();
-            return CreateObject<T>();
+            return new T();
         }
 
         void IRepository<T>.Add(T item)
@@ -77,41 +77,5 @@ namespace BrockAllen.MembershipReboot.RavenDb
         {
             documentSession.TryDispose();
         }
-
-        #region Create Proxies
-
-        private static T CreateObject<T>()
-        {
-            var obj = CreateConstructor<T>() as Func<T>;
-            return obj != null ? obj() : default(T);
-        }
-
-        private static ConstructorInfo GetConstructorForType(Type type)
-        {
-            ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.CreateInstance, null, Type.EmptyTypes, null);
-            if (null == constructor)
-            {
-                var message = string.Format("No constructor available for type '{0}'.", type);
-                throw new Exception(message);
-            }
-            return constructor;
-        }
-
-        private static Delegate CreateConstructor<T>()
-        {
-            ConstructorInfo constructorForType = GetConstructorForType(typeof (T));
-            DynamicMethod dynamicMethod = CreateDynamicMethod(constructorForType.DeclaringType.Name, typeof(T), Type.EmptyTypes);
-            ILGenerator iLGenerator = dynamicMethod.GetILGenerator();
-            iLGenerator.Emit(OpCodes.Newobj, constructorForType);
-            iLGenerator.Emit(OpCodes.Ret);
-            return dynamicMethod.CreateDelegate(typeof(Func<T>));
-        }
-
-        private static DynamicMethod CreateDynamicMethod(string name, Type returnType, Type[] parameterTypes)
-        {
-            return new DynamicMethod(name, returnType, parameterTypes, true);
-        }
-
-        #endregion Create Proxies
     }
 }

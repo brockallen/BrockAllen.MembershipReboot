@@ -4,6 +4,8 @@
  */
 
 using Raven.Client;
+using System;
+using System.Linq;
 
 namespace BrockAllen.MembershipReboot.RavenDb
 {
@@ -15,5 +17,11 @@ namespace BrockAllen.MembershipReboot.RavenDb
             : base(ctx)
         {
         }
+        public override UserAccount Get(params object[] keys)
+        {
+            IUserAccountRepository r = this;
+            return r.GetAll().Where(x => x.ID == (Guid)keys[0]).SingleOrDefault();
+        }
+        
     }
 }
