@@ -77,6 +77,26 @@ namespace BrockAllen.MembershipReboot
                 return msg;
             }
         }
+        public class LinkedAccountAddedTokenizer : Tokenizer
+        {
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            {
+                var evt = (LinkedAccountAddedEvent)accountEvent;
+                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = msg.Replace("{provider}", evt.LinkedAccount.ProviderName);
+                return msg;
+            }
+        }
+        public class LinkedAccountRemovedTokenizer : Tokenizer
+        {
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            {
+                var evt = (LinkedAccountRemovedEvent)accountEvent;
+                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = msg.Replace("{provider}", evt.LinkedAccount.ProviderName);
+                return msg;
+            }
+        }
 
         public ApplicationInformation ApplicationInformation 
         {
@@ -111,6 +131,8 @@ namespace BrockAllen.MembershipReboot
             if (type == typeof(EmailChangedEvent)) return new EmailChangedTokenizer();
             if (type == typeof(CertificateAddedEvent)) return new CertificateAddedTokenizer();
             if (type == typeof(CertificateRemovedEvent)) return new CertificateRemovedTokenizer();
+            if (type == typeof(LinkedAccountAddedEvent)) return new LinkedAccountAddedTokenizer();
+            if (type == typeof(LinkedAccountRemovedEvent)) return new LinkedAccountRemovedTokenizer();
             return new Tokenizer();
         }
 

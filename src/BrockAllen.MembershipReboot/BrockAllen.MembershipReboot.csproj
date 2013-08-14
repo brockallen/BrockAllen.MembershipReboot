@@ -108,6 +108,10 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="license.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountRemovedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountRemovedEvent_Body.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountAddedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountAddedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\CertificateRemovedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\CertificateRemovedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\CertificateAddedEvent_Subject.txt" />

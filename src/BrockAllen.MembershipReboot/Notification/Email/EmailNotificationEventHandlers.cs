@@ -69,7 +69,9 @@ namespace BrockAllen.MembershipReboot
         IEventHandler<MobilePhoneChangedEvent>,
         IEventHandler<MobilePhoneRemovedEvent>,
         IEventHandler<CertificateAddedEvent>,
-        IEventHandler<CertificateRemovedEvent>
+        IEventHandler<CertificateRemovedEvent>,
+        IEventHandler<LinkedAccountAddedEvent>,
+        IEventHandler<LinkedAccountRemovedEvent>
     {
         public EmailAccountEventsHandler(IMessageFormatter messageFormatter)
             : base(messageFormatter)
@@ -136,6 +138,16 @@ namespace BrockAllen.MembershipReboot
         }
 
         public void Handle(CertificateRemovedEvent evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(LinkedAccountAddedEvent evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(LinkedAccountRemovedEvent evt)
         {
             Process(evt);
         }

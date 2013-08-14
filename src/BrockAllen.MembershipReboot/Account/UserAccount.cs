@@ -84,7 +84,8 @@ namespace BrockAllen.MembershipReboot
         }
         protected internal void AddEvent<E>(E evt) where E : IEvent
         {
-            if (!events.Any(x => x.GetType() == evt.GetType()))
+            if (evt is IAllowMultiple ||
+                !events.Any(x => x.GetType() == evt.GetType()))
             {
                 events.Add(evt);
             }
@@ -617,8 +618,8 @@ namespace BrockAllen.MembershipReboot
             }
             else
             {
-                Tracing.Verbose("[UserAccount.ConfigureTwoFactorAuthentication] success -- two factor auth enabled, mode: ", mode);
-                this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this });
+                Tracing.Verbose("[UserAccount.ConfigureTwoFactorAuthentication] success -- two factor auth enabled, mode: {0}", mode);
+                this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = this, Mode = mode });
             }
         }
 
@@ -1007,12 +1008,13 @@ namespace BrockAllen.MembershipReboot
 
             if (!this.HasClaim(type, value))
             {
-                this.Claims.Add(
-                    new UserClaim
-                    {
-                        Type = type,
-                        Value = value
-                    });
+                var claim = new UserClaim
+                {
+                    Type = type,
+                    Value = value
+                };
+                this.Claims.Add(claim);
+                this.AddEvent(new ClaimAddedEvent { Account = this, Claim = claim });
             }
         }
 
@@ -1033,6 +1035,7 @@ namespace BrockAllen.MembershipReboot
             foreach (var claim in claimsToRemove.ToArray())
             {
                 this.Claims.Remove(claim);
+                this.AddEvent(new ClaimRemovedEvent { Account = this, Claim = claim });
             }
         }
 
@@ -1058,6 +1061,7 @@ namespace BrockAllen.MembershipReboot
             foreach (var claim in claimsToRemove.ToArray())
             {
                 this.Claims.Remove(claim);
+                this.AddEvent(new ClaimRemovedEvent { Account = this, Claim = claim });
             }
         }
 
@@ -1090,6 +1094,7 @@ namespace BrockAllen.MembershipReboot
                     ProviderAccountID = id
                 };
                 this.LinkedAccounts.Add(linked);
+                this.AddEvent(new LinkedAccountAddedEvent { Account = this, LinkedAccount = linked });
 
                 Tracing.Verbose("[UserAccount.AddOrUpdateLinkedAccount] linked account added");
             }
@@ -1118,6 +1123,7 @@ namespace BrockAllen.MembershipReboot
             if (linked != null)
             {
                 this.LinkedAccounts.Remove(linked);
+                this.AddEvent(new LinkedAccountRemovedEvent { Account = this, LinkedAccount = linked });
             }
         }
 

@@ -7,6 +7,8 @@
 using System.Security.Cryptography.X509Certificates;
 namespace BrockAllen.MembershipReboot
 {
+    interface IAllowMultiple { }
+    
     public abstract class UserAccountEvent : IEvent
     {
         public UserAccount Account { get; set; }
@@ -17,14 +19,15 @@ namespace BrockAllen.MembershipReboot
 
     public class PasswordResetRequestedEvent : UserAccountEvent { }
     public class PasswordChangedEvent : UserAccountEvent { }
-    public class CertificateAddedEvent : UserAccountEvent
+    public class CertificateAddedEvent : UserAccountEvent, IAllowMultiple
     {
         public UserCertificate Certificate { get; set; }
     }
-    public class CertificateRemovedEvent : UserAccountEvent
+    public class CertificateRemovedEvent : UserAccountEvent, IAllowMultiple
     {
         public UserCertificate Certificate { get; set; }
     }
+    
     public class UsernameReminderRequestedEvent : UserAccountEvent { }
     public class AccountClosedEvent : UserAccountEvent { }
     public class UsernameChangedEvent : UserAccountEvent { }
@@ -44,10 +47,26 @@ namespace BrockAllen.MembershipReboot
     public class MobilePhoneChangedEvent : UserAccountEvent { }
     public class MobilePhoneRemovedEvent : UserAccountEvent { }
     
-    public class TwoFactorAuthenticationEnabledEvent : UserAccountEvent { }
+    public class TwoFactorAuthenticationEnabledEvent : UserAccountEvent {
+        public TwoFactorAuthMode Mode { get; set; }
+    }
     public class TwoFactorAuthenticationDisabledEvent : UserAccountEvent { }
 
     public class TwoFactorAuthenticationCodeNotificationEvent : UserAccountEvent { }
+
+    public class ClaimAddedEvent : UserAccountEvent, IAllowMultiple {
+        public UserClaim Claim { get; set; }
+    }
+    public class ClaimRemovedEvent : UserAccountEvent, IAllowMultiple {
+        public UserClaim Claim { get; set; }
+    }
+
+    public class LinkedAccountAddedEvent : UserAccountEvent, IAllowMultiple {
+        public LinkedAccount LinkedAccount { get; set; }
+    }
+    public class LinkedAccountRemovedEvent : UserAccountEvent, IAllowMultiple {
+        public LinkedAccount LinkedAccount { get; set; }
+    }
 
     public abstract class SuccessfulLoginEvent : UserAccountEvent { }
     public class SuccessfulPasswordLoginEvent : SuccessfulLoginEvent { }
