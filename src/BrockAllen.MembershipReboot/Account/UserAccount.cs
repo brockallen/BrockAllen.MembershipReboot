@@ -84,7 +84,10 @@ namespace BrockAllen.MembershipReboot
         }
         protected internal void AddEvent<E>(E evt) where E : IEvent
         {
-            events.Add(evt);
+            if (!events.Any(x => x.GetType() == evt.GetType()))
+            {
+                events.Add(evt);
+            }
         }
 
         internal protected virtual void Init(string tenant, string username, string password, string email)
