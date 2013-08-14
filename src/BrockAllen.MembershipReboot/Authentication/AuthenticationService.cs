@@ -56,12 +56,12 @@ namespace BrockAllen.MembershipReboot
 
             if (!account.IsAccountVerified)
             {
-                throw new ValidationException("Account not yet verified");
+                throw new ValidationException("Account not yet verified.");
             }
 
             if (!account.IsLoginAllowed)
             {
-                throw new ValidationException("Login not allowed for this account");
+                throw new ValidationException("Login not allowed for this account.");
             }
 
             if (account.RequiresTwoFactorAuthToSignIn)
@@ -170,7 +170,7 @@ namespace BrockAllen.MembershipReboot
                     var email = claims.GetValue(ClaimTypes.Email);
                     if (String.IsNullOrWhiteSpace(email))
                     {
-                        throw new ValidationException("Can't create an account because there was no email from the identity provider");
+                        throw new ValidationException("Can't create an account because there was no email from the identity provider.");
                     }
 
                     // guess at a name to use

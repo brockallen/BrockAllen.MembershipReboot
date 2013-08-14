@@ -671,7 +671,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newPassword))
             {
                 Tracing.Error("[UserAccountService.SetPassword] failed -- null newPassword");
-                throw new ValidationException("Invalid newPassword.");
+                throw new ValidationException("Invalid new password.");
             }
 
             var account = this.GetByID(accountID);

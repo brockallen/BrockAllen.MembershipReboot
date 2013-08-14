@@ -122,7 +122,7 @@ namespace BrockAllen.MembershipReboot
 
         public void ChangeName(Guid groupID, string name)
         {
-            if (String.IsNullOrWhiteSpace(name)) throw new ValidationException("Invalid name");
+            if (String.IsNullOrWhiteSpace(name)) throw new ValidationException("Invalid name.");
 
             var group = Get(groupID);
             if (group == null) throw new ArgumentException("Invalid GroupID");

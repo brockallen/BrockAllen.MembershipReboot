@@ -255,7 +255,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Error("[UserAccount.SetPassword] failed -- no password provided");
-                throw new ValidationException("Invalid password");
+                throw new ValidationException("Invalid password.");
             }
 
             Tracing.Verbose("[UserAccount.SetPassword] setting new password hash");
