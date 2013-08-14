@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groups", "Groups\Groups.csproj", "{45982329-4823-4D78-B03B-85E58BA47608}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "..\src\BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RavenDbSample", "RavenDbSample\RavenDbSample.csproj", "{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +54,14 @@ Global
 		{45982329-4823-4D78-B03B-85E58BA47608}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45982329-4823-4D78-B03B-85E58BA47608}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45982329-4823-4D78-B03B-85E58BA47608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
