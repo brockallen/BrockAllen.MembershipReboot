@@ -13,9 +13,9 @@ namespace BrockAllen.MembershipReboot
     {
         [Key]
         [Column(Order=1)]
-        public Guid GroupID { get; set; }
+        public Guid GroupID { get; internal set; }
         [Key]
         [Column(Order = 2)]
-        public Guid ChildGroupID { get; set; }
+        public Guid ChildGroupID { get; internal set; }
     }
 }
