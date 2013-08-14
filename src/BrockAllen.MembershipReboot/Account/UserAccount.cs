@@ -18,7 +18,7 @@ namespace BrockAllen.MembershipReboot
         internal const int MobileCodeLength = 6;
         internal const int MobileCodeStaleDurationMinutes = 10;
 
-        internal protected UserAccount()
+        public UserAccount()
         {
             this.Claims = new HashSet<UserClaim>();
             this.LinkedAccounts = new HashSet<LinkedAccount>();
@@ -62,7 +62,7 @@ namespace BrockAllen.MembershipReboot
 
         [StringLength(100)]
         public virtual string VerificationKey { get; internal set; }
-        public virtual VerificationKeyPurpose? VerificationPurpose { get; set; }
+        public virtual VerificationKeyPurpose? VerificationPurpose { get; internal set; }
         public virtual DateTime? VerificationKeySent { get; internal set; }
 
         [Required]
