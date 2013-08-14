@@ -74,9 +74,9 @@ namespace BrockAllen.MembershipReboot
         public virtual ICollection<UserCertificate> Certificates { get; internal set; }
 
         List<IEvent> events = new List<IEvent>();
-        IEnumerable<IEvent> IEventSource.Events
+        IEnumerable<IEvent> IEventSource.GetEvents()
         {
-            get { return events; }
+            return events;
         }
         void IEventSource.Clear()
         {
