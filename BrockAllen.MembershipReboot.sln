@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot", "BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj", "{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot", "src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj", "{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5AE0A7EB-FF0E-4158-AE04-5DD60AEA5108}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5AE0A7
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "src\BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "src\BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

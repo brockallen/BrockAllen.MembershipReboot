@@ -8,21 +8,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4E073A
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingleTenantWebApp", "SingleTenantWebApp\SingleTenantWebApp.csproj", "{AA6283A3-9A1D-488D-979E-49D8E7813152}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingleTenantWebApp", "samples\SingleTenantWebApp\SingleTenantWebApp.csproj", "{AA6283A3-9A1D-488D-979E-49D8E7813152}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot", "..\src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj", "{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot", "src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj", "{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedAccounts", "LinkedAccounts\LinkedAccounts.csproj", "{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedAccounts", "samples\LinkedAccounts\LinkedAccounts.csproj", "{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizationsSample", "CustomizationsSample\CustomizationsSample.csproj", "{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "src\BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "..\src\BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groups", "samples\Groups\Groups.csproj", "{45982329-4823-4D78-B03B-85E58BA47608}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groups", "Groups\Groups.csproj", "{45982329-4823-4D78-B03B-85E58BA47608}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "src\BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "..\src\BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RavenDbSample", "samples\RavenDbSample\RavenDbSample.csproj", "{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RavenDbSample", "RavenDbSample\RavenDbSample.csproj", "{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizationsSample", "samples\CustomizationsSample\CustomizationsSample.csproj", "{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,10 +42,6 @@ Global
 		{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -62,6 +58,10 @@ Global
 		{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A1C4076-F0DA-4903-928C-31FA42BAA1BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
