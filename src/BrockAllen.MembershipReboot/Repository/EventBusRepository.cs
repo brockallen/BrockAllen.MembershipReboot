@@ -29,7 +29,7 @@ namespace BrockAllen.MembershipReboot
         private void RaiseValidation(IEventSource source)
         {
             if (source == null) throw new ArgumentNullException("source");
-            foreach (var evt in source.Events)
+            foreach (var evt in source.GetEvents())
             {
                 this.validationBus.RaiseEvent(evt);
             }
@@ -38,7 +38,7 @@ namespace BrockAllen.MembershipReboot
         private void RaiseEvents(IEventSource source)
         {
             if (source == null) throw new ArgumentNullException("source");
-            foreach (var evt in source.Events)
+            foreach (var evt in source.GetEvents())
             {
                 this.eventBus.RaiseEvent(evt);
             }

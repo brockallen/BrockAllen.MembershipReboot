@@ -11,7 +11,7 @@ namespace BrockAllen.MembershipReboot
     public interface IEvent { }
     public interface IEventSource
     {
-        IEnumerable<IEvent> Events { get; }
+        IEnumerable<IEvent> GetEvents();
         void Clear();
     }
 
