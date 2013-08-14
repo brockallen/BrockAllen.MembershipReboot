@@ -17,7 +17,12 @@ namespace BrockAllen.MembershipReboot
 
     public class PasswordResetRequestedEvent : UserAccountEvent { }
     public class PasswordChangedEvent : UserAccountEvent { }
-    public class CertificateAddedEvent : UserAccountEvent {
+    public class CertificateAddedEvent : UserAccountEvent
+    {
+        public UserCertificate Certificate { get; set; }
+    }
+    public class CertificateRemovedEvent : UserAccountEvent
+    {
         public UserCertificate Certificate { get; set; }
     }
     public class UsernameReminderRequestedEvent : UserAccountEvent { }

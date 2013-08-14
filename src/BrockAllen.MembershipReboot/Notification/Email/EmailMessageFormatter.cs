@@ -18,6 +18,7 @@ namespace BrockAllen.MembershipReboot
 
                 msg = msg.Replace("{username}", user.Username);
                 msg = msg.Replace("{email}", user.Email);
+                msg = msg.Replace("{mobile}", user.MobilePhoneNumber);
 
                 msg = msg.Replace("{applicationName}", appInfo.ApplicationName);
                 msg = msg.Replace("{emailSignature}", appInfo.EmailSignature);
@@ -54,6 +55,28 @@ namespace BrockAllen.MembershipReboot
                 return msg;
             }
         }
+        public class CertificateAddedTokenizer : Tokenizer
+        {
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            {
+                var evt = (CertificateAddedEvent)accountEvent;
+                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = msg.Replace("{thumbprint}", evt.Certificate.Thumbprint);
+                msg = msg.Replace("{subject}", evt.Certificate.Subject);
+                return msg;
+            }
+        }
+        public class CertificateRemovedTokenizer : Tokenizer
+        {
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            {
+                var evt = (CertificateRemovedEvent)accountEvent;
+                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = msg.Replace("{thumbprint}", evt.Certificate.Thumbprint);
+                msg = msg.Replace("{subject}", evt.Certificate.Subject);
+                return msg;
+            }
+        }
 
         public ApplicationInformation ApplicationInformation 
         {
@@ -86,6 +109,8 @@ namespace BrockAllen.MembershipReboot
             Type type = evt.GetType();
             if (type == typeof(EmailChangeRequestedEvent)) return new EmailChangeRequestedTokenizer();
             if (type == typeof(EmailChangedEvent)) return new EmailChangedTokenizer();
+            if (type == typeof(CertificateAddedEvent)) return new CertificateAddedTokenizer();
+            if (type == typeof(CertificateRemovedEvent)) return new CertificateRemovedTokenizer();
             return new Tokenizer();
         }
 

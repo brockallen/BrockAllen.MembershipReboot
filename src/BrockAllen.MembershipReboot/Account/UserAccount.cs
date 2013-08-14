@@ -1180,6 +1180,7 @@ namespace BrockAllen.MembershipReboot
             var certs = this.Certificates.Where(x => x.Thumbprint.Equals(thumbprint, StringComparison.OrdinalIgnoreCase)).ToArray();
             foreach (var cert in certs)
             {
+                this.AddEvent(new CertificateRemovedEvent { Account = this, Certificate = cert });
                 this.Certificates.Remove(cert);
             }
 

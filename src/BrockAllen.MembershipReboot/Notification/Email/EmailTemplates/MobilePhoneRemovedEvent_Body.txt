@@ -1,0 +1,7 @@
+﻿This email is to confirm that your mobile phone number has been removed from your account with {applicationName}.
+
+Username: {username}
+
+Thanks!
+
+{emailSignature}

@@ -1,0 +1,8 @@
+﻿This email is to confirm that your mobile phone number has been changed for your account with {applicationName}.
+
+Username: {username}
+New Mobile Phone Number: {mobile}
+
+Thanks!
+
+{emailSignature}
