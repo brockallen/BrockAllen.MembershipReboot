@@ -20,6 +20,15 @@ namespace LinkedAccounts
         internal static void Register()
         {
             var config = CreateMembershipRebootConfiguration();
+            var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
+                            "UserAccount/Login",
+                            "UserAccount/Register/Confirm/",
+                            "UserAccount/Register/Cancel/",
+                            "UserAccount/PasswordReset/Confirm/",
+                            "UserAccount/ChangeEmail/Confirm/");
+            var emailFormatter = new EmailMessageFormatter(appinfo); 
+            // uncomment if you want email notifications -- also update smtp settings in web.config
+            //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
 
             var builder = new ContainerBuilder();
 

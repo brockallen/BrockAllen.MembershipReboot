@@ -20,9 +20,11 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var emailFormatter = new EmailMessageFormatter(appinfo);
             if (settings.RequireAccountVerification)
             {
-                config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
+                // uncomment if you want email notifications -- also update smtp settings in web.config
+                //config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
             }
-            config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+            // uncomment if you want email notifications -- also update smtp settings in web.config
+            //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
             config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
             config.ConfigureAspNetCookieBasedTwoFactorAuthPolicy();
             
