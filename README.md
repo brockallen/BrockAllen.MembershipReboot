@@ -13,10 +13,11 @@ Some of the features of MembershipReboot are:
 * customizable username, password and email validation
 * notification system for account activity and updates (e.g. for auditing)
 * account linking with external identity providers (enterprise or social)
+* certificate based authentication
 * proper password storage (via PBKDF2)
 	* configurable iterations
 	* defaults to OWASP recommendations for iterations (e.g. 64K in year 2012)
-* two factor authentication support via mobile phone SMS messages
+* two factor authentication support via mobile phone SMS messages or client certificates
 
 The most common use case will be to integrate this into an ASP.NET or ASP.NET MVC application, though the library can also be used over a network as a service.
 
