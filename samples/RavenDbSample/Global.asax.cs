@@ -31,7 +31,7 @@ namespace BrockAllen.MembershipReboot.RavenDbSample
 
         private void EnsureSeededDatabase()
         {
-            using (var svc = new UserAccountService(new DefaultUserAccountRepository(DocumentStore)))
+            using (var svc = new UserAccountService(new RavenUserAccountRepository(DocumentStore)))
             {
                 if (svc.GetByUsername("admin") == null)
                 {
@@ -47,7 +47,7 @@ namespace BrockAllen.MembershipReboot.RavenDbSample
         {
             if (DocumentStore != null) return;
 
-            DocumentStore = new DefaultMembershipRebootDatabase("RavenDb").DocumentStore;
+            DocumentStore = new RavenMembershipRebootDatabase("RavenDb").DocumentStore;
         }
     }
 }
