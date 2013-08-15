@@ -11,11 +11,9 @@ namespace BrockAllen.MembershipReboot
 {
     public class AspNetCookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy
     {
-        const int DefaultPersistentCookieDays = 30;
-
         int persistentCookieDays;
         public AspNetCookieBasedTwoFactorAuthPolicy()
-            : this(DefaultPersistentCookieDays)
+            : this(MembershipRebootConstants.AuthenticationService.DefaultPersistentCookieDays)
         {
         }
 

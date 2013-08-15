@@ -14,10 +14,6 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserAccount : IEventSource
     {
-        internal const int VerificationKeyStaleDurationDays = 1;
-        internal const int MobileCodeLength = 6;
-        internal const int MobileCodeStaleDurationMinutes = 10;
-
         public UserAccount()
         {
             this.Claims = new HashSet<UserClaim>();
@@ -148,7 +144,7 @@ namespace BrockAllen.MembershipReboot
                     return true;
                 }
 
-                if (this.VerificationKeySent < UtcNow.AddDays(-VerificationKeyStaleDurationDays))
+                if (this.VerificationKeySent < UtcNow.AddDays(-MembershipRebootConstants.UserAccount.VerificationKeyStaleDurationDays))
                 {
                     return true;
                 }
@@ -462,7 +458,7 @@ namespace BrockAllen.MembershipReboot
 
         void IssueMobileCode()
         {
-            this.MobileCode = CryptoHelper.GenerateNumericCode(MobileCodeLength);
+            this.MobileCode = CryptoHelper.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
             this.MobileCodeSent = UtcNow;
         }
 
@@ -481,7 +477,7 @@ namespace BrockAllen.MembershipReboot
                     return true;
                 }
 
-                if (this.MobileCodeSent < UtcNow.AddMinutes(-MobileCodeStaleDurationMinutes))
+                if (this.MobileCodeSent < UtcNow.AddMinutes(-MembershipRebootConstants.UserAccount.MobileCodeStaleDurationMinutes))
                 {
                     return true;
                 }

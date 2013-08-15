@@ -11,7 +11,6 @@ namespace BrockAllen.MembershipReboot
         ITwoFactorAuthenticationPolicy,
         IEventHandler<SuccessfulTwoFactorAuthCodeLoginEvent>
     {
-        const string CookieBasedTwoFactorAuthPolicyCookieName = "mr.cbtfap";
 
         protected abstract bool HasCookie(string name, string value);
         protected abstract void IssueCookie(string name, string value);
@@ -25,7 +24,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (account == null) throw new ArgumentNullException("account");
 
-            if (HasCookie(CookieBasedTwoFactorAuthPolicyCookieName, GetCookieValue(account)))
+            if (HasCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName, GetCookieValue(account)))
             {
                 return false;
             }
@@ -37,7 +36,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (evt == null) throw new ArgumentNullException("evt");
 
-            IssueCookie(CookieBasedTwoFactorAuthPolicyCookieName, GetCookieValue(evt.Account));
+            IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName, GetCookieValue(evt.Account));
         }
     }
 }
