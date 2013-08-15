@@ -29,13 +29,15 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         private void InitDatabase()
         {
-            var svc = new UserAccountService(new MembershipRebootConfiguration(), new CustomRepository());
-            if (svc.GetByUsername("admin") == null)
+            using (var svc = DependencyResolver.Current.GetService<UserAccountService>())
             {
-                var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");
-                svc.VerifyAccount(account.VerificationKey);
-                account.AddClaim(ClaimTypes.Role, "Administrator");
-                svc.Update(account);
+                if (svc.GetByUsername("admin") == null)
+                {
+                    var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");
+                    svc.VerifyAccount(account.VerificationKey);
+                    account.AddClaim(ClaimTypes.Role, "Administrator");
+                    svc.Update(account);
+                }
             }
         }
     }

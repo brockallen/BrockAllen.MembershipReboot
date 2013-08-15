@@ -31,7 +31,7 @@ namespace BrockAllen.MembershipReboot.RavenDbSample
 
         private void EnsureSeededDatabase()
         {
-            using (var svc = new UserAccountService(new RavenUserAccountRepository(DocumentStore)))
+            using (var svc = DependencyResolver.Current.GetService<UserAccountService>())
             {
                 if (svc.GetByUsername("admin") == null)
                 {

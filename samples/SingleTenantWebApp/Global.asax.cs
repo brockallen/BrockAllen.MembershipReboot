@@ -29,7 +29,7 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         private void InitDatabase()
         {
-            using (var svc = new UserAccountService(new DefaultUserAccountRepository()))
+            using (var svc = DependencyResolver.Current.GetService<UserAccountService>())
             {
                 if (svc.GetByUsername("admin") == null)
                 {
