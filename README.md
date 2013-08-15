@@ -24,7 +24,7 @@ The most common use case will be to integrate this into an ASP.NET or ASP.NET MV
 
 # Getting Started with MembershipReboot
 
-There is a core project (BrockAllen.MembershipReboot), a unit test project and several sample applications demonstrating various use-cases. The best way to see MembershipReboot in action is to start with the SingleTenantWebApp sample in BrockAllen.MembershipReboot\samples\CurrentSamples.
+There is a core project (BrockAllen.MembershipReboot), two projects to implement the storage of the user account data (one uses EF, the other uses RavenDB), and a unit test project. There are also several sample applications demonstrating various use-cases. The best way to see MembershipReboot in action is to start with the SingleTenantWebApp from the samples folder.
 
 ## MembershipReboot, Claims and Windows Identity Foundation (WIF)
 
