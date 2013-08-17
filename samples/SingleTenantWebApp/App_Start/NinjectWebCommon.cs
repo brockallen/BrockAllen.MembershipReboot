@@ -59,10 +59,12 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 
             RegisterEntityFramework(kernel);
             //RegisterMongoDb(kernel);
+            //RegisterRavenDb(kernel);
         }
 
         private static void RegisterEntityFramework(IKernel kernel)
         {
+            System.Data.Entity.Database.SetInitializer<DefaultMembershipRebootDatabase>(new System.Data.Entity.CreateDatabaseIfNotExists<DefaultMembershipRebootDatabase>());
             kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository());
         }
 
@@ -83,12 +85,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         // - Uncomment this method.
         // - Call this method instead of RegisterEntityFramework in the RegisterServices method above.
 
-        //public static IDocumentStore DocumentStore { get; private set; }
         //private static void RegisterRavenDb(IKernel kernel)
         //{
-        //    kernel.Bind<MongoDb.MongoDatabase>().ToSelf().WithConstructorArgument("connectionStringName", "MongoDb");
-        //    DocumentStore = new RavenMembershipRebootDatabase("RavenDb").DocumentStore;
-        //    kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new RavenUserAccountRepository(DocumentStore));
+        //    kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new BrockAllen.MembershipReboot.RavenDb.RavenUserAccountRepository("RavenDb"));
         //}
     }
 }
