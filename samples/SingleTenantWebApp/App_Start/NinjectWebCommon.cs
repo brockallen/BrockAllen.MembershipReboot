@@ -55,8 +55,26 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         {
             var config = MembershipRebootConfig.Create();
             kernel.Bind<MembershipRebootConfiguration>().ToConstant(config);
-            kernel.Bind<IUserAccountRepository>().ToMethod(ctx=>new DefaultUserAccountRepository());
             kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();
+
+            RegisterEntityFramework(kernel);
+            //RegisterMongoDb(kernel);
         }
+
+        private static void RegisterEntityFramework(IKernel kernel)
+        {
+            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository());
+        }
+
+        // To use MongoDB:
+        // - Add a reference to the BrockAllen.MembershipReboot.MongoDb project.
+        // - Uncomment this method.
+        // - Call this method instead of RegisterEntityFramework in the RegisterServices method above.
+
+        //private static void RegisterMongoDb(IKernel kernel)
+        //{
+        //    kernel.Bind<MongoDb.MongoDatabase>().ToSelf().WithConstructorArgument("connectionStringName", "MongoDb");
+        //    kernel.Bind<IUserAccountRepository>().To<MongoDb.MongoUserAccountRepository>();
+        //}
     }
 }
