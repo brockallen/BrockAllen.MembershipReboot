@@ -71,6 +71,19 @@ namespace BrockAllen.MembershipReboot
 
             // gather claims
             var claims = GetBasicClaims(account, method);
+            
+            // get the rest
+            if (!String.IsNullOrWhiteSpace(account.Email))
+            {
+                claims.Add(new Claim(ClaimTypes.Email, account.Email));
+            }
+            if (!String.IsNullOrWhiteSpace(account.MobilePhoneNumber))
+            {
+                claims.Add(new Claim(ClaimTypes.MobilePhone, account.MobilePhoneNumber));
+            }
+            var x509 = from c in account.Certificates
+                       select new Claim(ClaimTypes.X500DistinguishedName, c.Subject);
+            claims.AddRange(x509);
             var otherClaims =
                 (from uc in account.Claims
                  select new Claim(uc.Type, uc.Value)).ToList();
@@ -97,17 +110,6 @@ namespace BrockAllen.MembershipReboot
             claims.Add(new Claim(ClaimTypes.NameIdentifier, account.ID.ToString("D")));
             claims.Add(new Claim(ClaimTypes.Name, account.Username));
             claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.Tenant, account.Tenant));
-            if (!String.IsNullOrWhiteSpace(account.Email))
-            {
-                claims.Add(new Claim(ClaimTypes.Email, account.Email));
-            }
-            if (!String.IsNullOrWhiteSpace(account.MobilePhoneNumber))
-            {
-                claims.Add(new Claim(ClaimTypes.MobilePhone, account.MobilePhoneNumber));
-            }
-            var x509 = from c in account.Certificates
-                       select new Claim(ClaimTypes.X500DistinguishedName, c.Subject);
-            claims.AddRange(x509);
 
             return claims;
         }
