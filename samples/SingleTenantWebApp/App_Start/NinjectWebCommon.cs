@@ -76,5 +76,19 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         //    kernel.Bind<MongoDb.MongoDatabase>().ToSelf().WithConstructorArgument("connectionStringName", "MongoDb");
         //    kernel.Bind<IUserAccountRepository>().To<MongoDb.MongoUserAccountRepository>();
         //}
+
+    
+        // To use RavenDB::
+        // - Add a reference to the BrockAllen.MembershipReboot.RavenDb project.
+        // - Uncomment this method.
+        // - Call this method instead of RegisterEntityFramework in the RegisterServices method above.
+
+        //public static IDocumentStore DocumentStore { get; private set; }
+        //private static void RegisterRavenDb(IKernel kernel)
+        //{
+        //    kernel.Bind<MongoDb.MongoDatabase>().ToSelf().WithConstructorArgument("connectionStringName", "MongoDb");
+        //    DocumentStore = new RavenMembershipRebootDatabase("RavenDb").DocumentStore;
+        //    kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new RavenUserAccountRepository(DocumentStore));
+        //}
     }
 }
