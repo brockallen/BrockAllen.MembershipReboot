@@ -1,4 +1,8 @@
-﻿<h2>Login With:</h2>
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Login With:</h2>
 <ul>
     <li>@Html.ActionLink("Google", "Login", new { type = BrockAllen.OAuth2.ProviderType.Google })</li>
     @*<li>@Html.ActionLink("Live", "Login", new { type = BrockAllen.OAuth2.ProviderType.Live})</li>*@

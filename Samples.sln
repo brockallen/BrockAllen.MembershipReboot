@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingleTenantWebApp", "sampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot", "src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj", "{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedAccounts", "samples\LinkedAccounts\LinkedAccounts.csproj", "{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "src\BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groups", "samples\Groups\Groups.csproj", "{45982329-4823-4D78-B03B-85E58BA47608}"
@@ -38,10 +36,6 @@ Global
 		{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A04E9682-71A4-42DA-84BD-1B7C8239D3EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.ActiveCfg = Release|Any CPU

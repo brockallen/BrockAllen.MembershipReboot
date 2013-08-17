@@ -1,16 +1,19 @@
-﻿using BrockAllen.MembershipReboot;
-using BrockAllen.OAuth2;
+﻿using BrockAllen.OAuth2;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
-namespace LinkedAccounts.Controllers
+namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
-    public class HomeController : Controller
+    public class LinkedAccountController : Controller
     {
-        static HomeController()
+        static LinkedAccountController()
         {
             RegisterOAuth2Clients();
         }
@@ -33,13 +36,13 @@ namespace LinkedAccounts.Controllers
             //    "4L08bE3WM8Ra4rRNMv3N--un5YOBr4gx");
         }
 
-        AuthenticationService AuthenticationService;
+        AuthenticationService authenticationService;
         UserAccountService userAccountService;
 
-        public HomeController(
+        public LinkedAccountController(
             AuthenticationService AuthenticationService)
         {
-            this.AuthenticationService = AuthenticationService;
+            this.authenticationService = AuthenticationService;
             this.userAccountService = AuthenticationService.UserAccountService;
         }
 
@@ -47,31 +50,50 @@ namespace LinkedAccounts.Controllers
         {
             if (disposing)
             {
-                this.AuthenticationService.TryDispose();
-                this.AuthenticationService = null;
+                this.authenticationService.TryDispose();
+                this.authenticationService = null;
             }
 
             base.Dispose(disposing);
         }
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult Logout()
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                AuthenticationService.SignOut();
-            }
-            return RedirectToAction("Index");
-        }
-
         public ActionResult Login(ProviderType type)
         {
-            return new OAuth2ActionResult(type);
+            return new OAuth2ActionResult(type, Url.Action("Manage"));
         }
+
+        [Authorize]
+        public ActionResult Manage()
+        {
+            var linkedAccounts = this.userAccountService.GetByID(User.GetUserID()).LinkedAccounts.ToArray();
+            return View("Manage", linkedAccounts);
+        }
+        
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Remove(string provider, string id)
+        {
+            try
+            {
+                var account = this.userAccountService.GetByID(User.GetUserID());
+                account.RemoveLinkedAccount(provider, id);
+                this.userAccountService.Update(account);
+                return RedirectToAction("Manage");
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return Manage();
+        }
+
 
         public async Task<ActionResult> OAuthCallback()
         {
@@ -84,7 +106,7 @@ namespace LinkedAccounts.Controllers
                     var claims = result.Claims;
                     var id = claims.GetValue(ClaimTypes.NameIdentifier);
 
-                    this.AuthenticationService.SignInWithLinkedAccount(provider, id, claims);
+                    this.authenticationService.SignInWithLinkedAccount(provider, id, claims);
 
                     if (result.ReturnUrl != null)
                     {
@@ -92,7 +114,7 @@ namespace LinkedAccounts.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 else
@@ -113,26 +135,8 @@ namespace LinkedAccounts.Controllers
                 ModelState.AddModelError("", "Error Signing In");
             }
 
+            //return View("~/Areas/UserAccount/Views/LinkedAccount/SignInError.cshtml");
             return View("SignInError");
-        }
-
-        public ActionResult Confirm(string id)
-        {
-            var result = this.userAccountService.VerifyAccount(id);
-            return View("Index");
-        }
-
-        public ActionResult Cancel(string id)
-        {
-            var result = this.userAccountService.CancelNewAccount(id);
-            return View("Index");
-        }
-
-        public ActionResult CloseAccount()
-        {
-            this.userAccountService.DeleteAccount(User.GetUserID());
-            this.AuthenticationService.SignOut();
-            return RedirectToAction("Index");
         }
     }
 }

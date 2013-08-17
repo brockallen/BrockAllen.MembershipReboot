@@ -1111,6 +1111,18 @@ namespace BrockAllen.MembershipReboot
             account.UpdateClaims(claims);
         }
 
+        public virtual void RemoveLinkedAccount(string provider)
+        {
+            Tracing.Information("[UserAccount.RemoveLinkedAccount] called for accountID: {0}", this.ID);
+
+            var linked = this.LinkedAccounts.Where(x => x.ProviderName == provider);
+            foreach(var item in linked)
+            {
+                this.LinkedAccounts.Remove(item);
+                this.AddEvent(new LinkedAccountRemovedEvent { Account = this, LinkedAccount = item });
+            }
+        }
+
         public virtual void RemoveLinkedAccount(string provider, string id)
         {
             Tracing.Information("[UserAccount.RemoveLinkedAccount] called for accountID: {0}", this.ID);
