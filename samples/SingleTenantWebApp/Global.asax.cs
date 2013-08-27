@@ -21,7 +21,10 @@ namespace BrockAllen.MembershipReboot.Mvc
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+        }
 
+        void Application_BeginRequest()
+        {
             InitDatabase();
         }
 
