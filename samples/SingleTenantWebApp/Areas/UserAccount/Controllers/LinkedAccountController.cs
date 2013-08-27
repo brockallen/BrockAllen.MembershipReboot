@@ -46,17 +46,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             this.userAccountService = AuthenticationService.UserAccountService;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                this.authenticationService.TryDispose();
-                this.authenticationService = null;
-            }
-
-            base.Dispose(disposing);
-        }
-
         [AllowAnonymous]
         public ActionResult Index()
         {

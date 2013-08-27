@@ -65,7 +65,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         private static void RegisterEntityFramework(IKernel kernel)
         {
             System.Data.Entity.Database.SetInitializer<DefaultMembershipRebootDatabase>(new System.Data.Entity.CreateDatabaseIfNotExists<DefaultMembershipRebootDatabase>());
-            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository());
+            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository()).InRequestScope();
         }
 
         // To use MongoDB:

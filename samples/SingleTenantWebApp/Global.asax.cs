@@ -27,19 +27,17 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         private void InitDatabase()
         {
-            using (var svc = DependencyResolver.Current.GetService<UserAccountService>())
+            var svc = DependencyResolver.Current.GetService<UserAccountService>();
+            if (svc.GetByUsername("admin") == null)
             {
-                if (svc.GetByUsername("admin") == null)
-                {
-                    var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");
-                    svc.VerifyAccount(account.VerificationKey);
+                var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");
+                svc.VerifyAccount(account.VerificationKey);
                     
-                    account = svc.GetByID(account.ID);
-                    account.AddClaim(ClaimTypes.Role, "Administrator");
-                    account.AddClaim(ClaimTypes.Role, "Manager");
-                    account.AddClaim(ClaimTypes.Country, "USA");
-                    svc.Update(account);
-                }
+                account = svc.GetByID(account.ID);
+                account.AddClaim(ClaimTypes.Role, "Administrator");
+                account.AddClaim(ClaimTypes.Role, "Manager");
+                account.AddClaim(ClaimTypes.Country, "USA");
+                svc.Update(account);
             }
         }
     }

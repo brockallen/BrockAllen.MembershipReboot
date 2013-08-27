@@ -13,22 +13,13 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class AuthenticationService : IDisposable
+    public abstract class AuthenticationService
     {
         public UserAccountService UserAccountService { get; set; }
 
         public AuthenticationService(UserAccountService userService)
         {
             this.UserAccountService = userService;
-        }
-
-        public void Dispose()
-        {
-            if (this.UserAccountService != null)
-            {
-                this.UserAccountService.Dispose();
-                this.UserAccountService = null;
-            }
         }
 
         protected abstract void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null);
