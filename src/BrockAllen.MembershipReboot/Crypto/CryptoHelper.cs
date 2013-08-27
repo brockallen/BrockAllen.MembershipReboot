@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    internal static class CryptoHelper
+    public static class CryptoHelper
     {
         internal const char PasswordHashingIterationCountSeparator = '.';
         internal static Func<int> GetCurrentYear = () => DateTime.Now.Year;
@@ -65,7 +65,7 @@ namespace BrockAllen.MembershipReboot
             return EncodeIterations(count) + PasswordHashingIterationCountSeparator + result;
         }
 
-        internal static bool VerifyHashedPassword(string hashedPassword, string password)
+        public static bool VerifyHashedPassword(string hashedPassword, string password)
         {
             if (hashedPassword.Contains(PasswordHashingIterationCountSeparator))
             {

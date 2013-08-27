@@ -1,7 +1,9 @@
 ﻿using BrockAllen.MembershipReboot.Ef;
 using System;
+using System.Linq;
 using System.Data.Entity;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {
@@ -22,6 +24,14 @@ namespace BrockAllen.MembershipReboot.Mvc
         public string ClientIP { get; set; }
     }
 
+    public class PasswordHistory
+    {
+        public int ID { get; set; }
+        public Guid UserID { get; set; }
+        public DateTime DateChanged { get; set; }
+        public string PasswordHash { get; set; }
+    }
+
     public class CustomDatabase : DbContext
     {
         public CustomDatabase()
@@ -37,6 +47,7 @@ namespace BrockAllen.MembershipReboot.Mvc
         public DbSet<SomeOtherEntity> OtherStuff { get; set; }
         public DbSet<UserAccount> UserAccountsTableWithSomeOtherName { get; set; }
         public DbSet<AuthenticationAudit> Audits { get; set; }
+        public DbSet<PasswordHistory> PasswordHistory { get; set; }
     }
 
     public class CustomRepository : DbContextUserAccountRepository<CustomDatabase>
@@ -108,10 +119,50 @@ namespace BrockAllen.MembershipReboot.Mvc
         }
     }
 
+    public class PasswordChanging :
+        IEventHandler<PasswordChangedEvent>
+    {
+        public void Handle(PasswordChangedEvent evt)
+        {
+            using (var db = new CustomDatabase())
+            {
+                var oldEntires =
+                    db.PasswordHistory.Where(x => x.UserID == evt.Account.ID).OrderByDescending(x => x.DateChanged).ToArray();
+                for (var i = 0; i < 3 && oldEntires.Length > i; i++)
+                {
+                    var oldHash = oldEntires[i].PasswordHash;
+                    if (MembershipReboot.CryptoHelper.VerifyHashedPassword(oldHash, evt.NewPassword))
+                    {
+                        throw new ValidationException("New Password must not be same as the past three");
+                    }
+                }
+            }
+        }
+    }
+
+    public class PasswordChanged :
+        IEventHandler<PasswordChangedEvent>
+    {
+        public void Handle(PasswordChangedEvent evt)
+        {
+            using (var db = new CustomDatabase())
+            {
+                var pw = new PasswordHistory
+                {
+                    UserID = evt.Account.ID,
+                    DateChanged = DateTime.UtcNow,
+                    PasswordHash = evt.Account.HashedPassword
+                };
+                db.PasswordHistory.Add(pw);
+                db.SaveChanges();
+            }
+        }
+    }
+
     // customize default email messages
     public class CustomEmailMessageFormatter : EmailMessageFormatter
     {
-        public CustomEmailMessageFormatter(Lazy<ApplicationInformation> info)
+        public CustomEmailMessageFormatter(ApplicationInformation info)
             : base(info)
         {
         }

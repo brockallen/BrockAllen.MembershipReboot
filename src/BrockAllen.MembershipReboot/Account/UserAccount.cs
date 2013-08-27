@@ -264,7 +264,7 @@ namespace BrockAllen.MembershipReboot
             PasswordChanged = UtcNow;
             RequiresPasswordReset = false;
 
-            this.AddEvent(new PasswordChangedEvent { Account = this });
+            this.AddEvent(new PasswordChangedEvent { Account = this, NewPassword = password });
         }
 
         protected internal virtual void ResetPassword()

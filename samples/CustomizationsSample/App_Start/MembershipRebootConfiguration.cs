@@ -28,23 +28,14 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             config.RegisterPasswordValidator(new PasswordValidator());
 
             var delivery = new SmtpMessageDelivery();
-            var formatter = new CustomEmailMessageFormatter(new Lazy<ApplicationInformation>(() =>
-            {
-                // build URL
-                var baseUrl = HttpContext.Current.GetApplicationUrl();
-                // area name
-                baseUrl += "UserAccount/";
 
-                return new ApplicationInformation
-                {
-                    ApplicationName = "Test",
-                    LoginUrl = baseUrl + "Login",
-                    VerifyAccountUrl = baseUrl + "Register/Confirm/",
-                    CancelNewAccountUrl = baseUrl + "Register/Cancel/",
-                    ConfirmPasswordResetUrl = baseUrl + "PasswordReset/Confirm/",
-                    ConfirmChangeEmailUrl = baseUrl + "ChangeEmail/Confirm/"
-                };
-            }));
+            var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
+                "UserAccount/Login", 
+                "UserAccount/Register/Confirm/",
+                "UserAccount/Register/Cancel/",
+                "UserAccount/PasswordReset/Confirm/",
+                "UserAccount/ChangeEmail/Confirm/");
+            var formatter = new CustomEmailMessageFormatter(appinfo);
 
             if (settings.RequireAccountVerification)
             {
@@ -53,6 +44,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             config.AddEventHandler(new EmailAccountEventsHandler(formatter, delivery));
             config.AddEventHandler(new AuthenticationAuditEventHandler());
             config.AddEventHandler(new NotifyAccountOwnerWhenTooManyFailedLoginAttempts());
+
+            config.AddValidationHandler(new PasswordChanging());
+            config.AddEventHandler(new PasswordChanged());
 
             return config;
         }
