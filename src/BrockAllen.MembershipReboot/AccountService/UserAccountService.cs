@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class UserAccountService : IDisposable
+    public class UserAccountService
     {
         public MembershipRebootConfiguration Configuration { get; set; }
         
@@ -101,14 +101,6 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("ValidateEmail failed: " + result.ErrorMessage);
                 throw new ValidationException(result.ErrorMessage);
-            }
-        }
-
-        public void Dispose()
-        {
-            if (this.userRepository.TryDispose())
-            {
-                this.userRepository = null;
             }
         }
 
