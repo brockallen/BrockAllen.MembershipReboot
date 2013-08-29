@@ -231,12 +231,14 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(provider)) return null;
             if (String.IsNullOrWhiteSpace(id)) return null;
 
-            var query =
-                from u in userRepository.GetAll()
-                where u.Tenant == tenant
-                from l in u.LinkedAccounts
-                where l.ProviderName == provider && l.ProviderAccountID == id
-                select u;
+            var query = (from u in userRepository.GetAll()
+                        where u.Tenant == tenant
+                          select u).AsEnumerable();
+
+            query = from u in query
+                    from l in u.LinkedAccounts
+                    where l.ProviderName == provider && l.ProviderAccountID == id
+                    select u;
 
             var account = query.SingleOrDefault();
             if (account == null)
