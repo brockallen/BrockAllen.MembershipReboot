@@ -46,5 +46,21 @@ namespace BrockAllen.MembershipReboot.MongoDb
         public void Dispose()
         {
         }
+
+        public UserAccount FindByLinkedAccount(string tenant, string provider, string id) 
+        {
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (String.IsNullOrWhiteSpace(provider)) return null;
+            if (String.IsNullOrWhiteSpace(id)) return null;
+            
+            var query =
+                from u in GetAll()
+                where u.Tenant == tenant
+                from l in u.LinkedAccounts
+                where l.ProviderName == provider && l.ProviderAccountID == id
+                select u;
+
+            return query.SingleOrDefault();
+        }
     }
 }
