@@ -40,7 +40,7 @@ namespace BrockAllen.MembershipReboot.MongoDb
 
         public void Remove(Group item)
         {
-            _db.Groups().Remove(Query<UserAccount>.EQ(e => e.ID, item.ID));
+            _db.Groups().Remove(Query<Group>.EQ(e => e.ID, item.ID));
         }
 
         public void Dispose()
