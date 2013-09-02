@@ -219,18 +219,8 @@ namespace BrockAllen.MembershipReboot
                 tenant = SecuritySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return null;
-            if (String.IsNullOrWhiteSpace(provider)) return null;
-            if (String.IsNullOrWhiteSpace(id)) return null;
+            var account = userRepository.FindByLinkedAccount(tenant, provider, id);
 
-            var query =
-                from u in userRepository.GetAll()
-                where u.Tenant == tenant
-                from l in u.LinkedAccounts
-                where l.ProviderName == provider && l.ProviderAccountID == id
-                select u;
-
-            var account = query.SingleOrDefault();
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByLinkedAccount] failed to locate by tenant: {0}, provider: {1}, id: {2}", tenant, provider, id);

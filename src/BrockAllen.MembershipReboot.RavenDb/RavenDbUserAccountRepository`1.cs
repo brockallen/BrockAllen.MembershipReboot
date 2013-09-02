@@ -24,5 +24,22 @@ namespace BrockAllen.MembershipReboot.RavenDb
             IUserAccountRepository r = this;
             return r.GetAll().Where(x => x.ID == (Guid)keys[0]).SingleOrDefault();
         }
+
+        public UserAccount FindByLinkedAccount(string tenant, string provider, string id) 
+        {
+            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (String.IsNullOrWhiteSpace(provider)) return null;
+            if (String.IsNullOrWhiteSpace(id)) return null;
+
+            IUserAccountRepository me = this;
+
+            var results = documentSession.Advanced
+                .LuceneQuery<UserAccount, UserAccount_AccountByProviderAndId>()
+                .Search("Provider", provider)
+                .Search("Id", id);
+            
+            return results.SingleOrDefault();
+        }
     }
+
 }

@@ -16,7 +16,7 @@ namespace BrockAllen.MembershipReboot.RavenDb
         where T : class, new()
     {
         private readonly IDocumentStore documentStore;
-        private readonly IDocumentSession documentSession;
+        protected readonly IDocumentSession documentSession;
         private readonly IRavenQueryable<T> items;
 
         public RavenDbRepository(IDocumentStore documentStore)
