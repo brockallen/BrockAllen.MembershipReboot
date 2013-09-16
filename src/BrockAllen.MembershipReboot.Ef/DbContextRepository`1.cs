@@ -66,10 +66,10 @@ namespace BrockAllen.MembershipReboot.Ef
             CheckDisposed();
 
             var entry = db.Entry(item);
-            if (entry.State == System.Data.EntityState.Detached)
+            if (entry.State == EntityState.Detached)
             {
                 items.Attach(item);
-                entry.State = System.Data.EntityState.Modified;
+                entry.State = EntityState.Modified;
             }
             db.SaveChanges();
         }
