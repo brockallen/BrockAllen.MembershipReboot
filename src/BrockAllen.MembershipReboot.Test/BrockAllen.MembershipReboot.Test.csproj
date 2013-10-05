@@ -38,7 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
-      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+      <HintPath>..\..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -57,22 +57,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Accounts\UserAccountValidationTests.cs" />
-    <Compile Include="Configuration\FactoryTests.cs" />
-    <Compile Include="Extensions\ClaimsExtensionsTests.cs" />
-    <Compile Include="Extensions\ClaimsPrincipalExtensionsTests.cs" />
-    <Compile Include="Extensions\DisposableExtensionsTests.cs" />
-    <Compile Include="MockUserAccount.cs" />
-    <Compile Include="Models\UserAccountTests.cs" />
-    <Compile Include="Notification\EmailEventHandlerTests.cs" />
+    <Compile Include="FakeUserAccountRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Accounts\Deprecated\BasicPasswordPolicyTests.cs" />
-    <Compile Include="MockUserAccountService.cs" />
-    <Compile Include="Configuration\SecuritySettingsTests.cs" />
-    <Compile Include="Accounts\UserAccountServiceTests.cs" />
-    <Compile Include="Crypto\CryptoHelperTests.cs" />
-    <Compile Include="Validation\AggregateValidatorTests.cs" />
-    <Compile Include="Validation\DelegateValidatorTests.cs" />
+    <Compile Include="AccountService\UserAccountServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">
@@ -82,6 +69,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="test.cer" />
+    <EmbeddedResource Include="test2.cer" />
   </ItemGroup>
   <ItemGroup />
   <Choose>

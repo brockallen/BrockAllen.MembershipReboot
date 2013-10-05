@@ -598,7 +598,11 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.AuthenticateWithCertificate] called");
 
-            certificate.Validate();
+            if (!certificate.Validate())
+            {
+                account = null;
+                return false;
+            }
 
             account = this.GetByCertificate(certificate.Thumbprint);
             if (account == null) return false;

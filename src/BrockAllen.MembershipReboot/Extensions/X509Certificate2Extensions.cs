@@ -10,18 +10,21 @@ namespace BrockAllen.MembershipReboot
 {
     static class X509Certificate2Extensions
     {
-        public static void Validate(this X509Certificate2 certificate)
+        public static bool Validate(this X509Certificate2 certificate)
         {
             if (certificate == null)
             {
                 Tracing.Verbose("[X509Certificate2Extensions.Validate] failed -- null cert");
-                throw new ArgumentNullException("certificate");
+                return false;
             }
+            
             if (certificate.Handle == IntPtr.Zero)
             {
                 Tracing.Verbose("[X509Certificate2Extensions.Validate] failed -- invalid cert handle");
-                throw new ArgumentException("Invalid certificate");
+                return false;
             }
+
+            return true;
         }
     }
 }

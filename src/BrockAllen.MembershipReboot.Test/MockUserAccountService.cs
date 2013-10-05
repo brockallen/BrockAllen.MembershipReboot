@@ -20,7 +20,7 @@ namespace BrockAllen.MembershipReboot.Test
             this.UserAccountRepository.Setup(x => x.Create()).Returns(new UserAccount());
 
             this.SecuritySettings = new SecuritySettings();
-            Configuration = new MembershipRebootConfiguration(this.SecuritySettings, this.UserAccountRepository.Object);
+            //Configuration = new MembershipRebootConfiguration(this.SecuritySettings, this.UserAccountRepository.Object);
         }
 
         Mock<UserAccountService> svc;

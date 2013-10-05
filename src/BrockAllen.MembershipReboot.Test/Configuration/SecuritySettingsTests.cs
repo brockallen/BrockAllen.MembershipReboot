@@ -15,7 +15,6 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
         public void TestDefaults()
         {
             var settings = new SecuritySettings();
-            Assert.AreEqual("MembershipReboot", settings.ConnectionStringName);
             Assert.AreEqual(false, settings.MultiTenant);
             Assert.AreEqual("default", settings.DefaultTenant);
             Assert.AreEqual(false, settings.EmailIsUsername);

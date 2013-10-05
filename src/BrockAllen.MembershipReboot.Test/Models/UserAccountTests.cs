@@ -241,54 +241,54 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 Assert.IsTrue(result);
             }
 
-            [TestMethod]
-            public void VerificationKeySentPastStaleDuration_ReturnsTrue()
-            {
-                var subject = new MockUserAccount();
-                var now = new DateTime(2000, 2, 3);
-                subject.Setup(x => x.UtcNow).Returns(now);
-                subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDurationDays).Add(TimeSpan.FromSeconds(1)));
-                var result = subject.Object.IsVerificationKeyStale;
-                Assert.IsTrue(result);
-            }
+            //[TestMethod]
+            //public void VerificationKeySentPastStaleDuration_ReturnsTrue()
+            //{
+            //    var subject = new MockUserAccount();
+            //    var now = new DateTime(2000, 2, 3);
+            //    subject.Setup(x => x.UtcNow).Returns(now);
+            //    subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDurationDays).Add(TimeSpan.FromSeconds(1)));
+            //    var result = subject.Object.IsVerificationKeyStale;
+            //    Assert.IsTrue(result);
+            //}
 
-            [TestMethod]
-            public void VerificationKeySentAtExactStaleDurationInPast_ReturnsFalse()
-            {
-                var subject = new MockUserAccount();
-                var now = new DateTime(2000, 2, 3);
-                subject.Setup(x => x.UtcNow).Returns(now);
-                subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDurationDays));
-                var result = subject.Object.IsVerificationKeyStale;
-                Assert.IsFalse(result);
-            }
+            //[TestMethod]
+            //public void VerificationKeySentAtExactStaleDurationInPast_ReturnsFalse()
+            //{
+            //    var subject = new MockUserAccount();
+            //    var now = new DateTime(2000, 2, 3);
+            //    subject.Setup(x => x.UtcNow).Returns(now);
+            //    subject.Object.VerificationKeySent = now.Subtract(TimeSpan.FromDays(UserAccount.VerificationKeyStaleDurationDays));
+            //    var result = subject.Object.IsVerificationKeyStale;
+            //    Assert.IsFalse(result);
+            //}
         }
 
         [TestClass]
         public class ResetPassword
         {
-            [TestMethod]
-            public void AccountNotVerified_RaisesAccountCreatedEvent()
-            {
-                var acct = new MockUserAccount();
+            //[TestMethod]
+            //public void AccountNotVerified_RaisesAccountCreatedEvent()
+            //{
+            //    var acct = new MockUserAccount();
 
-                acct.Object.ResetPassword();
+            //    acct.Object.ResetPassword();
 
-                var es = acct.Object as IEventSource;
-                Assert.IsTrue(es.Events.Where(x => x is AccountCreatedEvent).Any());
-            }
+            //    var es = acct.Object as IEventSource;
+            //    Assert.IsTrue(es.Events.Where(x => x is AccountCreatedEvent).Any());
+            //}
             
-            [TestMethod]
-            public void AccountVerified_RaisesPasswordResetRequestedEvent()
-            {
-                var acct = new MockUserAccount();
-                acct.VerifyAccount();
+            //[TestMethod]
+            //public void AccountVerified_RaisesPasswordResetRequestedEvent()
+            //{
+            //    var acct = new MockUserAccount();
+            //    acct.VerifyAccount();
 
-                acct.Object.ResetPassword();
+            //    acct.Object.ResetPassword();
 
-                var es = acct.Object as IEventSource;
-                Assert.IsTrue(es.Events.Where(x => x is PasswordResetRequestedEvent).Any());
-            }
+            //    var es = acct.Object as IEventSource;
+            //    Assert.IsTrue(es.Events.Where(x => x is PasswordResetRequestedEvent).Any());
+            //}
 
             [TestMethod]
             public void VerificationKeyIsNull_SetsVerificationKey()
@@ -673,20 +673,20 @@ namespace BrockAllen.MembershipReboot.Test.Models
         [TestClass]
         public class ChangeEmailRequest
         {
-            [TestMethod]
-            [ExpectedException(typeof(ValidationException))]
-            public void NewEmailIsNull_Throws()
-            {
-                var sub = new UserAccount();
-                var result = sub.ChangeEmailRequest(null);
-            }
-            [TestMethod]
-            [ExpectedException(typeof(ValidationException))]
-            public void EmptyEmailIsNull_Throws()
-            {
-                var sub = new UserAccount();
-                var result = sub.ChangeEmailRequest("");
-            }
+            //[TestMethod]
+            //[ExpectedException(typeof(ValidationException))]
+            //public void NewEmailIsNull_Throws()
+            //{
+            //    var sub = new UserAccount();
+            //    var result = sub.ChangeEmailRequest(null);
+            //}
+            //[TestMethod]
+            //[ExpectedException(typeof(ValidationException))]
+            //public void EmptyEmailIsNull_Throws()
+            //{
+            //    var sub = new UserAccount();
+            //    var result = sub.ChangeEmailRequest("");
+            //}
 
 
             //[Ignore]
@@ -698,92 +698,92 @@ namespace BrockAllen.MembershipReboot.Test.Models
             //    var result = sub.ChangeEmailRequest("test");
             //}
 
-            [TestMethod]
-            public void AccountNotVerified_ReturnsFail()
-            {
-                var sub = new UserAccount();
-                sub.IsAccountVerified = false;
-                var result = sub.ChangeEmailRequest("test@test.com");
-                Assert.IsFalse(result);
-            }
+            //[TestMethod]
+            //public void AccountNotVerified_ReturnsFail()
+            //{
+            //    var sub = new UserAccount();
+            //    sub.IsAccountVerified = false;
+            //    var result = sub.ChangeEmailRequest("test@test.com");
+            //    Assert.IsFalse(result);
+            //}
 
-            [TestMethod]
-            public void AccountVerified_ReturnsSuccess()
-            {
-                var sub = new UserAccount();
-                sub.IsAccountVerified = true;
-                var result = sub.ChangeEmailRequest("test@test.com");
-                Assert.IsTrue(result);
-            }
+            //[TestMethod]
+            //public void AccountVerified_ReturnsSuccess()
+            //{
+            //    var sub = new UserAccount();
+            //    sub.IsAccountVerified = true;
+            //    var result = sub.ChangeEmailRequest("test@test.com");
+            //    Assert.IsTrue(result);
+            //}
 
-            [TestMethod]
-            public void ChangeEmailSuccess_VerificationKeyStale_VerificationKeyFlagsReset()
-            {
-                var sub = new MockUserAccount();
-                sub.Object.IsAccountVerified = true;
-                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
-                sub.Setup(x => x.IsVerificationKeyStale).Returns(true);
-                sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
-                sub.Setup(x => x.GenerateSalt()).Returns("salt");
-                var now = new DateTime(2000, 2, 3);
-                sub.Setup(x => x.UtcNow).Returns(now);
+            //[TestMethod]
+            //public void ChangeEmailSuccess_VerificationKeyStale_VerificationKeyFlagsReset()
+            //{
+            //    var sub = new MockUserAccount();
+            //    sub.Object.IsAccountVerified = true;
+            //    sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
+            //    sub.Setup(x => x.IsVerificationKeyStale).Returns(true);
+            //    sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
+            //    sub.Setup(x => x.GenerateSalt()).Returns("salt");
+            //    var now = new DateTime(2000, 2, 3);
+            //    sub.Setup(x => x.UtcNow).Returns(now);
 
-                var result = sub.Object.ChangeEmailRequest("test@test.com");
-                Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
-                Assert.AreEqual(now, sub.Object.VerificationKeySent);
-            }
+            //    var result = sub.Object.ChangeEmailRequest("test@test.com");
+            //    Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
+            //    Assert.AreEqual(now, sub.Object.VerificationKeySent);
+            //}
 
-            [TestMethod]
-            public void ChangeEmailSuccess_VerificationPurposeMismatch_VerificationKeyFlagsReset()
-            {
-                var sub = new MockUserAccount();
-                sub.Object.IsAccountVerified = true;
-                sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
-                sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
-                sub.Setup(x => x.GenerateSalt()).Returns("salt");
-                var now = new DateTime(2000, 2, 3);
-                sub.Setup(x => x.UtcNow).Returns(now);
+            //[TestMethod]
+            //public void ChangeEmailSuccess_VerificationPurposeMismatch_VerificationKeyFlagsReset()
+            //{
+            //    var sub = new MockUserAccount();
+            //    sub.Object.IsAccountVerified = true;
+            //    sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
+            //    sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
+            //    sub.Setup(x => x.GenerateSalt()).Returns("salt");
+            //    var now = new DateTime(2000, 2, 3);
+            //    sub.Setup(x => x.UtcNow).Returns(now);
 
-                var result = sub.Object.ChangeEmailRequest("test@test.com");
-                Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
-                Assert.AreEqual(now, sub.Object.VerificationKeySent);
-            }
+            //    var result = sub.Object.ChangeEmailRequest("test@test.com");
+            //    Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
+            //    Assert.AreEqual(now, sub.Object.VerificationKeySent);
+            //}
 
-            [TestMethod]
-            public void ChangeEmailSuccess_VerificationKeyDoesntMatchEmailPrefix_VerificationKeyFlagsReset()
-            {
-                var sub = new MockUserAccount();
-                sub.Object.IsAccountVerified = true;
-                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
-                sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
-                sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
-                sub.Setup(x => x.GenerateSalt()).Returns("salt");
-                var now = new DateTime(2000, 2, 3);
-                sub.Setup(x => x.UtcNow).Returns(now);
-                sub.Object.VerificationKey = "key";
-                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
+            //[TestMethod]
+            //public void ChangeEmailSuccess_VerificationKeyDoesntMatchEmailPrefix_VerificationKeyFlagsReset()
+            //{
+            //    var sub = new MockUserAccount();
+            //    sub.Object.IsAccountVerified = true;
+            //    sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
+            //    sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
+            //    sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("hash");
+            //    sub.Setup(x => x.GenerateSalt()).Returns("salt");
+            //    var now = new DateTime(2000, 2, 3);
+            //    sub.Setup(x => x.UtcNow).Returns(now);
+            //    sub.Object.VerificationKey = "key";
+            //    sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
 
-                var result = sub.Object.ChangeEmailRequest("test@test.com");
-                Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
-                Assert.AreEqual(now, sub.Object.VerificationKeySent);
-            }
+            //    var result = sub.Object.ChangeEmailRequest("test@test.com");
+            //    Assert.AreEqual("hashsalt", sub.Object.VerificationKey);
+            //    Assert.AreEqual(now, sub.Object.VerificationKeySent);
+            //}
 
-            [TestMethod]
-            public void ChangeEmailSuccess_VerificationKeyMatchesEmailPrefix_VerificationKeyFlagsNotReset()
-            {
-                var sub = new MockUserAccount();
-                sub.Object.IsAccountVerified = true;
-                sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
-                sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("key");
-                sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
-                sub.Object.VerificationKey = "key";
-                var date = new DateTime(2000, 2, 3);
-                sub.Object.VerificationKeySent = date;
+            //[TestMethod]
+            //public void ChangeEmailSuccess_VerificationKeyMatchesEmailPrefix_VerificationKeyFlagsNotReset()
+            //{
+            //    var sub = new MockUserAccount();
+            //    sub.Object.IsAccountVerified = true;
+            //    sub.Setup(x => x.IsVerificationKeyStale).Returns(false);
+            //    sub.Setup(x => x.Hash(It.IsAny<string>())).Returns("key");
+            //    sub.Object.VerificationPurpose = VerificationKeyPurpose.ChangeEmail;
+            //    sub.Object.VerificationKey = "key";
+            //    var date = new DateTime(2000, 2, 3);
+            //    sub.Object.VerificationKeySent = date;
 
-                var result = sub.Object.ChangeEmailRequest("test@test.com");
-                Assert.AreEqual("key", sub.Object.VerificationKey);
-                Assert.AreEqual(date, sub.Object.VerificationKeySent);
-            }
+            //    var result = sub.Object.ChangeEmailRequest("test@test.com");
+            //    Assert.AreEqual("key", sub.Object.VerificationKey);
+            //    Assert.AreEqual(date, sub.Object.VerificationKeySent);
+            //}
         }
 
         [TestClass]
@@ -1374,16 +1374,16 @@ namespace BrockAllen.MembershipReboot.Test.Models
         [TestClass]
         public class SendAccountNameReminder
         {
-            [TestMethod]
-            public void RaisesUsernameReminderRequestedEvent()
-            {
-                var ua = new UserAccount();
+            //[TestMethod]
+            //public void RaisesUsernameReminderRequestedEvent()
+            //{
+            //    var ua = new UserAccount();
                 
-                ua.SendAccountNameReminder();
+            //    ua.SendAccountNameReminder();
                 
-                IEventSource es = ua as IEventSource;
-                Assert.IsTrue(es.Events.Any(x => x is UsernameReminderRequestedEvent));
-            }
+            //    IEventSource es = ua as IEventSource;
+            //    Assert.IsTrue(es.Events.Any(x => x is UsernameReminderRequestedEvent));
+            //}
         }
 
         [TestClass]
@@ -1398,16 +1398,16 @@ namespace BrockAllen.MembershipReboot.Test.Models
                 sub.ChangeUsername(null);
             }
 
-            [TestMethod]
-            public void RaisesUsernameChangedEvent()
-            {
-                var ua = new UserAccount();
+            //[TestMethod]
+            //public void RaisesUsernameChangedEvent()
+            //{
+            //    var ua = new UserAccount();
 
-                ua.ChangeUsername("foo");
+            //    ua.ChangeUsername("foo");
 
-                IEventSource es = ua as IEventSource;
-                Assert.IsTrue(es.Events.Any(x => x is UsernameChangedEvent));
-            }
+            //    IEventSource es = ua as IEventSource;
+            //    Assert.IsTrue(es.Events.Any(x => x is UsernameChangedEvent));
+            //}
             
             [TestMethod]
             public void NameIsAssigned()
