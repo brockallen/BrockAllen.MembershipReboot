@@ -57,6 +57,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Configuration\SecuritySettingsTests.cs" />
+    <Compile Include="Crypto\CryptoHelperTests.cs" />
+    <Compile Include="Extensions\ClaimsExtensionsTests.cs" />
+    <Compile Include="Extensions\ClaimsPrincipalExtensionsTests.cs" />
+    <Compile Include="Extensions\DisposableExtensionsTests.cs" />
     <Compile Include="FakeUserAccountRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccountService\UserAccountServiceTests.cs" />
@@ -72,7 +77,10 @@
     <EmbeddedResource Include="test.cer" />
     <EmbeddedResource Include="test2.cer" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Notification\" />
+    <Folder Include="Validation\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

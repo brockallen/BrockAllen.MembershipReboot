@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BrockAllen.MembershipReboot.Test.Accounts
+namespace BrockAllen.MembershipReboot.Test.AccountService
 {
     [TestClass]
     public class UserAccountValidationTests
