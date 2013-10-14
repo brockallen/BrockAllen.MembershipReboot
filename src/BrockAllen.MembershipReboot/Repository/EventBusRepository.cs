@@ -78,7 +78,7 @@ namespace BrockAllen.MembershipReboot
         public void Update(T item)
         {
             RaiseValidation(item);
-            inner.Update(item);
+            inner.Update(item); 
             RaiseEvents(item);
         }
 
