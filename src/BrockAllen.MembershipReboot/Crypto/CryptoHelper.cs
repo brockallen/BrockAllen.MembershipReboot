@@ -24,7 +24,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(value)) throw new ArgumentNullException("value");
             if (String.IsNullOrWhiteSpace(key)) throw new ArgumentNullException("key");
 
-            var valueBytes = System.Text.Encoding.UTF8.GetBytes(key);
+            var valueBytes = System.Text.Encoding.UTF8.GetBytes(value);
             var keyBytes = System.Text.Encoding.UTF8.GetBytes(key);
             
             var alg = new System.Security.Cryptography.HMACSHA512(keyBytes);
