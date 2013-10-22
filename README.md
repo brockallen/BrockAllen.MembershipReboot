@@ -113,3 +113,7 @@ The default configuration uses the .NET SMTP configuration to send emails. To ru
 ## Database Configuration
 
 The samples use Entiy Framework and SQL Server Compact. You don't need to and can configure your own repository (such as SQL Azure, or even a NoSql database). See the samples for an example.
+
+## Documentation
+
+There is preliminary documentation [here](https://github.com/brockallen/BrockAllen.MembershipReboot/wiki).
