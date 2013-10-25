@@ -7,21 +7,10 @@ using System;
 using System.Linq;
 using System.Web;
 
-namespace BrockAllen.MembershipReboot
+namespace BrockAllen.MembershipReboot.WebHost
 {
     public class AspNetCookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy
     {
-        int persistentCookieDays;
-        public AspNetCookieBasedTwoFactorAuthPolicy()
-            : this(MembershipRebootConstants.AuthenticationService.DefaultPersistentCookieDays)
-        {
-        }
-
-        public AspNetCookieBasedTwoFactorAuthPolicy(int persistentCookieDays)
-        {
-            this.persistentCookieDays = persistentCookieDays;
-        }
-
         protected override bool HasCookie(string name, string value)
         {
             var ctx = HttpContext.Current;
@@ -40,7 +29,7 @@ namespace BrockAllen.MembershipReboot
                 var cookie = new HttpCookie(name, value);
                 cookie.HttpOnly = true;
                 cookie.Secure = true;
-                cookie.Expires = DateTime.Now.AddDays(this.persistentCookieDays);
+                cookie.Expires = DateTime.Now.AddDays(this.PersistentCookieDurationInDays);
                 cookie.Shareable = false;
                 cookie.Path = ctx.Request.ApplicationPath;
                 if (!cookie.Path.EndsWith("/")) cookie.Path += "/";

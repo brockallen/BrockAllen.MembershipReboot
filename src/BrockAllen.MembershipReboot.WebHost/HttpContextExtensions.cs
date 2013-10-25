@@ -4,9 +4,13 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
-namespace BrockAllen.MembershipReboot
+namespace BrockAllen.MembershipReboot.WebHost
 {
     public static class HttpContextExtensions
     {
@@ -23,7 +27,7 @@ namespace BrockAllen.MembershipReboot
 
             return ctx.Request.GetApplicationUrl();
         }
-        
+
         public static string GetApplicationUrl(this HttpRequestBase request)
         {
             if (request == null) throw new ArgumentNullException("request");

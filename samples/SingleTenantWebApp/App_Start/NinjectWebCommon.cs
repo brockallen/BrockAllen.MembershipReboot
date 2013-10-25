@@ -5,6 +5,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     using BrockAllen.MembershipReboot;
     using BrockAllen.MembershipReboot.Ef;
+    using BrockAllen.MembershipReboot.WebHost;
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
     using Ninject;
     using Ninject.Web.Common;

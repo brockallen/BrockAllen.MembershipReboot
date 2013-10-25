@@ -11,6 +11,12 @@ namespace BrockAllen.MembershipReboot
         ITwoFactorAuthenticationPolicy,
         IEventHandler<SuccessfulTwoFactorAuthCodeLoginEvent>
     {
+        public CookieBasedTwoFactorAuthPolicy()
+        {
+            this.PersistentCookieDurationInDays = MembershipRebootConstants.AuthenticationService.DefaultPersistentCookieDays;
+        }
+
+        public int PersistentCookieDurationInDays { get; set; }
 
         protected abstract bool HasCookie(string name, string value);
         protected abstract void IssueCookie(string name, string value);

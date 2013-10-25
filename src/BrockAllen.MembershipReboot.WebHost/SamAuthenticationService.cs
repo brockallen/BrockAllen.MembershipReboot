@@ -8,12 +8,12 @@ using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace BrockAllen.MembershipReboot
+namespace BrockAllen.MembershipReboot.WebHost
 {
     public class SamAuthenticationService : AuthenticationService
     {
         public SamAuthenticationService(UserAccountService userService)
-            : base(userService)
+            : base(userService, FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager)
         {
         }
 

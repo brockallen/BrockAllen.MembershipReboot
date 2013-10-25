@@ -16,12 +16,5 @@ namespace BrockAllen.MembershipReboot
             config.TwoFactorAuthenticationPolicy = policy;
             config.AddEventHandler(policy);
         }
-
-        public static void ConfigureAspNetCookieBasedTwoFactorAuthPolicy(this MembershipRebootConfiguration config)
-        {
-            if (config == null) throw new ArgumentNullException("config");
-
-            config.ConfigureCookieBasedTwoFactorAuthPolicy(new AspNetCookieBasedTwoFactorAuthPolicy());
-        }
     }
 }

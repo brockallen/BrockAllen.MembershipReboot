@@ -5,7 +5,7 @@
 
 using System;
 using System.Web;
-namespace BrockAllen.MembershipReboot
+namespace BrockAllen.MembershipReboot.WebHost
 {
     public class AspNetApplicationInformation : ApplicationInformation
     {

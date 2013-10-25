@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrockAllen.MembershipReboot.WebHost;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 

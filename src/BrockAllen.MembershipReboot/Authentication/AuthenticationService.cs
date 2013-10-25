@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
@@ -16,10 +15,17 @@ namespace BrockAllen.MembershipReboot
     public abstract class AuthenticationService
     {
         public UserAccountService UserAccountService { get; set; }
+        public ClaimsAuthenticationManager ClaimsAuthenticationManager { get; set; }
 
         public AuthenticationService(UserAccountService userService)
+            : this(userService, null)
+        {
+        }
+        
+        public AuthenticationService(UserAccountService userService, ClaimsAuthenticationManager claimsAuthenticationManager)
         {
             this.UserAccountService = userService;
+            this.ClaimsAuthenticationManager = claimsAuthenticationManager;
         }
 
         protected abstract void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null);
@@ -85,7 +91,10 @@ namespace BrockAllen.MembershipReboot
             var cp = new ClaimsPrincipal(id);
 
             // claims transform
-            cp = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager.Authenticate(String.Empty, cp);
+            if (this.ClaimsAuthenticationManager != null)
+            {
+                cp = ClaimsAuthenticationManager.Authenticate(String.Empty, cp);
+            }
 
             // issue cookie
             IssueToken(cp);

@@ -36,22 +36,13 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.Identitymodel.Services" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountService\AuthenticationPurpose.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
-    <Compile Include="Configuration\AspNetApplicationInformation.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Account\TwoFactorAuthMode.cs" />
@@ -60,7 +51,6 @@
     <Compile Include="Groups\GroupChild.cs" />
     <Compile Include="Groups\GroupService.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
-    <Compile Include="TwoFactorAuthPolicy\AspNetCookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />
     <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
@@ -68,7 +58,6 @@
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Constants\MembershipRebootConstants.cs" />
     <Compile Include="Extensions\DisposableExtensions.cs" />
-    <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Account\LinkedAccountClaim.cs" />
     <Compile Include="Account\LinkedAccount.cs" />
     <Compile Include="Account\UserAccountEvents.cs" />
@@ -87,7 +76,6 @@
     <Compile Include="Crypto\System.Web.Helpers.Crypto.cs" />
     <Compile Include="Crypto\CryptoHelper.cs" />
     <Compile Include="Configuration\ApplicationInformation.cs" />
-    <Compile Include="Authentication\SamAuthenticationService.cs" />
     <Compile Include="Notification\Message.cs" />
     <Compile Include="Notification\IMessageDelivery.cs" />
     <Compile Include="Repository\IUserAccountRepository.cs" />
