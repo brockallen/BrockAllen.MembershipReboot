@@ -11,11 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groups", "samples\Groups\Groups.csproj", "{45982329-4823-4D78-B03B-85E58BA47608}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "src\BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "samples\BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizationsSample", "samples\CustomizationsSample\CustomizationsSample.csproj", "{43812BDB-D8DC-462E-8621-3DC3D5DE34A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.MongoDb", "src\BrockAllen.MembershipReboot.MongoDb\BrockAllen.MembershipReboot.MongoDb.csproj", "{239CE743-DA22-4A3C-8A31-699CC33476CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.MongoDb", "samples\BrockAllen.MembershipReboot.MongoDb\BrockAllen.MembershipReboot.MongoDb.csproj", "{239CE743-DA22-4A3C-8A31-699CC33476CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.WebHost", "src\BrockAllen.MembershipReboot.WebHost\BrockAllen.MembershipReboot.WebHost.csproj", "{754AE1B9-11D0-4270-98C7-8DA69B150860}"
 EndProject
