@@ -22,14 +22,23 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         SecuritySettings securitySettings;
         MembershipRebootConfiguration configuration;
 
+        int oldIterations;
         [TestInitialize]
         public void Init()
         {
+            oldIterations = SecuritySettings.Instance.PasswordHashingIterationCount;
+            SecuritySettings.Instance.PasswordHashingIterationCount = 1; // tests will run faster
+
             securitySettings = new SecuritySettings();
-            securitySettings.PasswordHashingIterationCount = 1; // tests will run faster
             configuration = new MembershipRebootConfiguration(securitySettings);
             repository = new FakeUserAccountRepository(); 
             subject = new UserAccountService(configuration, repository);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            SecuritySettings.Instance.PasswordHashingIterationCount = oldIterations;
         }
 
         [TestMethod]
