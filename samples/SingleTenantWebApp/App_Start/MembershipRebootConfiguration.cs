@@ -22,11 +22,11 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             if (settings.RequireAccountVerification)
             {
                 // uncomment if you want email notifications -- also update smtp settings in web.config
-                config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
+                //config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
             }
             // uncomment if you want email notifications -- also update smtp settings in web.config
-            config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
-            config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
+            //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+            //config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
             config.ConfigureAspNetCookieBasedTwoFactorAuthPolicy();
             
             return config;
