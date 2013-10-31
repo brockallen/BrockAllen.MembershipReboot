@@ -97,12 +97,8 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Login\CertificateLogin.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
-    <Content Include="Views\Login\TwoFactorAuthCodeLogin.cshtml" />
     <Content Include="Views\Logout\Index.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Object.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\RegisterInputModel.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Content\Site.less" />
     <None Include="Web.Debug.config">

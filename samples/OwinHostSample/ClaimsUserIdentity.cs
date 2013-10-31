@@ -31,7 +31,7 @@ namespace OwinHostSample
 
         public string UserName
         {
-            get { return "ClaimsPrincipal"; }
+            get { return this.Principal.Identity.Name; }
         }
     }
 }

@@ -37,11 +37,6 @@ namespace OwinHostSample.Modules
                 }
                 return View["Index"];
             };
-
-            this.Get["Certificate"] = ctx =>
-                {
-                    return 200;
-                };
         }
 
             //this.Get[""] = ctx =>

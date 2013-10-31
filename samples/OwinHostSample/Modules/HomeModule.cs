@@ -19,6 +19,30 @@ namespace OwinHostSample.Modules
                 {
                     return View["Index"];
                 };
+            this.Post[""] = ctx =>
+            {
+                var gender = (string)this.Request.Form["gender"];
+                var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
+                var account = userAccountService.GetByUsername(this.Context.CurrentUser.UserName);
+                if (String.IsNullOrWhiteSpace(gender))
+                {
+                    account.RemoveClaim(ClaimTypes.Gender);
+                }
+                else
+                {
+                    // if you only want one of these claim types, uncomment the next line
+                    //account.RemoveClaim(ClaimTypes.Gender);
+                    account.AddClaim(ClaimTypes.Gender, gender);
+                }
+                userAccountService.Update(account);
+
+                // since we've changed the claims, we need to re-issue the cookie that
+                // contains the claims.
+                var authSvc = this.Context.ToOwinContext().GetAuthenticationService();
+                authSvc.SignIn(account);
+
+                return this.Response.AsRedirect("~/");
+            };
         }
     }
 }
