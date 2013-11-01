@@ -99,8 +99,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Logout\Index.cshtml" />
-    <Content Include="Views\Web.config" />
     <Content Include="Content\Site.less" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\Detail.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -114,6 +115,7 @@
   <ItemGroup>
     <Compile Include="ClaimsUserIdentity.cs" />
     <Compile Include="Models\LoginInputModel.cs" />
+    <Compile Include="Modules\AdminModule.cs" />
     <Compile Include="Modules\LogoutModule.cs" />
     <Compile Include="Modules\LoginModule.cs" />
     <Compile Include="Modules\HomeModule.cs" />

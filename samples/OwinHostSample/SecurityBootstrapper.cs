@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Owin;
+using Nancy.Diagnostics;
 
 namespace OwinHostSample
 {
@@ -30,6 +31,11 @@ namespace OwinHostSample
             }
 
             return Task.FromResult<Response>(null);
+        }
+
+        protected override DiagnosticsConfiguration DiagnosticsConfiguration
+        {
+            get { return new DiagnosticsConfiguration { Password = @"pass" }; }
         }
     }
 }
