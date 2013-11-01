@@ -1,4 +1,9 @@
-﻿using BrockAllen.MembershipReboot.Owin;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using BrockAllen.MembershipReboot.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using System;

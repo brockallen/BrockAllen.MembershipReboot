@@ -1,4 +1,9 @@
-﻿using Microsoft.Owin;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
