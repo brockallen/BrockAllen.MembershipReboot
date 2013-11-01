@@ -16,7 +16,7 @@ else
         <tbody>
             @foreach(var prop in account.GetType().GetProperties())
             {
-                if (prop.PropertyType.IsValueType)
+                if (true || prop.PropertyType.IsValueType)
                 { 
                     <tr>
                         <td>@prop.Name</td>

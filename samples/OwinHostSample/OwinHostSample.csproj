@@ -77,6 +77,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -102,6 +103,11 @@
     <Content Include="Content\Site.less" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\Detail.cshtml" />
+    <Content Include="Views\Register\Index.cshtml" />
+    <Content Include="Views\Register\Cancel.cshtml" />
+    <Content Include="Views\Register\Confirm.cshtml" />
+    <Content Include="Views\Register\Success.cshtml" />
+    <Content Include="Views\CloseAccount\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -115,7 +121,10 @@
   <ItemGroup>
     <Compile Include="ClaimsUserIdentity.cs" />
     <Compile Include="Models\LoginInputModel.cs" />
+    <Compile Include="Models\RegisterInputModel.cs" />
     <Compile Include="Modules\AdminModule.cs" />
+    <Compile Include="Modules\CloseAccountModule.cs" />
+    <Compile Include="Modules\RegisterModule.cs" />
     <Compile Include="Modules\LogoutModule.cs" />
     <Compile Include="Modules\LoginModule.cs" />
     <Compile Include="Modules\HomeModule.cs" />
