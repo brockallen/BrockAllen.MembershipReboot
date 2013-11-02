@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppBuilderExtensions.cs" />
+    <Compile Include="OwinApplicationInformation.cs" />
     <Compile Include="OwinAuthenticationService.cs" />
     <Compile Include="MembershipRebootOwinConstants.cs" />
     <Compile Include="OwinCookieBasedTwoFactorAuthPolicy.cs" />

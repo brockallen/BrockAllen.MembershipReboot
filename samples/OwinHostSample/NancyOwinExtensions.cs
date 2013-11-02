@@ -72,9 +72,27 @@ namespace OwinHostSample
 
             using (var db = new BrockAllen.MembershipReboot.Ef.DefaultUserAccountRepository())
             {
-                var mrConfig = new MembershipRebootConfiguration();
+                var settings = SecuritySettings.FromConfiguration();
+                var mrConfig = new MembershipRebootConfiguration(settings);
                 mrConfig.ConfigureCookieBasedTwoFactorAuthPolicy(new OwinCookieBasedTwoFactorAuthPolicy(env));
-                
+
+                var appInfo = new OwinApplicationInformation(env,
+                    "Test", "Test Email Signature",
+                    "UserAccount/Login",
+                    "UserAccount/Register/Confirm/",
+                    "UserAccount/Register/Cancel/",
+                    "UserAccount/PasswordReset/Confirm/",
+                    "UserAccount/ChangeEmail/Confirm/");
+
+                var emailFormatter = new EmailMessageFormatter(appInfo);
+                if (settings.RequireAccountVerification)
+                {
+                    // uncomment if you want email notifications -- also update smtp settings in web.config
+                    //config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
+                }
+                // uncomment if you want email notifications -- also update smtp settings in web.config
+                //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+
                 var uaSvc = new UserAccountService(mrConfig, db);
                 var anSvc = new OwinAuthenticationService(uaSvc, env);
                 try
