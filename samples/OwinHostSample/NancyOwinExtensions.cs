@@ -72,7 +72,10 @@ namespace OwinHostSample
 
             using (var db = new BrockAllen.MembershipReboot.Ef.DefaultUserAccountRepository())
             {
-                var uaSvc = new UserAccountService(db);
+                var mrConfig = new MembershipRebootConfiguration();
+                mrConfig.ConfigureCookieBasedTwoFactorAuthPolicy(new OwinCookieBasedTwoFactorAuthPolicy(env));
+                
+                var uaSvc = new UserAccountService(mrConfig, db);
                 var anSvc = new OwinAuthenticationService(uaSvc, env);
                 try
                 {

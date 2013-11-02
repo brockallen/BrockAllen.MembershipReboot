@@ -51,6 +51,7 @@
     <Compile Include="AppBuilderExtensions.cs" />
     <Compile Include="OwinAuthenticationService.cs" />
     <Compile Include="MembershipRebootOwinConstants.cs" />
+    <Compile Include="OwinCookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
