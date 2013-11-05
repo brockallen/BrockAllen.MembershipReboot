@@ -58,6 +58,19 @@ namespace OwinHostSample.Modules
                 var result = userAccountService.CancelNewAccount((string)this.Request.Form["id"]);
                 return View["Cancel", result];
             };
+            this.Get["Confirm/{id}"] = ctx =>
+            {
+                var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
+                var result = userAccountService.VerifyAccount((string)ctx.id);
+                return View["Confirm", result];
+            };
+
+            this.Get["Cancel/{id}"] = ctx =>
+            {
+                var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
+                var result = userAccountService.CancelNewAccount((string)ctx.id);
+                return View["Cancel", result];
+            };
         }
     }
 }

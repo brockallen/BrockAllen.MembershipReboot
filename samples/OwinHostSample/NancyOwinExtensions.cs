@@ -78,20 +78,20 @@ namespace OwinHostSample
 
                 var appInfo = new OwinApplicationInformation(env,
                     "Test", "Test Email Signature",
-                    "UserAccount/Login",
-                    "UserAccount/Register/Confirm/",
-                    "UserAccount/Register/Cancel/",
-                    "UserAccount/PasswordReset/Confirm/",
-                    "UserAccount/ChangeEmail/Confirm/");
+                    "Login",
+                    "Register/Confirm/",
+                    "Register/Cancel/",
+                    "PasswordReset/Confirm/",
+                    "ChangeEmail/Confirm/");
 
                 var emailFormatter = new EmailMessageFormatter(appInfo);
                 if (settings.RequireAccountVerification)
                 {
                     // uncomment if you want email notifications -- also update smtp settings in web.config
-                    //config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
+                    mrConfig.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
                 }
                 // uncomment if you want email notifications -- also update smtp settings in web.config
-                //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+                mrConfig.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
 
                 var uaSvc = new UserAccountService(mrConfig, db);
                 var anSvc = new OwinAuthenticationService(uaSvc, env);
