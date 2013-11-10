@@ -94,6 +94,27 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void GetByUsername_MultiTenant_UsernamesNotUniqueAcrossTenants_NoTenant_ReturnsNull()
+        {
+            securitySettings.UsernamesUniqueAcrossTenants = false;
+            securitySettings.MultiTenant = true;
+            subject.CreateAccount("tenant", "user", "pass", "user@test.com");
+
+            var acct = subject.GetByUsername("user");
+            Assert.IsNull(acct);
+        }
+        [TestMethod]
+        public void GetByUsername_MultiTenant_UsernamesUniqueAcrossTenants_NoTenant_ReturnsCorrectAccount()
+        {
+            securitySettings.UsernamesUniqueAcrossTenants = true;
+            securitySettings.MultiTenant = true;
+            subject.CreateAccount("tenant", "user", "pass", "user@test.com");
+
+            var acct = subject.GetByUsername("user");
+            Assert.IsNotNull(acct);
+        }
+
+        [TestMethod]
         public void GetByVerificationKey_EmptyKey_ReturnsNull()
         {
             Assert.IsNull(subject.GetByVerificationKey(""));
@@ -683,6 +704,19 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             catch (ArgumentException)
             {
             }
+        }
+
+        [TestMethod]
+        public void Authenticate_MultiTenancy_UsernamesUniqueAcrossTenants_NoTenantAPI_ShouldFindUser()
+        {
+            securitySettings.RequireAccountVerification = false;
+            securitySettings.MultiTenant = true;
+            securitySettings.UsernamesUniqueAcrossTenants = true;
+            
+            var acct = subject.CreateAccount("tenant", "user", "pass", "user@test.com");
+
+            var result = subject.Authenticate("user", "pass");
+            Assert.IsTrue(result);
         }
 
         [TestMethod]

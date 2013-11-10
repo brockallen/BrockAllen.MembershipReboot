@@ -149,10 +149,16 @@ namespace BrockAllen.MembershipReboot
                 tenant = SecuritySettings.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return null;
+            if (!SecuritySettings.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(username)) return null;
 
-            var account = userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).SingleOrDefault();
+            var query = userRepository.GetAll().Where(x => x.Username == username);
+            if (!SecuritySettings.UsernamesUniqueAcrossTenants)
+            {
+                query = query.Where(x => x.Tenant == tenant);
+            }
+            
+            var account = query.SingleOrDefault();
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByUsername] failed to locate account: {0}, {1}", tenant, username);
@@ -444,7 +450,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[UserAccountService.Authenticate] called: {0}, {1}", tenant, username);
 
-            if (String.IsNullOrWhiteSpace(tenant)) return false;
+            if (!SecuritySettings.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(username)) return false;
             if (String.IsNullOrWhiteSpace(password)) return false;
 
