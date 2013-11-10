@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Ef", "src\BrockAllen.MembershipReboot.Ef\BrockAllen.MembershipReboot.Ef.csproj", "{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Owin", "src\BrockAllen.MembershipReboot.Owin\BrockAllen.MembershipReboot.Owin.csproj", "{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{453C8A9D-72AA-4F8D-9354-8B0F57F2B58A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
