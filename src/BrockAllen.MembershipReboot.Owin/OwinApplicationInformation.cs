@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot.Owin
 {
-    public class OwinApplicationInformation : ApplicationInformation
+    public class OwinApplicationInformation : RelativePathApplicationInformation
     {
         OwinContext owinContext;
 
@@ -32,124 +32,22 @@ namespace BrockAllen.MembershipReboot.Owin
             this.RelativeConfirmChangeEmailUrl = relativeConfirmChangeEmailUrl;
         }
 
-        public string RelativeLoginUrl { get; set; }
-        public string RelativeVerifyAccountUrl { get; set; }
-        public string RelativeCancelNewAccountUrl { get; set; }
-        public string RelativeConfirmPasswordResetUrl { get; set; }
-        public string RelativeConfirmChangeEmailUrl { get; set; }
-
-        string baseUrl;
-        object urlLock = new object();
-        string BaseUrl
+        protected override string GetApplicationBaseUrl()
         {
-            get
+            var tmp = owinContext.Request.Scheme + "://" + owinContext.Request.Host;
+            if (owinContext.Request.PathBase.HasValue)
             {
-                if (baseUrl == null)
+                if (!owinContext.Request.PathBase.Value.StartsWith("/"))
                 {
-                    lock (urlLock)
-                    {
-                        if (baseUrl == null)
-                        {
-                            // build URL
-                            var tmp = owinContext.Request.Scheme + "://" + owinContext.Request.Host;
-                            if (owinContext.Request.PathBase.HasValue)
-                            {
-                                if (!owinContext.Request.PathBase.Value.StartsWith("/"))
-                                {
-                                    tmp += "/";
-                                }
-                                tmp += owinContext.Request.PathBase.Value;
-                            }
-                            else
-                            {
-                                tmp += "/";
-                            }
-                            baseUrl = tmp;
-                        }
-                    }
+                    tmp += "/";
                 }
-                return baseUrl;
+                tmp += owinContext.Request.PathBase.Value;
             }
-        }
-
-        public override string LoginUrl
-        {
-            get
+            else
             {
-                if (String.IsNullOrWhiteSpace(base.LoginUrl))
-                {
-                    LoginUrl = BaseUrl + RelativeLoginUrl;
-                }
-                return base.LoginUrl;
+                tmp += "/";
             }
-            set
-            {
-                base.LoginUrl = value;
-            }
-        }
-
-        public override string VerifyAccountUrl
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(base.VerifyAccountUrl))
-                {
-                    VerifyAccountUrl = BaseUrl + RelativeVerifyAccountUrl;
-                }
-                return base.VerifyAccountUrl;
-            }
-            set
-            {
-                base.VerifyAccountUrl = value;
-            }
-        }
-
-        public override string CancelNewAccountUrl
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(base.CancelNewAccountUrl))
-                {
-                    CancelNewAccountUrl = BaseUrl + RelativeCancelNewAccountUrl;
-                }
-                return base.CancelNewAccountUrl;
-            }
-            set
-            {
-                base.CancelNewAccountUrl = value;
-            }
-        }
-
-        public override string ConfirmPasswordResetUrl
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(base.ConfirmPasswordResetUrl))
-                {
-                    ConfirmPasswordResetUrl = BaseUrl + RelativeConfirmPasswordResetUrl;
-                }
-                return base.ConfirmPasswordResetUrl;
-            }
-            set
-            {
-                base.ConfirmPasswordResetUrl = value;
-            }
-        }
-
-        public override string ConfirmChangeEmailUrl
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(base.ConfirmChangeEmailUrl))
-                {
-                    ConfirmChangeEmailUrl = BaseUrl + RelativeConfirmChangeEmailUrl;
-                }
-                return base.ConfirmChangeEmailUrl;
-            }
-            set
-            {
-                base.ConfirmChangeEmailUrl = value;
-            }
+            return tmp;
         }
     }
 }

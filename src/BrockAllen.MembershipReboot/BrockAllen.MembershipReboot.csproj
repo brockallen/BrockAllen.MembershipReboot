@@ -43,6 +43,7 @@
     <Compile Include="AccountService\AuthenticationPurpose.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
+    <Compile Include="Configuration\RelativePathApplicationInformation.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Account\TwoFactorAuthMode.cs" />
@@ -129,7 +130,7 @@
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Body.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
