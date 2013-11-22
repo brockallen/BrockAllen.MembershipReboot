@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.WebHost", "src\BrockAllen.MembershipReboot.WebHost\BrockAllen.MembershipReboot.WebHost.csproj", "{754AE1B9-11D0-4270-98C7-8DA69B150860}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OwinHostSample", "samples\OwinHostSample\OwinHostSample.csproj", "{674F3B34-E8F7-4C86-92DB-4FA5223D46B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Owin", "src\BrockAllen.MembershipReboot.Owin\BrockAllen.MembershipReboot.Owin.csproj", "{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}"
 EndProject
 Global
@@ -61,10 +59,6 @@ Global
 		{754AE1B9-11D0-4270-98C7-8DA69B150860}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{754AE1B9-11D0-4270-98C7-8DA69B150860}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{754AE1B9-11D0-4270-98C7-8DA69B150860}.Release|Any CPU.Build.0 = Release|Any CPU
-		{674F3B34-E8F7-4C86-92DB-4FA5223D46B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{674F3B34-E8F7-4C86-92DB-4FA5223D46B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{674F3B34-E8F7-4C86-92DB-4FA5223D46B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{674F3B34-E8F7-4C86-92DB-4FA5223D46B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB9C17A4-1BAC-4C11-BBB0-8D67557073A0}.Release|Any CPU.ActiveCfg = Release|Any CPU

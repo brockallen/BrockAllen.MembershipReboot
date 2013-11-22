@@ -251,6 +251,7 @@
     <Content Include="Areas\UserAccount\Views\LinkedAccount\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\LinkedAccount\SignInError.cshtml" />
     <Content Include="Areas\UserAccount\Views\LinkedAccount\Manage.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\ConfirmResult.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="configuring_client_certs_readme.txt" />
     <Content Include="Content\Site.css">

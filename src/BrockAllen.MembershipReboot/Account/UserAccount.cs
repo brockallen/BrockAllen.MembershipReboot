@@ -169,13 +169,19 @@ namespace BrockAllen.MembershipReboot
             this.VerificationKeySent = null;
         }
 
-        protected internal virtual bool VerifyAccount(string key)
+        protected internal virtual bool VerifyAccount(string key, string password)
         {
             Tracing.Information("[UserAccount.VerifyAccount] called for accountID: {0}", this.ID);
 
             if (String.IsNullOrWhiteSpace(key))
             {
                 Tracing.Error("[UserAccount.VerifyAccount] failed -- no key");
+                return false;
+            }
+            
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- no password");
                 return false;
             }
 
@@ -203,15 +209,26 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
+            if (!VerifyHashedPassword(password))
+            {
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- invalid password");
+                return false;
+            }
+
             Tracing.Verbose("[UserAccount.VerifyAccount] succeeded");
 
-            this.IsAccountVerified = true;
-            this.ClearVerificationKey();
-
-            this.AddEvent(new AccountVerifiedEvent { Account = this });
+            this.VerifyAccount();
 
             return true;
         }
+
+        protected internal virtual void VerifyAccount()
+        {
+            this.IsAccountVerified = true;
+            this.ClearVerificationKey();
+            this.AddEvent(new AccountVerifiedEvent { Account = this });
+        }
+
 
         protected internal virtual bool CancelNewAccount(string key)
         {

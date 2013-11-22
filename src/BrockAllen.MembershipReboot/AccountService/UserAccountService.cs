@@ -355,7 +355,7 @@ namespace BrockAllen.MembershipReboot
             if (!SecuritySettings.RequireAccountVerification)
             {
                 Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.RequireAccountVerification is false, so marking account as verified");
-                account.VerifyAccount(account.VerificationKey);
+                account.VerifyAccount();
             }
 
             Tracing.Verbose("[UserAccountService.CreateAccount] success");
@@ -365,14 +365,14 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual bool VerifyAccount(string key)
+        public virtual bool VerifyAccount(string key, string password)
         {
             Tracing.Information("[UserAccountService.VerifyAccount] called: {0}", key);
 
             var account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
-            var result = account.VerifyAccount(key);
+            var result = account.VerifyAccount(key, password);
             Update(account);
 
             Tracing.Verbose("[UserAccountService.VerifyAccount] result: {0}", result);

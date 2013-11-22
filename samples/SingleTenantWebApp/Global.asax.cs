@@ -34,7 +34,7 @@ namespace BrockAllen.MembershipReboot.Mvc
             if (svc.GetByUsername("admin") == null)
             {
                 var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");
-                svc.VerifyAccount(account.VerificationKey);
+                svc.VerifyAccount(account.VerificationKey, "admin123");
                     
                 account = svc.GetByID(account.ID);
                 account.AddClaim(ClaimTypes.Role, "Administrator");

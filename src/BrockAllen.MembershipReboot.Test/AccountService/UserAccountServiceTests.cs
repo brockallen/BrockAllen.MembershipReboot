@@ -326,8 +326,27 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.AllowLoginAfterAccountCreation = true;
             securitySettings.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.VerifyAccount(acct.VerificationKey);
+            subject.VerifyAccount(acct.VerificationKey, "pass");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
+        }
+
+        [TestMethod]
+        public void VerifiyAccount_InvalidPassword_DoesNotAllowUserToLogin()
+        {
+            securitySettings.AllowLoginAfterAccountCreation = true;
+            securitySettings.RequireAccountVerification = true;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.VerifyAccount(acct.VerificationKey, "bad value");
+            Assert.IsFalse(subject.Authenticate("test", "pass"));
+        }
+        
+        [TestMethod]
+        public void VerifiyAccount_InvalidPassword_ReturnsFalse()
+        {
+            securitySettings.AllowLoginAfterAccountCreation = true;
+            securitySettings.RequireAccountVerification = true;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(subject.VerifyAccount(acct.VerificationKey, "bad value"));
         }
 
         [TestMethod]
@@ -336,13 +355,16 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.AllowLoginAfterAccountCreation = true;
             securitySettings.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.VerifyAccount(acct.VerificationKey));
+            Assert.IsTrue(subject.VerifyAccount(acct.VerificationKey, "pass"));
         }
         
         [TestMethod]
         public void VerifiyAccount_InvalidKey_ReturnsFalse()
         {
-            Assert.IsFalse(subject.VerifyAccount("123"));
+            securitySettings.AllowLoginAfterAccountCreation = true;
+            securitySettings.RequireAccountVerification = true;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(subject.VerifyAccount("123", "pass"));
         }
 
         [TestMethod]
@@ -379,7 +401,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CancelNewAccount_KeyUsedForAnotherPurpose_ReturnsFalse()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.VerifyAccount(acct.VerificationKey);
+            subject.VerifyAccount(acct.VerificationKey, "pass");
             subject.ChangeEmailRequest(acct.ID, "test2@test.com");
 
             Assert.IsFalse(subject.CancelNewAccount(repository.Get(acct.ID).VerificationKey));
