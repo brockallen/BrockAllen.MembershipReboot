@@ -848,9 +848,9 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        public virtual bool ChangeEmailFromKey(Guid accountID, string password, string key, string newEmail)
+        public virtual bool ChangeEmailFromKey(Guid accountID, string password, string key)
         {
-            Tracing.Information("[UserAccountService.ChangeEmailFromKey] called: {0}, {1}", accountID, newEmail);
+            Tracing.Information("[UserAccountService.ChangeEmailFromKey] called: {0}", accountID);
 
             if (String.IsNullOrWhiteSpace(password))
             {
@@ -862,11 +862,6 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- null key");
                 throw new ValidationException("Invalid key.");
             }
-            if (String.IsNullOrWhiteSpace(newEmail))
-            {
-                Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- null newEmail");
-                throw new ValidationException("Invalid email.");
-            }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
@@ -877,13 +872,14 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Invalid password.");
             }
 
-            ValidateEmail(account, newEmail);
+            // one last check
+            ValidateEmail(account, account.VerificationStorage);
 
-            var result = account.ChangeEmailFromKey(key, newEmail);
+            var result = account.ChangeEmailFromKey(key);
             if (result && SecuritySettings.EmailIsUsername)
             {
-                Tracing.Verbose("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, newEmail);
-                account.Username = newEmail;
+                Tracing.Verbose("[UserAccountService.ChangeEmailFromKey] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, account.Email);
+                account.Username = account.Email;
             }
             
             Update(account);
