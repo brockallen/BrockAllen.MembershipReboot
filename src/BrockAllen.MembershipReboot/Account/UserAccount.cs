@@ -144,7 +144,7 @@ namespace BrockAllen.MembershipReboot
                     return true;
                 }
 
-                if (this.VerificationKeySent < UtcNow.AddDays(-MembershipRebootConstants.UserAccount.VerificationKeyStaleDurationDays))
+                if (this.VerificationKeySent < UtcNow.AddMinutes(-MembershipRebootConstants.UserAccount.VerificationKeyStaleDurationMinutes))
                 {
                     return true;
                 }

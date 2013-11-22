@@ -15,14 +15,14 @@ namespace BrockAllen.MembershipReboot
 
         public class UserAccount
         {
-            internal const int VerificationKeyStaleDurationDays = 1;
+            internal const int VerificationKeyStaleDurationMinutes = 20;
             internal const int MobileCodeLength = 6;
             internal const int MobileCodeStaleDurationMinutes = 10;
         }
 
         public class AuthenticationService
         {
-            internal static readonly TimeSpan TwoFactorAuthTokenLifetime = TimeSpan.FromMinutes(30);
+            internal static readonly TimeSpan TwoFactorAuthTokenLifetime = TimeSpan.FromMinutes(10);
             internal const int DefaultPersistentCookieDays = 30;
             internal const string CookieBasedTwoFactorAuthPolicyCookieName = "mr.cbtfap";
         }
