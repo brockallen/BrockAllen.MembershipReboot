@@ -57,6 +57,7 @@
     <Compile Include="DbContextGroupRepository`1.cs" />
     <Compile Include="DbContextUserAccountRepository`1.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
