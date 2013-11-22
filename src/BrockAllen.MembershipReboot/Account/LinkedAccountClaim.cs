@@ -20,7 +20,7 @@ namespace BrockAllen.MembershipReboot
         public virtual Guid UserAccountID { get; internal set; }
         [Key]
         [Column(Order = 2)]
-        [StringLength(50)]
+        [StringLength(30)]
         public virtual string ProviderName { get; internal set; }
         [Key]
         [Column(Order = 3)]
