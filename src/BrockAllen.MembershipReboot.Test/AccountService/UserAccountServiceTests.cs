@@ -577,6 +577,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             acct = subject.GetByID(id);
             Assert.IsFalse(subject.AuthenticateWithCode(id, acct.MobileCode + "123"));
         }
+
         
         [TestMethod]
         public void AuthenticateWithCode_InvalidAccountId_Throws()
@@ -1326,7 +1327,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             Assert.AreEqual("123", repository.Get(id).MobilePhoneNumber);
         }
-        
+
         [TestMethod]
         public void ChangeMobilePhoneRequest_EmptyMobilePhone_FailsValidation()
         {
@@ -1341,6 +1342,49 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             catch (ValidationException ex)
             {
                 StringAssert.Contains(ex.Message, "Phone");
+            }
+        }
+
+        [TestMethod]
+        public void ChangeMobilePhoneRequest_NonUniqueMobilePhone_FailsValidation()
+        {
+            securitySettings.RequireAccountVerification = false;
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            subject.ChangeMobilePhoneRequest(acct1.ID, "123");
+            subject.ChangeMobilePhoneFromCode(acct1.ID, acct1.MobileCode);
+
+            var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
+
+            try
+            {
+                subject.ChangeMobilePhoneRequest(acct2.ID, "123");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                StringAssert.Contains(ex.Message, "phone");
+            }
+        }
+
+        [TestMethod]
+        public void ChangeMobilePhoneFromCode_NonUniqueMobilePhone_FailsValidation()
+        {
+            securitySettings.RequireAccountVerification = false;
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
+            subject.ChangeMobilePhoneRequest(acct1.ID, "123");
+            subject.ChangeMobilePhoneRequest(acct2.ID, "123");
+
+            subject.ChangeMobilePhoneFromCode(acct1.ID, acct1.MobileCode);
+
+            try
+            {
+                subject.ChangeMobilePhoneFromCode(acct2.ID, acct2.MobileCode);
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                StringAssert.Contains(ex.Message, "phone");
             }
         }
 

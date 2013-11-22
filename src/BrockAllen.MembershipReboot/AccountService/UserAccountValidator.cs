@@ -4,12 +4,15 @@
  */
 
 using System;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
     class UserAccountValidator :
-        IEventHandler<CertificateAddedEvent>
+        IEventHandler<CertificateAddedEvent>,
+        IEventHandler<MobilePhoneChangeRequestedEvent>,
+        IEventHandler<MobilePhoneChangedEvent>
     {
         UserAccountService userAccountService;
         public UserAccountValidator(UserAccountService userAccountService)
@@ -30,6 +33,40 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Verbose("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
                 throw new ValidationException("That certificate is already in use by a different account.");
+            }
+        }
+
+        public void Handle(MobilePhoneChangeRequestedEvent evt)
+        {
+            if (evt == null) throw new ArgumentNullException("event");
+            if (evt.Account == null) throw new ArgumentNullException("account");
+            if (String.IsNullOrWhiteSpace(evt.NewMobilePhoneNumber)) throw new ArgumentNullException("NewMobilePhoneNumber");
+
+            ValidateMobileNumber(evt.Account, evt.NewMobilePhoneNumber);
+        }
+
+        public void Handle(MobilePhoneChangedEvent evt)
+        {
+            if (evt == null) throw new ArgumentNullException("event");
+            if (evt.Account == null) throw new ArgumentNullException("account");
+            
+            ValidateMobileNumber(evt.Account, evt.Account.MobilePhoneNumber);
+        }
+
+        void ValidateMobileNumber(UserAccount account, string mobile)
+        {
+            if (!String.IsNullOrWhiteSpace(mobile))
+            {
+                var query =
+                    from a in userAccountService.GetAll(account.Tenant)
+                    where a.MobilePhoneNumber == mobile && a.ID != account.ID
+                    select a;
+
+                if (query.Any())
+                {
+                    Tracing.Verbose("[UserAccountValidation.MobilePhoneMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
+                    throw new ValidationException("That mobile phone is already in use by a different account.");
+                }
             }
         }
     }
