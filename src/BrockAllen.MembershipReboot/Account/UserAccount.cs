@@ -233,7 +233,6 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new AccountVerifiedEvent { Account = this });
         }
 
-
         protected internal virtual bool CancelNewAccount(string key)
         {
             Tracing.Information("[UserAccount.CancelNewAccount] called for accountID: {0}", this.ID);
