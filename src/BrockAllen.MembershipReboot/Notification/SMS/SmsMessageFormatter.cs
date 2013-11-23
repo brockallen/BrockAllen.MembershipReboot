@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BrockAllen.MembershipReboot
@@ -29,7 +30,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public Message Format(UserAccountEvent accountEvent)
+        public Message Format(UserAccountEvent accountEvent, dynamic extra)
         {
             if (accountEvent == null) throw new ArgumentNullException("accountEvent");
 

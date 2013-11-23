@@ -22,26 +22,5 @@ namespace BrockAllen.MembershipReboot.Mvc
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
         }
-
-        void Application_BeginRequest()
-        {
-            InitDatabase();
-        }
-
-        private void InitDatabase()
-        {
-            var svc = DependencyResolver.Current.GetService<UserAccountService>();
-            if (svc.GetByUsername("admin") == null)
-            {
-                var account = svc.CreateAccount("admin", "admin123", "brockallen@gmail.com");
-                svc.VerifyAccount(account.VerificationKey, "admin123");
-                    
-                account = svc.GetByID(account.ID);
-                account.AddClaim(ClaimTypes.Role, "Administrator");
-                account.AddClaim(ClaimTypes.Role, "Manager");
-                account.AddClaim(ClaimTypes.Country, "USA");
-                svc.Update(account);
-            }
-        }
     }
 }

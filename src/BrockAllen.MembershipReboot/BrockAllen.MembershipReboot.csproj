@@ -51,6 +51,7 @@
     <Compile Include="Account\UserCertificate.cs" />
     <Compile Include="Groups\GroupChild.cs" />
     <Compile Include="Groups\GroupService.cs" />
+    <Compile Include="Notification\DynamicDictionary.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
     <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />

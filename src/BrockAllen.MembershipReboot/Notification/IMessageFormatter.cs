@@ -4,10 +4,11 @@
  */
 
 
+using System.Collections.Generic;
 namespace BrockAllen.MembershipReboot
 {
     public interface IMessageFormatter
     {
-        Message Format(UserAccountEvent accountEvent);
+        Message Format(UserAccountEvent accountEvent, dynamic extra);
     }
 }

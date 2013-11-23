@@ -21,6 +21,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         FakeUserAccountRepository repository;
         SecuritySettings securitySettings;
         MembershipRebootConfiguration configuration;
+        public string LastVerificationKey { get; set; }
 
         int oldIterations;
         [TestInitialize]
@@ -31,8 +32,36 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             securitySettings = new SecuritySettings();
             configuration = new MembershipRebootConfiguration(securitySettings);
+            configuration.AddEventHandler(new KeyNotification(this));
             repository = new FakeUserAccountRepository(); 
             subject = new UserAccountService(configuration, repository);
+        }
+
+        class KeyNotification : 
+            IEventHandler<AccountCreatedEvent>, 
+            IEventHandler<PasswordResetRequestedEvent>,
+            IEventHandler<EmailChangeRequestedEvent>
+        {
+            UserAccountServiceTests instance;
+            public KeyNotification (UserAccountServiceTests instance)
+            {
+                this.instance = instance;
+            }
+
+            public void Handle(AccountCreatedEvent evt)
+            {
+                instance.LastVerificationKey = evt.VerificationKey;
+            }
+
+            public void Handle(PasswordResetRequestedEvent evt)
+            {
+                instance.LastVerificationKey = evt.VerificationKey;
+            }
+
+            public void Handle(EmailChangeRequestedEvent evt)
+            {
+                instance.LastVerificationKey = evt.VerificationKey;
+            }
         }
 
         [TestCleanup]
@@ -326,7 +355,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.AllowLoginAfterAccountCreation = true;
             securitySettings.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.VerifyAccount(acct.VerificationKey, "pass");
+            subject.VerifyAccount(LastVerificationKey, "pass");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
         }
 
@@ -336,7 +365,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.AllowLoginAfterAccountCreation = true;
             securitySettings.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.VerifyAccount(acct.VerificationKey, "bad value");
+            subject.VerifyAccount(LastVerificationKey, "bad value");
             Assert.IsFalse(subject.Authenticate("test", "pass"));
         }
         
@@ -346,7 +375,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.AllowLoginAfterAccountCreation = true;
             securitySettings.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsFalse(subject.VerifyAccount(acct.VerificationKey, "bad value"));
+            Assert.IsFalse(subject.VerifyAccount(LastVerificationKey, "bad value"));
         }
 
         [TestMethod]
@@ -355,7 +384,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.AllowLoginAfterAccountCreation = true;
             securitySettings.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.VerifyAccount(acct.VerificationKey, "pass"));
+            Assert.IsTrue(subject.VerifyAccount(LastVerificationKey, "pass"));
         }
         
         [TestMethod]
@@ -371,7 +400,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CancelNewAccount_CloseAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.CancelNewAccount(acct.VerificationKey);
+            subject.CancelNewAccount(LastVerificationKey);
             Assert.IsTrue(acct.IsAccountClosed);
         }
         
@@ -380,7 +409,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsNotNull(repository.Get(acct.ID));
-            subject.CancelNewAccount(acct.VerificationKey);
+            subject.CancelNewAccount(LastVerificationKey);
             Assert.IsNull(repository.Get(acct.ID));
         }
         
@@ -388,7 +417,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CancelNewAccount_ValidKey_ReturnsTrue()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.CancelNewAccount(acct.VerificationKey));
+            Assert.IsTrue(subject.CancelNewAccount(LastVerificationKey));
         }
         
         [TestMethod]
@@ -401,10 +430,10 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CancelNewAccount_KeyUsedForAnotherPurpose_ReturnsFalse()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.VerifyAccount(acct.VerificationKey, "pass");
+            subject.VerifyAccount(LastVerificationKey, "pass");
             subject.ChangeEmailRequest(acct.ID, "test2@test.com");
 
-            Assert.IsFalse(subject.CancelNewAccount(repository.Get(acct.ID).VerificationKey));
+            Assert.IsFalse(subject.CancelNewAccount(LastVerificationKey));
         }
 
         [TestMethod]
@@ -937,7 +966,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
-            var key = subject.GetByID(id).VerificationKey;
+            var key = LastVerificationKey;
 
             subject.ChangePasswordFromResetKey(key, "pass2");
 
@@ -953,7 +982,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
-            var key = subject.GetByID(id).VerificationKey;
+            var key = LastVerificationKey;
 
             Assert.IsFalse(subject.ChangePasswordFromResetKey(key, "pass2"));
             Assert.IsFalse(subject.Authenticate("test", "pass2"));
@@ -1002,7 +1031,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
-            var key = subject.GetByID(id).VerificationKey;
+            var key = LastVerificationKey;
 
             Assert.IsFalse(subject.ChangePasswordFromResetKey(key, "pass2"));
         }
@@ -1015,7 +1044,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
-            var key = subject.GetByID(id).VerificationKey;
+            var key = LastVerificationKey;
 
             Assert.IsFalse(subject.ChangePasswordFromResetKey("", "pass2"));
         }
@@ -1028,7 +1057,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
-            var key = subject.GetByID(id).VerificationKey;
+            var key = LastVerificationKey;
 
             Assert.IsFalse(subject.ChangePasswordFromResetKey("abc", "pass2"));
         }
@@ -1111,7 +1140,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
-            subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey);
+            subject.ChangeEmailFromKey(id, "pass", LastVerificationKey);
             var acct = repository.Get(id);
             Assert.AreEqual("test2@test.com", acct.Email);
         }
@@ -1177,7 +1206,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
-            Assert.IsTrue(subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey));
+            Assert.IsTrue(subject.ChangeEmailFromKey(id, "pass", LastVerificationKey));
         }
 
         [TestMethod]
@@ -1189,7 +1218,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
-            subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey);
+            subject.ChangeEmailFromKey(id, "pass", LastVerificationKey);
 
             Assert.AreEqual("test2@test.com", repository.Get(id).Username);
         }
@@ -1204,7 +1233,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             try
             {
-                subject.ChangeEmailFromKey(id, "", repository.Get(id).VerificationKey);
+                subject.ChangeEmailFromKey(id, "", LastVerificationKey);
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -1223,7 +1252,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             try
             {
-                subject.ChangeEmailFromKey(id, "pass2", repository.Get(id).VerificationKey);
+                subject.ChangeEmailFromKey(id, "pass2", LastVerificationKey);
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -1261,7 +1290,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             try
             {
-                subject.ChangeEmailFromKey(Guid.NewGuid(), "pass", repository.Get(id).VerificationKey);
+                subject.ChangeEmailFromKey(Guid.NewGuid(), "pass", LastVerificationKey);
                 Assert.Fail();
             }
             catch (ArgumentException)

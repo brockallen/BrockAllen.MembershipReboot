@@ -14,10 +14,14 @@ namespace BrockAllen.MembershipReboot
         public UserAccount Account { get; set; }
     }
 
-    public class AccountCreatedEvent : UserAccountEvent { }
+    public class AccountCreatedEvent : UserAccountEvent {
+        public string VerificationKey { get; set; }
+    }
     public class AccountVerifiedEvent : UserAccountEvent { }
 
-    public class PasswordResetRequestedEvent : UserAccountEvent { }
+    public class PasswordResetRequestedEvent : UserAccountEvent {
+        public string VerificationKey { get; set; }
+    }
     public class PasswordChangedEvent : UserAccountEvent { 
         public string NewPassword { get; set; }
     }
@@ -36,6 +40,7 @@ namespace BrockAllen.MembershipReboot
     public class EmailChangeRequestedEvent : UserAccountEvent
     {
         public string NewEmail { get; set; }
+        public string VerificationKey { get; set; }
     }
     public class EmailChangedEvent : UserAccountEvent
     {

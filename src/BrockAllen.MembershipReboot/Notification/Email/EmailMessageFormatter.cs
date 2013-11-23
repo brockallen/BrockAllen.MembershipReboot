@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BrockAllen.MembershipReboot
@@ -12,7 +13,7 @@ namespace BrockAllen.MembershipReboot
     {
         public class Tokenizer
         {
-            public virtual string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            public virtual string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
                 var user = accountEvent.Account;
 
@@ -24,21 +25,22 @@ namespace BrockAllen.MembershipReboot
                 msg = msg.Replace("{emailSignature}", appInfo.EmailSignature);
                 msg = msg.Replace("{loginUrl}", appInfo.LoginUrl);
 
-                msg = msg.Replace("{confirmAccountCreateUrl}", appInfo.VerifyAccountUrl + user.VerificationKey);
-                msg = msg.Replace("{cancelNewAccountUrl}", appInfo.CancelNewAccountUrl + user.VerificationKey);
+                msg = msg.Replace("{confirmAccountCreateUrl}", appInfo.VerifyAccountUrl + extra.VerificationKey);
+                msg = msg.Replace("{cancelNewAccountUrl}", appInfo.CancelNewAccountUrl + extra.VerificationKey);
 
-                msg = msg.Replace("{confirmPasswordResetUrl}", appInfo.ConfirmPasswordResetUrl + user.VerificationKey);
-                msg = msg.Replace("{confirmChangeEmailUrl}", appInfo.ConfirmChangeEmailUrl + user.VerificationKey);
+                msg = msg.Replace("{confirmPasswordResetUrl}", appInfo.ConfirmPasswordResetUrl + extra.VerificationKey);
+                msg = msg.Replace("{confirmChangeEmailUrl}", appInfo.ConfirmChangeEmailUrl + extra.VerificationKey);
 
                 return msg;
             }
         }
         public class EmailChangeRequestedTokenizer : Tokenizer
         {
-            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
+                Tokenizer b = this;
                 var evt = (EmailChangeRequestedEvent)accountEvent;
-                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{newEmail}", evt.NewEmail);
                 msg = msg.Replace("{oldEmail}", accountEvent.Account.Email);
                 return msg;
@@ -46,10 +48,11 @@ namespace BrockAllen.MembershipReboot
         }
         public class EmailChangedTokenizer : Tokenizer
         {
-            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
+                Tokenizer b = this;
                 var evt = (EmailChangedEvent)accountEvent;
-                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{newEmail}", accountEvent.Account.Email);
                 msg = msg.Replace("{oldEmail}", evt.OldEmail);
                 return msg;
@@ -57,10 +60,11 @@ namespace BrockAllen.MembershipReboot
         }
         public class CertificateAddedTokenizer : Tokenizer
         {
-            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
+                Tokenizer b = this;
                 var evt = (CertificateAddedEvent)accountEvent;
-                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{thumbprint}", evt.Certificate.Thumbprint);
                 msg = msg.Replace("{subject}", evt.Certificate.Subject);
                 return msg;
@@ -68,10 +72,11 @@ namespace BrockAllen.MembershipReboot
         }
         public class CertificateRemovedTokenizer : Tokenizer
         {
-            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
+                Tokenizer b = this;
                 var evt = (CertificateRemovedEvent)accountEvent;
-                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{thumbprint}", evt.Certificate.Thumbprint);
                 msg = msg.Replace("{subject}", evt.Certificate.Subject);
                 return msg;
@@ -79,20 +84,22 @@ namespace BrockAllen.MembershipReboot
         }
         public class LinkedAccountAddedTokenizer : Tokenizer
         {
-            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
+                Tokenizer b = this;
                 var evt = (LinkedAccountAddedEvent)accountEvent;
-                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{provider}", evt.LinkedAccount.ProviderName);
                 return msg;
             }
         }
         public class LinkedAccountRemovedTokenizer : Tokenizer
         {
-            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg)
+            public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
+                Tokenizer b = this;
                 var evt = (LinkedAccountRemovedEvent)accountEvent;
-                msg = base.Tokenize(accountEvent, appInfo, msg);
+                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{provider}", evt.LinkedAccount.ProviderName);
                 return msg;
             }
@@ -118,10 +125,10 @@ namespace BrockAllen.MembershipReboot
             this.appInfo = appInfo;
         }
 
-        public Message Format(UserAccountEvent accountEvent)
+        public Message Format(UserAccountEvent accountEvent, dynamic extra)
         {
             if (accountEvent == null) throw new ArgumentNullException("accountEvent");
-            return CreateMessage(GetSubject(accountEvent), GetBody(accountEvent));
+            return CreateMessage(GetSubject(accountEvent, extra), GetBody(accountEvent, extra));
         }
 
         protected virtual Tokenizer GetTokenizer(UserAccountEvent evt)
@@ -143,21 +150,21 @@ namespace BrockAllen.MembershipReboot
             return new Message { Subject = subject, Body = body };
         }
 
-        protected string FormatValue(UserAccountEvent evt, string value)
+        protected string FormatValue(UserAccountEvent evt, string value, dynamic extra)
         {
             if (value == null) return null;
 
             var tokenizer = GetTokenizer(evt);
-            return tokenizer.Tokenize(evt, this.ApplicationInformation, value);
+            return tokenizer.Tokenize(evt, this.ApplicationInformation, value, extra);
         }
-        
-        protected virtual string GetSubject(UserAccountEvent evt)
+
+        protected virtual string GetSubject(UserAccountEvent evt, dynamic extra)
         {
-            return FormatValue(evt, LoadSubjectTemplate(evt));
+            return FormatValue(evt, LoadSubjectTemplate(evt), extra);
         }
-        protected virtual string GetBody(UserAccountEvent evt)
+        protected virtual string GetBody(UserAccountEvent evt, dynamic extra)
         {
-            return FormatValue(evt, LoadBodyTemplate(evt));
+            return FormatValue(evt, LoadBodyTemplate(evt), extra);
         }
 
         protected virtual string LoadSubjectTemplate(UserAccountEvent evt)

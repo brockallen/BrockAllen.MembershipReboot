@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
@@ -132,9 +133,9 @@ namespace BrockAllen.MembershipReboot
             this.IsLoginAllowed = false;
             this.AccountTwoFactorAuthMode = TwoFactorAuthMode.None;
             this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
-            this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
+            var key = this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
 
-            this.AddEvent(new AccountCreatedEvent { Account = this });
+            this.AddEvent(new AccountCreatedEvent { Account = this, VerificationKey = key });
         }
 
         protected internal virtual bool IsVerificationKeyStale
@@ -154,15 +155,53 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
         }
-        
-        internal void SetVerificationKey(VerificationKeyPurpose purpose, string key = null, string state = null)
+
+        internal string SetVerificationKey(VerificationKeyPurpose purpose, string key = null, string state = null)
         {
             if (key == null) key = StripUglyBase64(this.GenerateSalt());
-            
-            this.VerificationKey = key;
+
+            this.VerificationKey = CryptoHelper.Hash(key);
             this.VerificationPurpose = purpose;
             this.VerificationKeySent = UtcNow;
             this.VerificationStorage = state;
+
+            return key;
+        }
+
+        internal bool IsVerificationKeyValid(VerificationKeyPurpose purpose, string key)
+        {
+            if (!IsVerificationPurposeValid(purpose))
+            {
+                return false;
+            }
+
+            var hashedKey = CryptoHelper.Hash(key);
+            var result = SlowEquals(this.VerificationKey, hashedKey);
+            if (!result)
+            {
+                Tracing.Error("[UserAccount.IsVerificationKeyValid] failed -- verification key doesn't match");
+                return false;
+            }
+
+            Tracing.Information("[UserAccount.IsVerificationKeyValid] success -- verification key valid");
+            return true;
+        }
+        
+        internal bool IsVerificationPurposeValid(VerificationKeyPurpose purpose)
+        {
+            if (this.VerificationPurpose != purpose)
+            {
+                Tracing.Error("[UserAccount.IsVerificationPurposeValid] failed -- verification purpose invalid");
+                return false;
+            }
+
+            if (IsVerificationKeyStale)
+            {
+                Tracing.Error("[UserAccount.IsVerificationPurposeValid] failed -- verification key stale");
+                return false;
+            }
+
+            return true;
         }
 
         internal void ClearVerificationKey()
@@ -195,21 +234,9 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount)
+            if (!IsVerificationKeyValid(VerificationKeyPurpose.VerifyAccount, key))
             {
-                Tracing.Error("[UserAccount.VerifyAccount] failed -- verification purpose invalid");
-                return false;
-            }
-
-            if (IsVerificationKeyStale)
-            {
-                Tracing.Error("[UserAccount.VerifyAccount] failed -- verification key stale");
-                return false;
-            }
-
-            if (this.VerificationKey != key)
-            {
-                Tracing.Error("[UserAccount.VerifyAccount] failed -- verification key doesn't match");
+                Tracing.Error("[UserAccount.VerifyAccount] failed -- key verification failed");
                 return false;
             }
 
@@ -243,24 +270,12 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (this.VerificationPurpose != VerificationKeyPurpose.VerifyAccount)
+            if (!IsVerificationKeyValid(VerificationKeyPurpose.VerifyAccount, key))
             {
-                Tracing.Error("[UserAccount.CancelNewAccount] failed -- key purpose invalid");
+                Tracing.Error("[UserAccount.CancelNewAccount] failed -- key verification failed");
                 return false;
-            }
-
-            if (IsVerificationKeyStale)
-            {
-                Tracing.Error("[UserAccount.CancelNewAccount] failed -- verification key stale");
-                return false;
-            }
-
-            if (this.VerificationKey != key)
-            {
-                Tracing.Error("[UserAccount.CancelNewAccount] failed -- verification key doesn't match");
-                return false;
-            }
-
+            } 
+            
             Tracing.Verbose("[UserAccount.CancelNewAccount] succeeded (closing account)");
             
             this.CloseAccount();
@@ -293,31 +308,23 @@ namespace BrockAllen.MembershipReboot
 
             if (!this.IsAccountVerified)
             {
-                if (IsVerificationKeyStale || VerificationKeyPurpose.VerifyAccount != this.VerificationPurpose)
-                {
-                    Tracing.Verbose("[UserAccount.ResetPassword] creating new verification key because existing one is stale");
-                    this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
-                }
+                Tracing.Verbose("[UserAccount.ResetPassword] creating new verification key because existing one is stale");
+                var key = this.SetVerificationKey(VerificationKeyPurpose.VerifyAccount);
                 
                 // if they've not yet verified then don't allow changes
                 // instead raise an event as if the account was just created to 
                 // the user re-recieves their notification
                 Tracing.Verbose("[UserAccount.ResetPassword] account not verified -- raising account create to resend notification");
-                this.AddEvent(new AccountCreatedEvent { Account = this });
+                this.AddEvent(new AccountCreatedEvent { Account = this, VerificationKey = key });
             }
             else
             {
-                // if there's no current key, or if there is a key but 
-                // it's stale, create a new reset key
-                if (IsVerificationKeyStale || VerificationKeyPurpose.ResetPassword != this.VerificationPurpose)
-                {
-                    Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
-                    this.SetVerificationKey(VerificationKeyPurpose.ResetPassword);
-                }
+                Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
+                var key = this.SetVerificationKey(VerificationKeyPurpose.ResetPassword);
                 
                 Tracing.Verbose("[UserAccount.ResetPassword] account verified -- raising event to send reset notification");
                 
-                this.AddEvent(new PasswordResetRequestedEvent { Account = this });
+                this.AddEvent(new PasswordResetRequestedEvent { Account = this, VerificationKey = key });
             }
         }
 
@@ -337,23 +344,9 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            // if the key is too old don't honor it
-            if (IsVerificationKeyStale)
+            if (!IsVerificationKeyValid(VerificationKeyPurpose.ResetPassword, key))
             {
-                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- verification key too old");
-                return false;
-            }
-
-            if (this.VerificationPurpose != VerificationKeyPurpose.ResetPassword)
-            {
-                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- invalid verification key purpose");
-                return false;
-            }
-
-            // check if key matches
-            if (this.VerificationKey != key)
-            {
-                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- verification keys don't match");
+                Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- key verification failed");
                 return false;
             }
 
@@ -862,20 +855,12 @@ namespace BrockAllen.MembershipReboot
                 throw new Exception("Account not verified");
             }
 
-            // if there's no current key, or it's not a change email key
-            // or if there is a key but it's older than one day, then create 
-            // a new reset key
-            if (IsVerificationKeyStale ||
-                this.VerificationPurpose != VerificationKeyPurpose.ChangeEmail ||
-                (this.VerificationPurpose == VerificationKeyPurpose.ChangeEmail && !newEmail.Equals(this.VerificationStorage, StringComparison.OrdinalIgnoreCase)))
-            {
-                Tracing.Verbose("[UserAccount.ChangeEmailRequest] creating a new reset key");
-                this.SetVerificationKey(VerificationKeyPurpose.ChangeEmail, state:newEmail);
-            }
+            Tracing.Verbose("[UserAccount.ChangeEmailRequest] creating a new reset key");
+            var key = this.SetVerificationKey(VerificationKeyPurpose.ChangeEmail, state:newEmail);
 
             Tracing.Verbose("[UserAccount.ChangeEmailRequest] success");
             
-            this.AddEvent(new EmailChangeRequestedEvent { Account = this, NewEmail = newEmail });
+            this.AddEvent(new EmailChangeRequestedEvent { Account = this, NewEmail = newEmail, VerificationKey = key });
         }
 
         protected internal virtual bool ChangeEmailFromKey(string key)
@@ -888,24 +873,12 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Invalid key.");
             }
 
-            if (IsVerificationKeyStale)
+            if (!IsVerificationKeyValid(VerificationKeyPurpose.ChangeEmail, key))
             {
-                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification key is stale");
+                Tracing.Error("[UserAccount.ChangeEmailFromKey] failed -- key verification failed");
                 return false;
             }
-
-            if (this.VerificationPurpose != VerificationKeyPurpose.ChangeEmail)
-            {
-                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- invalid purpose");
-                return false;
-            }
-
-            if (key != this.VerificationKey)
-            {
-                Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification keys don't match");
-                return false;
-            }
-
+            
             if (String.IsNullOrWhiteSpace(this.VerificationStorage))
             {
                 Tracing.Verbose("[UserAccount.ChangeEmailFromKey] failed -- verification storage empty");
@@ -1245,6 +1218,11 @@ namespace BrockAllen.MembershipReboot
         protected internal virtual bool VerifyHashedPassword(string password)
         {
             return CryptoHelper.VerifyHashedPassword(HashedPassword, password);
+        }
+
+        protected internal bool SlowEquals(string a, string b)
+        {
+            return CryptoHelper.SlowEquals(a, b);
         }
 
         protected internal virtual DateTime UtcNow

@@ -167,7 +167,7 @@ namespace BrockAllen.MembershipReboot.Mvc
         {
         }
 
-        protected override string GetBody(UserAccountEvent evt)
+        protected override string GetBody(UserAccountEvent evt, dynamic extra)
         {
             if (evt is AccountVerifiedEvent)
             {
@@ -176,10 +176,11 @@ namespace BrockAllen.MembershipReboot.Mvc
 
             if (evt is AccountClosedEvent)
             {
-                return FormatValue(evt, "your account was closed with {applicationName}. good riddance.");
+                return FormatValue(evt, "your account was closed with {applicationName}. good riddance.", extra);
             }
 
-            return base.GetBody(evt);
+            Func<UserAccountEvent, dynamic, string> f = base.GetBody;
+            return f(evt, extra);
         }
     }
 }

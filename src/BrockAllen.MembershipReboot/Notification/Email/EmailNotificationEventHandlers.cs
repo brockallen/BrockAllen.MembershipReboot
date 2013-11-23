@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -26,12 +27,13 @@ namespace BrockAllen.MembershipReboot
             this.messageDelivery = messageDelivery;
         }
 
-        public virtual void Process(UserAccountEvent evt, string email = null)
+        public virtual void Process(UserAccountEvent evt, object extra = null)
         {
-            var msg = this.messageFormatter.Format(evt);
+            dynamic d = new DynamicDictionary(extra);
+            var msg = this.messageFormatter.Format(evt, d);
             if (msg != null)
             {
-                msg.To = email ?? evt.Account.Email;
+                msg.To = d.NewEmail ?? evt.Account.Email;
                 this.messageDelivery.Send(msg);
             }
         }
@@ -52,7 +54,7 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(AccountCreatedEvent evt)
         {
-            Process(evt);
+            Process(evt, new { evt.VerificationKey });
         }
     }
 
@@ -89,7 +91,7 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(PasswordResetRequestedEvent evt)
         {
-            Process(evt);
+            Process(evt, new { evt.VerificationKey });
         }
 
         public void Handle(PasswordChangedEvent evt)
@@ -114,7 +116,7 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(EmailChangeRequestedEvent evt)
         {
-            Process(evt, evt.NewEmail);
+            Process(evt, new{evt.NewEmail, evt.VerificationKey});
         }
 
         public void Handle(EmailChangedEvent evt)

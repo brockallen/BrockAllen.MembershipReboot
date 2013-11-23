@@ -33,7 +33,7 @@ namespace BrockAllen.MembershipReboot
         
         protected virtual Message CreateMessage(UserAccountEvent evt, string phone)
         {
-            var msg = this.messageFormatter.Format(evt);
+            var msg = this.messageFormatter.Format(evt, null);
             if (msg != null)
             {
                 msg.To = phone ?? evt.Account.MobilePhoneNumber;

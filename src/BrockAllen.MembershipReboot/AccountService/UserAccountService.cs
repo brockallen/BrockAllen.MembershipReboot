@@ -204,6 +204,8 @@ namespace BrockAllen.MembershipReboot
         {
             if (String.IsNullOrWhiteSpace(key)) return null;
 
+            key = CryptoHelper.Hash(key);
+
             var account = userRepository.GetAll().Where(x => x.VerificationKey == key).SingleOrDefault();
             if (account == null)
             {

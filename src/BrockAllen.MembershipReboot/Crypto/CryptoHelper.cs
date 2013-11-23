@@ -6,6 +6,7 @@
 using BrockAllen.MembershipReboot.Helpers;
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -116,6 +117,27 @@ namespace BrockAllen.MembershipReboot
                 return count;
             }
             return StartCount;
+        }
+
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        internal static bool SlowEquals(string a, string b)
+        {
+            if (Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            if (a == null || b == null || a.Length != b.Length)
+            {
+                return false;
+            }
+
+            bool same = true;
+            for (var i = 0; i < a.Length; i++)
+            {
+                same &= (a[i] == b[i]);
+            }
+            return same;
         }
     }
 }
