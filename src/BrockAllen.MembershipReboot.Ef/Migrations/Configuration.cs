@@ -10,6 +10,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            ContextKey = "BrockAllen.MembershipReboot.Ef.DefaultMembershipRebootDatabase";
         }
 
         protected override void Seed(BrockAllen.MembershipReboot.Ef.DefaultMembershipRebootDatabase context)
