@@ -22,6 +22,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         SecuritySettings securitySettings;
         MembershipRebootConfiguration configuration;
         public string LastVerificationKey { get; set; }
+        public string LastMobileCode { get; set; }
 
         int oldIterations;
         [TestInitialize]
@@ -40,7 +41,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         class KeyNotification : 
             IEventHandler<AccountCreatedEvent>, 
             IEventHandler<PasswordResetRequestedEvent>,
-            IEventHandler<EmailChangeRequestedEvent>
+            IEventHandler<EmailChangeRequestedEvent>,
+            IEventHandler<MobilePhoneChangeRequestedEvent>,
+            IEventHandler<TwoFactorAuthenticationCodeNotificationEvent>
         {
             UserAccountServiceTests instance;
             public KeyNotification (UserAccountServiceTests instance)
@@ -61,6 +64,16 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             public void Handle(EmailChangeRequestedEvent evt)
             {
                 instance.LastVerificationKey = evt.VerificationKey;
+            }
+
+            public void Handle(MobilePhoneChangeRequestedEvent evt)
+            {
+                instance.LastMobileCode = evt.Code;
+            }
+
+            public void Handle(TwoFactorAuthenticationCodeNotificationEvent evt)
+            {
+                instance.LastMobileCode = evt.Code;
             }
         }
 
@@ -563,14 +576,12 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
-            var acct = subject.GetByID(id);
-            subject.ChangeMobilePhoneFromCode(id, acct.MobileCode);
-            subject.ConfigureTwoFactorAuthentication(acct.ID, TwoFactorAuthMode.Mobile);
+            subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
+            subject.ConfigureTwoFactorAuthentication(id, TwoFactorAuthMode.Mobile);
 
             subject.Authenticate("test", "pass");
 
-            acct = subject.GetByID(id);
-            Assert.IsTrue(subject.AuthenticateWithCode(id, acct.MobileCode));
+            Assert.IsTrue(subject.AuthenticateWithCode(id, LastMobileCode));
         }
         
         [TestMethod]
@@ -580,14 +591,14 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             var acct = subject.GetByID(id);
-            subject.ChangeMobilePhoneFromCode(id, acct.MobileCode);
+            subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
             subject.ConfigureTwoFactorAuthentication(acct.ID, TwoFactorAuthMode.Mobile);
 
             subject.Authenticate("test", "pass");
 
             acct = subject.GetByID(id);
             UserAccount acct2;
-            subject.AuthenticateWithCode(id, acct.MobileCode, out acct2);
+            subject.AuthenticateWithCode(id, LastMobileCode, out acct2);
             Assert.AreEqual(acct.ID, acct2.ID);
         }
 
@@ -597,14 +608,12 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
-            var acct = subject.GetByID(id);
-            subject.ChangeMobilePhoneFromCode(id, acct.MobileCode);
-            subject.ConfigureTwoFactorAuthentication(acct.ID, TwoFactorAuthMode.Mobile);
+            subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
+            subject.ConfigureTwoFactorAuthentication(id, TwoFactorAuthMode.Mobile);
 
             subject.Authenticate("test", "pass");
 
-            acct = subject.GetByID(id);
-            Assert.IsFalse(subject.AuthenticateWithCode(id, acct.MobileCode + "123"));
+            Assert.IsFalse(subject.AuthenticateWithCode(id, LastMobileCode + "123"));
         }
 
         
@@ -777,7 +786,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
-            var code = subject.GetByID(id).MobileCode;
+            var code = LastMobileCode;
             subject.ChangeMobilePhoneFromCode(id, code);
 
             subject.ConfigureTwoFactorAuthentication(id, TwoFactorAuthMode.Mobile);
@@ -1305,7 +1314,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             var acct = subject.GetByID(id);
-            subject.ChangeMobilePhoneFromCode(id, acct.MobileCode);
+            subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
 
             subject.RemoveMobilePhone(id);
 
@@ -1319,7 +1328,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             var acct = subject.GetByID(id);
-            subject.ChangeMobilePhoneFromCode(id, acct.MobileCode);
+            subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
 
             try
             {
@@ -1338,7 +1347,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             subject.ChangeMobilePhoneRequest(id, "123");
             var acct = subject.GetByID(id);
-            subject.ChangeMobilePhoneFromCode(id, acct.MobileCode);
+            subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
 
             Assert.AreEqual("123", repository.Get(id).MobilePhoneNumber);
         }
@@ -1366,7 +1375,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.RequireAccountVerification = false;
             var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
             subject.ChangeMobilePhoneRequest(acct1.ID, "123");
-            subject.ChangeMobilePhoneFromCode(acct1.ID, acct1.MobileCode);
+            subject.ChangeMobilePhoneFromCode(acct1.ID, LastMobileCode);
 
             var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
 
@@ -1387,14 +1396,16 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             securitySettings.RequireAccountVerification = false;
             var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
             var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
+            
             subject.ChangeMobilePhoneRequest(acct1.ID, "123");
+            var acct1Code = LastMobileCode;
             subject.ChangeMobilePhoneRequest(acct2.ID, "123");
+            var acct2Code = LastMobileCode;
 
-            subject.ChangeMobilePhoneFromCode(acct1.ID, acct1.MobileCode);
-
+            subject.ChangeMobilePhoneFromCode(acct1.ID, acct1Code);
             try
             {
-                subject.ChangeMobilePhoneFromCode(acct2.ID, acct2.MobileCode);
+                subject.ChangeMobilePhoneFromCode(acct2.ID, acct2Code);
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -1426,8 +1437,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeMobilePhoneRequest(id, "123");
-            var acct = subject.GetByID(id);
-            Assert.IsTrue(subject.ChangeMobilePhoneFromCode(id, acct.MobileCode));
+            Assert.IsTrue(subject.ChangeMobilePhoneFromCode(id, LastMobileCode));
         }
 
         [TestMethod]

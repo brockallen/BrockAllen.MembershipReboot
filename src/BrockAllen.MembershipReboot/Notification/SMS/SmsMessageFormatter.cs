@@ -34,7 +34,7 @@ namespace BrockAllen.MembershipReboot
         {
             if (accountEvent == null) throw new ArgumentNullException("accountEvent");
 
-            var message = GetMessageBody(accountEvent);
+            var message = GetMessageBody(accountEvent, extra);
             return new Message
             {
                 Subject = message,
@@ -42,12 +42,12 @@ namespace BrockAllen.MembershipReboot
             };
         }
 
-        private string GetMessageBody(UserAccountEvent accountEvent)
+        private string GetMessageBody(UserAccountEvent accountEvent, dynamic extra)
         {
             var txt = LoadTemplate();
             
             txt = txt.Replace("{applicationName}", ApplicationInformation.ApplicationName);
-            txt = txt.Replace("{code}", accountEvent.Account.MobileCode);
+            txt = txt.Replace("{code}", extra.Code);
 
             return txt;
         }

@@ -50,6 +50,7 @@ namespace BrockAllen.MembershipReboot
     public class MobilePhoneChangeRequestedEvent : UserAccountEvent
     {
         public string NewMobilePhoneNumber { get; set; }
+        public string Code { get; set; }
     }
     public class MobilePhoneChangedEvent : UserAccountEvent { }
     public class MobilePhoneRemovedEvent : UserAccountEvent { }
@@ -59,7 +60,9 @@ namespace BrockAllen.MembershipReboot
     }
     public class TwoFactorAuthenticationDisabledEvent : UserAccountEvent { }
 
-    public class TwoFactorAuthenticationCodeNotificationEvent : UserAccountEvent { }
+    public class TwoFactorAuthenticationCodeNotificationEvent : UserAccountEvent {
+        public string Code { get; set; }
+    }
 
     public class ClaimAddedEvent : UserAccountEvent, IAllowMultiple {
         public UserClaim Claim { get; set; }

@@ -183,7 +183,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            Tracing.Information("[UserAccount.IsVerificationKeyValid] success -- verification key valid");
+            Tracing.Verbose("[UserAccount.IsVerificationKeyValid] success -- verification key valid");
             return true;
         }
         
@@ -201,6 +201,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
+            Tracing.Verbose("[UserAccount.IsVerificationPurposeValid] success -- verification purpose valid");
             return true;
         }
 
@@ -469,10 +470,32 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        void IssueMobileCode()
+        string IssueMobileCode()
         {
-            this.MobileCode = CryptoHelper.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
+            string code = CryptoHelper.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
+            this.MobileCode = CryptoHelper.Hash(code);
             this.MobileCodeSent = UtcNow;
+            return code;
+        }
+
+        bool VerifyMobileCode(string code)
+        {
+            if (IsMobileCodeStale)
+            {
+                Tracing.Error("[UserAccount.VerifyMobileCode] failed -- mobile code stale");
+                return false;
+            }
+
+            string hash = CryptoHelper.Hash(code);
+            var result = SlowEquals(hash, this.MobileCode);
+            if (!result)
+            {
+                Tracing.Error("[UserAccount.VerifyMobileCode] failed -- mobile code invalid");
+                return false;
+            }
+
+            Tracing.Verbose("[UserAccount.VerifyMobileCode] success -- mobile code valid");
+            return true;
         }
 
         void ClearMobileAuthCode()
@@ -515,18 +538,12 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Mobile phone number must be different then the current.");
             }
 
-            if (this.IsMobileCodeStale ||
-                this.VerificationPurpose != VerificationKeyPurpose.ChangeMobile)
-            {
-                Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] setting new verification key and mobile code");
-                
-                this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, state:newMobilePhoneNumber);
-                this.IssueMobileCode();
-            }
+            this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, state: newMobilePhoneNumber);
+            var code = this.IssueMobileCode();
 
             Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] success");
 
-            this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber });
+            this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber, Code = code });
         }
 
         protected internal virtual bool ConfirmMobilePhoneNumberFromCode(string code)
@@ -545,15 +562,9 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (this.IsMobileCodeStale)
+            if (!VerifyMobileCode(code))
             {
-                Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- stale mobile code");
-                return false;
-            }
-
-            if (code != this.MobileCode)
-            {
-                Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- codes don't match");
+                Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- mobile code failed to verify");
                 return false;
             }
 
@@ -735,18 +746,14 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (this.IsMobileCodeStale ||
-                this.VerificationPurpose == VerificationKeyPurpose.ChangeMobile)
-            {
-                Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] new mobile code issued");
-                this.IssueMobileCode();
-            }
+            Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] new mobile code issued");
+            var code = this.IssueMobileCode();
 
             Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] success");
 
             this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Mobile;
 
-            this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this });
+            this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this, Code = code });
 
             return true;
         }
@@ -791,15 +798,9 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (IsMobileCodeStale)
+            if (!VerifyMobileCode(code))
             {
-                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- mobile code stale");
-                return false;
-            }
-            
-            if (code != this.MobileCode)
-            {
-                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- codes don't match");
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthCode] failed -- mobile code failed to verify");
                 return false;
             }
 

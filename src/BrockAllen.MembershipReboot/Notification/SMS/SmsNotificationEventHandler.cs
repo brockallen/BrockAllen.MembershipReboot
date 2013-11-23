@@ -22,33 +22,34 @@ namespace BrockAllen.MembershipReboot
 
         protected abstract void SendSms(Message message);
 
-        public virtual void Process(UserAccountEvent evt, string phone = null)
+        public virtual void Process(UserAccountEvent evt, object data = null)
         {
-            var msg = CreateMessage(evt, phone);
+            dynamic d = new DynamicDictionary(data);
+            var msg = CreateMessage(evt, d);
             if (msg != null)
             {
                 SendSms(msg);
             }
         }
         
-        protected virtual Message CreateMessage(UserAccountEvent evt, string phone)
+        protected virtual Message CreateMessage(UserAccountEvent evt, dynamic extra)
         {
-            var msg = this.messageFormatter.Format(evt, null);
+            var msg = this.messageFormatter.Format(evt, extra);
             if (msg != null)
             {
-                msg.To = phone ?? evt.Account.MobilePhoneNumber;
+                msg.To = extra.NewMobilePhoneNumber ?? evt.Account.MobilePhoneNumber;
             }
             return msg;
         }
 
         public void Handle(MobilePhoneChangeRequestedEvent evt)
         {
-            Process(evt, evt.NewMobilePhoneNumber);
+            Process(evt, new { evt.NewMobilePhoneNumber, evt.Code });
         }
 
         public void Handle(TwoFactorAuthenticationCodeNotificationEvent evt)
         {
-            Process(evt);
+            Process(evt, new { evt.Code });
         }
     }
 }
