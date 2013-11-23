@@ -10,7 +10,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<BrockAllen.MembershipReboot.Ef.DefaultMembershipRebootDatabase>
+    public sealed class Configuration : DbMigrationsConfiguration<BrockAllen.MembershipReboot.Ef.DefaultMembershipRebootDatabase>
     {
         public Configuration()
         {
