@@ -62,7 +62,7 @@ namespace BrockAllen.MembershipReboot
         public virtual VerificationKeyPurpose? VerificationPurpose { get; internal set; }
         public virtual DateTime? VerificationKeySent { get; internal set; }
         [StringLength(100)]
-        public string VerificationStorage { get; internal set; }
+        public virtual string VerificationStorage { get; internal set; }
 
         [Required]
         [StringLength(200)]
@@ -71,6 +71,7 @@ namespace BrockAllen.MembershipReboot
         public virtual ICollection<UserClaim> Claims { get; internal set; }
         public virtual ICollection<LinkedAccount> LinkedAccounts { get; internal set; }
         public virtual ICollection<UserCertificate> Certificates { get; internal set; }
+        public virtual ICollection<TwoFactorAuthToken> TwoFactorAuthTokens { get; internal set; }
 
         List<IEvent> events = new List<IEvent>();
         IEnumerable<IEvent> IEventSource.GetEvents()
@@ -1231,6 +1232,49 @@ namespace BrockAllen.MembershipReboot
             {
                 return DateTime.UtcNow;
             }
+        }
+
+        internal string CreateTwoFactorAuthToken()
+        {
+            var value = CryptoHelper.GenerateSalt();
+
+            var item = new TwoFactorAuthToken
+            {
+                Token = CryptoHelper.Hash(value),
+                Issued = this.UtcNow
+            };
+            this.TwoFactorAuthTokens.Add(item);
+            
+            return value;
+        }
+
+        internal bool VerifyTwoFactorAuthToken(string token)
+        {
+            if (String.IsNullOrWhiteSpace(token))
+            {
+                return false;
+            }
+
+            token = CryptoHelper.Hash(token);
+
+            var expiration = UtcNow.AddDays(-MembershipRebootConstants.UserAccount.TwoFactorAuthTokenDurationDays);
+            var query = 
+                from t in this.TwoFactorAuthTokens
+                where 
+                    t.Issued < this.PasswordChanged || 
+                    t.Issued < expiration
+                select t;
+            foreach(var item in query.ToArray())
+            {
+                this.TwoFactorAuthTokens.Remove(item);
+            }
+
+            query = 
+                from t in this.TwoFactorAuthTokens.ToArray()
+                where SlowEquals(t.Token, token)
+                select t;
+            
+            return query.Any();
         }
     }
 }

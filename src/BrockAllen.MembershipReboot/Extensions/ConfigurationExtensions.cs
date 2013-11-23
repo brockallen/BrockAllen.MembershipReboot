@@ -14,7 +14,6 @@ namespace BrockAllen.MembershipReboot
             if (config == null) throw new ArgumentNullException("config");
 
             config.TwoFactorAuthenticationPolicy = policy;
-            config.AddEventHandler(policy);
         }
     }
 }

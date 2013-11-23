@@ -9,11 +9,11 @@ namespace BrockAllen.MembershipReboot.WebHost
 {
     public static class ConfigurationExtensions
     {
-        public static void ConfigureAspNetCookieBasedTwoFactorAuthPolicy(this MembershipRebootConfiguration config)
+        public static void ConfigureAspNetCookieBasedTwoFactorAuthPolicy(this MembershipRebootConfiguration config, bool debugging = false)
         {
             if (config == null) throw new ArgumentNullException("config");
 
-            config.ConfigureCookieBasedTwoFactorAuthPolicy(new AspNetCookieBasedTwoFactorAuthPolicy());
+            config.ConfigureCookieBasedTwoFactorAuthPolicy(new AspNetCookieBasedTwoFactorAuthPolicy(debugging));
         }
     }
 }

@@ -8,8 +8,7 @@ using System;
 namespace BrockAllen.MembershipReboot
 {
     public abstract class CookieBasedTwoFactorAuthPolicy :
-        ITwoFactorAuthenticationPolicy,
-        IEventHandler<SuccessfulTwoFactorAuthCodeLoginEvent>
+        ITwoFactorAuthenticationPolicy
     {
         public CookieBasedTwoFactorAuthPolicy()
         {
@@ -18,31 +17,23 @@ namespace BrockAllen.MembershipReboot
 
         public int PersistentCookieDurationInDays { get; set; }
 
-        protected abstract bool HasCookie(string name, string value);
+        protected abstract string GetCookie(string name);
         protected abstract void IssueCookie(string name, string value);
+        protected abstract void RemoveCookie(string name);
 
-        string GetCookieValue(UserAccount account)
+        public string GetTwoFactorAuthToken(string prefix)
         {
-            return CryptoHelper.Hash(account.ID.ToString(), account.HashedPassword);
+            return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + prefix);
         }
 
-        public bool RequestRequiresTwoFactorAuth(UserAccount account)
+        public void IssueTwoFactorAuthToken(string prefix, string token)
         {
-            if (account == null) throw new ArgumentNullException("account");
-
-            if (HasCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName, GetCookieValue(account)))
-            {
-                return false;
-            }
-
-            return true;
+            IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + prefix, token);
         }
 
-        public void Handle(SuccessfulTwoFactorAuthCodeLoginEvent evt)
+        public void RemoveTwoFactorAuthToken(string prefix)
         {
-            if (evt == null) throw new ArgumentNullException("evt");
-
-            IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName, GetCookieValue(evt.Account));
+            RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + prefix);
         }
     }
 }

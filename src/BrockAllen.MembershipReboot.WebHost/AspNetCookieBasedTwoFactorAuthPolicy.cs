@@ -11,25 +11,49 @@ namespace BrockAllen.MembershipReboot.WebHost
 {
     public class AspNetCookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy
     {
-        protected override bool HasCookie(string name, string value)
+        public bool Debugging { get; set; }
+
+        public AspNetCookieBasedTwoFactorAuthPolicy(bool debugging)
+        {
+            Debugging = debugging;
+        }
+
+        protected override string GetCookie(string name)
         {
             var ctx = HttpContext.Current;
             if (ctx.Request.Cookies.AllKeys.Contains(name))
             {
-                return ctx.Request.Cookies[name].Value == value;
+                return ctx.Request.Cookies[name].Value;
             }
-            return false;
+            return null;
         }
 
         protected override void IssueCookie(string name, string value)
         {
             var ctx = HttpContext.Current;
-            if (ctx.Request.IsSecureConnection)
+            if (ctx.Request.IsSecureConnection || this.Debugging)
             {
                 var cookie = new HttpCookie(name, value);
                 cookie.HttpOnly = true;
-                cookie.Secure = true;
+                cookie.Secure = ctx.Request.IsSecureConnection || !this.Debugging;
                 cookie.Expires = DateTime.Now.AddDays(this.PersistentCookieDurationInDays);
+                cookie.Shareable = false;
+                cookie.Path = ctx.Request.ApplicationPath;
+                if (!cookie.Path.EndsWith("/")) cookie.Path += "/";
+
+                ctx.Response.Cookies.Add(cookie);
+            }
+        }
+
+        protected override void RemoveCookie(string name)
+        {
+            var ctx = HttpContext.Current;
+            if (ctx.Request.IsSecureConnection || this.Debugging)
+            {
+                var cookie = new HttpCookie(name, ".");
+                cookie.HttpOnly = true;
+                cookie.Secure = ctx.Request.IsSecureConnection || !this.Debugging;
+                cookie.Expires = DateTime.Now.AddYears(-1);
                 cookie.Shareable = false;
                 cookie.Path = ctx.Request.ApplicationPath;
                 if (!cookie.Path.EndsWith("/")) cookie.Path += "/";

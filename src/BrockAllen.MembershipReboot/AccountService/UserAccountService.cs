@@ -548,8 +548,16 @@ namespace BrockAllen.MembershipReboot
                 bool shouldRequestTwoFactorAuthCode = true;
                 if (this.Configuration.TwoFactorAuthenticationPolicy != null)
                 {
-                    shouldRequestTwoFactorAuthCode = this.Configuration.TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth(account);
-                    Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy.RequestRequiresTwoFactorAuth called, result: {0}", shouldRequestTwoFactorAuthCode);
+                    var token = this.Configuration.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account.Tenant);
+                    
+                    var verified = account.VerifyTwoFactorAuthToken(token);
+                    if (!verified)
+                    {
+                        this.Configuration.TwoFactorAuthenticationPolicy.RemoveTwoFactorAuthToken(account.Tenant);
+                    }
+
+                    shouldRequestTwoFactorAuthCode = !verified;
+                    Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token verified, result: {0}", shouldRequestTwoFactorAuthCode);
                 }
 
                 if (shouldRequestTwoFactorAuthCode)
@@ -589,9 +597,16 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             var result = account.VerifyTwoFactorAuthCode(code);
-            Update(account);
-
             Tracing.Verbose("[UserAccountService.AuthenticateWithCode] result {0}", result);
+
+            if (result && this.Configuration.TwoFactorAuthenticationPolicy != null)
+            {
+                var token = account.CreateTwoFactorAuthToken();
+                this.Configuration.TwoFactorAuthenticationPolicy.IssueTwoFactorAuthToken(account.Tenant, token);
+                Tracing.Verbose("[UserAccountService.AuthenticateWithCode] TwoFactorAuthenticationPolicy issuing a new two factor auth token");
+            };
+            
+            Update(account);
 
             return result;
         }
