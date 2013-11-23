@@ -63,6 +63,9 @@ namespace BrockAllen.MembershipReboot
     public class TwoFactorAuthenticationCodeNotificationEvent : UserAccountEvent {
         public string Code { get; set; }
     }
+    public class TwoFactorAuthenticationTokenCreatedEvent : UserAccountEvent {
+        public string Token { get; set; }
+    }
 
     public class ClaimAddedEvent : UserAccountEvent, IAllowMultiple {
         public UserClaim Claim { get; set; }

@@ -8,7 +8,9 @@ using System;
 namespace BrockAllen.MembershipReboot
 {
     public abstract class CookieBasedTwoFactorAuthPolicy :
-        ITwoFactorAuthenticationPolicy
+        ITwoFactorAuthenticationPolicy,
+        IEventHandler<TwoFactorAuthenticationTokenCreatedEvent>,
+        IEventHandler<TwoFactorAuthenticationDisabledEvent>
     {
         public CookieBasedTwoFactorAuthPolicy()
         {
@@ -21,19 +23,27 @@ namespace BrockAllen.MembershipReboot
         protected abstract void IssueCookie(string name, string value);
         protected abstract void RemoveCookie(string name);
 
-        public string GetTwoFactorAuthToken(string prefix)
+        public string GetTwoFactorAuthToken(UserAccount account)
         {
-            return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + prefix);
+            if (account == null) throw new ArgumentNullException("account");
+            return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
         }
 
-        public void IssueTwoFactorAuthToken(string prefix, string token)
+        public void Handle(TwoFactorAuthenticationTokenCreatedEvent evt)
         {
-            IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + prefix, token);
-        }
+            if (evt == null) throw new ArgumentNullException("evt");
+            if (evt.Token == null) throw new ArgumentNullException("Token");
+            if (evt.Account == null) throw new ArgumentNullException("account");
 
-        public void RemoveTwoFactorAuthToken(string prefix)
+            IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant, evt.Token);
+        }
+        
+        public void Handle(TwoFactorAuthenticationDisabledEvent evt)
         {
-            RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + prefix);
+            if (evt == null) throw new ArgumentNullException("evt");
+            if (evt.Account == null) throw new ArgumentNullException("account");
+
+            RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant);
         }
     }
 }

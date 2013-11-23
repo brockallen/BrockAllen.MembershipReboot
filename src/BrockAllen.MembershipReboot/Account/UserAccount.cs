@@ -44,6 +44,7 @@ namespace BrockAllen.MembershipReboot
         public virtual string MobileCode { get; internal set; }
         public virtual DateTime? MobileCodeSent { get; internal set; }
         public virtual string MobilePhoneNumber { get; internal set; }
+        public virtual DateTime? MobilePhoneNumberChanged { get; internal set; }
 
         public virtual TwoFactorAuthMode AccountTwoFactorAuthMode { get; internal set; }
         public virtual TwoFactorAuthMode CurrentTwoFactorAuthStatus { get; internal set; }
@@ -476,6 +477,7 @@ namespace BrockAllen.MembershipReboot
             string code = CryptoHelper.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
             this.MobileCode = CryptoHelper.HashPassword(code);
             this.MobileCodeSent = UtcNow;
+            
             return code;
         }
 
@@ -502,6 +504,14 @@ namespace BrockAllen.MembershipReboot
         {
             this.MobileCode = null;
             this.MobileCodeSent = null;
+            if (this.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile)
+            {
+                this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
+            }
+            if (this.VerificationPurpose == VerificationKeyPurpose.ChangeMobile)
+            {
+                this.ClearVerificationKey();
+            }
         }
 
         protected virtual bool IsMobileCodeStale
@@ -538,12 +548,24 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException("Mobile phone number must be different then the current.");
             }
 
-            this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, state: newMobilePhoneNumber);
-            var code = this.IssueMobileCode();
+            if (!this.IsVerificationPurposeValid(VerificationKeyPurpose.ChangeMobile) ||
+                IsMobileCodeStale ||
+                newMobilePhoneNumber != this.VerificationStorage ||
+                this.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile)
+            {
+                this.ClearMobileAuthCode();
+                
+                this.SetVerificationKey(VerificationKeyPurpose.ChangeMobile, state: newMobilePhoneNumber);
+                var code = this.IssueMobileCode();
 
-            Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] success");
+                Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] success");
 
-            this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber, Code = code });
+                this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = this, NewMobilePhoneNumber = newMobilePhoneNumber, Code = code });
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] complete, but not issuing a new code");
+            }
         }
 
         protected internal virtual bool ConfirmMobilePhoneNumberFromCode(string code)
@@ -571,6 +593,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccount.ConfirmMobilePhoneNumberFromCode] success");
             
             this.MobilePhoneNumber = this.VerificationStorage;
+            this.MobilePhoneNumberChanged = UtcNow;
 
             this.ClearVerificationKey();
             this.ClearMobileAuthCode();
@@ -599,7 +622,9 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccount.ClearMobilePhoneNumber] success");
 
             this.ClearMobileAuthCode();
+            
             this.MobilePhoneNumber = null;
+            this.MobilePhoneNumberChanged = UtcNow;
 
             this.AddEvent(new MobilePhoneRemovedEvent { Account = this });
         }
@@ -629,10 +654,14 @@ namespace BrockAllen.MembershipReboot
             }
 
             this.ClearMobileAuthCode();
+
             this.AccountTwoFactorAuthMode = mode;
+            this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
 
             if (mode == TwoFactorAuthMode.None)
             {
+                this.RemoveTwoFactorAuthTokens();
+
                 Tracing.Verbose("[UserAccount.ConfigureTwoFactorAuthentication] success -- two factor auth disabled");
                 this.AddEvent(new TwoFactorAuthenticationDisabledEvent { Account = this });
             }
@@ -746,14 +775,22 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] new mobile code issued");
-            var code = this.IssueMobileCode();
+            if (IsMobileCodeStale || this.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
+            {
+                this.ClearMobileAuthCode();
 
-            Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] success");
+                Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] new mobile code issued");
+                var code = this.IssueMobileCode();
+                this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Mobile;
 
-            this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Mobile;
+                Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] success");
 
-            this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this, Code = code });
+                this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = this, Code = code });
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] success, but not issing a new code");
+            }
 
             return true;
         }
@@ -806,9 +843,10 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccount.VerifyTwoFactorAuthCode] success");
 
+            this.ClearMobileAuthCode();
+
             this.LastLogin = UtcNow;
             this.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
-            this.ClearMobileAuthCode();
 
             this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent { Account = this });
 
@@ -904,9 +942,9 @@ namespace BrockAllen.MembershipReboot
 
             this.ClearVerificationKey();
             this.ClearMobileAuthCode();
-
-            IsLoginAllowed = false;
-            CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
+            this.ConfigureTwoFactorAuthentication(TwoFactorAuthMode.None);
+            
+            this.IsLoginAllowed = false;
 
             if (!IsAccountClosed)
             {
@@ -1190,6 +1228,85 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
+        internal virtual void CreateTwoFactorAuthToken()
+        {
+            Tracing.Information("[UserAccount.CreateTwoFactorAuthToken] called for accountID: {0}", this.ID);
+
+            if (this.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Error("[UserAccount.CreateTwoFactorAuthToken] AccountTwoFactorAuthMode is not mobile");
+                throw new Exception("AccountTwoFactorAuthMode is not Mobile");
+            }
+
+            var value = CryptoHelper.GenerateSalt();
+
+            var item = new TwoFactorAuthToken
+            {
+                Token = CryptoHelper.Hash(value),
+                Issued = this.UtcNow
+            };
+            this.TwoFactorAuthTokens.Add(item);
+
+            this.AddEvent(new TwoFactorAuthenticationTokenCreatedEvent { Account = this, Token = value });
+        }
+
+        internal virtual bool VerifyTwoFactorAuthToken(string token)
+        {
+            Tracing.Information("[UserAccount.VerifyTwoFactorAuthToken] called for accountID: {0}", this.ID);
+
+            if (this.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthToken] AccountTwoFactorAuthMode is not mobile");
+                return false;
+            }
+
+            if (String.IsNullOrWhiteSpace(token))
+            {
+                Tracing.Error("[UserAccount.VerifyTwoFactorAuthToken] failed -- no token");
+                return false;
+            }
+
+            token = CryptoHelper.Hash(token);
+
+            var expiration = UtcNow.AddDays(-MembershipRebootConstants.UserAccount.TwoFactorAuthTokenDurationDays);
+            var removequery =
+                from t in this.TwoFactorAuthTokens
+                where
+                    t.Issued < this.PasswordChanged ||
+                    t.Issued < this.MobilePhoneNumberChanged ||
+                    t.Issued < expiration
+                select t;
+            var itemsToRemove = removequery.ToArray();
+
+            Tracing.Verbose("[UserAccount.VerifyTwoFactorAuthToken] number of stale tokens being removed: {0}", itemsToRemove.Length);
+
+            foreach (var item in itemsToRemove)
+            {
+                this.TwoFactorAuthTokens.Remove(item);
+            }
+
+            var matchquery =
+                from t in this.TwoFactorAuthTokens.ToArray()
+                where SlowEquals(t.Token, token)
+                select t;
+
+            var result = matchquery.Any();
+
+            Tracing.Verbose("[UserAccount.VerifyTwoFactorAuthToken] result was token verified: {0}", result);
+
+            return result;
+        }
+
+        internal virtual void RemoveTwoFactorAuthTokens()
+        {
+            Tracing.Information("[UserAccount.RemoveTwoFactorAuthTokens] called for accountID: {0}", this.ID);
+            
+            foreach (var item in this.TwoFactorAuthTokens.ToArray())
+            {
+                this.TwoFactorAuthTokens.Remove(item);
+            }
+        }
+
         static readonly string[] UglyBase64 = { "+", "/", "=" };
         static string StripUglyBase64(string s)
         {
@@ -1232,49 +1349,6 @@ namespace BrockAllen.MembershipReboot
             {
                 return DateTime.UtcNow;
             }
-        }
-
-        internal string CreateTwoFactorAuthToken()
-        {
-            var value = CryptoHelper.GenerateSalt();
-
-            var item = new TwoFactorAuthToken
-            {
-                Token = CryptoHelper.Hash(value),
-                Issued = this.UtcNow
-            };
-            this.TwoFactorAuthTokens.Add(item);
-            
-            return value;
-        }
-
-        internal bool VerifyTwoFactorAuthToken(string token)
-        {
-            if (String.IsNullOrWhiteSpace(token))
-            {
-                return false;
-            }
-
-            token = CryptoHelper.Hash(token);
-
-            var expiration = UtcNow.AddDays(-MembershipRebootConstants.UserAccount.TwoFactorAuthTokenDurationDays);
-            var query = 
-                from t in this.TwoFactorAuthTokens
-                where 
-                    t.Issued < this.PasswordChanged || 
-                    t.Issued < expiration
-                select t;
-            foreach(var item in query.ToArray())
-            {
-                this.TwoFactorAuthTokens.Remove(item);
-            }
-
-            query = 
-                from t in this.TwoFactorAuthTokens.ToArray()
-                where SlowEquals(t.Token, token)
-                select t;
-            
-            return query.Any();
         }
     }
 }

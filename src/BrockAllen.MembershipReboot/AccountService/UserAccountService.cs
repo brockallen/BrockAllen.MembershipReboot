@@ -548,16 +548,16 @@ namespace BrockAllen.MembershipReboot
                 bool shouldRequestTwoFactorAuthCode = true;
                 if (this.Configuration.TwoFactorAuthenticationPolicy != null)
                 {
-                    var token = this.Configuration.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account.Tenant);
-                    
-                    var verified = account.VerifyTwoFactorAuthToken(token);
-                    if (!verified)
+                    var token = this.Configuration.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
+                    if (!String.IsNullOrWhiteSpace(token))
                     {
-                        this.Configuration.TwoFactorAuthenticationPolicy.RemoveTwoFactorAuthToken(account.Tenant);
+                        shouldRequestTwoFactorAuthCode = !account.VerifyTwoFactorAuthToken(token);
+                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token found, was verified: {0}", shouldRequestTwoFactorAuthCode);
                     }
-
-                    shouldRequestTwoFactorAuthCode = !verified;
-                    Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token verified, result: {0}", shouldRequestTwoFactorAuthCode);
+                    else
+                    {
+                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy no token present");
+                    }
                 }
 
                 if (shouldRequestTwoFactorAuthCode)
@@ -601,8 +601,7 @@ namespace BrockAllen.MembershipReboot
 
             if (result && this.Configuration.TwoFactorAuthenticationPolicy != null)
             {
-                var token = account.CreateTwoFactorAuthToken();
-                this.Configuration.TwoFactorAuthenticationPolicy.IssueTwoFactorAuthToken(account.Tenant, token);
+                account.CreateTwoFactorAuthToken();
                 Tracing.Verbose("[UserAccountService.AuthenticateWithCode] TwoFactorAuthenticationPolicy issuing a new two factor auth token");
             };
             
@@ -914,6 +913,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             account.ClearMobilePhoneNumber();
+
             Update(account);
         }
 

@@ -67,9 +67,9 @@
     <Compile Include="Migrations\201311230142548_VerificationState.Designer.cs">
       <DependentUpon>201311230142548_VerificationState.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201311231800335_TwoFactorAuthTokens.cs" />
-    <Compile Include="Migrations\201311231800335_TwoFactorAuthTokens.Designer.cs">
-      <DependentUpon>201311231800335_TwoFactorAuthTokens.cs</DependentUpon>
+    <Compile Include="Migrations\201311231957330_TwoFactorAuthTokens.cs" />
+    <Compile Include="Migrations\201311231957330_TwoFactorAuthTokens.Designer.cs">
+      <DependentUpon>201311231957330_TwoFactorAuthTokens.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,8 +90,8 @@
     <EmbeddedResource Include="Migrations\201311230142548_VerificationState.resx">
       <DependentUpon>201311230142548_VerificationState.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311231800335_TwoFactorAuthTokens.resx">
-      <DependentUpon>201311231800335_TwoFactorAuthTokens.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201311231957330_TwoFactorAuthTokens.resx">
+      <DependentUpon>201311231957330_TwoFactorAuthTokens.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

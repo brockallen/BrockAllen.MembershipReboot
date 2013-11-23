@@ -38,9 +38,9 @@ namespace BrockAllen.MembershipReboot
         {
             public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
-                Tokenizer b = this;
+                Func<UserAccountEvent, ApplicationInformation, string, dynamic, string> b = base.Tokenize;
                 var evt = (EmailChangeRequestedEvent)accountEvent;
-                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
+                msg = b(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{newEmail}", evt.NewEmail);
                 msg = msg.Replace("{oldEmail}", accountEvent.Account.Email);
                 return msg;
@@ -50,9 +50,9 @@ namespace BrockAllen.MembershipReboot
         {
             public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
-                Tokenizer b = this;
+                Func<UserAccountEvent, ApplicationInformation, string, dynamic, string> b = base.Tokenize;
                 var evt = (EmailChangedEvent)accountEvent;
-                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
+                msg = b(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{newEmail}", accountEvent.Account.Email);
                 msg = msg.Replace("{oldEmail}", evt.OldEmail);
                 return msg;
@@ -62,9 +62,9 @@ namespace BrockAllen.MembershipReboot
         {
             public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
-                Tokenizer b = this;
                 var evt = (CertificateAddedEvent)accountEvent;
-                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
+                Func<UserAccountEvent, ApplicationInformation, string, dynamic, string> b = base.Tokenize;
+                msg = b(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{thumbprint}", evt.Certificate.Thumbprint);
                 msg = msg.Replace("{subject}", evt.Certificate.Subject);
                 return msg;
@@ -74,9 +74,9 @@ namespace BrockAllen.MembershipReboot
         {
             public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
-                Tokenizer b = this;
                 var evt = (CertificateRemovedEvent)accountEvent;
-                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
+                Func<UserAccountEvent, ApplicationInformation, string, dynamic, string> b = base.Tokenize;
+                msg = b(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{thumbprint}", evt.Certificate.Thumbprint);
                 msg = msg.Replace("{subject}", evt.Certificate.Subject);
                 return msg;
@@ -86,9 +86,9 @@ namespace BrockAllen.MembershipReboot
         {
             public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
-                Tokenizer b = this;
+                Func<UserAccountEvent, ApplicationInformation, string, dynamic, string> b = base.Tokenize;
                 var evt = (LinkedAccountAddedEvent)accountEvent;
-                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
+                msg = b(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{provider}", evt.LinkedAccount.ProviderName);
                 return msg;
             }
@@ -97,9 +97,9 @@ namespace BrockAllen.MembershipReboot
         {
             public override string Tokenize(UserAccountEvent accountEvent, ApplicationInformation appInfo, string msg, dynamic extra)
             {
-                Tokenizer b = this;
+                Func<UserAccountEvent, ApplicationInformation, string, dynamic, string> b = base.Tokenize;
                 var evt = (LinkedAccountRemovedEvent)accountEvent;
-                msg = b.Tokenize(accountEvent, appInfo, msg, extra);
+                msg = b(accountEvent, appInfo, msg, extra);
                 msg = msg.Replace("{provider}", evt.LinkedAccount.ProviderName);
                 return msg;
             }

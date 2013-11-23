@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
 namespace BrockAllen.MembershipReboot.Ef.Migrations
 {
     using System;
@@ -19,12 +24,14 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
                 .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
                 .Index(t => t.UserAccountID);
             
+            AddColumn("dbo.UserAccounts", "MobilePhoneNumberChanged", c => c.DateTime());
         }
         
         public override void Down()
         {
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccountID" });
+            DropColumn("dbo.UserAccounts", "MobilePhoneNumberChanged");
             DropTable("dbo.TwoFactorAuthTokens");
         }
     }

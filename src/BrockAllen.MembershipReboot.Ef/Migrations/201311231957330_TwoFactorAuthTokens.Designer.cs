@@ -13,7 +13,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201311231800335_TwoFactorAuthTokens"; }
+            get { return "201311231957330_TwoFactorAuthTokens"; }
         }
         
         string IMigrationMetadata.Source
