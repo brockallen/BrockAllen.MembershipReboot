@@ -8,7 +8,7 @@ namespace BrockAllen.MembershipReboot
     public enum VerificationKeyPurpose
     {
         VerifyAccount = 1,
-        ChangePassword = 2,
+        ResetPassword = 2,
         ChangeEmail = 3,
         ChangeMobile = 4
     }

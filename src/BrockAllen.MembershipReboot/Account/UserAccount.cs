@@ -310,10 +310,10 @@ namespace BrockAllen.MembershipReboot
             {
                 // if there's no current key, or if there is a key but 
                 // it's stale, create a new reset key
-                if (IsVerificationKeyStale || VerificationKeyPurpose.ChangePassword != this.VerificationPurpose)
+                if (IsVerificationKeyStale || VerificationKeyPurpose.ResetPassword != this.VerificationPurpose)
                 {
                     Tracing.Verbose("[UserAccount.ResetPassword] creating new verification keys");
-                    this.SetVerificationKey(VerificationKeyPurpose.ChangePassword);
+                    this.SetVerificationKey(VerificationKeyPurpose.ResetPassword);
                 }
                 
                 Tracing.Verbose("[UserAccount.ResetPassword] account verified -- raising event to send reset notification");
@@ -345,7 +345,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (this.VerificationPurpose != VerificationKeyPurpose.ChangePassword)
+            if (this.VerificationPurpose != VerificationKeyPurpose.ResetPassword)
             {
                 Tracing.Error("[UserAccount.ChangePasswordFromResetKey] failed -- invalid verification key purpose");
                 return false;
