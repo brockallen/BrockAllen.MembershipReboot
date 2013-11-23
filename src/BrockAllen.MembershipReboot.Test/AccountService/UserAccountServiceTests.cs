@@ -1111,24 +1111,29 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
-            subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey, "test2@test.com");
+            subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey);
             var acct = repository.Get(id);
             Assert.AreEqual("test2@test.com", acct.Email);
         }
-
+        
         [TestMethod]
-        public void ChangeEmailRequest_AllowsEmailWithDifferentCaseToBeChanged()
+        public void ChangeEmailRequest_NonuniqueEmail_FailsValidation()
         {
             securitySettings.AllowLoginAfterAccountCreation = true;
             securitySettings.RequireAccountVerification = false;
-            var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
 
-            subject.ChangeEmailRequest(id, "test2@test.com");
-            subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey, "TEST2@TEST.COM");
-            var acct = repository.Get(id);
-            Assert.AreEqual("TEST2@TEST.COM", acct.Email);
+            try
+            {
+                subject.ChangeEmailRequest(acct1.ID, "test2@test.com");
+                Assert.Fail();
+            }
+            catch(ValidationException ex)
+            {
+                StringAssert.Contains(ex.Message, "Email");
+            }
         }
-        
         [TestMethod]
         public void ChangeEmailRequest_InvalidAccountId_Throws()
         {
@@ -1172,7 +1177,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
-            Assert.IsTrue(subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey, "test2@test.com"));
+            Assert.IsTrue(subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey));
         }
 
         [TestMethod]
@@ -1184,7 +1189,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
-            subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey, "test2@test.com");
+            subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey);
 
             Assert.AreEqual("test2@test.com", repository.Get(id).Username);
         }
@@ -1199,7 +1204,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             try
             {
-                subject.ChangeEmailFromKey(id, "", repository.Get(id).VerificationKey, "test2@test.com");
+                subject.ChangeEmailFromKey(id, "", repository.Get(id).VerificationKey);
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -1218,7 +1223,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             try
             {
-                subject.ChangeEmailFromKey(id, "pass2", repository.Get(id).VerificationKey, "test2@test.com");
+                subject.ChangeEmailFromKey(id, "pass2", repository.Get(id).VerificationKey);
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -1237,31 +1242,12 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             try
             {
-                subject.ChangeEmailFromKey(id, "pass", "", "test2@test.com");
+                subject.ChangeEmailFromKey(id, "pass", "");
                 Assert.Fail();
             }
             catch (ValidationException ex)
             {
                 StringAssert.Contains(ex.Message, "key");
-            }
-        }
-
-        [TestMethod]
-        public void ChangeEmailFromKey_EmptyNewEmail_ValidationFails()
-        {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
-            var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
-
-            subject.ChangeEmailRequest(id, "test2@test.com");
-            try
-            {
-                subject.ChangeEmailFromKey(id, "pass", repository.Get(id).VerificationKey, "");
-                Assert.Fail();
-            }
-            catch (ValidationException ex)
-            {
-                StringAssert.Contains(ex.Message, "email");
             }
         }
 
@@ -1275,7 +1261,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             try
             {
-                subject.ChangeEmailFromKey(Guid.NewGuid(), "pass", repository.Get(id).VerificationKey, "test2@test.com");
+                subject.ChangeEmailFromKey(Guid.NewGuid(), "pass", repository.Get(id).VerificationKey);
                 Assert.Fail();
             }
             catch (ArgumentException)

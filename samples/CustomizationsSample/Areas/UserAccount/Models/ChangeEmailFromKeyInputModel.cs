@@ -9,10 +9,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
-        [EmailAddress]
-        public string NewEmail { get; set; }
-
         [HiddenInput]
         public string Key { get; set; }
     }

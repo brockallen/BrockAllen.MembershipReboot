@@ -57,11 +57,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ChangeEmailFromKey(User.GetUserID(), model.Password, model.Key, model.NewEmail))
+                    if (this.userAccountService.ChangeEmailFromKey(User.GetUserID(), model.Password, model.Key))
                     {
                         // since we've changed the email, we need to re-issue the cookie that
                         // contains the claims.
-                        var account = this.userAccountService.GetByEmail(model.NewEmail);
+                        var account = this.userAccountService.GetByID(User.GetUserID());
                         authSvc.SignIn(account);
                         return View("Success");
                     }
