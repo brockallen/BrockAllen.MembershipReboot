@@ -80,7 +80,7 @@ namespace BrockAllen.MembershipReboot
 
             if (NameAlreadyExists(tenant, name))
             {
-                throw new ValidationException("That name is already in use.");
+                throw new ValidationException(Resources.ValidationMessages.NameAlreadyInUse);
             }
 
             var grp = this.groupRepository.Create();
@@ -122,14 +122,14 @@ namespace BrockAllen.MembershipReboot
 
         public void ChangeName(Guid groupID, string name)
         {
-            if (String.IsNullOrWhiteSpace(name)) throw new ValidationException("Invalid name.");
+            if (String.IsNullOrWhiteSpace(name)) throw new ValidationException(Resources.ValidationMessages.InvalidName);
 
             var group = Get(groupID);
             if (group == null) throw new ArgumentException("Invalid GroupID");
             
             if (NameAlreadyExists(group.Tenant, name, groupID))
             {
-                throw new ValidationException("That name is already in use.");
+                throw new ValidationException(Resources.ValidationMessages.NameAlreadyInUse);
             }
 
             group.Name = name;

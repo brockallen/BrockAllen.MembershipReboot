@@ -32,7 +32,7 @@ namespace BrockAllen.MembershipReboot
             if (otherAccount != null && otherAccount.ID != account.ID)
             {
                 Tracing.Verbose("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
-                throw new ValidationException("That certificate is already in use by a different account.");
+                throw new ValidationException(Resources.ValidationMessages.CertificateAlreadyInUse);
             }
         }
 
@@ -65,7 +65,7 @@ namespace BrockAllen.MembershipReboot
                 if (query.Any())
                 {
                     Tracing.Verbose("[UserAccountValidation.MobilePhoneMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
-                    throw new ValidationException("That mobile phone is already in use by a different account.");
+                    throw new ValidationException(Resources.ValidationMessages.MobilePhoneAlreadyInUse);
                 }
             }
         }

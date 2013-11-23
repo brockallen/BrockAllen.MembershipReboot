@@ -51,12 +51,12 @@ namespace BrockAllen.MembershipReboot
 
             if (!account.IsAccountVerified)
             {
-                throw new ValidationException("Account not yet verified.");
+                throw new ValidationException(Resources.ValidationMessages.AccountNotVerified);
             }
 
             if (!account.IsLoginAllowed)
             {
-                throw new ValidationException("Login not allowed for this account.");
+                throw new ValidationException(Resources.ValidationMessages.LoginNotAllowed);
             }
 
             if (account.RequiresTwoFactorAuthToSignIn)
@@ -170,7 +170,7 @@ namespace BrockAllen.MembershipReboot
                     var email = claims.GetValue(ClaimTypes.Email);
                     if (String.IsNullOrWhiteSpace(email))
                     {
-                        throw new ValidationException("Can't create an account because there was no email from the identity provider.");
+                        throw new ValidationException(Resources.ValidationMessages.AccountCreateFailNoEmailFromIdp);
                     }
 
                     // guess at a name to use
@@ -184,7 +184,7 @@ namespace BrockAllen.MembershipReboot
                     // check to see if email already exists
                     if (this.UserAccountService.EmailExists(tenant, email))
                     {
-                        throw new ValidationException("Can't login with this provider because the email is already associated with another account. Please login with your local account and then associate the provider.");
+                        throw new ValidationException(Resources.ValidationMessages.LoginFailEmailAlreadyAssociated);
                     }
 
                     // auto-gen a password, they can always reset it later if they want to use the password feature

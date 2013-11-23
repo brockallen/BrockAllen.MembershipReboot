@@ -689,7 +689,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newPassword))
             {
                 Tracing.Error("[UserAccountService.SetPassword] failed -- null newPassword");
-                throw new ValidationException("Invalid new password.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidNewPassword);
             }
 
             var account = this.GetByID(accountID);
@@ -708,12 +708,12 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(oldPassword))
             {
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- null oldPassword");
-                throw new ValidationException("Invalid old password.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidOldPassword);
             }
             if (String.IsNullOrWhiteSpace(newPassword))
             {
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- null newPassword");
-                throw new ValidationException("Invalid new password.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidNewPassword);
             }
 
             var account = this.GetByID(accountID);
@@ -724,7 +724,7 @@ namespace BrockAllen.MembershipReboot
             if (!Authenticate(account, oldPassword, AuthenticationPurpose.VerifyPassword))
             {
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- failed authN");
-                throw new ValidationException("Invalid old password.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidOldPassword);
             }
 
             account.SetPassword(newPassword);
@@ -749,16 +749,16 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant))
             {
                 Tracing.Error("[UserAccountService.ResetPassword] failed -- null tenant");
-                throw new ValidationException("Invalid tenant.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidTenant);
             }
             if (String.IsNullOrWhiteSpace(email))
             {
                 Tracing.Error("[UserAccountService.ResetPassword] failed -- null email");
-                throw new ValidationException("Invalid email.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
             }
 
             var account = this.GetByEmail(tenant, email);
-            if (account == null) throw new ValidationException("Invalid email.");
+            if (account == null) throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
 
             account.ResetPassword();
             Update(account);
@@ -810,11 +810,11 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(email))
             {
                 Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- null email");
-                throw new ValidationException("Invalid email.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
             }
 
             var account = this.GetByEmail(tenant, email);
-            if (account == null) throw new ValidationException("Invalid email.");
+            if (account == null) throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
 
             account.SendAccountNameReminder();
             Update(account);
@@ -833,7 +833,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newUsername))
             {
                 Tracing.Error("[UserAccountService.ChangeUsername] failed -- null newUsername");
-                throw new ValidationException("Invalid username.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidUsername);
             }
 
             var account = this.GetByID(accountID);
@@ -852,7 +852,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newEmail))
             {
                 Tracing.Error("[UserAccountService.ChangeEmailRequest] failed -- null newEmail");
-                throw new ValidationException("Invalid email.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
             }
 
             var account = this.GetByID(accountID);
@@ -871,12 +871,12 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- null password");
-                throw new ValidationException("Invalid password.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
             }
             if (String.IsNullOrWhiteSpace(key))
             {
                 Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- null key");
-                throw new ValidationException("Invalid key.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
             var account = this.GetByID(accountID);
@@ -885,7 +885,7 @@ namespace BrockAllen.MembershipReboot
             if (!Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
             {
                 Tracing.Error("[UserAccountService.ChangeEmailFromKey] failed -- authN failed");
-                throw new ValidationException("Invalid password.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
             }
 
             // one last check
@@ -924,7 +924,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
             {
                 Tracing.Error("[UserAccountService.ChangeMobilePhoneRequest] failed -- null newMobilePhoneNumber");
-                throw new ValidationException("Invalid Phone Number.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPhone);
             }
 
             var account = this.GetByID(accountID);

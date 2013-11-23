@@ -104,17 +104,17 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username))
             {
                 Tracing.Error("[UserAccount.Init] failed -- no username");
-                throw new ValidationException("Username is required.");
+                throw new ValidationException(Resources.ValidationMessages.UsernameRequired);
             }
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Error("[UserAccount.Init] failed -- no password");
-                throw new ValidationException("Password is required.");
+                throw new ValidationException(Resources.ValidationMessages.PasswordRequired);
             }
             if (String.IsNullOrWhiteSpace(email))
             {
                 Tracing.Error("[UserAccount.Init] failed -- no email");
-                throw new ValidationException("Email is required.");
+                throw new ValidationException(Resources.ValidationMessages.EmailRequired);
             }
 
             if (this.ID != Guid.Empty)
@@ -293,7 +293,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Error("[UserAccount.SetPassword] failed -- no password provided");
-                throw new ValidationException("Invalid password.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
             }
 
             Tracing.Verbose("[UserAccount.SetPassword] setting new password hash");
@@ -539,13 +539,13 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
             {
                 Tracing.Error("[UserAccount.RequestChangeMobilePhoneNumber] invalid mobile phone");
-                throw new ValidationException("Mobile Phone Number required.");
+                throw new ValidationException(Resources.ValidationMessages.MobilePhoneRequired);
             }
 
             if (this.MobilePhoneNumber == newMobilePhoneNumber)
             {
                 Tracing.Error("[UserAccount.RequestChangeMobilePhoneNumber] mobile phone same as current");
-                throw new ValidationException("Mobile phone number must be different then the current.");
+                throw new ValidationException(Resources.ValidationMessages.MobilePhoneMustBeDifferent);
             }
 
             if (!this.IsVerificationPurposeValid(VerificationKeyPurpose.ChangeMobile) ||
@@ -643,14 +643,14 @@ namespace BrockAllen.MembershipReboot
                 String.IsNullOrWhiteSpace(this.MobilePhoneNumber))
             {
                 Tracing.Error("[UserAccount.ConfigureTwoFactorAuthentication] failed -- mobile requested but no mobile phone for account");
-                throw new ValidationException("Register a mobile phone number to enable mobile two factor authentication.");
+                throw new ValidationException(Resources.ValidationMessages.RegisterMobileForTwoFactor);
             }
 
             if (mode == TwoFactorAuthMode.Certificate &&
                 !this.Certificates.Any())
             {
                 Tracing.Error("[UserAccount.ConfigureTwoFactorAuthentication] failed -- certificate requested but no certificates for account");
-                throw new ValidationException("Add a client certificate to enable certificate two factor authentication.");
+                throw new ValidationException(Resources.ValidationMessages.AddClientCertForTwoFactor);
             }
 
             this.ClearMobileAuthCode();
@@ -884,7 +884,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newEmail))
             {
                 Tracing.Error("[UserAccount.ChangeEmailRequest] failed -- invalid newEmail");
-                throw new ValidationException("Invalid email.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
             }
 
             // if they've not yet verified then fail
@@ -909,7 +909,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(key))
             {
                 Tracing.Error("[UserAccount.ChangeEmailFromKey] failed -- invalid key");
-                throw new ValidationException("Invalid key.");
+                throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
             if (!IsVerificationKeyValid(VerificationKeyPurpose.ChangeEmail, key))
