@@ -473,7 +473,7 @@ namespace BrockAllen.MembershipReboot
         string IssueMobileCode()
         {
             string code = CryptoHelper.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
-            this.MobileCode = CryptoHelper.Hash(code);
+            this.MobileCode = CryptoHelper.HashPassword(code);
             this.MobileCodeSent = UtcNow;
             return code;
         }
@@ -486,8 +486,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            string hash = CryptoHelper.Hash(code);
-            var result = SlowEquals(hash, this.MobileCode);
+            var result = CryptoHelper.VerifyHashedPassword(this.MobileCode, code);
             if (!result)
             {
                 Tracing.Error("[UserAccount.VerifyMobileCode] failed -- mobile code invalid");
