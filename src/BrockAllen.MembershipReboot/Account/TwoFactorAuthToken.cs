@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,9 +29,5 @@ namespace BrockAllen.MembershipReboot
         public virtual string Token { get; internal set; }
 
         public virtual DateTime Issued { get; internal set; }
-
-        //[Required]
-        //[ForeignKey("UserAccountID")]
-        //public virtual UserAccount User { get; internal set; }
     }
 }

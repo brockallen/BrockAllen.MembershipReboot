@@ -59,10 +59,12 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.LoginNotAllowed);
             }
 
-            if (account.RequiresTwoFactorAuthToSignIn)
+            if (account.RequiresTwoFactorAuthToSignIn || 
+                account.RequiresPasswordReset || 
+                this.UserAccountService.IsPasswordExpired(account))
             {
-                Tracing.Verbose("[AuthenticationService.SignIn] detected account requires two factor to sign in: {0}", account.ID);
-                IssuePartialSignInTokenForTwoFactorAuth(account, method);
+                Tracing.Verbose("[AuthenticationService.SignIn] detected account requires two factor or password reset to sign in: {0}", account.ID);
+                IssuePartialSignInToken(account, method);
                 return;
             }
 
@@ -114,7 +116,7 @@ namespace BrockAllen.MembershipReboot
             return claims;
         }
 
-        private void IssuePartialSignInTokenForTwoFactorAuth(UserAccount account, string method)
+        private void IssuePartialSignInToken(UserAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 

@@ -4,7 +4,7 @@ using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class ChangePasswordController : Controller
     {
         UserAccountService userAccountService;
@@ -15,6 +15,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         
         public ActionResult Index()
         {
+            if (!User.HasUserID())
+            {
+                return new HttpUnauthorizedResult();
+            }
             return View(new ChangePasswordInputModel());
         }
         
@@ -22,6 +26,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(ChangePasswordInputModel model)
         {
+            if (!User.HasUserID())
+            {
+                return new HttpUnauthorizedResult();
+            }
+
             if (ModelState.IsValid)
             {
                 try
