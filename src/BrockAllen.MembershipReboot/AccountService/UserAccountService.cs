@@ -369,9 +369,15 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool VerifyAccount(string key, string password)
         {
+            UserAccount account;
+            return VerifyAccount(key, password, out account);
+        }
+        
+        public virtual bool VerifyAccount(string key, string password, out UserAccount account)
+        {
             Tracing.Information("[UserAccountService.VerifyAccount] called: {0}", key);
 
-            var account = this.GetByVerificationKey(key);
+            account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
             var result = account.VerifyAccount(key, password);

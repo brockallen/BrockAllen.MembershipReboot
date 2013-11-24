@@ -8,10 +8,12 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     public class RegisterController : Controller
     {
         UserAccountService userAccountService;
-        
-        public RegisterController(UserAccountService userAccountService)
+        AuthenticationService authSvc;
+
+        public RegisterController(AuthenticationService authSvc)
         {
-            this.userAccountService = userAccountService;
+            this.authSvc = authSvc;
+            this.userAccountService = authSvc.UserAccountService;
         }
 
         public ActionResult Index()
@@ -53,8 +55,19 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [HttpPost]
         public ActionResult Confirm(string id, string password)
         {
-            var result = this.userAccountService.VerifyAccount(id, password);
-            return View("ConfirmResult", result);
+            BrockAllen.MembershipReboot.UserAccount account;
+            var result = this.userAccountService.VerifyAccount(id, password, out account);
+            if (result)
+            {
+                authSvc.SignIn(account);
+            }
+
+            return RedirectToAction("ConfirmResult", new { success = result });
+        }
+
+        public ActionResult ConfirmResult(bool success)
+        {
+            return View("ConfirmResult", success);
         }
 
         public ActionResult Cancel(string id)
