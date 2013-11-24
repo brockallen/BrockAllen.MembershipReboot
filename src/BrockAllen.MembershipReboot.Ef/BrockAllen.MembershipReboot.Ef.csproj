@@ -59,21 +59,9 @@
     <Compile Include="Migrations\201311222357350_InitialCreate.Designer.cs">
       <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201311230007004_ProviderName.cs" />
-    <Compile Include="Migrations\201311230007004_ProviderName.Designer.cs">
-      <DependentUpon>201311230007004_ProviderName.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201311230142548_VerificationState.cs" />
-    <Compile Include="Migrations\201311230142548_VerificationState.Designer.cs">
-      <DependentUpon>201311230142548_VerificationState.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201311231957330_TwoFactorAuthTokens.cs" />
-    <Compile Include="Migrations\201311231957330_TwoFactorAuthTokens.Designer.cs">
-      <DependentUpon>201311231957330_TwoFactorAuthTokens.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201311242102183_PasswordResetSecrets.cs" />
-    <Compile Include="Migrations\201311242102183_PasswordResetSecrets.Designer.cs">
-      <DependentUpon>201311242102183_PasswordResetSecrets.cs</DependentUpon>
+    <Compile Include="Migrations\201311242107026_v5.cs" />
+    <Compile Include="Migrations\201311242107026_v5.Designer.cs">
+      <DependentUpon>201311242107026_v5.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,17 +76,8 @@
     <EmbeddedResource Include="Migrations\201311222357350_InitialCreate.resx">
       <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311230007004_ProviderName.resx">
-      <DependentUpon>201311230007004_ProviderName.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311230142548_VerificationState.resx">
-      <DependentUpon>201311230142548_VerificationState.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311231957330_TwoFactorAuthTokens.resx">
-      <DependentUpon>201311231957330_TwoFactorAuthTokens.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311242102183_PasswordResetSecrets.resx">
-      <DependentUpon>201311242102183_PasswordResetSecrets.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201311242107026_v5.resx">
+      <DependentUpon>201311242107026_v5.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

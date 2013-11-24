@@ -7,13 +7,13 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.0.1-21010")]
-    public sealed partial class PasswordResetSecrets : IMigrationMetadata
+    public sealed partial class v5 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(PasswordResetSecrets));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(v5));
         
         string IMigrationMetadata.Id
         {
-            get { return "201311242102183_PasswordResetSecrets"; }
+            get { return "201311242107026_v5"; }
         }
         
         string IMigrationMetadata.Source
