@@ -71,6 +71,10 @@
     <Compile Include="Migrations\201311231957330_TwoFactorAuthTokens.Designer.cs">
       <DependentUpon>201311231957330_TwoFactorAuthTokens.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201311242102183_PasswordResetSecrets.cs" />
+    <Compile Include="Migrations\201311242102183_PasswordResetSecrets.Designer.cs">
+      <DependentUpon>201311242102183_PasswordResetSecrets.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -92,6 +96,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201311231957330_TwoFactorAuthTokens.resx">
       <DependentUpon>201311231957330_TwoFactorAuthTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201311242102183_PasswordResetSecrets.resx">
+      <DependentUpon>201311242102183_PasswordResetSecrets.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

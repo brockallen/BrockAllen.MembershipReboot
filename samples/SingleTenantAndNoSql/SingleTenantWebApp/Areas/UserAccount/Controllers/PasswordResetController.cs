@@ -1,6 +1,7 @@
 ﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using System.Linq;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
@@ -17,7 +18,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             return View();
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Index(PasswordResetInputModel model)
@@ -37,6 +38,86 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return View();
         }
 
+        public ActionResult ResetWithSecret()
+        {
+            return View("ResetWithSecret");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetWithSecret(PasswordResetInputModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var account = this.userAccountService.GetByEmail(model.Email);
+                    if (account != null)
+                    {
+                        var vm = new PasswordResetWithSecretInputModel(account.ID);
+                        vm.Questions =
+                            account.PasswordResetSecrets.Select(
+                                x => new PasswordResetSecretViewModel
+                                {
+                                    QuestionID = x.ID,
+                                    Question = x.Question
+                                }).ToArray();
+
+                        return View("ResetWithQuestions", vm);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Invalid email");
+                    }
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+            }
+            return View("ResetWithSecret");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetWithQuestions(PasswordResetWithSecretInputModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var answers = 
+                        model.Questions.Select(x=>new PasswordResetQuestionAnswer{QuestionID = x.QuestionID, Answer = x.Answer} );
+                    this.userAccountService.ResetPasswordFromSecretQuestionAndAnswer(model.UnprotectedAccountID.Value, answers.ToArray());
+                    return View("ResetSuccess");
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+            }
+
+            var id = model.UnprotectedAccountID;
+            if (id != null)
+            {
+                var account = this.userAccountService.GetByID(id.Value);
+                if (account != null)
+                {
+                    var vm = new PasswordResetWithSecretInputModel(account.ID);
+                    vm.Questions =
+                        account.PasswordResetSecrets.Select(
+                            x => new PasswordResetSecretViewModel
+                            {
+                                QuestionID = x.ID,
+                                Question = x.Question
+                            }).ToArray();
+                    return View("ResetWithQuestions", vm);
+                }
+            }
+
+            return RedirectToAction("ResetWithSecret");
+        }
+
         public ActionResult Confirm(string id)
         {
             var vm = new ChangePasswordFromResetKeyInputModel()
@@ -45,7 +126,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             };
             return View("Confirm", vm);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Confirm(ChangePasswordFromResetKeyInputModel model)

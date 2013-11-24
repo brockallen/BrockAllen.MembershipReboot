@@ -760,6 +760,12 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByEmail(tenant, email);
             if (account == null) throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
 
+            if (account.PasswordResetSecrets.Count > 0)
+            {
+                Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- account configured for secret question/answer");
+                throw new ValidationException(Resources.ValidationMessages.AccountPasswordResetRequiresSecretQuestion);
+            }
+
             account.ResetPassword();
             Update(account);
         }
@@ -785,6 +791,145 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.ChangePasswordFromResetKey] result: {0}", result);
 
             return result;
+        }
+
+        public virtual void AddPasswordResetSecret(Guid accountID, string password, string question, string answer)
+        {
+            Tracing.Information("[UserAccountService.AddPasswordResetSecret] called: {0}", accountID);
+
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null oldPassword");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
+            }
+            if (String.IsNullOrWhiteSpace(question))
+            {
+                Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null question");
+                throw new ValidationException(Resources.ValidationMessages.SecretQuestionRequired);
+            }
+            if (String.IsNullOrWhiteSpace(answer))
+            {
+                Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null answer");
+                throw new ValidationException(Resources.ValidationMessages.SecretAnswerRequired);
+            }
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            if (!Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
+            {
+                Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- failed authN");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
+            }
+
+            if (account.PasswordResetSecrets.Any(x=>x.Question == question))
+            {
+                Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- question already exists");
+                throw new ValidationException(Resources.ValidationMessages.SecretQuestionAlreadyInUse);
+            }
+
+            var secret = new PasswordResetSecret {
+                ID = Guid.NewGuid(),
+                Question = question, 
+                Answer = CryptoHelper.Hash(answer)
+            };
+            account.PasswordResetSecrets.Add(secret);
+            account.AddEvent(new PasswordResetSecretAddedEvent { Account = account, Secret = secret });
+            
+            Update(account);
+        }
+
+        public virtual void RemovePasswordResetSecret(Guid accountID, Guid questionID)
+        {
+            Tracing.Information("[UserAccountService.RemovePasswordResetSecret] called: Acct: {0}, Question: {1}", accountID, questionID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            var item = account.PasswordResetSecrets.SingleOrDefault(x => x.ID == questionID);
+            if (item != null)
+            {
+                account.PasswordResetSecrets.Remove(item);
+                account.AddEvent(new PasswordResetSecretRemovedEvent { Account = account, Secret = item });
+                Update(account);
+            }
+        }
+
+        public virtual void ResetPasswordFromSecretQuestionAndAnswer(Guid accountID, PasswordResetQuestionAnswer[] answers)
+        {
+            Tracing.Information("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] called: {0}", accountID);
+
+            if (answers == null || answers.Length == 0 || answers.Any(x => String.IsNullOrWhiteSpace(x.Answer)))
+            {
+                Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- no answers");
+                throw new ValidationException(Resources.ValidationMessages.SecretAnswerRequired);
+            }
+
+            var account = this.GetByID(accountID);
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- invalid account id");
+                throw new Exception("Invalid Account ID");
+            }
+
+            if (account.PasswordResetSecrets.Count == 0)
+            {
+                Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- account not configured for secret question/answer");
+                throw new ValidationException(Resources.ValidationMessages.AccountNotConfiguredWithSecretQuestion);
+            }
+
+            if (account.FailedPasswordResetCount >= SecuritySettings.AccountLockoutFailedLoginAttempts &&
+                account.LastFailedPasswordReset >= UtcNow.Subtract(SecuritySettings.AccountLockoutDuration))
+            {
+                account.LastFailedPasswordReset = UtcNow;
+                account.FailedPasswordResetCount++;
+                
+                account.AddEvent(new PasswordResetFailedEvent { Account = account });
+                
+                Update(account);
+                
+                Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- too many failed password reset attempts");
+                throw new ValidationException(Resources.ValidationMessages.InvalidQuestionOrAnswer);
+            }
+
+            var secrets = account.PasswordResetSecrets.ToArray();
+            var failed = false;
+            foreach (var answer in answers)
+            {
+                var secret = secrets.SingleOrDefault(x => x.ID == answer.QuestionID);
+                if (secret == null || 
+                    !CryptoHelper.SlowEquals(secret.Answer, CryptoHelper.Hash(answer.Answer)))
+                {
+                    failed = true;
+                }
+            }
+
+            if (failed)
+            {
+                account.LastFailedPasswordReset = UtcNow;
+                if (account.FailedPasswordResetCount <= 0)
+                {
+                    account.FailedPasswordResetCount = 1;
+                }
+                else
+                {
+                    account.FailedPasswordResetCount++;
+                }
+                account.AddEvent(new PasswordResetFailedEvent { Account = account });
+            }
+            else
+            {
+                account.LastFailedPasswordReset = null;
+                account.FailedPasswordResetCount = 0;
+                account.ResetPassword();
+            }
+
+            Update(account);
+
+            if (failed)
+            {
+                throw new ValidationException(Resources.ValidationMessages.InvalidQuestionOrAnswer);
+            }
         }
 
         public virtual void SendUsernameReminder(string email)
@@ -968,6 +1113,14 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
 
             return account.GetIsPasswordExpired(SecuritySettings.PasswordResetFrequency);
+        }
+        
+        protected internal virtual DateTime UtcNow
+        {
+            get
+            {
+                return DateTime.UtcNow;
+            }
         }
     }
 }

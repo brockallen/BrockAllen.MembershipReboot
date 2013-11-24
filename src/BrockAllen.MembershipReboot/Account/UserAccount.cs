@@ -41,8 +41,13 @@ namespace BrockAllen.MembershipReboot
         public virtual DateTime PasswordChanged { get; internal set; }
         public virtual bool RequiresPasswordReset { get; set; }
 
+        public virtual DateTime? LastFailedPasswordReset { get; internal set; }
+        public virtual int FailedPasswordResetCount { get; internal set; }
+
+        [StringLength(100)]
         public virtual string MobileCode { get; internal set; }
         public virtual DateTime? MobileCodeSent { get; internal set; }
+        [StringLength(20)]
         public virtual string MobilePhoneNumber { get; internal set; }
         public virtual DateTime? MobilePhoneNumberChanged { get; internal set; }
 
@@ -73,6 +78,7 @@ namespace BrockAllen.MembershipReboot
         public virtual ICollection<LinkedAccount> LinkedAccounts { get; internal set; }
         public virtual ICollection<UserCertificate> Certificates { get; internal set; }
         public virtual ICollection<TwoFactorAuthToken> TwoFactorAuthTokens { get; internal set; }
+        public virtual ICollection<PasswordResetSecret> PasswordResetSecrets { get; internal set; }
 
         List<IEvent> events = new List<IEvent>();
         IEnumerable<IEvent> IEventSource.GetEvents()

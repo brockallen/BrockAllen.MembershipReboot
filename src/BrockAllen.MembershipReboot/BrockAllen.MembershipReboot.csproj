@@ -41,8 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountService\AuthenticationPurpose.cs" />
+    <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Account\TwoFactorAuthToken.cs" />
+    <Compile Include="Account\PasswordResetSecret.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\RelativePathApplicationInformation.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />

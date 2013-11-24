@@ -170,6 +170,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\CertificateController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\ChangeSecretQuestionController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangePasswordController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\CloseAccountController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangeUsernameController.cs" />
@@ -186,6 +187,7 @@
     <Compile Include="Areas\UserAccount\Models\ChangeEmailRequestInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeEmailFromKeyInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordFromResetKeyInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\ChangeSecretQuestionInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangePasswordInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeUsernameInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeMobileRequestInputModel.cs" />
@@ -245,6 +247,11 @@
     <Content Include="Areas\UserAccount\Views\LinkedAccount\SignInError.cshtml" />
     <Content Include="Areas\UserAccount\Views\LinkedAccount\Manage.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\ConfirmResult.cshtml" />
+    <Content Include="Areas\UserAccount\Views\PasswordReset\ResetWithSecret.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Index.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Success.cshtml" />
+    <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Add.cshtml" />
+    <Content Include="Areas\UserAccount\Views\PasswordReset\ResetWithQuestions.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="configuring_client_certs_readme.txt" />
     <Content Include="Content\Site.css">
