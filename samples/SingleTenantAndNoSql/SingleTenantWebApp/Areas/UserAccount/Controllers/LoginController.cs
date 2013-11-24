@@ -36,7 +36,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
                     if (account.RequiresTwoFactorAuthCodeToSignIn)
                     {
-                        return View("TwoFactorAuthCodeLogin");
+                        return RedirectToAction("TwoFactorAuthCodeLogin");
                     }
                     if (account.RequiresTwoFactorCertificateToSignIn)
                     {
@@ -62,6 +62,17 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             }
 
             return View(model);
+        }
+
+        public ActionResult TwoFactorAuthCodeLogin()
+        {
+            if (!User.HasUserID())
+            {
+                // if the temp cookie is expired, then make the login again
+                return RedirectToAction("Index");
+            }
+
+            return View();
         }
 
         [HttpPost]

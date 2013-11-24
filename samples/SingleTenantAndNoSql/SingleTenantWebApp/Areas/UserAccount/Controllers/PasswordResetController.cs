@@ -9,9 +9,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     public class PasswordResetController : Controller
     {
         UserAccountService userAccountService;
-        public PasswordResetController(UserAccountService userAccountService)
+        AuthenticationService authenticationService;
+        public PasswordResetController(AuthenticationService authenticationService)
         {
-            this.userAccountService = userAccountService;
+            this.authenticationService = authenticationService;
+            this.userAccountService = authenticationService.UserAccountService;
         }
 
         public ActionResult Index()
@@ -135,9 +137,20 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    if (this.userAccountService.ChangePasswordFromResetKey(model.Key, model.Password))
+                    BrockAllen.MembershipReboot.UserAccount account;
+                    if (this.userAccountService.ChangePasswordFromResetKey(model.Key, model.Password, out account))
                     {
-                        return View("Success");
+                        this.authenticationService.SignIn(account);
+                        if (account.RequiresTwoFactorAuthCodeToSignIn)
+                        {
+                            return RedirectToAction("TwoFactorAuthCodeLogin", "Login");
+                        }
+                        if (account.RequiresTwoFactorCertificateToSignIn)
+                        {
+                            return RedirectToAction("CertificateLogin", "Login");
+                        }
+
+                        return RedirectToAction("Success");
                     }
                     else
                     {
@@ -149,6 +162,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     ModelState.AddModelError("", ex.Message);
                 }
             }
+            return View();
+        }
+
+        public ActionResult Success()
+        {
             return View();
         }
     }

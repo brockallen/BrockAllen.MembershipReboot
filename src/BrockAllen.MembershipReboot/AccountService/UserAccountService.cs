@@ -778,15 +778,22 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
+            UserAccount account;
+            return ChangePasswordFromResetKey(key, newPassword, out account);
+        }
+
+        public virtual bool ChangePasswordFromResetKey(string key, string newPassword, out UserAccount account)
+        {
             Tracing.Information("[UserAccountService.ChangePasswordFromResetKey] called: {0}", key);
 
             if (String.IsNullOrWhiteSpace(key))
             {
                 Tracing.Error("[UserAccountService.ChangePasswordFromResetKey] failed -- null key");
+                account = null;
                 return false;
             }
 
-            var account = this.GetByVerificationKey(key);
+            account = this.GetByVerificationKey(key);
             if (account == null) return false;
 
             ValidatePassword(account, newPassword);

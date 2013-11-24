@@ -5,5 +5,13 @@
 <h2>Password Changed</h2>
 <p>
     Your password has been changed.
-    You can now login @Html.ActionLink("here", "Index", "Login").
+    @if (User.Identity.IsAuthenticated)
+    {
+        @: You are now logged in.
+    }
+    else
+    {
+        @:You can now login
+        @Html.ActionLink("here", "Index", "Login").
+    }
 </p>
