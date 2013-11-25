@@ -60,6 +60,7 @@
     <Compile Include="Groups\GroupService.cs" />
     <Compile Include="Notification\DynamicDictionary.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
+    <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Resources\ValidationMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

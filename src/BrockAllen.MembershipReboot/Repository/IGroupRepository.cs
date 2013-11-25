@@ -8,13 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace BrockAllen.MembershipReboot
 {
-    public interface IGroupRepository : IDisposable
+    public interface IGroupRepository : IRepository<Group>
     {
-        IQueryable<Group> GetAll();
-        Group Get(Guid id);
-        Group Create();
-        void Add(Group item);
-        void Remove(Group item);
-        void Update(Group item);
     }
 }

@@ -61,12 +61,16 @@ namespace BrockAllen.MembershipReboot.Mvc
         public DbSet<PasswordHistory> PasswordHistory { get; set; }
     }
 
-    public class CustomRepository : DefaultUserAccountRepository
+    public class CustomRepository : DbContextUserAccountRepository<CustomDatabase>
     {
         // you can do either style ctor (or none) -- depends how much control 
         // you want over instantiating the CustomDatabase instance
         public CustomRepository()
             : base(new CustomDatabase())
+        {
+        }
+        public CustomRepository(string name)
+            : base(new CustomDatabase(name))
         {
         }
         public CustomRepository(CustomDatabase db)

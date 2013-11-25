@@ -49,6 +49,9 @@
     <Content Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbContextGroupRepository`1.cs" />
+    <Compile Include="DbContextRepository`1.cs" />
+    <Compile Include="DbContextUserAccountRepository`1.cs" />
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
