@@ -44,13 +44,14 @@
     <Compile Include="AccountService\IUserAccountInternalExtensions.cs" />
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
+    <Compile Include="Account\LinkedAccountClaim.cs" />
     <Compile Include="Account\TwoFactorAuthToken.cs" />
     <Compile Include="Account\PasswordResetSecret.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\RelativePathApplicationInformation.cs" />
     <Compile Include="Crypto\ICrypto.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
-    <Compile Include="Extensions\ILinkedAccountExtensions.cs" />
+    <Compile Include="Extensions\LinkedAccountExtensions.cs" />
     <Compile Include="Extensions\IUserAccountExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Account\TwoFactorAuthMode.cs" />

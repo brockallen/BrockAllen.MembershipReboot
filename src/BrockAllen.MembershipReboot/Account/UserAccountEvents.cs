@@ -11,7 +11,7 @@ namespace BrockAllen.MembershipReboot
 
     public abstract class UserAccountEvent : IEvent
     {
-        public IUserAccount Account { get; set; }
+        public UserAccount Account { get; set; }
     }
 
     public class AccountCreatedEvent : UserAccountEvent
@@ -27,11 +27,11 @@ namespace BrockAllen.MembershipReboot
     }
     public class PasswordResetSecretAddedEvent : UserAccountEvent
     {
-        public IPasswordResetSecret Secret { get; set; }
+        public PasswordResetSecret Secret { get; set; }
     }
     public class PasswordResetSecretRemovedEvent : UserAccountEvent
     {
-        public IPasswordResetSecret Secret { get; set; }
+        public PasswordResetSecret Secret { get; set; }
     }
     
     
@@ -41,11 +41,11 @@ namespace BrockAllen.MembershipReboot
     }
     public class CertificateAddedEvent : UserAccountEvent, IAllowMultiple
     {
-        public IUserCertificate Certificate { get; set; }
+        public UserCertificate Certificate { get; set; }
     }
     public class CertificateRemovedEvent : UserAccountEvent, IAllowMultiple
     {
-        public IUserCertificate Certificate { get; set; }
+        public UserCertificate Certificate { get; set; }
     }
 
     public class UsernameReminderRequestedEvent : UserAccountEvent { }
@@ -86,27 +86,27 @@ namespace BrockAllen.MembershipReboot
 
     public class ClaimAddedEvent : UserAccountEvent, IAllowMultiple
     {
-        public IUserClaim Claim { get; set; }
+        public UserClaim Claim { get; set; }
     }
     public class ClaimRemovedEvent : UserAccountEvent, IAllowMultiple
     {
-        public IUserClaim Claim { get; set; }
+        public UserClaim Claim { get; set; }
     }
 
     public class LinkedAccountAddedEvent : UserAccountEvent, IAllowMultiple
     {
-        public ILinkedAccount LinkedAccount { get; set; }
+        public LinkedAccount LinkedAccount { get; set; }
     }
     public class LinkedAccountRemovedEvent : UserAccountEvent, IAllowMultiple
     {
-        public ILinkedAccount LinkedAccount { get; set; }
+        public LinkedAccount LinkedAccount { get; set; }
     }
 
     public abstract class SuccessfulLoginEvent : UserAccountEvent { }
     public class SuccessfulPasswordLoginEvent : SuccessfulLoginEvent { }
     public class SuccessfulCertificateLoginEvent : SuccessfulLoginEvent
     {
-        public IUserCertificate UserCertificate { get; set; }
+        public UserCertificate UserCertificate { get; set; }
         public X509Certificate2 Certificate { get; set; }
     }
     public class SuccessfulTwoFactorAuthCodeLoginEvent : SuccessfulLoginEvent { }

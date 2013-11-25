@@ -12,13 +12,28 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface ILinkedAccount
+    public class LinkedAccount
     {
-        string ProviderName { get; set; }
-        string ProviderAccountID { get; set; }
-        DateTime LastLogin { get; set; }
-        ICollection<IUserClaim> Claims { get; set; }
+        internal protected LinkedAccount()
+        {
+            this.Claims = new HashSet<LinkedAccountClaim>();
+        }
 
-        IUserClaim CreateClaim();
+        [Key]
+        [Column(Order = 1)]
+        public virtual Guid UserAccountID { get; internal set; }
+        [Key]
+        [Column(Order = 2)]
+        [StringLength(30)]
+        public virtual string ProviderName { get; internal set; }
+        [Key]
+        [Column(Order = 3)]
+        [StringLength(100)]
+        public virtual string ProviderAccountID { get; internal set; }
+
+        public virtual DateTime LastLogin { get; internal set; }
+
+        public virtual ICollection<LinkedAccountClaim> Claims { get; internal set; }
     }
 }
+

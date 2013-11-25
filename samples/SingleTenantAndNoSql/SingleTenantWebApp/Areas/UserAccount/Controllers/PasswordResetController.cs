@@ -61,7 +61,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                             account.PasswordResetSecrets.Select(
                                 x => new PasswordResetSecretViewModel
                                 {
-                                    QuestionID = x.ID,
+                                    QuestionID = x.PasswordResetSecretID,
                                     Question = x.Question
                                 }).ToArray();
 
@@ -110,7 +110,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                         account.PasswordResetSecrets.Select(
                             x => new PasswordResetSecretViewModel
                             {
-                                QuestionID = x.ID,
+                                QuestionID = x.PasswordResetSecretID,
                                 Question = x.Question
                             }).ToArray();
                     return View("ResetWithQuestions", vm);
@@ -137,7 +137,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    BrockAllen.MembershipReboot.IUserAccount account;
+                    BrockAllen.MembershipReboot.UserAccount account;
                     if (this.userAccountService.ChangePasswordFromResetKey(model.Key, model.Password, out account))
                     {
                         this.authenticationService.SignIn(account);

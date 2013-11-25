@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    internal static class IUserAccountInternalExtensions
+    internal static class UserAccountInternalExtensions
     {
-        //internal static void Init(this IUserAccount account, string tenant, string username, string password, string email)
+        //internal static void Init(this UserAccount account, string tenant, string username, string password, string email)
         //{
         //    Tracing.Information("[UserAccount.Init] called");
 
@@ -57,7 +57,7 @@ namespace BrockAllen.MembershipReboot
         //    this.AddEvent(new AccountCreatedEvent { Account = account, VerificationKey = key });
         //}
 
-        //internal string SetVerificationKey(this IUserAccount account, VerificationKeyPurpose purpose, string key = null, string state = null)
+        //internal string SetVerificationKey(this UserAccount account, VerificationKeyPurpose purpose, string key = null, string state = null)
         //{
         //    if (key == null) key = UserAccountService.StripUglyBase64(Configuration.Crypto.GenerateSalt());
 

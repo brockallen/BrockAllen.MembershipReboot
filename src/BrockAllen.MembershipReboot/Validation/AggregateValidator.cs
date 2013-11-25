@@ -11,7 +11,7 @@ namespace BrockAllen.MembershipReboot
 {
     public class AggregateValidator : List<IValidator>, IValidator
     {
-        public ValidationResult Validate(UserAccountService service, IUserAccount account, string value)
+        public ValidationResult Validate(UserAccountService service, UserAccount account, string value)
         {
             if (service == null) throw new ArgumentNullException("service");
             if (account == null) throw new ArgumentNullException("account");

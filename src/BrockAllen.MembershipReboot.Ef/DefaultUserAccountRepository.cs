@@ -38,39 +38,39 @@ namespace BrockAllen.MembershipReboot.Ef
             }
         }
 
-        public IQueryable<IUserAccount> GetAll()
+        public IQueryable<UserAccount> GetAll()
         {
             CheckDisposed();
             return items;
         }
 
-        public IUserAccount Get(Guid key)
+        public UserAccount Get(Guid key)
         {
             CheckDisposed();
             return items.Find(key);
         }
 
-        public IUserAccount Create()
+        public UserAccount Create()
         {
             CheckDisposed();
             return items.Create();
         }
 
-        public void Add(IUserAccount item)
+        public void Add(UserAccount item)
         {
             CheckDisposed();
             items.Add((UserAccount)item);
             db.SaveChanges();
         }
 
-        public void Remove(IUserAccount item)
+        public void Remove(UserAccount item)
         {
             CheckDisposed();
             items.Remove((UserAccount)item);
             db.SaveChanges();
         }
 
-        public void Update(IUserAccount item)
+        public void Update(UserAccount item)
         {
             CheckDisposed();
 

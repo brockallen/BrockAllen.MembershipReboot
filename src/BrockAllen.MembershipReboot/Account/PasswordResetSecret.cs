@@ -9,10 +9,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface IPasswordResetSecret
+    public class PasswordResetSecret
     {
-        Guid ID { get; set; }
-        string Question { get; set; }
-        string Answer { get; set; }
+        internal protected PasswordResetSecret()
+        {
+        }
+
+        [Key]
+        [Column(Order = 1)]
+        public virtual Guid PasswordResetSecretID { get; internal set; }
+
+        [Key]
+        [Column(Order = 2)]
+        public virtual Guid UserAccountID { get; internal set; }
+
+        [StringLength(150)]
+        [Required]
+        public virtual string Question { get; internal set; }
+
+        [StringLength(150)]
+        [Required]
+        public virtual string Answer { get; internal set; }
     }
 }

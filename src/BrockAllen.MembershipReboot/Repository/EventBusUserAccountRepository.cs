@@ -47,36 +47,36 @@ namespace BrockAllen.MembershipReboot
             source.Clear();
         }
 
-        public IQueryable<IUserAccount> GetAll()
+        public IQueryable<UserAccount> GetAll()
         {
             return inner.GetAll();
         }
 
-        public IUserAccount Get(Guid key)
+        public UserAccount Get(Guid key)
         {
             return inner.Get(key);
         }
 
-        public IUserAccount Create()
+        public UserAccount Create()
         {
             return inner.Create();
         }
 
-        public void Add(IUserAccount item)
+        public void Add(UserAccount item)
         {
             RaiseValidation();
             inner.Add(item);
             RaiseEvents();
         }
 
-        public void Remove(IUserAccount item)
+        public void Remove(UserAccount item)
         {
             RaiseValidation();
             inner.Remove(item);
             RaiseEvents();
         }
 
-        public void Update(IUserAccount item)
+        public void Update(UserAccount item)
         {
             RaiseValidation();
             inner.Update(item);

@@ -487,7 +487,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.IsFalse(subject.Authenticate("test", ""));
             Assert.IsFalse(subject.Authenticate("test", null));
             Assert.IsFalse(subject.Authenticate("", "pass"));
-            Assert.IsFalse(subject.Authenticate(null, "pass"));
+            Assert.IsFalse(subject.Authenticate((string)null, "pass"));
             Assert.IsFalse(subject.Authenticate("test2", "pass"));
         }
         
@@ -529,7 +529,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.IsFalse(subject.Authenticate("test@test.com", ""));
             Assert.IsFalse(subject.Authenticate("test@test.com", null));
             Assert.IsFalse(subject.Authenticate("", "pass"));
-            Assert.IsFalse(subject.Authenticate(null, "pass"));
+            Assert.IsFalse(subject.Authenticate((string)null, "pass"));
             Assert.IsFalse(subject.Authenticate("test2", "pass"));
         }
 
@@ -654,8 +654,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             Assert.IsTrue(subject.AuthenticateWithCertificate(cert));
         }
@@ -667,8 +666,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             Assert.IsTrue(subject.AuthenticateWithCertificate(acct.ID, cert));
         }
@@ -680,8 +678,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             UserAccount acct2;
             subject.AuthenticateWithCertificate(cert, out acct2);
@@ -695,8 +692,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             UserAccount acct2;
             subject.AuthenticateWithCertificate(acct.ID, cert, out acct2);
@@ -711,8 +707,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             Assert.IsFalse(subject.AuthenticateWithCertificate(cert2));
         }
@@ -725,8 +720,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             Assert.IsFalse(subject.AuthenticateWithCertificate(cert2));
         }
@@ -739,8 +733,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             Assert.IsFalse(subject.AuthenticateWithCertificate(acct.ID, cert2));
         }
@@ -752,8 +745,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
 
             try
             {
@@ -815,8 +807,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var cert = GetTestCert();
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            acct.AddCertificate(cert);
-            subject.Update(acct);
+            subject.AddCertificate(acct.ID, cert);
             var id = acct.ID;
 
             subject.ConfigureTwoFactorAuthentication(id, TwoFactorAuthMode.Certificate);

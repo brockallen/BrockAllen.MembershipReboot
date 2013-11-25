@@ -9,7 +9,7 @@ namespace BrockAllen.MembershipReboot
 {
     public interface IValidator
     {
-        ValidationResult Validate(UserAccountService service, IUserAccount account, string value);
+        ValidationResult Validate(UserAccountService service, UserAccount account, string value);
     }
 }
     

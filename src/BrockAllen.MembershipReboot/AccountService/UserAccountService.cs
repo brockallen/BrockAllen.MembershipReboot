@@ -70,7 +70,7 @@ namespace BrockAllen.MembershipReboot
             });
         }
 
-        internal protected void ValidateUsername(IUserAccount account, string value)
+        internal protected void ValidateUsername(UserAccount account, string value)
         {
             var result = this.usernameValidator.Value.Validate(this, account, value);
             if (result != null && result != ValidationResult.Success)
@@ -79,7 +79,7 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(result.ErrorMessage);
             }
         }
-        internal protected void ValidatePassword(IUserAccount account, string value)
+        internal protected void ValidatePassword(UserAccount account, string value)
         {
             var result = this.passwordValidator.Value.Validate(this, account, value);
             if (result != null && result != ValidationResult.Success)
@@ -88,7 +88,7 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(result.ErrorMessage);
             }
         }
-        internal protected void ValidateEmail(IUserAccount account, string value)
+        internal protected void ValidateEmail(UserAccount account, string value)
         {
             var result = this.emailValidator.Value.Validate(this, account, value);
             if (result != null && result != ValidationResult.Success)
@@ -98,7 +98,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public virtual void Update(IUserAccount account)
+        public virtual void Update(UserAccount account)
         {
             if (account == null)
             {
@@ -130,12 +130,12 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public virtual IQueryable<IUserAccount> GetAll()
+        public virtual IQueryable<UserAccount> GetAll()
         {
             return GetAll(null);
         }
 
-        public virtual IQueryable<IUserAccount> GetAll(string tenant)
+        public virtual IQueryable<UserAccount> GetAll(string tenant)
         {
             if (!Configuration.MultiTenant)
             {
@@ -143,17 +143,17 @@ namespace BrockAllen.MembershipReboot
                 tenant = Configuration.DefaultTenant;
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<IUserAccount>().AsQueryable();
+            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<UserAccount>().AsQueryable();
 
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
         }
 
-        public virtual IUserAccount GetByUsername(string username)
+        public virtual UserAccount GetByUsername(string username)
         {
             return GetByUsername(null, username);
         }
 
-        public virtual IUserAccount GetByUsername(string tenant, string username)
+        public virtual UserAccount GetByUsername(string tenant, string username)
         {
             if (!Configuration.MultiTenant)
             {
@@ -178,12 +178,12 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual IUserAccount GetByEmail(string email)
+        public virtual UserAccount GetByEmail(string email)
         {
             return GetByEmail(null, email);
         }
 
-        public virtual IUserAccount GetByEmail(string tenant, string email)
+        public virtual UserAccount GetByEmail(string tenant, string email)
         {
             if (!Configuration.MultiTenant)
             {
@@ -202,7 +202,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual IUserAccount GetByID(Guid id)
+        public virtual UserAccount GetByID(Guid id)
         {
             var account = this.userRepository.Get(id);
             if (account == null)
@@ -212,7 +212,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual IUserAccount GetByVerificationKey(string key)
+        public virtual UserAccount GetByVerificationKey(string key)
         {
             if (String.IsNullOrWhiteSpace(key)) return null;
 
@@ -226,12 +226,12 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual IUserAccount GetByLinkedAccount(string provider, string id)
+        public virtual UserAccount GetByLinkedAccount(string provider, string id)
         {
             return GetByLinkedAccount(null, provider, id);
         }
 
-        public virtual IUserAccount GetByLinkedAccount(string tenant, string provider, string id)
+        public virtual UserAccount GetByLinkedAccount(string tenant, string provider, string id)
         {
             if (!Configuration.MultiTenant)
             {
@@ -258,12 +258,12 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        public virtual IUserAccount GetByCertificate(string thumbprint)
+        public virtual UserAccount GetByCertificate(string thumbprint)
         {
             return GetByCertificate(null, thumbprint);
         }
 
-        public virtual IUserAccount GetByCertificate(string tenant, string thumbprint)
+        public virtual UserAccount GetByCertificate(string tenant, string thumbprint)
         {
             if (!Configuration.MultiTenant)
             {
@@ -335,12 +335,12 @@ namespace BrockAllen.MembershipReboot
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).Any();
         }
 
-        public virtual IUserAccount CreateAccount(string username, string password, string email)
+        public virtual UserAccount CreateAccount(string username, string password, string email)
         {
             return CreateAccount(null, username, password, email);
         }
 
-        public virtual IUserAccount CreateAccount(string tenant, string username, string password, string email)
+        public virtual UserAccount CreateAccount(string tenant, string username, string password, string email)
         {
             if (Configuration.EmailIsUsername)
             {
@@ -379,7 +379,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        internal protected virtual void Init(IUserAccount account, string tenant, string username, string password, string email)
+        internal protected virtual void Init(UserAccount account, string tenant, string username, string password, string email)
         {
             Tracing.Information("[UserAccount.Init] called");
 
@@ -429,11 +429,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool VerifyAccount(string key, string password)
         {
-            IUserAccount account;
+            UserAccount account;
             return VerifyAccount(key, password, out account);
         }
 
-        public virtual bool VerifyAccount(string key, string password, out IUserAccount account)
+        public virtual bool VerifyAccount(string key, string password, out UserAccount account)
         {
             Tracing.Information("[UserAccountService.VerifyAccount] called: {0}", key);
 
@@ -448,7 +448,7 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
-        protected internal virtual bool VerifyAccount(IUserAccount account, string key, string password)
+        protected internal virtual bool VerifyAccount(UserAccount account, string key, string password)
         {
             Tracing.Information("[UserAccount.VerifyAccount] called for accountID: {0}", account.ID);
 
@@ -512,7 +512,7 @@ namespace BrockAllen.MembershipReboot
             DeleteAccount(account);
         }
 
-        protected internal virtual void DeleteAccount(IUserAccount account)
+        protected internal virtual void DeleteAccount(UserAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -532,17 +532,17 @@ namespace BrockAllen.MembershipReboot
         {
             return Authenticate(null, username, password);
         }
-        public virtual bool Authenticate(string username, string password, out IUserAccount account)
+        public virtual bool Authenticate(string username, string password, out UserAccount account)
         {
             return Authenticate(null, username, password, out account);
         }
 
         public virtual bool Authenticate(string tenant, string username, string password)
         {
-            IUserAccount account;
+            UserAccount account;
             return Authenticate(tenant, username, password, out account);
         }
-        public virtual bool Authenticate(string tenant, string username, string password, out IUserAccount account)
+        public virtual bool Authenticate(string tenant, string username, string password, out UserAccount account)
         {
             account = null;
 
@@ -568,17 +568,17 @@ namespace BrockAllen.MembershipReboot
         {
             return AuthenticateWithEmail(null, email, password);
         }
-        public virtual bool AuthenticateWithEmail(string email, string password, out IUserAccount account)
+        public virtual bool AuthenticateWithEmail(string email, string password, out UserAccount account)
         {
             return AuthenticateWithEmail(null, email, password, out account);
         }
 
         public virtual bool AuthenticateWithEmail(string tenant, string email, string password)
         {
-            IUserAccount account;
+            UserAccount account;
             return AuthenticateWithEmail(null, email, password, out account);
         }
-        public virtual bool AuthenticateWithEmail(string tenant, string email, string password, out IUserAccount account)
+        public virtual bool AuthenticateWithEmail(string tenant, string email, string password, out UserAccount account)
         {
             account = null;
 
@@ -600,12 +600,12 @@ namespace BrockAllen.MembershipReboot
             return Authenticate(account, password, AuthenticationPurpose.SignIn);
         }
 
-        public virtual bool AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password, out IUserAccount account)
+        public virtual bool AuthenticateWithUsernameOrEmail(string userNameOrEmail, string password, out UserAccount account)
         {
             return AuthenticateWithUsernameOrEmail(null, userNameOrEmail, password, out account);
         }
 
-        public virtual bool AuthenticateWithUsernameOrEmail(string tenant, string userNameOrEmail, string password, out IUserAccount account)
+        public virtual bool AuthenticateWithUsernameOrEmail(string tenant, string userNameOrEmail, string password, out UserAccount account)
         {
             account = null;
 
@@ -633,7 +633,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected internal virtual bool Authenticate(IUserAccount account, string password, AuthenticationPurpose purpose)
+        protected internal virtual bool Authenticate(UserAccount account, string password, AuthenticationPurpose purpose)
         {
             Tracing.Verbose("[UserAccountService.Authenticate] for account: {0}", account.ID);
 
@@ -687,11 +687,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool AuthenticateWithCode(Guid accountID, string code)
         {
-            IUserAccount account;
+            UserAccount account;
             return AuthenticateWithCode(accountID, code, out account);
         }
 
-        public virtual bool AuthenticateWithCode(Guid accountID, string code, out IUserAccount account)
+        public virtual bool AuthenticateWithCode(Guid accountID, string code, out UserAccount account)
         {
             Tracing.Information("[UserAccountService.AuthenticateWithCode] called {0}", accountID);
 
@@ -714,11 +714,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate)
         {
-            IUserAccount account;
+            UserAccount account;
             return AuthenticateWithCertificate(certificate, out account);
         }
 
-        public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate, out IUserAccount account)
+        public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate, out UserAccount account)
         {
             Tracing.Information("[UserAccountService.AuthenticateWithCertificate] called");
 
@@ -741,11 +741,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool AuthenticateWithCertificate(Guid accountID, X509Certificate2 certificate)
         {
-            IUserAccount account;
+            UserAccount account;
             return AuthenticateWithCertificate(accountID, certificate, out account);
         }
 
-        public virtual bool AuthenticateWithCertificate(Guid accountID, X509Certificate2 certificate, out IUserAccount account)
+        public virtual bool AuthenticateWithCertificate(Guid accountID, X509Certificate2 certificate, out UserAccount account)
         {
             Tracing.Information("[UserAccountService.AuthenticateWithCertificate] called for userID: {0}", accountID);
 
@@ -874,11 +874,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
-            IUserAccount account;
+            UserAccount account;
             return ChangePasswordFromResetKey(key, newPassword, out account);
         }
 
-        public virtual bool ChangePasswordFromResetKey(string key, string newPassword, out IUserAccount account)
+        public virtual bool ChangePasswordFromResetKey(string key, string newPassword, out UserAccount account)
         {
             Tracing.Information("[UserAccountService.ChangePasswordFromResetKey] called: {0}", key);
 
@@ -937,8 +937,9 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.SecretQuestionAlreadyInUse);
             }
 
-            var secret = account.CreatePasswordResetSecret();
-            secret.ID = Guid.NewGuid();
+            var secret = new PasswordResetSecret();
+            secret.PasswordResetSecretID = Guid.NewGuid();
+            secret.UserAccountID = account.ID;
             secret.Question = question;
             secret.Answer = CryptoHelper.Hash(answer);
             account.PasswordResetSecrets.Add(secret);
@@ -955,7 +956,7 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            var item = account.PasswordResetSecrets.SingleOrDefault(x => x.ID == questionID);
+            var item = account.PasswordResetSecrets.SingleOrDefault(x => x.PasswordResetSecretID == questionID);
             if (item != null)
             {
                 account.PasswordResetSecrets.Remove(item);
@@ -1005,7 +1006,7 @@ namespace BrockAllen.MembershipReboot
             var failed = false;
             foreach (var answer in answers)
             {
-                var secret = secrets.SingleOrDefault(x => x.ID == answer.QuestionID);
+                var secret = secrets.SingleOrDefault(x => x.PasswordResetSecretID == answer.QuestionID);
                 if (secret == null ||
                     !CryptoHelper.SlowEquals(secret.Answer, CryptoHelper.Hash(answer.Answer)))
                 {
@@ -1217,7 +1218,7 @@ namespace BrockAllen.MembershipReboot
             return IsPasswordExpired(account);
         }
 
-        public virtual bool IsPasswordExpired(IUserAccount account)
+        public virtual bool IsPasswordExpired(UserAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -1230,7 +1231,7 @@ namespace BrockAllen.MembershipReboot
             return last.AddDays(Configuration.PasswordResetFrequency) <= now;
         }
 
-        internal string SetVerificationKey(IUserAccount account, VerificationKeyPurpose purpose, string key = null, string state = null)
+        internal string SetVerificationKey(UserAccount account, VerificationKeyPurpose purpose, string key = null, string state = null)
         {
             if (key == null) key = StripUglyBase64(Configuration.Crypto.GenerateSalt());
 
@@ -1242,7 +1243,7 @@ namespace BrockAllen.MembershipReboot
             return key;
         }
 
-        internal bool IsVerificationKeyValid(IUserAccount account, VerificationKeyPurpose purpose, string key)
+        internal bool IsVerificationKeyValid(UserAccount account, VerificationKeyPurpose purpose, string key)
         {
             if (!IsVerificationPurposeValid(account, purpose))
             {
@@ -1261,7 +1262,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        internal bool IsVerificationPurposeValid(IUserAccount account, VerificationKeyPurpose purpose)
+        internal bool IsVerificationPurposeValid(UserAccount account, VerificationKeyPurpose purpose)
         {
             if (account.VerificationPurpose != purpose)
             {
@@ -1279,7 +1280,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual bool IsVerificationKeyStale(IUserAccount account)
+        protected internal virtual bool IsVerificationKeyStale(UserAccount account)
         {
             if (account.VerificationKeySent == null)
             {
@@ -1294,7 +1295,7 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        internal void ClearVerificationKey(IUserAccount account)
+        internal void ClearVerificationKey(UserAccount account)
         {
             account.VerificationKey = null;
             account.VerificationPurpose = null;
@@ -1302,19 +1303,19 @@ namespace BrockAllen.MembershipReboot
             account.VerificationStorage = null;
         }
 
-        internal bool VerifyHashedPassword(IUserAccount account, string password)
+        internal bool VerifyHashedPassword(UserAccount account, string password)
         {
             return Configuration.Crypto.VerifyHashedPassword(account.HashedPassword, password);
         }
 
-        protected internal virtual void VerifyAccount(IUserAccount account)
+        protected internal virtual void VerifyAccount(UserAccount account)
         {
             account.IsAccountVerified = true;
             ClearVerificationKey(account);
             this.AddEvent(new AccountVerifiedEvent { Account = account });
         }
 
-        protected internal virtual bool CancelNewAccount(IUserAccount account, string key)
+        protected internal virtual bool CancelNewAccount(UserAccount account, string key)
         {
             Tracing.Information("[UserAccount.CancelNewAccount] called for accountID: {0}", account.ID);
 
@@ -1337,7 +1338,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual void SetPassword(IUserAccount account, string password)
+        protected internal virtual void SetPassword(UserAccount account, string password)
         {
             Tracing.Information("[UserAccount.SetPassword] called for accountID: {0}", account.ID);
 
@@ -1356,7 +1357,7 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new PasswordChangedEvent { Account = account, NewPassword = password });
         }
 
-        protected internal virtual void ResetPassword(IUserAccount account)
+        protected internal virtual void ResetPassword(UserAccount account)
         {
             Tracing.Information("[UserAccount.ResetPassword] called for accountID: {0}", account.ID);
 
@@ -1382,7 +1383,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected internal virtual bool ChangePasswordFromResetKey(IUserAccount account, string key, string newPassword)
+        protected internal virtual bool ChangePasswordFromResetKey(UserAccount account, string key, string newPassword)
         {
             Tracing.Information("[UserAccount.ChangePasswordFromResetKey] called for accountID: {0}", account.ID);
 
@@ -1412,7 +1413,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual bool Authenticate(IUserAccount account, string password)
+        protected internal virtual bool Authenticate(UserAccount account, string password)
         {
             Tracing.Information("[UserAccount.Authenticate] called for accountID: {0}", account.ID);
 
@@ -1476,7 +1477,7 @@ namespace BrockAllen.MembershipReboot
             return valid;
         }
 
-        protected internal virtual bool HasTooManyRecentPasswordFailures(IUserAccount account)
+        protected internal virtual bool HasTooManyRecentPasswordFailures(UserAccount account)
         {
             if (Configuration.AccountLockoutFailedLoginAttempts <= account.FailedLoginCount)
             {
@@ -1486,7 +1487,7 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        protected internal virtual bool Authenticate(IUserAccount account, X509Certificate2 certificate)
+        protected internal virtual bool Authenticate(UserAccount account, X509Certificate2 certificate)
         {
             Tracing.Information("[UserAccount.Authenticate] certificate auth called for account ID: {0}", account.ID);
 
@@ -1519,7 +1520,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        string IssueMobileCode(IUserAccount account)
+        string IssueMobileCode(UserAccount account)
         {
             string code = CryptoHelper.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
             account.MobileCode = CryptoHelper.HashPassword(code);
@@ -1528,7 +1529,7 @@ namespace BrockAllen.MembershipReboot
             return code;
         }
 
-        bool VerifyMobileCode(IUserAccount account, string code)
+        bool VerifyMobileCode(UserAccount account, string code)
         {
             if (IsMobileCodeStale(account))
             {
@@ -1547,7 +1548,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        void ClearMobileAuthCode(IUserAccount account)
+        void ClearMobileAuthCode(UserAccount account)
         {
             account.MobileCode = null;
             account.MobileCodeSent = null;
@@ -1561,7 +1562,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual bool IsMobileCodeStale(IUserAccount account)
+        protected virtual bool IsMobileCodeStale(UserAccount account)
         {
             if (account.MobileCodeSent == null || String.IsNullOrWhiteSpace(account.MobileCode))
             {
@@ -1576,7 +1577,7 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        protected internal virtual void RequestChangeMobilePhoneNumber(IUserAccount account, string newMobilePhoneNumber)
+        protected internal virtual void RequestChangeMobilePhoneNumber(UserAccount account, string newMobilePhoneNumber)
         {
             Tracing.Information("[UserAccount.RequestChangeMobilePhoneNumber] called for accountID: {0}", account.ID);
 
@@ -1613,7 +1614,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected internal virtual bool ConfirmMobilePhoneNumberFromCode(IUserAccount account, string code)
+        protected internal virtual bool ConfirmMobilePhoneNumberFromCode(UserAccount account, string code)
         {
             Tracing.Information("[UserAccount.ConfirmMobilePhoneNumberFromCode] called for accountID: {0}", account.ID);
 
@@ -1648,7 +1649,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual void ClearMobilePhoneNumber(IUserAccount account)
+        protected internal virtual void ClearMobilePhoneNumber(UserAccount account)
         {
             Tracing.Information("[UserAccount.ClearMobilePhoneNumber] called for accountID: {0}", account.ID);
 
@@ -1674,7 +1675,7 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new MobilePhoneRemovedEvent { Account = account });
         }
 
-        protected internal virtual void ConfigureTwoFactorAuthentication(IUserAccount account, TwoFactorAuthMode mode)
+        protected internal virtual void ConfigureTwoFactorAuthentication(UserAccount account, TwoFactorAuthMode mode)
         {
             Tracing.Information("[UserAccount.ConfigureTwoFactorAuthentication] called for accountID: {0}, mode: {1}", account.ID, mode);
 
@@ -1717,7 +1718,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected internal virtual bool RequestTwoFactorAuthCertificate(IUserAccount account)
+        protected internal virtual bool RequestTwoFactorAuthCertificate(UserAccount account)
         {
             Tracing.Information("[UserAccount.RequestTwoFactorAuthCertificate] called for accountID: {0}", account.ID);
 
@@ -1758,7 +1759,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual bool RequestTwoFactorAuthCode(IUserAccount account)
+        protected internal virtual bool RequestTwoFactorAuthCode(UserAccount account)
         {
             Tracing.Information("[UserAccount.RequestTwoFactorAuthCode] called for accountID: {0}", account.ID);
 
@@ -1812,7 +1813,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual bool VerifyTwoFactorAuthCode(IUserAccount account, string code)
+        protected internal virtual bool VerifyTwoFactorAuthCode(UserAccount account, string code)
         {
             Tracing.Information("[UserAccount.VerifyTwoFactorAuthCode] called for accountID: {0}", account.ID);
 
@@ -1870,14 +1871,14 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual void SendAccountNameReminder(IUserAccount account)
+        protected internal virtual void SendAccountNameReminder(UserAccount account)
         {
             Tracing.Information("[UserAccount.SendAccountNameReminder] called for accountID: {0}", account.ID);
 
             this.AddEvent(new UsernameReminderRequestedEvent { Account = account });
         }
 
-        protected internal virtual void ChangeUsername(IUserAccount account, string newUsername)
+        protected internal virtual void ChangeUsername(UserAccount account, string newUsername)
         {
             Tracing.Information("[UserAccount.ChangeUsername] called for accountID: {0}", account.ID);
 
@@ -1894,7 +1895,7 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new UsernameChangedEvent { Account = account });
         }
 
-        protected internal virtual void ChangeEmailRequest(IUserAccount account, string newEmail)
+        protected internal virtual void ChangeEmailRequest(UserAccount account, string newEmail)
         {
             Tracing.Information("[UserAccount.ChangeEmailRequest] called for accountID: {0}", account.ID);
 
@@ -1919,7 +1920,7 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new EmailChangeRequestedEvent { Account = account, NewEmail = newEmail, VerificationKey = key });
         }
 
-        protected internal virtual bool ChangeEmailFromKey(IUserAccount account, string key)
+        protected internal virtual bool ChangeEmailFromKey(UserAccount account, string key)
         {
             Tracing.Information("[UserAccount.ChangeEmailFromKey] called for accountID: {0}", account.ID);
 
@@ -1953,7 +1954,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected internal virtual void CloseAccount(IUserAccount account)
+        protected internal virtual void CloseAccount(UserAccount account)
         {
             Tracing.Information("[UserAccount.CloseAccount] called for accountID: {0}", account.ID);
 
@@ -1986,7 +1987,7 @@ namespace BrockAllen.MembershipReboot
             AddClaim(account, type, value);
             Update(account);
         }
-        protected virtual void AddClaim(IUserAccount account, string type, string value)
+        protected virtual void AddClaim(UserAccount account, string type, string value)
         {
             Tracing.Information("[UserAccount.AddClaim] called for accountID: {0}", account.ID);
 
@@ -2003,7 +2004,8 @@ namespace BrockAllen.MembershipReboot
 
             if (!account.HasClaim(type, value))
             {
-                var claim = account.CreateUserClaim();
+                var claim = new UserClaim();
+                claim.UserAccountID = account.ID;
                 claim.Type = type;
                 claim.Value = value;
                 account.Claims.Add(claim);
@@ -2019,7 +2021,7 @@ namespace BrockAllen.MembershipReboot
             RemoveClaim(account, type);
             Update(account);
         }
-        protected virtual void RemoveClaim(IUserAccount account, string type)
+        protected virtual void RemoveClaim(UserAccount account, string type)
         {
             Tracing.Information("[UserAccount.RemoveClaim] called for accountID: {0}", account.ID);
 
@@ -2048,7 +2050,7 @@ namespace BrockAllen.MembershipReboot
             RemoveClaim(account, type, value);
             Update(account);
         }
-        protected virtual void RemoveClaim(IUserAccount account, string type, string value)
+        protected virtual void RemoveClaim(UserAccount account, string type, string value)
         {
             Tracing.Information("[UserAccount.RemoveClaim] called for accountID: {0}", account.ID);
 
@@ -2074,12 +2076,12 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual ILinkedAccount GetLinkedAccount(IUserAccount account, string provider, string id)
+        protected virtual LinkedAccount GetLinkedAccount(UserAccount account, string provider, string id)
         {
             return account.LinkedAccounts.Where(x => x.ProviderName == provider && x.ProviderAccountID == id).SingleOrDefault();
         }
 
-        public virtual void AddOrUpdateLinkedAccount(IUserAccount account, string provider, string id, IEnumerable<Claim> claims = null)
+        public virtual void AddOrUpdateLinkedAccount(UserAccount account, string provider, string id, IEnumerable<Claim> claims = null)
         {
             Tracing.Information("[UserAccount.AddOrUpdateLinkedAccount] called for accountID: {0}", account.ID);
 
@@ -2097,7 +2099,8 @@ namespace BrockAllen.MembershipReboot
             var linked = GetLinkedAccount(account, provider, id);
             if (linked == null)
             {
-                linked = account.CreateLinkedAccount();
+                linked = new LinkedAccount();
+                linked.UserAccountID = account.ID;
                 linked.ProviderName = provider;
                 linked.ProviderAccountID = id;
                 account.LinkedAccounts.Add(linked);
@@ -2105,25 +2108,13 @@ namespace BrockAllen.MembershipReboot
 
                 Tracing.Verbose("[UserAccount.AddOrUpdateLinkedAccount] linked account added");
             }
-            UpdateLinkedAccount(account, linked, claims);
-        }
-
-        protected virtual void UpdateLinkedAccount(IUserAccount account, ILinkedAccount linked, IEnumerable<Claim> claims = null)
-        {
-            Tracing.Information("[UserAccount.UpdateLinkedAccount] called for accountID: {0}", account.ID);
-
-            if (account == null)
-            {
-                Tracing.Error("[UserAccount.UpdateLinkedAccount] failed -- null account");
-                throw new ArgumentNullException("account");
-            }
-
-            account.LastLogin = UtcNow;
+            
+            linked.LastLogin = UtcNow;
             UpdateClaims(linked, claims);
             Update(account);
         }
 
-        protected virtual void UpdateClaims(ILinkedAccount linked, IEnumerable<Claim> claims)
+        protected virtual void UpdateClaims(LinkedAccount linked, IEnumerable<Claim> claims)
         {
             claims = claims ?? Enumerable.Empty<Claim>();
 
@@ -2131,7 +2122,10 @@ namespace BrockAllen.MembershipReboot
 
             foreach (var c in claims)
             {
-                var claim = linked.CreateClaim();
+                var claim = new LinkedAccountClaim();
+                claim.UserAccountID = linked.UserAccountID;
+                claim.ProviderAccountID = linked.ProviderAccountID;
+                claim.ProviderName = linked.ProviderName;
                 claim.Type = c.Type;
                 claim.Value = c.Value;
                 linked.Claims.Add(claim);
@@ -2146,7 +2140,7 @@ namespace BrockAllen.MembershipReboot
             RemoveLinkedAccount(account, provider);
             Update(account);
         }
-        protected virtual void RemoveLinkedAccount(IUserAccount account, string provider)
+        protected virtual void RemoveLinkedAccount(UserAccount account, string provider)
         {
             Tracing.Information("[UserAccount.RemoveLinkedAccount] called for accountID: {0}", account.ID);
 
@@ -2166,7 +2160,7 @@ namespace BrockAllen.MembershipReboot
             RemoveLinkedAccount(account, provider, id);
             Update(account);
         }
-        protected virtual void RemoveLinkedAccount(IUserAccount account, string provider, string id)
+        protected virtual void RemoveLinkedAccount(UserAccount account, string provider, string id)
         {
             Tracing.Information("[UserAccount.RemoveLinkedAccount] called for accountID: {0}", account.ID);
 
@@ -2186,7 +2180,7 @@ namespace BrockAllen.MembershipReboot
             AddCertificate(account, certificate);
             Update(account);
         }
-        protected virtual void AddCertificate(IUserAccount account, X509Certificate2 certificate)
+        protected virtual void AddCertificate(UserAccount account, X509Certificate2 certificate)
         {
             Tracing.Information("[UserAccount.AddCertificate] called for accountID: {0}", account.ID);
 
@@ -2203,7 +2197,7 @@ namespace BrockAllen.MembershipReboot
             AddCertificate(account, thumbprint, subject);
             Update(account);
         }
-        protected virtual void AddCertificate(IUserAccount account, string thumbprint, string subject)
+        protected virtual void AddCertificate(UserAccount account, string thumbprint, string subject)
         {
             Tracing.Information("[UserAccount.AddCertificate] called for accountID: {0}", account.ID);
 
@@ -2218,7 +2212,8 @@ namespace BrockAllen.MembershipReboot
                 throw new ArgumentNullException("subject");
             }
 
-            var cert = account.CreateUserCertificate();
+            var cert = new UserCertificate();
+            cert.UserAccountID = account.ID;
             cert.Thumbprint = thumbprint;
             cert.Subject = subject;
             account.Certificates.Add(cert);
@@ -2234,7 +2229,7 @@ namespace BrockAllen.MembershipReboot
             RemoveCertificate(account, certificate);
             Update(account);
         }
-        protected virtual void RemoveCertificate(IUserAccount account, X509Certificate2 certificate)
+        protected virtual void RemoveCertificate(UserAccount account, X509Certificate2 certificate)
         {
             Tracing.Information("[UserAccount.RemoveCertificate] called for accountID: {0}", account.ID);
 
@@ -2260,7 +2255,7 @@ namespace BrockAllen.MembershipReboot
             RemoveCertificate(account, thumbprint);
             Update(account);
         }
-        protected virtual void RemoveCertificate(IUserAccount account, string thumbprint)
+        protected virtual void RemoveCertificate(UserAccount account, string thumbprint)
         {
             Tracing.Information("[UserAccount.RemoveCertificate] called for accountID: {0}", account.ID);
 
@@ -2285,7 +2280,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        internal virtual void CreateTwoFactorAuthToken(IUserAccount account)
+        internal virtual void CreateTwoFactorAuthToken(UserAccount account)
         {
             Tracing.Information("[UserAccount.CreateTwoFactorAuthToken] called for accountID: {0}", account.ID);
 
@@ -2297,7 +2292,8 @@ namespace BrockAllen.MembershipReboot
 
             var value = CryptoHelper.GenerateSalt();
 
-            var item = account.CreateTwoFactorAuthToken();
+            var item = new TwoFactorAuthToken();
+            item.UserAccountID = account.ID;
             item.Token = CryptoHelper.Hash(value);
             item.Issued = UtcNow;
             account.TwoFactorAuthTokens.Add(item);
@@ -2305,7 +2301,7 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new TwoFactorAuthenticationTokenCreatedEvent { Account = account, Token = value });
         }
 
-        internal virtual bool VerifyTwoFactorAuthToken(IUserAccount account, string token)
+        internal virtual bool VerifyTwoFactorAuthToken(UserAccount account, string token)
         {
             Tracing.Information("[UserAccount.VerifyTwoFactorAuthToken] called for accountID: {0}", account.ID);
 
@@ -2352,7 +2348,7 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
-        internal virtual void RemoveTwoFactorAuthTokens(IUserAccount account)
+        internal virtual void RemoveTwoFactorAuthTokens(UserAccount account)
         {
             Tracing.Information("[UserAccount.RemoveTwoFactorAuthTokens] called for accountID: {0}", account.ID);
 

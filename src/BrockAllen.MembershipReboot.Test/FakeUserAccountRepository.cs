@@ -15,10 +15,9 @@ namespace BrockAllen.MembershipReboot.Test
             return UserAccounts.AsQueryable();
         }
 
-        public UserAccount Get(params object[] keys)
+        public UserAccount Get(Guid key)
         {
-            Guid id = (Guid)keys[0];
-            return UserAccounts.SingleOrDefault(x => x.ID == id);
+            return UserAccounts.SingleOrDefault(x => x.ID == key);
         }
 
         public UserAccount Create()

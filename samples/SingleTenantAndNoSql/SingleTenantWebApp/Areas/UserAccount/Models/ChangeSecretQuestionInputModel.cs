@@ -4,7 +4,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
 {
     public class PasswordResetSecretsViewModel
     {
-        public IPasswordResetSecret[] Secrets { get; set; }
+        public PasswordResetSecret[] Secrets { get; set; }
     }
 
     public class AddSecretQuestionInputModel

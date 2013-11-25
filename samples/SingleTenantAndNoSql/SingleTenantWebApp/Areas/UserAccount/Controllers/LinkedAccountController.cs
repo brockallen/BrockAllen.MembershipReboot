@@ -81,7 +81,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return Manage();
         }
 
-
         public async Task<ActionResult> OAuthCallback()
         {
             try

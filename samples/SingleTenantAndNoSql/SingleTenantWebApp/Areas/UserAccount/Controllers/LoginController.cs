@@ -29,7 +29,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (ModelState.IsValid)
             {
-                BrockAllen.MembershipReboot.IUserAccount account;
+                BrockAllen.MembershipReboot.UserAccount account;
                 if (userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password, out account))
                 {
                     authSvc.SignIn(account);
@@ -89,7 +89,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    BrockAllen.MembershipReboot.IUserAccount account;
+                    BrockAllen.MembershipReboot.UserAccount account;
                     if (userAccountService.AuthenticateWithCode(this.User.GetUserID(), model.Code, out account))
                     {
                         authSvc.SignIn(account);
@@ -130,7 +130,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     var cert = new X509Certificate2(Request.ClientCertificate.Certificate);
-                    BrockAllen.MembershipReboot.IUserAccount account;
+                    BrockAllen.MembershipReboot.UserAccount account;
 
                     var result = false;
                     // we're allowing the use of certs for login and for two factor auth. normally you'd 

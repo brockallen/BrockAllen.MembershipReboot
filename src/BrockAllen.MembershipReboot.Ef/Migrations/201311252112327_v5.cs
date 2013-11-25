@@ -1,8 +1,3 @@
-/*
- * Copyright (c) Brock Allen.  All rights reserved.
- * see license.txt
- */
-
 namespace BrockAllen.MembershipReboot.Ef.Migrations
 {
     using System;
@@ -21,17 +16,16 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropPrimaryKey("dbo.LinkedAccountClaims");
             DropPrimaryKey("dbo.LinkedAccounts");
 
-
             CreateTable(
                 "dbo.PasswordResetSecrets",
                 c => new
                     {
-                        ID = c.Guid(nullable: false),
+                        PasswordResetSecretID = c.Guid(nullable: false),
                         UserAccountID = c.Guid(nullable: false),
                         Question = c.String(nullable: false, maxLength: 150),
                         Answer = c.String(nullable: false, maxLength: 150),
                     })
-                .PrimaryKey(t => new { t.ID, t.UserAccountID })
+                .PrimaryKey(t => new { t.PasswordResetSecretID, t.UserAccountID })
                 .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
                 .Index(t => t.UserAccountID);
             
@@ -56,7 +50,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 30));
             AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 30));
 
-
+            
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
 
@@ -79,7 +73,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropPrimaryKey("dbo.LinkedAccountClaims");
             DropPrimaryKey("dbo.LinkedAccounts");
 
-
+            
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.PasswordResetSecrets", "UserAccountID", "dbo.UserAccounts");
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccountID" });
@@ -95,6 +89,8 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropTable("dbo.TwoFactorAuthTokens");
             DropTable("dbo.PasswordResetSecrets");
 
+
+
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
 
@@ -104,7 +100,6 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
 
             AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
             AddForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts", cascadeDelete: true);
-
         }
     }
 }

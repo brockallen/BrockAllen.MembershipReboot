@@ -10,11 +10,11 @@ namespace BrockAllen.MembershipReboot
 {
     public interface IUserAccountRepository : IDisposable
     {
-        IQueryable<IUserAccount> GetAll();
-        IUserAccount Get(Guid id);
-        IUserAccount Create();
-        void Add(IUserAccount item);
-        void Remove(IUserAccount item);
-        void Update(IUserAccount item);
+        IQueryable<UserAccount> GetAll();
+        UserAccount Get(Guid id);
+        UserAccount Create();
+        void Add(UserAccount item);
+        void Remove(UserAccount item);
+        void Update(UserAccount item);
     }
 }

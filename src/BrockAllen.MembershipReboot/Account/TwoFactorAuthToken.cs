@@ -13,9 +13,21 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface ITwoFactorAuthToken
+    public class TwoFactorAuthToken
     {
-        string Token { get; set; }
-        DateTime Issued { get; set; }
+        internal TwoFactorAuthToken()
+        {
+        }
+
+        [Key]
+        [Column(Order = 1)]
+        public virtual Guid UserAccountID { get; internal set; }
+
+        [Key]
+        [Column(Order = 2)]
+        [StringLength(100)]
+        public virtual string Token { get; internal set; }
+
+        public virtual DateTime Issued { get; internal set; }
     }
 }

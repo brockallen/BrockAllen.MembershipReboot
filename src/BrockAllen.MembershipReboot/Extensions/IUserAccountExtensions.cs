@@ -13,7 +13,7 @@ namespace BrockAllen.MembershipReboot
 {
     public static class IUserAccountExtensions
     {
-        public static bool HasClaim(this IUserAccount account, string type)
+        public static bool HasClaim(this UserAccount account, string type)
         {
             if (account == null) throw new ArgumentException("account");
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
@@ -21,7 +21,7 @@ namespace BrockAllen.MembershipReboot
             return account.Claims.Any(x => x.Type == type);
         }
 
-        public static bool HasClaim(this IUserAccount account, string type, string value)
+        public static bool HasClaim(this UserAccount account, string type, string value)
         {
             if (account == null) throw new ArgumentException("account");
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
@@ -30,7 +30,7 @@ namespace BrockAllen.MembershipReboot
             return account.Claims.Any(x => x.Type == type && x.Value == value);
         }
 
-        public static IEnumerable<string> GetClaimValues(this IUserAccount account, string type)
+        public static IEnumerable<string> GetClaimValues(this UserAccount account, string type)
         {
             if (account == null) throw new ArgumentException("account");
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
@@ -42,7 +42,7 @@ namespace BrockAllen.MembershipReboot
             return query.ToArray();
         }
 
-        public static string GetClaimValue(this IUserAccount account, string type)
+        public static string GetClaimValue(this UserAccount account, string type)
         {
             if (account == null) throw new ArgumentException("account");
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentException("type");
@@ -54,13 +54,13 @@ namespace BrockAllen.MembershipReboot
             return query.SingleOrDefault();
         }
 
-        public static bool RequiresTwoFactorAuthToSignIn(this IUserAccount account)
+        public static bool RequiresTwoFactorAuthToSignIn(this UserAccount account)
         {
             if (account == null) throw new ArgumentException("account");
             return account.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.None;
         }
 
-        public static bool RequiresTwoFactorCertificateToSignIn(this IUserAccount account)
+        public static bool RequiresTwoFactorCertificateToSignIn(this UserAccount account)
         {
             if (account == null) throw new ArgumentException("account");
             return
@@ -68,7 +68,7 @@ namespace BrockAllen.MembershipReboot
                 account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Certificate;
         }
 
-        public static bool RequiresTwoFactorAuthCodeToSignIn(this IUserAccount account)
+        public static bool RequiresTwoFactorAuthCodeToSignIn(this UserAccount account)
         {
             if (account == null) throw new ArgumentException("account");
             return
