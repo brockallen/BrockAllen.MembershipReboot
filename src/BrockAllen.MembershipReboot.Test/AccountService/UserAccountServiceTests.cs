@@ -19,7 +19,6 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
     {
         UserAccountService subject;
         FakeUserAccountRepository repository;
-        SecuritySettings securitySettings;
         MembershipRebootConfiguration configuration;
         public string LastVerificationKey { get; set; }
         public string LastMobileCode { get; set; }
@@ -31,8 +30,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             oldIterations = SecuritySettings.Instance.PasswordHashingIterationCount;
             SecuritySettings.Instance.PasswordHashingIterationCount = 1; // tests will run faster
 
-            securitySettings = new SecuritySettings();
-            configuration = new MembershipRebootConfiguration(securitySettings);
+            configuration = new MembershipRebootConfiguration();
             configuration.AddEventHandler(new KeyNotification(this));
             repository = new FakeUserAccountRepository(); 
             subject = new UserAccountService(configuration, repository);
@@ -138,8 +136,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void GetByUsername_MultiTenant_UsernamesNotUniqueAcrossTenants_NoTenant_ReturnsNull()
         {
-            securitySettings.UsernamesUniqueAcrossTenants = false;
-            securitySettings.MultiTenant = true;
+            configuration.UsernamesUniqueAcrossTenants = false;
+            configuration.MultiTenant = true;
             subject.CreateAccount("tenant", "user", "pass", "user@test.com");
 
             var acct = subject.GetByUsername("user");
@@ -148,8 +146,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void GetByUsername_MultiTenant_UsernamesUniqueAcrossTenants_NoTenant_ReturnsCorrectAccount()
         {
-            securitySettings.UsernamesUniqueAcrossTenants = true;
-            securitySettings.MultiTenant = true;
+            configuration.UsernamesUniqueAcrossTenants = true;
+            configuration.MultiTenant = true;
             subject.CreateAccount("tenant", "user", "pass", "user@test.com");
 
             var acct = subject.GetByUsername("user");
@@ -207,8 +205,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_SettingsRequiresVerification_CannotLogin()
         {
-            securitySettings.RequireAccountVerification = true;
-            securitySettings.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
+            configuration.AllowLoginAfterAccountCreation = true;
             subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsFalse(subject.Authenticate("test", "pass"));
         }
@@ -216,8 +214,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_SettingsDoesNotRequiresVerification_CanLogin()
         {
-            securitySettings.RequireAccountVerification = false;
-            securitySettings.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
             subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
         }
@@ -225,8 +223,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_SettingsDoNotAllowLoginAfterCreate_CannotLogin()
         {
-            securitySettings.RequireAccountVerification = false;
-            securitySettings.AllowLoginAfterAccountCreation = false;
+            configuration.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = false;
             subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsFalse(subject.Authenticate("test", "pass"));
         }
@@ -234,8 +232,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_AllowLoginAfterCreate_CanLogin()
         {
-            securitySettings.RequireAccountVerification = false;
-            securitySettings.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
             subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
         }
@@ -317,7 +315,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_SettingsRequireMultiTenant_EmptyTenant_Throws()
         {
-            securitySettings.MultiTenant = true;
+            configuration.MultiTenant = true;
             try
             {
                 subject.CreateAccount("", "test", "pass", "test@test.com");
@@ -332,8 +330,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_SettingsSingleMultiTenant_UserAccountUsesDefaultTenant()
         {
-            securitySettings.MultiTenant = false;
-            securitySettings.DefaultTenant = "foo";
+            configuration.MultiTenant = false;
+            configuration.DefaultTenant = "foo";
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             var acct = repository.Get(id);
             Assert.AreEqual("foo", acct.Tenant);
@@ -356,7 +354,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_SettingsRequireEmailIsUsername_UsernameIsEmail()
         {
-            securitySettings.EmailIsUsername = true;
+            configuration.EmailIsUsername = true;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             var acct = repository.Get(id);
             Assert.AreEqual("test@test.com", acct.Username);
@@ -365,8 +363,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void VerifiyAccount_AllowsUserToLogin()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = true;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             subject.VerifyAccount(LastVerificationKey, "pass");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
@@ -375,8 +373,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void VerifiyAccount_InvalidPassword_DoesNotAllowUserToLogin()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = true;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             subject.VerifyAccount(LastVerificationKey, "bad value");
             Assert.IsFalse(subject.Authenticate("test", "pass"));
@@ -385,8 +383,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void VerifiyAccount_InvalidPassword_ReturnsFalse()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = true;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsFalse(subject.VerifyAccount(LastVerificationKey, "bad value"));
         }
@@ -394,8 +392,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void VerifiyAccount_ValidKey_ReturnsTrue()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = true;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.VerifyAccount(LastVerificationKey, "pass"));
         }
@@ -403,8 +401,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void VerifiyAccount_InvalidKey_ReturnsFalse()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = true;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsFalse(subject.VerifyAccount("123", "pass"));
         }
@@ -474,7 +472,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void Authenticate_ValidCredentials_ReturnsTrue()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
         }
@@ -482,7 +480,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void Authenticate_InvalidCredentials_ReturnsFalse()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsFalse(subject.Authenticate("test", "abc"));
             Assert.IsFalse(subject.Authenticate("test", "123"));
@@ -496,7 +494,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void Authenticate_ReturnsCorrectAccount()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct2;
             subject.Authenticate("test", "pass", out acct2);
@@ -506,7 +504,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithEmail_ValidEmail_ReturnsTrue()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.AuthenticateWithEmail("test@test.com", "pass"));
         }
@@ -514,7 +512,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithEmail_ReturnsCorrectAccount()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct2;
             subject.AuthenticateWithEmail("test@test.com", "pass", out acct2);
@@ -524,7 +522,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithEmail_InvalidCredentials_ReturnsFalse()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsFalse(subject.Authenticate("test@test.com", "abc"));
             Assert.IsFalse(subject.Authenticate("test@test.com", "123"));
@@ -538,7 +536,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithUsernameOrEmail_ValidCredentials_ReturnsTrue()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct;
             Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct));
@@ -548,8 +546,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithUsernameOrEmail_SecuritySettingsEmailIsUsername_ReturnsCorrectValue()
         {
-            securitySettings.EmailIsUsername = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.EmailIsUsername = true;
+            configuration.RequireAccountVerification = false;
             subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct;
             Assert.IsFalse(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct));
@@ -559,7 +557,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithUsernameOrEmail_ReturnsCorrectAccount()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             
             UserAccount acct2;
@@ -573,7 +571,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithCode_ValidCode_ReturnsTrue()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
@@ -587,7 +585,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithCode_ValidCode_ReturnsCorrectAccount()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             var acct = subject.GetByID(id);
@@ -605,7 +603,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void AuthenticateWithCode_InvalidCode_ReturnsFalse()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
@@ -654,7 +652,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             var cert = GetTestCert();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -667,7 +665,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             var cert = GetTestCert();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -680,7 +678,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             var cert = GetTestCert();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -695,7 +693,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             var cert = GetTestCert();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -711,7 +709,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var cert = GetTestCert();
             var cert2 = GetTestCert2();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -725,7 +723,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var cert = GetTestCert();
             var cert2 = new X509Certificate2();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -739,7 +737,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var cert = GetTestCert();
             var cert2 = GetTestCert2();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -752,7 +750,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             var cert = GetTestCert();
 
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -770,9 +768,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void Authenticate_MultiTenancy_UsernamesUniqueAcrossTenants_NoTenantAPI_ShouldFindUser()
         {
-            securitySettings.RequireAccountVerification = false;
-            securitySettings.MultiTenant = true;
-            securitySettings.UsernamesUniqueAcrossTenants = true;
+            configuration.RequireAccountVerification = false;
+            configuration.MultiTenant = true;
+            configuration.UsernamesUniqueAcrossTenants = true;
             
             var acct = subject.CreateAccount("tenant", "user", "pass", "user@test.com");
 
@@ -783,7 +781,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ConfigureTwoFactorAuthentication_Mobile_UpdatesRepository()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             var code = LastMobileCode;
@@ -798,7 +796,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ConfigureTwoFactorAuthentication_Mobile_RequiresMobilePhoneNumber()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -815,7 +813,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void ConfigureTwoFactorAuthentication_Certificate_UpdatesRepository()
         {
             var cert = GetTestCert();
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             acct.AddCertificate(cert);
             subject.Update(acct);
@@ -830,7 +828,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ConfigureTwoFactorAuthentication_Certificate_RequiresCertificate()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -846,8 +844,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void SetPassword_ChangesPassword()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.SetPassword(id, "pass2");
 
@@ -871,8 +869,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void SetPassword_InvalidPassword_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -888,8 +886,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePassword_ChangesPassword()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangePassword(id, "pass", "pass2");
@@ -901,8 +899,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePassword_InvalidAccountId_Throws()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -916,8 +914,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePassword_EmptyOldPass_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -934,8 +932,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePassword_InvalidOldPass_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -952,8 +950,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePassword_EmptyNewPass_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -970,8 +968,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ResetPassword_AllowsPasswordToBeReset()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
@@ -986,8 +984,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ResetPassword_UnverifiedAccount_CannotChangePassword()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = true;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
@@ -1000,8 +998,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ResetPassword_EmptyEmail_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -1018,8 +1016,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ResetPassword_InvalidEmail_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -1036,8 +1034,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePasswordFromResetKey_RequiresResetPassword()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             var key = LastVerificationKey;
@@ -1048,8 +1046,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePasswordFromResetKey_EmptyKey_ReturnsFalse()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
@@ -1061,8 +1059,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePasswordFromResetKey_InvalidKey_ReturnsFalse()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ResetPassword("test@test.com");
@@ -1144,8 +1142,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailRequest_AllowsEmailToBeChanged()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
@@ -1157,8 +1155,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailRequest_NonuniqueEmail_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
             var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
 
@@ -1175,8 +1173,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailRequest_InvalidAccountId_Throws()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -1192,8 +1190,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailRequest_EmptyNewEmail_FailsValidation()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -1210,8 +1208,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailFromKey_Success_ReturnsTrue()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
@@ -1221,9 +1219,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailFromKey_SecuritySettingsEmailIsUsername_ChangesUsername()
         {
-            securitySettings.EmailIsUsername = true;
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.EmailIsUsername = true;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
@@ -1235,8 +1233,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailFromKey_EmptyPassword_ValidationFails()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
@@ -1254,8 +1252,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailFromKey_InvalidPassword_ValidationFails()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
@@ -1273,8 +1271,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailFromKey_EmptyKey_ValidationFails()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
@@ -1292,8 +1290,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailFromKey_InvalidAccountId_Throws()
         {
-            securitySettings.AllowLoginAfterAccountCreation = true;
-            securitySettings.RequireAccountVerification = false;
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeEmailRequest(id, "test2@test.com");
@@ -1310,7 +1308,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void RemoveMobilePhone_RemovesMobilePhone()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             var acct = subject.GetByID(id);
@@ -1324,7 +1322,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void RemoveMobilePhone_InvalidAccountId_Throws()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
             var acct = subject.GetByID(id);
@@ -1342,7 +1340,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeMobilePhoneRequest_AllowsMobileToBeChanged()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeMobilePhoneRequest(id, "123");
@@ -1355,7 +1353,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeMobilePhoneRequest_EmptyMobilePhone_FailsValidation()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -1365,14 +1363,14 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Phone");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidPhone, ex.Message);
             }
         }
 
         [TestMethod]
         public void ChangeMobilePhoneRequest_NonUniqueMobilePhone_FailsValidation()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
             subject.ChangeMobilePhoneRequest(acct1.ID, "123");
             subject.ChangeMobilePhoneFromCode(acct1.ID, LastMobileCode);
@@ -1393,7 +1391,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeMobilePhoneFromCode_NonUniqueMobilePhone_FailsValidation()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
             var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
             
@@ -1417,7 +1415,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeMobilePhoneRequest_InvalidAccountId_Throws()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             try
@@ -1433,7 +1431,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeMobilePhoneFromCode_Success_ReturnsTrue()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
 
             subject.ChangeMobilePhoneRequest(id, "123");
@@ -1443,7 +1441,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeMobilePhoneFromCode_EmptyCode_ReturnsFalse()
         {
-            securitySettings.RequireAccountVerification = false;
+            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
 

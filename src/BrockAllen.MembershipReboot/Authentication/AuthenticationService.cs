@@ -144,9 +144,9 @@ namespace BrockAllen.MembershipReboot
             string providerAccountID,
             IEnumerable<Claim> claims)
         {
-            if (!UserAccountService.Configuration.SecuritySettings.MultiTenant)
+            if (!UserAccountService.Configuration.MultiTenant)
             {
-                tenant = UserAccountService.Configuration.SecuritySettings.DefaultTenant;
+                tenant = UserAccountService.Configuration.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentException("tenant");

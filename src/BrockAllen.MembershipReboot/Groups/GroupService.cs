@@ -12,14 +12,6 @@ namespace BrockAllen.MembershipReboot
         MembershipRebootConfiguration configuration;
         IGroupRepository groupRepository;
 
-        public SecuritySettings SecuritySettings
-        {
-            get
-            {
-                return configuration.SecuritySettings;
-            }
-        }
-
         public GroupService(IGroupRepository groupRepository)
             : this(new MembershipRebootConfiguration(), groupRepository)
         {
@@ -41,9 +33,9 @@ namespace BrockAllen.MembershipReboot
         
         public IQueryable<Group> GetAll(string tenant)
         {
-            if (!SecuritySettings.MultiTenant)
+            if (!configuration.MultiTenant)
             {
-                tenant = SecuritySettings.DefaultTenant;
+                tenant = configuration.DefaultTenant;
             }
 
             if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentNullException("tenant");
@@ -73,9 +65,9 @@ namespace BrockAllen.MembershipReboot
 
         public Group Create(string tenant, string name)
         {
-            if (!SecuritySettings.MultiTenant)
+            if (!configuration.MultiTenant)
             {
-                tenant = SecuritySettings.DefaultTenant;
+                tenant = configuration.DefaultTenant;
             }
 
             if (NameAlreadyExists(tenant, name))

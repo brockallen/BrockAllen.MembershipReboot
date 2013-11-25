@@ -17,10 +17,31 @@ namespace BrockAllen.MembershipReboot
         public MembershipRebootConfiguration(SecuritySettings securitySettings)
         {
             if (securitySettings == null) throw new ArgumentNullException("securitySettings");
-            this.SecuritySettings = securitySettings;
+            
+            this.MultiTenant = securitySettings.MultiTenant;
+            this.DefaultTenant = securitySettings.DefaultTenant;
+            this.EmailIsUsername = securitySettings.EmailIsUsername;
+            this.UsernamesUniqueAcrossTenants = securitySettings.UsernamesUniqueAcrossTenants;
+            this.RequireAccountVerification = securitySettings.RequireAccountVerification;
+            this.AllowLoginAfterAccountCreation = securitySettings.AllowLoginAfterAccountCreation;
+            this.AccountLockoutFailedLoginAttempts = securitySettings.AccountLockoutFailedLoginAttempts;
+            this.AccountLockoutDuration = securitySettings.AccountLockoutDuration;
+            this.AllowAccountDeletion = securitySettings.AllowAccountDeletion;
+            this.PasswordHashingIterationCount = securitySettings.PasswordHashingIterationCount;
+            this.PasswordResetFrequency = securitySettings.PasswordResetFrequency;
         }
 
-        public SecuritySettings SecuritySettings { get; private set; }
+        public bool MultiTenant { get; set; }
+        public string DefaultTenant { get; set; }
+        public bool EmailIsUsername { get; set; }
+        public bool UsernamesUniqueAcrossTenants { get; set; }
+        public bool RequireAccountVerification { get; set; }
+        public bool AllowLoginAfterAccountCreation { get; set; }
+        public int AccountLockoutFailedLoginAttempts { get; set; }
+        public TimeSpan AccountLockoutDuration { get; set; }
+        public bool AllowAccountDeletion { get; set; }
+        public int PasswordHashingIterationCount { get; set; }
+        public int PasswordResetFrequency { get; set; }
 
         AggregateValidator usernameValidators = new AggregateValidator();
         public void RegisterUsernameValidator(params IValidator[] items)
