@@ -28,7 +28,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     this.userAccountService.CreateAccount(model.Username, model.Password, model.Email);
-                    if (userAccountService.Configuration.SecuritySettings.RequireAccountVerification)
+                    if (userAccountService.Configuration.RequireAccountVerification)
                     {
                         return View("Success", model);
                     }

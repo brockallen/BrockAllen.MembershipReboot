@@ -32,6 +32,12 @@ namespace BrockAllen.MembershipReboot.Mvc
         public string PasswordHash { get; set; }
     }
 
+    //public class CustomUserAccount : UserAccount
+    //{
+    //    public string FirstName { get; set; }
+    //    public string LastName { get; set; }
+    //}
+
     public class CustomDatabase : DbContext
     {
         static CustomDatabase()
@@ -55,19 +61,18 @@ namespace BrockAllen.MembershipReboot.Mvc
         public DbSet<PasswordHistory> PasswordHistory { get; set; }
     }
 
-    public class CustomRepository : DbContextUserAccountRepository<CustomDatabase>
+    public class CustomRepository : DefaultUserAccountRepository
     {
         // you can do either style ctor (or none) -- depends how much control 
         // you want over instantiating the CustomDatabase instance
-
-        //public CustomRepository()
-        //{
-        //}
-
-        //public CustomRepository()
-        //    : base(new CustomDatabase())
-        //{
-        //}
+        public CustomRepository()
+            : base(new CustomDatabase())
+        {
+        }
+        public CustomRepository(CustomDatabase db)
+            : base(db)
+        {
+        }
     }
 
     // this shows the extensibility point of being notified of account activity
