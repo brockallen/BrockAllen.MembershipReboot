@@ -135,6 +135,9 @@
   <data name="CertificateAlreadyInUse" xml:space="preserve">
     <value>That certificate is already in use by a different account.</value>
   </data>
+  <data name="EmailAlreadyInUse" xml:space="preserve">
+    <value>Email already in use.</value>
+  </data>
   <data name="EmailRequired" xml:space="preserve">
     <value>Email is required.</value>
   </data>
@@ -189,6 +192,9 @@
   <data name="NameRequired" xml:space="preserve">
     <value>Name is required.</value>
   </data>
+  <data name="NewPasswordMustBeDifferent" xml:space="preserve">
+    <value>The new password must be different than the old password.</value>
+  </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Password is required.</value>
   </data>
@@ -206,6 +212,12 @@
   </data>
   <data name="TenantRequired" xml:space="preserve">
     <value>Tenant is required.</value>
+  </data>
+  <data name="UsernameAlreadyInUse" xml:space="preserve">
+    <value>Username already in use.</value>
+  </data>
+  <data name="UsernameCannotContainAtSign" xml:space="preserve">
+    <value>Username cannot contain the '@' character.</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Username is required.</value>

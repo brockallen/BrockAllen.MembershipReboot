@@ -248,7 +248,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Username");
+                Assert.AreEqual(Resources.ValidationMessages.UsernameRequired, ex.Message);
             }
         }
         
@@ -262,7 +262,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Username");
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotContainAtSign, ex.Message);
             }
         }
         
@@ -278,7 +278,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Username");
+                Assert.AreEqual(Resources.ValidationMessages.UsernameAlreadyInUse, ex.Message);
             }
         }
         
@@ -292,7 +292,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Email");
+                Assert.AreEqual(Resources.ValidationMessages.EmailRequired, ex.Message);
             }
         }
         
@@ -308,7 +308,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Email");
+                Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
             }
         }
 
@@ -347,7 +347,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Password");
+                Assert.AreEqual(Resources.ValidationMessages.PasswordRequired, ex.Message);
             }
         }
         
@@ -925,7 +925,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "old");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidOldPassword, ex.Message);
             }
         }
 
@@ -943,7 +943,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "old");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidOldPassword, ex.Message);
             }
         }
 
@@ -961,7 +961,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "new");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidNewPassword, ex.Message);
             }
         }
 
@@ -1009,7 +1009,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "email");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidEmail, ex.Message);
             }
         }
         
@@ -1027,7 +1027,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "email");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidEmail, ex.Message);
             }
         }
 
@@ -1091,7 +1091,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Username");
+                Assert.AreEqual(Resources.ValidationMessages.UsernameAlreadyInUse, ex.Message);
             }
         }
 
@@ -1122,7 +1122,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "username");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidUsername, ex.Message);
             }
         }
 
@@ -1167,7 +1167,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch(ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "Email");
+                Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
             }
         }
         [TestMethod]
@@ -1201,7 +1201,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "email");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidEmail, ex.Message);
             }
         }
 
@@ -1245,7 +1245,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "password");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidPassword, ex.Message);
             }
         }
 
@@ -1264,7 +1264,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "password");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidPassword, ex.Message);
             }
         }
 
@@ -1283,7 +1283,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "key");
+                Assert.AreEqual(Resources.ValidationMessages.InvalidKey, ex.Message);
             }
         }
 
@@ -1384,7 +1384,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "phone");
+                Assert.AreEqual(Resources.ValidationMessages.MobilePhoneAlreadyInUse, ex.Message);
             }
         }
 
@@ -1408,7 +1408,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
             catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "phone");
+                Assert.AreEqual(Resources.ValidationMessages.MobilePhoneAlreadyInUse, ex.Message);
             }
         }
 

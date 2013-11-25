@@ -17,7 +17,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.UsernameDoesNotContainAtSign] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult("Username cannot contain the '@' character.");
+                    return new ValidationResult(Resources.ValidationMessages.UsernameCannotContainAtSign);
                 }
                 return null;
             });
@@ -29,7 +29,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult("Username already in use.");
+                    return new ValidationResult(Resources.ValidationMessages.UsernameAlreadyInUse);
                 }
                 return null;
             });
@@ -42,7 +42,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult("Email is invalid.");
+                    return new ValidationResult(Resources.ValidationMessages.InvalidEmail);
                 }
                 return null;
             });
@@ -54,7 +54,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
                     
-                    return new ValidationResult("Email already in use.");
+                    return new ValidationResult(Resources.ValidationMessages.EmailAlreadyInUse);
                 }
                 return null;
             });
@@ -68,7 +68,7 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Verbose("[UserAccountValidation.PasswordMustBeDifferentThanCurrent] validation failed: {0}, {1}", account.Tenant, account.Username);
 
-                return new ValidationResult("The new password must be different than the old password.");
+                return new ValidationResult(Resources.ValidationMessages.NewPasswordMustBeDifferent);
             }
             return null;
         });

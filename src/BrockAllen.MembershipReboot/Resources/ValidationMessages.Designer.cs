@@ -115,6 +115,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email already in use..
+        /// </summary>
+        internal static string EmailAlreadyInUse {
+            get {
+                return ResourceManager.GetString("EmailAlreadyInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email is required..
         /// </summary>
         internal static string EmailRequired {
@@ -277,6 +286,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The new password must be different than the old password..
+        /// </summary>
+        internal static string NewPasswordMustBeDifferent {
+            get {
+                return ResourceManager.GetString("NewPasswordMustBeDifferent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password is required..
         /// </summary>
         internal static string PasswordRequired {
@@ -327,6 +345,24 @@ namespace BrockAllen.MembershipReboot.Resources {
         internal static string TenantRequired {
             get {
                 return ResourceManager.GetString("TenantRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username already in use..
+        /// </summary>
+        internal static string UsernameAlreadyInUse {
+            get {
+                return ResourceManager.GetString("UsernameAlreadyInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username cannot contain the &apos;@&apos; character..
+        /// </summary>
+        internal static string UsernameCannotContainAtSign {
+            get {
+                return ResourceManager.GetString("UsernameCannotContainAtSign", resourceCulture);
             }
         }
         
