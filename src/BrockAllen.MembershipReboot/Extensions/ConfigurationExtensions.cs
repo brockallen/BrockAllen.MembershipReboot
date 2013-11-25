@@ -16,5 +16,17 @@ namespace BrockAllen.MembershipReboot
             config.TwoFactorAuthenticationPolicy = policy;
             config.AddEventHandler(policy);
         }
+
+        public static void ConfigurePasswordComplexity(this MembershipRebootConfiguration config)
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            config.RegisterPasswordValidator(new PasswordComplexityValidator());
+        }
+        
+        public static void ConfigurePasswordComplexity(this MembershipRebootConfiguration config, int minimumLength, int minimumNumberOfComplexityRules)
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            config.RegisterPasswordValidator(new PasswordComplexityValidator(minimumLength, minimumNumberOfComplexityRules));
+        }
     }
 }

@@ -27,5 +27,11 @@ namespace BrockAllen.MembershipReboot
             internal const int DefaultPersistentCookieDays = UserAccount.TwoFactorAuthTokenDurationDays;
             internal const string CookieBasedTwoFactorAuthPolicyCookieName = "mr.cbtfap.";
         }
+
+        public class PasswordComplexity
+        {
+            internal const int MinimumLength = 10;
+            internal const int NumberOfComplexityRules = 3;
+        }
     }
 }

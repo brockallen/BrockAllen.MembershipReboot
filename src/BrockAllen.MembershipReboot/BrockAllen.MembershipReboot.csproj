@@ -99,6 +99,7 @@
     <Compile Include="Validation\AggregateValidator.cs" />
     <Compile Include="Validation\DelegateValidator.cs" />
     <Compile Include="Validation\IValidator.cs" />
+    <Compile Include="Validation\PasswordComplexityValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

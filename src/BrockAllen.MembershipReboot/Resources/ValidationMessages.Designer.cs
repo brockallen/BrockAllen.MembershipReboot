@@ -295,6 +295,24 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Password must contain at least {0} of the follwing characters: one upper, one lower, one digit and one other..
+        /// </summary>
+        internal static string PasswordComplexityRules {
+            get {
+                return ResourceManager.GetString("PasswordComplexityRules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must be at least {0} characters long..
+        /// </summary>
+        internal static string PasswordLength {
+            get {
+                return ResourceManager.GetString("PasswordLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password is required..
         /// </summary>
         internal static string PasswordRequired {
