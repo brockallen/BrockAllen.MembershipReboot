@@ -73,7 +73,7 @@
     <Compile Include="Constants\MembershipRebootConstants.cs" />
     <Compile Include="Extensions\DisposableExtensions.cs" />
     <Compile Include="Account\LinkedAccount.cs" />
-    <Compile Include="Account\UserAccountEvents.cs" />
+    <Compile Include="AccountService\UserAccountEvents.cs" />
     <Compile Include="Account\VerificationKeyPurpose.cs" />
     <Compile Include="Account\UserClaim.cs" />
     <Compile Include="Notification\IMessageFormatter.cs" />

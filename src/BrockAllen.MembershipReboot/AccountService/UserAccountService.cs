@@ -98,20 +98,6 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public virtual void Update(UserAccount account)
-        {
-            if (account == null)
-            {
-                Tracing.Error("[UserAccountService.Update] called -- failed null account");
-                throw new ArgumentNullException("account");
-            }
-
-            Tracing.Information("[UserAccountService.Update] called for account: {0}", account.ID);
-
-            account.LastUpdated = UtcNow;
-            this.userRepository.Update(account);
-        }
-
         List<IEvent> events = new List<IEvent>();
         IEnumerable<IEvent> IEventSource.GetEvents()
         {
@@ -133,6 +119,20 @@ namespace BrockAllen.MembershipReboot
         public virtual IQueryable<UserAccount> GetAll()
         {
             return GetAll(null);
+        }
+
+        public virtual void Update(UserAccount account)
+        {
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.Update] called -- failed null account");
+                throw new ArgumentNullException("account");
+            }
+
+            Tracing.Information("[UserAccountService.Update] called for account: {0}", account.ID);
+
+            account.LastUpdated = UtcNow;
+            this.userRepository.Update(account);
         }
 
         public virtual IQueryable<UserAccount> GetAll(string tenant)
