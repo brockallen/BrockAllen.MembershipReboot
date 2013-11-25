@@ -61,6 +61,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account is already verified..
+        /// </summary>
+        internal static string AccountAlreadyVerified {
+            get {
+                return ResourceManager.GetString("AccountAlreadyVerified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can&apos;t create an account because there was no email from the identity provider..
         /// </summary>
         internal static string AccountCreateFailNoEmailFromIdp {

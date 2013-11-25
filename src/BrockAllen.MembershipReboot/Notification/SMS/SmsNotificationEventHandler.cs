@@ -31,7 +31,7 @@ namespace BrockAllen.MembershipReboot
                 SendSms(msg);
             }
         }
-        
+
         protected virtual Message CreateMessage(UserAccountEvent evt, dynamic extra)
         {
             var msg = this.messageFormatter.Format(evt, extra);

@@ -317,14 +317,6 @@
       <Project>{a33fe01f-ae9b-4bde-b521-ab13916b1cfa}</Project>
       <Name>BrockAllen.MembershipReboot</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BrockAllen.MembershipReboot.MongoDb\BrockAllen.MembershipReboot.MongoDb.csproj">
-      <Project>{239ce743-da22-4a3c-8a31-699cc33476ce}</Project>
-      <Name>BrockAllen.MembershipReboot.MongoDb</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj">
-      <Project>{4a778329-6308-45e3-b5cd-3c89b7d139d9}</Project>
-      <Name>BrockAllen.MembershipReboot.RavenDb</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

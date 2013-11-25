@@ -8,6 +8,6 @@ namespace BrockAllen.MembershipReboot
 {
     public interface ITwoFactorAuthenticationPolicy
     {
-        string GetTwoFactorAuthToken(UserAccount account);
+        string GetTwoFactorAuthToken(IUserAccount account);
     }
 }

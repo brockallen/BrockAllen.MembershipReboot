@@ -55,7 +55,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [HttpPost]
         public ActionResult Confirm(string id, string password)
         {
-            BrockAllen.MembershipReboot.UserAccount account;
+            BrockAllen.MembershipReboot.IUserAccount account;
             var result = this.userAccountService.VerifyAccount(id, password, out account);
             if (result)
             {

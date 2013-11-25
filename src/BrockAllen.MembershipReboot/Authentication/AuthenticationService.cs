@@ -39,12 +39,12 @@ namespace BrockAllen.MembershipReboot
             SignIn(account, AuthenticationMethods.Password);
         }
 
-        public virtual void SignIn(UserAccount account)
+        public virtual void SignIn(IUserAccount account)
         {
             SignIn(account, AuthenticationMethods.Password);
         }
 
-        public virtual void SignIn(UserAccount account, string method)
+        public virtual void SignIn(IUserAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
@@ -59,7 +59,7 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.LoginNotAllowed);
             }
 
-            if (account.RequiresTwoFactorAuthToSignIn || 
+            if (account.RequiresTwoFactorAuthToSignIn() || 
                 account.RequiresPasswordReset || 
                 this.UserAccountService.IsPasswordExpired(account))
             {
@@ -102,7 +102,7 @@ namespace BrockAllen.MembershipReboot
             IssueToken(cp);
         }
 
-        private static List<Claim> GetBasicClaims(UserAccount account, string method)
+        private static List<Claim> GetBasicClaims(IUserAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -116,7 +116,7 @@ namespace BrockAllen.MembershipReboot
             return claims;
         }
 
-        private void IssuePartialSignInToken(UserAccount account, string method)
+        private void IssuePartialSignInToken(IUserAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -154,7 +154,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
             if (claims == null) throw new ArgumentNullException("claims");
 
-            UserAccount account = null;
+            IUserAccount account = null;
             var user = ClaimsPrincipal.Current;
             if (user.Identity.IsAuthenticated)
             {
@@ -201,8 +201,8 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new Exception("Failed to locate account");
 
             // add/update the provider with this account
-            account.AddOrUpdateLinkedAccount(providerName, providerAccountID, claims);
-            this.UserAccountService.Update(account);
+            this.UserAccountService.AddOrUpdateLinkedAccount(account, providerName, providerAccountID, claims);
+            //this.UserAccountService.Update(account);
 
             // signin from the account
             // if we want to include the provider's claims, then perhaps this

@@ -137,15 +137,15 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    BrockAllen.MembershipReboot.UserAccount account;
+                    BrockAllen.MembershipReboot.IUserAccount account;
                     if (this.userAccountService.ChangePasswordFromResetKey(model.Key, model.Password, out account))
                     {
                         this.authenticationService.SignIn(account);
-                        if (account.RequiresTwoFactorAuthCodeToSignIn)
+                        if (account.RequiresTwoFactorAuthCodeToSignIn())
                         {
                             return RedirectToAction("TwoFactorAuthCodeLogin", "Login");
                         }
-                        if (account.RequiresTwoFactorCertificateToSignIn)
+                        if (account.RequiresTwoFactorCertificateToSignIn())
                         {
                             return RedirectToAction("CertificateLogin", "Login");
                         }

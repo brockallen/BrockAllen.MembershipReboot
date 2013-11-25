@@ -28,13 +28,13 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             var account = userAccountService.GetByUsername(User.Identity.Name);
             if (String.IsNullOrWhiteSpace(gender))
             {
-                account.RemoveClaim(ClaimTypes.Gender);
+                userAccountService.RemoveClaim(User.GetUserID(), ClaimTypes.Gender);
             }
             else
             {
                 // if you only want one of these claim types, uncomment the next line
                 //account.RemoveClaim(ClaimTypes.Gender);
-                account.AddClaim(ClaimTypes.Gender, gender);
+                userAccountService.AddClaim(User.GetUserID(), ClaimTypes.Gender, gender);
             }
             userAccountService.Update(account);
 

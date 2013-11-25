@@ -53,7 +53,7 @@ namespace BrockAllen.MembershipReboot
             ValidateMobileNumber(evt.Account, evt.Account.MobilePhoneNumber);
         }
 
-        void ValidateMobileNumber(UserAccount account, string mobile)
+        void ValidateMobileNumber(IUserAccount account, string mobile)
         {
             if (!String.IsNullOrWhiteSpace(mobile))
             {

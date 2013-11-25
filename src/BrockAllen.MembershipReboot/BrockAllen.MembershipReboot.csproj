@@ -41,13 +41,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountService\AuthenticationPurpose.cs" />
+    <Compile Include="AccountService\IUserAccountInternalExtensions.cs" />
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Account\TwoFactorAuthToken.cs" />
     <Compile Include="Account\PasswordResetSecret.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\RelativePathApplicationInformation.cs" />
+    <Compile Include="Crypto\ICrypto.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
+    <Compile Include="Extensions\ILinkedAccountExtensions.cs" />
+    <Compile Include="Extensions\IUserAccountExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Account\TwoFactorAuthMode.cs" />
     <Compile Include="Groups\Group.cs" />
@@ -68,7 +72,6 @@
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Constants\MembershipRebootConstants.cs" />
     <Compile Include="Extensions\DisposableExtensions.cs" />
-    <Compile Include="Account\LinkedAccountClaim.cs" />
     <Compile Include="Account\LinkedAccount.cs" />
     <Compile Include="Account\UserAccountEvents.cs" />
     <Compile Include="Account\VerificationKeyPurpose.cs" />
@@ -77,9 +80,7 @@
     <Compile Include="Notification\Email\EmailMessageFormatter.cs" />
     <Compile Include="Notification\SMS\SmsNotificationEventHandler.cs" />
     <Compile Include="Notification\SMS\SmsMessageFormatter.cs" />
-    <Compile Include="Repository\EventBusRepository.cs" />
     <Compile Include="Repository\EventBusUserAccountRepository.cs" />
-    <Compile Include="Repository\IRepository.cs" />
     <Compile Include="AccountService\UserAccountValidation.cs" />
     <Compile Include="Bus\EventBus.cs" />
     <Compile Include="Bus\Events.cs" />

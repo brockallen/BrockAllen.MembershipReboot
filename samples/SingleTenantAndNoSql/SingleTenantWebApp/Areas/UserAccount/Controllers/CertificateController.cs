@@ -26,9 +26,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(string thumbprint)
         {
-            var acct = userAccountService.GetByID(this.User.GetUserID());
-            acct.RemoveCertificate(thumbprint);
-            userAccountService.Update(acct);
+            userAccountService.RemoveCertificate(this.User.GetUserID(), thumbprint);
             return RedirectToAction("Index");
         }
 
@@ -52,8 +50,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                         var bytes = ms.ToArray();
 
                         var cert = new X509Certificate2(bytes);
-                        acct.AddCertificate(cert);
-                        userAccountService.Update(acct);
+                        userAccountService.AddCertificate(User.GetUserID(), cert);
 
                         return RedirectToAction("Index");
                     }

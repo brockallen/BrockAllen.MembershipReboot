@@ -51,10 +51,8 @@
   <ItemGroup>
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
-    <Compile Include="DbContextRepository`1.cs" />
-    <Compile Include="DbContextGroupRepository`1.cs" />
-    <Compile Include="DbContextUserAccountRepository`1.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
+    <Compile Include="LinkedAccount.cs" />
     <Compile Include="Migrations\201311222357350_InitialCreate.cs" />
     <Compile Include="Migrations\201311222357350_InitialCreate.Designer.cs">
       <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
@@ -64,7 +62,12 @@
       <DependentUpon>201311242107026_v5.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="PasswordResetSecret.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TwoFactorAuthToken.cs" />
+    <Compile Include="UserAccount.cs" />
+    <Compile Include="UserCertificate.cs" />
+    <Compile Include="UserClaim.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">

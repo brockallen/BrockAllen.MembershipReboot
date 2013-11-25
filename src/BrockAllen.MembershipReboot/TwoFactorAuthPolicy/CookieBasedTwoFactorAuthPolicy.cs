@@ -23,7 +23,7 @@ namespace BrockAllen.MembershipReboot
         protected abstract void IssueCookie(string name, string value);
         protected abstract void RemoveCookie(string name);
 
-        public string GetTwoFactorAuthToken(UserAccount account)
+        public string GetTwoFactorAuthToken(IUserAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
             return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
@@ -37,7 +37,7 @@ namespace BrockAllen.MembershipReboot
 
             IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant, evt.Token);
         }
-        
+
         public void Handle(TwoFactorAuthenticationDisabledEvent evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");

@@ -71,9 +71,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             try
             {
-                var account = this.userAccountService.GetByID(User.GetUserID());
-                account.RemoveLinkedAccount(provider, id);
-                this.userAccountService.Update(account);
+                this.userAccountService.RemoveLinkedAccount(User.GetUserID(), provider, id);
                 return RedirectToAction("Manage");
             }
             catch (ValidationException ex)

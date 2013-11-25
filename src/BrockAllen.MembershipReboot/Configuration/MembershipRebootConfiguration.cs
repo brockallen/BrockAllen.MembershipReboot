@@ -29,6 +29,8 @@ namespace BrockAllen.MembershipReboot
             this.AllowAccountDeletion = securitySettings.AllowAccountDeletion;
             this.PasswordHashingIterationCount = securitySettings.PasswordHashingIterationCount;
             this.PasswordResetFrequency = securitySettings.PasswordResetFrequency;
+
+            this.Crypto = new DefaultCrypto();
         }
 
         public bool MultiTenant { get; set; }
@@ -79,5 +81,6 @@ namespace BrockAllen.MembershipReboot
         }
         
         public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
+        public ICrypto Crypto { get; set; }
     }
 }

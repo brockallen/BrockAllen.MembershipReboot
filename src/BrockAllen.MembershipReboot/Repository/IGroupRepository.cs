@@ -3,9 +3,18 @@
  * see license.txt
  */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 namespace BrockAllen.MembershipReboot
 {
-    public interface IGroupRepository : IRepository<Group>
+    public interface IGroupRepository : IDisposable
     {
+        IQueryable<Group> GetAll();
+        Group Get(Guid id);
+        Group Create();
+        void Add(Group item);
+        void Remove(Group item);
+        void Update(Group item);
     }
 }

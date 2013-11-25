@@ -17,7 +17,7 @@ namespace BrockAllen.MembershipReboot
             : this(messageFormatter, new SmtpMessageDelivery())
         {
         }
-        
+
         public EmailEventHandler(IMessageFormatter messageFormatter, IMessageDelivery messageDelivery)
         {
             if (messageFormatter == null) throw new ArgumentNullException("messageFormatter");
@@ -46,7 +46,7 @@ namespace BrockAllen.MembershipReboot
             : base(messageFormatter)
         {
         }
-        
+
         public EmailAccountCreatedEventHandler(IMessageFormatter messageFormatter, IMessageDelivery messageDelivery)
             : base(messageFormatter, messageDelivery)
         {
