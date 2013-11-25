@@ -27,7 +27,11 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             // uncomment if you want email notifications -- also update smtp settings in web.config
             //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
             //config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
-            config.ConfigureAspNetCookieBasedTwoFactorAuthPolicy();
+            // set to false for production
+            config.ConfigureAspNetCookieBasedTwoFactorAuthPolicy(debugging:true);
+
+            // uncomment to ensure proper password complexity
+            //config.ConfigurePasswordComplexity();
             
             return config;
         }
