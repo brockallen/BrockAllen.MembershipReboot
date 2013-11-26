@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class PasswordComplexityValidator : IValidator
+    public class PasswordComplexityValidator<T> : IValidator<T>
+        where T : UserAccount
     {
         public int MinimumLength { get; set; }
         public int MinimumNumberOfComplexityRules { get; set; }
@@ -24,7 +25,7 @@ namespace BrockAllen.MembershipReboot
             if (MinimumNumberOfComplexityRules > 4) MinimumNumberOfComplexityRules = 4;
         }
 
-        public ValidationResult Validate(UserAccountService service, UserAccount account, string value)
+        public ValidationResult Validate(UserAccountService<T> service, T account, string value)
         {
             if (String.IsNullOrWhiteSpace(value))
             {

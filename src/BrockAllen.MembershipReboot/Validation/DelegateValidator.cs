@@ -8,17 +8,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class DelegateValidator : IValidator
+    public class DelegateValidator<T> : IValidator<T>
+        where T : UserAccount
     {
-        Func<UserAccountService, UserAccount, string, ValidationResult> func;
-        public DelegateValidator(Func<UserAccountService, UserAccount, string, ValidationResult> func)
+        Func<UserAccountService<T>, T, string, ValidationResult> func;
+        public DelegateValidator(Func<UserAccountService<T>, T, string, ValidationResult> func)
         {
             if (func == null) throw new ArgumentNullException("func");
 
             this.func = func;
         }
 
-        public ValidationResult Validate(UserAccountService service, UserAccount account, string value)
+        public ValidationResult Validate(UserAccountService<T> service, T account, string value)
         {
             return func(service, account, value);
         }

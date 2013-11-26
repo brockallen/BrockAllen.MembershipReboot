@@ -9,14 +9,15 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class EventBusUserAccountRepository : IUserAccountRepository
+    public class EventBusUserAccountRepository<T> : IUserAccountRepository<T>
+        where T : UserAccount
     {
         IEventSource source;
-        IUserAccountRepository inner;
+        IUserAccountRepository<T> inner;
         IEventBus validationBus;
         IEventBus eventBus;
 
-        public EventBusUserAccountRepository(IEventSource source, IUserAccountRepository inner, IEventBus validationBus, IEventBus eventBus)
+        public EventBusUserAccountRepository(IEventSource source, IUserAccountRepository<T> inner, IEventBus validationBus, IEventBus eventBus)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (inner == null) throw new ArgumentNullException("inner");
@@ -47,36 +48,36 @@ namespace BrockAllen.MembershipReboot
             source.Clear();
         }
 
-        public IQueryable<UserAccount> GetAll()
+        public IQueryable<T> GetAll()
         {
             return inner.GetAll();
         }
 
-        public UserAccount Get(Guid key)
+        public T Get(Guid key)
         {
             return inner.Get(key);
         }
 
-        public UserAccount Create()
+        public T Create()
         {
             return inner.Create();
         }
 
-        public void Add(UserAccount item)
+        public void Add(T item)
         {
             RaiseValidation();
             inner.Add(item);
             RaiseEvents();
         }
 
-        public void Remove(UserAccount item)
+        public void Remove(T item)
         {
             RaiseValidation();
             inner.Remove(item);
             RaiseEvents();
         }
 
-        public void Update(UserAccount item)
+        public void Update(T item)
         {
             RaiseValidation();
             inner.Update(item);

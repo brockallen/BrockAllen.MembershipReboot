@@ -9,13 +9,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
-    class UserAccountValidator :
+    class UserAccountValidator<T> :
         IEventHandler<CertificateAddedEvent>,
         IEventHandler<MobilePhoneChangeRequestedEvent>,
         IEventHandler<MobilePhoneChangedEvent>
+        where T : UserAccount
     {
-        UserAccountService userAccountService;
-        public UserAccountValidator(UserAccountService userAccountService)
+        UserAccountService<T> userAccountService;
+        public UserAccountValidator(UserAccountService<T> userAccountService)
         {
             if (userAccountService == null) throw new ArgumentNullException("userAccountService");
             this.userAccountService = userAccountService;

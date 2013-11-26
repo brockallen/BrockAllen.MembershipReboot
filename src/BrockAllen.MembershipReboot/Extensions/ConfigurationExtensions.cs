@@ -20,13 +20,13 @@ namespace BrockAllen.MembershipReboot
         public static void ConfigurePasswordComplexity(this MembershipRebootConfiguration config)
         {
             if (config == null) throw new ArgumentNullException("config");
-            config.RegisterPasswordValidator(new PasswordComplexityValidator());
+            config.RegisterPasswordValidator(new PasswordComplexityValidator<UserAccount>());
         }
-        
+
         public static void ConfigurePasswordComplexity(this MembershipRebootConfiguration config, int minimumLength, int minimumNumberOfComplexityRules)
         {
             if (config == null) throw new ArgumentNullException("config");
-            config.RegisterPasswordValidator(new PasswordComplexityValidator(minimumLength, minimumNumberOfComplexityRules));
+            config.RegisterPasswordValidator(new PasswordComplexityValidator<UserAccount>(minimumLength, minimumNumberOfComplexityRules));
         }
     }
 }

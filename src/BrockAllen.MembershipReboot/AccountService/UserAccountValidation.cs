@@ -8,10 +8,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
-    internal class UserAccountValidation
+    internal class UserAccountValidation<T>
+        where T : UserAccount
     {
-        public static readonly IValidator UsernameDoesNotContainAtSign =
-            new DelegateValidator((service, account, value) =>
+        public static readonly IValidator<T> UsernameDoesNotContainAtSign =
+            new DelegateValidator<T>((service, account, value) =>
             {
                 if (value.Contains("@"))
                 {
@@ -22,8 +23,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator UsernameMustNotAlreadyExist =
-            new DelegateValidator((service, account, value) =>
+        public static readonly IValidator<T> UsernameMustNotAlreadyExist =
+            new DelegateValidator<T>((service, account, value) =>
             {
                 if (service.UsernameExists(account.Tenant, value))
                 {
@@ -34,8 +35,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator EmailIsValidFormat =
-            new DelegateValidator((service, account, value) =>
+        public static readonly IValidator<T> EmailIsValidFormat =
+            new DelegateValidator<T>((service, account, value) =>
             {
                 EmailAddressAttribute validator = new EmailAddressAttribute();
                 if (!validator.IsValid(value))
@@ -47,8 +48,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator EmailMustNotAlreadyExist =
-            new DelegateValidator((service, account, value) =>
+        public static readonly IValidator<T> EmailMustNotAlreadyExist =
+            new DelegateValidator<T>((service, account, value) =>
             {
                 if (service.EmailExists(account.Tenant, value))
                 {
@@ -59,8 +60,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator PasswordMustBeDifferentThanCurrent =
-            new DelegateValidator((service, account, value) =>
+        public static readonly IValidator<T> PasswordMustBeDifferentThanCurrent =
+            new DelegateValidator<T>((service, account, value) =>
         {
             // Use LastLogin null-check to see if it's a new account
             // we don't want to run this logic if it's a new account

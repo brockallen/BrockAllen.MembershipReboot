@@ -7,9 +7,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
-    public interface IValidator
+    public interface IValidator<T>
+        where T : UserAccount
     {
-        ValidationResult Validate(UserAccountService service, UserAccount account, string value);
+        ValidationResult Validate(UserAccountService<T> service, T account, string value);
     }
 }
     

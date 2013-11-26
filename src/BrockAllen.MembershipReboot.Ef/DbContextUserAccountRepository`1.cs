@@ -6,9 +6,10 @@
 using System.Data.Entity;
 namespace BrockAllen.MembershipReboot.Ef
 {
-    public class DbContextUserAccountRepository<Ctx>
-           : DbContextRepository<UserAccount>, IUserAccountRepository
+    public class DbContextUserAccountRepository<Ctx, T>
+           : DbContextRepository<T>, IUserAccountRepository<T>
         where Ctx : DbContext, new()
+        where T : UserAccount
     {
         public DbContextUserAccountRepository()
             : this(new Ctx())

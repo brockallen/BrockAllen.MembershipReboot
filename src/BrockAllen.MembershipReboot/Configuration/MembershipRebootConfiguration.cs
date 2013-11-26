@@ -7,7 +7,21 @@ using System;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class MembershipRebootConfiguration
+    public class MembershipRebootConfiguration : MembershipRebootConfiguration<UserAccount>
+    {
+        public MembershipRebootConfiguration()
+            : this(SecuritySettings.Instance)
+        {
+        }
+
+        public MembershipRebootConfiguration(SecuritySettings securitySettings)
+            : base(securitySettings)
+        {
+        }
+    }
+
+    public class MembershipRebootConfiguration<T>
+        where T : UserAccount
     {
         public MembershipRebootConfiguration()
             : this(SecuritySettings.Instance)
@@ -45,26 +59,26 @@ namespace BrockAllen.MembershipReboot
         public int PasswordHashingIterationCount { get; set; }
         public int PasswordResetFrequency { get; set; }
 
-        AggregateValidator usernameValidators = new AggregateValidator();
-        public void RegisterUsernameValidator(params IValidator[] items)
+        AggregateValidator<T> usernameValidators = new AggregateValidator<T>();
+        public void RegisterUsernameValidator(params IValidator<T>[] items)
         {
             usernameValidators.AddRange(items);
         }
-        public IValidator UsernameValidator { get { return usernameValidators; } }
+        public IValidator<T> UsernameValidator { get { return usernameValidators; } }
 
-        AggregateValidator passwordValidators = new AggregateValidator();
-        public void RegisterPasswordValidator(params IValidator[] items)
+        AggregateValidator<T> passwordValidators = new AggregateValidator<T>();
+        public void RegisterPasswordValidator(params IValidator<T>[] items)
         {
             passwordValidators.AddRange(items);
         }
-        public IValidator PasswordValidator { get { return passwordValidators; } }
-        
-        AggregateValidator emailValidators = new AggregateValidator();
-        public void RegisterEmailValidator(params IValidator[] items)
+        public IValidator<T> PasswordValidator { get { return passwordValidators; } }
+
+        AggregateValidator<T> emailValidators = new AggregateValidator<T>();
+        public void RegisterEmailValidator(params IValidator<T>[] items)
         {
             emailValidators.AddRange(items);
         }
-        public IValidator EmailValidator { get { return emailValidators; } }
+        public IValidator<T> EmailValidator { get { return emailValidators; } }
 
         EventBus eventBus = new EventBus();
         public IEventBus EventBus { get { return eventBus; } }

@@ -12,17 +12,37 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class AuthenticationService
+    public abstract class AuthenticationService : AuthenticationService<UserAccount>
     {
-        public UserAccountService UserAccountService { get; set; }
-        public ClaimsAuthenticationManager ClaimsAuthenticationManager { get; set; }
-
+        public new UserAccountService UserAccountService
+        {
+            get { return (UserAccountService)base.UserAccountService; }
+            set { base.UserAccountService = value; }
+        }
+        
         public AuthenticationService(UserAccountService userService)
             : this(userService, null)
         {
         }
-        
+
         public AuthenticationService(UserAccountService userService, ClaimsAuthenticationManager claimsAuthenticationManager)
+            : base(userService, claimsAuthenticationManager)
+        {
+        }
+    }
+
+    public abstract class AuthenticationService<T>
+        where T : UserAccount
+    {
+        public UserAccountService<T> UserAccountService { get; set; }
+        public ClaimsAuthenticationManager ClaimsAuthenticationManager { get; set; }
+
+        public AuthenticationService(UserAccountService<T> userService)
+            : this(userService, null)
+        {
+        }
+
+        public AuthenticationService(UserAccountService<T> userService, ClaimsAuthenticationManager claimsAuthenticationManager)
         {
             this.UserAccountService = userService;
             this.ClaimsAuthenticationManager = claimsAuthenticationManager;
@@ -39,12 +59,12 @@ namespace BrockAllen.MembershipReboot
             SignIn(account, AuthenticationMethods.Password);
         }
 
-        public virtual void SignIn(UserAccount account)
+        public virtual void SignIn(T account)
         {
             SignIn(account, AuthenticationMethods.Password);
         }
 
-        public virtual void SignIn(UserAccount account, string method)
+        public virtual void SignIn(T account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
@@ -102,7 +122,7 @@ namespace BrockAllen.MembershipReboot
             IssueToken(cp);
         }
 
-        private static List<Claim> GetBasicClaims(UserAccount account, string method)
+        private static List<Claim> GetBasicClaims(T account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -116,7 +136,7 @@ namespace BrockAllen.MembershipReboot
             return claims;
         }
 
-        private void IssuePartialSignInToken(UserAccount account, string method)
+        private void IssuePartialSignInToken(T account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -154,7 +174,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
             if (claims == null) throw new ArgumentNullException("claims");
 
-            UserAccount account = null;
+            T account = null;
             var user = ClaimsPrincipal.Current;
             if (user.Identity.IsAuthenticated)
             {

@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class GroupService
+    public class GroupService<T>
     {
-        MembershipRebootConfiguration configuration;
+        MembershipRebootConfiguration<UserAccount> configuration;
         IGroupRepository groupRepository;
 
         public GroupService(IGroupRepository groupRepository)
-            : this(new MembershipRebootConfiguration(), groupRepository)
+            : this(new MembershipRebootConfiguration<UserAccount>(), groupRepository)
         {
         }
 
-        public GroupService(MembershipRebootConfiguration configuration, IGroupRepository groupRepository)
+        public GroupService(MembershipRebootConfiguration<UserAccount> configuration, IGroupRepository groupRepository)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
             if (groupRepository == null) throw new ArgumentNullException("groupRepository");
