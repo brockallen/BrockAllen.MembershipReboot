@@ -9,7 +9,20 @@ using System.IO;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class SmsMessageFormatter : IMessageFormatter
+    public class SmsMessageFormatter : SmsMessageFormatter<UserAccount>
+    {
+        public SmsMessageFormatter(ApplicationInformation appInfo)
+            : base(appInfo)
+        {
+        }
+        public SmsMessageFormatter(Lazy<ApplicationInformation> appInfo)
+            : base(appInfo)
+        {
+        }
+    }
+
+    public class SmsMessageFormatter<T> : IMessageFormatter<T>
+        where T : UserAccount
     {
         Lazy<ApplicationInformation> appInfo;
         public SmsMessageFormatter(ApplicationInformation appInfo)
@@ -30,7 +43,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public Message Format(UserAccountEvent accountEvent, dynamic extra)
+        public Message Format(UserAccountEvent<T> accountEvent, dynamic extra)
         {
             if (accountEvent == null) throw new ArgumentNullException("accountEvent");
 
@@ -42,7 +55,7 @@ namespace BrockAllen.MembershipReboot
             };
         }
 
-        private string GetMessageBody(UserAccountEvent accountEvent, dynamic extra)
+        private string GetMessageBody(UserAccountEvent<T> accountEvent, dynamic extra)
         {
             var txt = LoadTemplate();
             
@@ -55,7 +68,7 @@ namespace BrockAllen.MembershipReboot
         const string ResourcePathTemplate = "BrockAllen.MembershipReboot.Notification.SMS.SmsTemplates.Code.txt";
         string LoadTemplate()
         {
-            var asm = typeof(SmsMessageFormatter).Assembly;
+            var asm = typeof(SmsMessageFormatter<>).Assembly;
             using (var s = asm.GetManifestResourceStream(ResourcePathTemplate))
             {
                 if (s == null) return null;

@@ -37,11 +37,11 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         class KeyNotification : 
-            IEventHandler<AccountCreatedEvent>, 
-            IEventHandler<PasswordResetRequestedEvent>,
-            IEventHandler<EmailChangeRequestedEvent>,
-            IEventHandler<MobilePhoneChangeRequestedEvent>,
-            IEventHandler<TwoFactorAuthenticationCodeNotificationEvent>
+            IEventHandler<AccountCreatedEvent<UserAccount>>,
+            IEventHandler<PasswordResetRequestedEvent<UserAccount>>,
+            IEventHandler<EmailChangeRequestedEvent<UserAccount>>,
+            IEventHandler<MobilePhoneChangeRequestedEvent<UserAccount>>,
+            IEventHandler<TwoFactorAuthenticationCodeNotificationEvent<UserAccount>>
         {
             UserAccountServiceTests instance;
             public KeyNotification (UserAccountServiceTests instance)
@@ -49,27 +49,27 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 this.instance = instance;
             }
 
-            public void Handle(AccountCreatedEvent evt)
+            public void Handle(AccountCreatedEvent<UserAccount> evt)
             {
                 instance.LastVerificationKey = evt.VerificationKey;
             }
 
-            public void Handle(PasswordResetRequestedEvent evt)
+            public void Handle(PasswordResetRequestedEvent<UserAccount> evt)
             {
                 instance.LastVerificationKey = evt.VerificationKey;
             }
 
-            public void Handle(EmailChangeRequestedEvent evt)
+            public void Handle(EmailChangeRequestedEvent<UserAccount> evt)
             {
                 instance.LastVerificationKey = evt.VerificationKey;
             }
 
-            public void Handle(MobilePhoneChangeRequestedEvent evt)
+            public void Handle(MobilePhoneChangeRequestedEvent<UserAccount> evt)
             {
                 instance.LastMobileCode = evt.Code;
             }
 
-            public void Handle(TwoFactorAuthenticationCodeNotificationEvent evt)
+            public void Handle(TwoFactorAuthenticationCodeNotificationEvent<UserAccount> evt)
             {
                 instance.LastMobileCode = evt.Code;
             }

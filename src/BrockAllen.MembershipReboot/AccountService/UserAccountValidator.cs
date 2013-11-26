@@ -10,9 +10,9 @@ using System.ComponentModel.DataAnnotations;
 namespace BrockAllen.MembershipReboot
 {
     class UserAccountValidator<T> :
-        IEventHandler<CertificateAddedEvent>,
-        IEventHandler<MobilePhoneChangeRequestedEvent>,
-        IEventHandler<MobilePhoneChangedEvent>
+        IEventHandler<CertificateAddedEvent<T>>,
+        IEventHandler<MobilePhoneChangeRequestedEvent<T>>,
+        IEventHandler<MobilePhoneChangedEvent<T>>
         where T : UserAccount
     {
         UserAccountService<T> userAccountService;
@@ -21,8 +21,8 @@ namespace BrockAllen.MembershipReboot
             if (userAccountService == null) throw new ArgumentNullException("userAccountService");
             this.userAccountService = userAccountService;
         }
-        
-        public void Handle(CertificateAddedEvent evt)
+
+        public void Handle(CertificateAddedEvent<T> evt)
         {
             if (evt == null) throw new ArgumentNullException("event");
             if (evt.Account == null) throw new ArgumentNullException("account");
@@ -37,7 +37,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public void Handle(MobilePhoneChangeRequestedEvent evt)
+        public void Handle(MobilePhoneChangeRequestedEvent<T> evt)
         {
             if (evt == null) throw new ArgumentNullException("event");
             if (evt.Account == null) throw new ArgumentNullException("account");
@@ -46,7 +46,7 @@ namespace BrockAllen.MembershipReboot
             ValidateMobileNumber(evt.Account, evt.NewMobilePhoneNumber);
         }
 
-        public void Handle(MobilePhoneChangedEvent evt)
+        public void Handle(MobilePhoneChangedEvent<T> evt)
         {
             if (evt == null) throw new ArgumentNullException("event");
             if (evt.Account == null) throw new ArgumentNullException("account");

@@ -7,13 +7,22 @@ using System;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class SmsEventHandler :
-        IEventHandler<MobilePhoneChangeRequestedEvent>,
-        IEventHandler<TwoFactorAuthenticationCodeNotificationEvent>
+    public abstract class SmsEventHandler : SmsEventHandler<UserAccount>
     {
-        IMessageFormatter messageFormatter;
+        public SmsEventHandler(IMessageFormatter<UserAccount> messageFormatter)
+            : base(messageFormatter)
+        {
+        }
+    }
 
-        public SmsEventHandler(IMessageFormatter messageFormatter)
+    public abstract class SmsEventHandler<T> :
+        IEventHandler<MobilePhoneChangeRequestedEvent<T>>,
+        IEventHandler<TwoFactorAuthenticationCodeNotificationEvent<T>>
+        where T: UserAccount
+    {
+        IMessageFormatter<T> messageFormatter;
+
+        public SmsEventHandler(IMessageFormatter<T> messageFormatter)
         {
             if (messageFormatter == null) throw new ArgumentNullException("messageFormatter");
 
@@ -22,7 +31,7 @@ namespace BrockAllen.MembershipReboot
 
         protected abstract void SendSms(Message message);
 
-        public virtual void Process(UserAccountEvent evt, object data = null)
+        public virtual void Process(UserAccountEvent<T> evt, object data = null)
         {
             dynamic d = new DynamicDictionary(data);
             var msg = CreateMessage(evt, d);
@@ -32,7 +41,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual Message CreateMessage(UserAccountEvent evt, dynamic extra)
+        protected virtual Message CreateMessage(UserAccountEvent<T> evt, dynamic extra)
         {
             var msg = this.messageFormatter.Format(evt, extra);
             if (msg != null)
@@ -42,12 +51,12 @@ namespace BrockAllen.MembershipReboot
             return msg;
         }
 
-        public void Handle(MobilePhoneChangeRequestedEvent evt)
+        public void Handle(MobilePhoneChangeRequestedEvent<T> evt)
         {
             Process(evt, new { evt.NewMobilePhoneNumber, evt.Code });
         }
 
-        public void Handle(TwoFactorAuthenticationCodeNotificationEvent evt)
+        public void Handle(TwoFactorAuthenticationCodeNotificationEvent<T> evt)
         {
             Process(evt, new { evt.Code });
         }

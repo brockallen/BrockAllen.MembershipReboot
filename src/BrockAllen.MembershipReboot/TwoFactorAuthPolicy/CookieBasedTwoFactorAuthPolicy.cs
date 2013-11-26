@@ -9,8 +9,8 @@ namespace BrockAllen.MembershipReboot
 {
     public abstract class CookieBasedTwoFactorAuthPolicy :
         ITwoFactorAuthenticationPolicy,
-        IEventHandler<TwoFactorAuthenticationTokenCreatedEvent>,
-        IEventHandler<TwoFactorAuthenticationDisabledEvent>
+        IEventHandler<TwoFactorAuthenticationTokenCreatedEvent<UserAccount>>,
+        IEventHandler<TwoFactorAuthenticationDisabledEvent<UserAccount>>
     {
         public CookieBasedTwoFactorAuthPolicy()
         {
@@ -29,7 +29,7 @@ namespace BrockAllen.MembershipReboot
             return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
         }
 
-        public void Handle(TwoFactorAuthenticationTokenCreatedEvent evt)
+        public void Handle(TwoFactorAuthenticationTokenCreatedEvent<UserAccount> evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
             if (evt.Token == null) throw new ArgumentNullException("Token");
@@ -37,8 +37,8 @@ namespace BrockAllen.MembershipReboot
 
             IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant, evt.Token);
         }
-
-        public void Handle(TwoFactorAuthenticationDisabledEvent evt)
+        
+        public void Handle(TwoFactorAuthenticationDisabledEvent<UserAccount> evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
             if (evt.Account == null) throw new ArgumentNullException("account");

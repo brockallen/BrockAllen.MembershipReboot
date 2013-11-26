@@ -9,114 +9,114 @@ namespace BrockAllen.MembershipReboot
 {
     interface IAllowMultiple { }
 
-    public abstract class UserAccountEvent : IEvent
+    public abstract class UserAccountEvent<T> : IEvent
     {
-        public UserAccount Account { get; set; }
+        public T Account { get; set; }
     }
 
-    public class AccountCreatedEvent : UserAccountEvent
+    public class AccountCreatedEvent<T> : UserAccountEvent<T>
     {
         public string VerificationKey { get; set; }
     }
-    public class AccountVerifiedEvent : UserAccountEvent { }
+    public class AccountVerifiedEvent<T> : UserAccountEvent<T> { }
 
-    public class PasswordResetFailedEvent : UserAccountEvent { }
-    public class PasswordResetRequestedEvent : UserAccountEvent
+    public class PasswordResetFailedEvent<T> : UserAccountEvent<T> { }
+    public class PasswordResetRequestedEvent<T> : UserAccountEvent<T>
     {
         public string VerificationKey { get; set; }
     }
-    public class PasswordResetSecretAddedEvent : UserAccountEvent
+    public class PasswordResetSecretAddedEvent<T> : UserAccountEvent<T>
     {
         public PasswordResetSecret Secret { get; set; }
     }
-    public class PasswordResetSecretRemovedEvent : UserAccountEvent
+    public class PasswordResetSecretRemovedEvent<T> : UserAccountEvent<T>
     {
         public PasswordResetSecret Secret { get; set; }
     }
     
     
-    public class PasswordChangedEvent : UserAccountEvent
+    public class PasswordChangedEvent<T> : UserAccountEvent<T>
     {
         public string NewPassword { get; set; }
     }
-    public class CertificateAddedEvent : UserAccountEvent, IAllowMultiple
+    public class CertificateAddedEvent<T> : UserAccountEvent<T>, IAllowMultiple
     {
         public UserCertificate Certificate { get; set; }
     }
-    public class CertificateRemovedEvent : UserAccountEvent, IAllowMultiple
+    public class CertificateRemovedEvent<T> : UserAccountEvent<T>, IAllowMultiple
     {
         public UserCertificate Certificate { get; set; }
     }
 
-    public class UsernameReminderRequestedEvent : UserAccountEvent { }
-    public class AccountClosedEvent : UserAccountEvent { }
-    public class UsernameChangedEvent : UserAccountEvent { }
-    public class EmailChangeRequestedEvent : UserAccountEvent
+    public class UsernameReminderRequestedEvent<T> : UserAccountEvent<T> { }
+    public class AccountClosedEvent<T> : UserAccountEvent<T> { }
+    public class UsernameChangedEvent<T> : UserAccountEvent<T> { }
+    public class EmailChangeRequestedEvent<T> : UserAccountEvent<T>
     {
         public string NewEmail { get; set; }
         public string VerificationKey { get; set; }
     }
-    public class EmailChangedEvent : UserAccountEvent
+    public class EmailChangedEvent<T> : UserAccountEvent<T>
     {
         public string OldEmail { get; set; }
     }
 
-    public class MobilePhoneChangeRequestedEvent : UserAccountEvent
+    public class MobilePhoneChangeRequestedEvent<T> : UserAccountEvent<T>
     {
         public string NewMobilePhoneNumber { get; set; }
         public string Code { get; set; }
     }
-    public class MobilePhoneChangedEvent : UserAccountEvent { }
-    public class MobilePhoneRemovedEvent : UserAccountEvent { }
+    public class MobilePhoneChangedEvent<T> : UserAccountEvent<T> { }
+    public class MobilePhoneRemovedEvent<T> : UserAccountEvent<T> { }
 
-    public class TwoFactorAuthenticationEnabledEvent : UserAccountEvent
+    public class TwoFactorAuthenticationEnabledEvent<T> : UserAccountEvent<T>
     {
         public TwoFactorAuthMode Mode { get; set; }
     }
-    public class TwoFactorAuthenticationDisabledEvent : UserAccountEvent { }
+    public class TwoFactorAuthenticationDisabledEvent<T> : UserAccountEvent<T> { }
 
-    public class TwoFactorAuthenticationCodeNotificationEvent : UserAccountEvent
+    public class TwoFactorAuthenticationCodeNotificationEvent<T> : UserAccountEvent<T>
     {
         public string Code { get; set; }
     }
-    public class TwoFactorAuthenticationTokenCreatedEvent : UserAccountEvent
+    public class TwoFactorAuthenticationTokenCreatedEvent<T> : UserAccountEvent<T>
     {
         public string Token { get; set; }
     }
 
-    public class ClaimAddedEvent : UserAccountEvent, IAllowMultiple
+    public class ClaimAddedEvent<T> : UserAccountEvent<T>, IAllowMultiple
     {
         public UserClaim Claim { get; set; }
     }
-    public class ClaimRemovedEvent : UserAccountEvent, IAllowMultiple
+    public class ClaimRemovedEvent<T> : UserAccountEvent<T>, IAllowMultiple
     {
         public UserClaim Claim { get; set; }
     }
 
-    public class LinkedAccountAddedEvent : UserAccountEvent, IAllowMultiple
+    public class LinkedAccountAddedEvent<T> : UserAccountEvent<T>, IAllowMultiple
     {
         public LinkedAccount LinkedAccount { get; set; }
     }
-    public class LinkedAccountRemovedEvent : UserAccountEvent, IAllowMultiple
+    public class LinkedAccountRemovedEvent<T> : UserAccountEvent<T>, IAllowMultiple
     {
         public LinkedAccount LinkedAccount { get; set; }
     }
 
-    public abstract class SuccessfulLoginEvent : UserAccountEvent { }
-    public class SuccessfulPasswordLoginEvent : SuccessfulLoginEvent { }
-    public class SuccessfulCertificateLoginEvent : SuccessfulLoginEvent
+    public abstract class SuccessfulLoginEvent<T> : UserAccountEvent<T> { }
+    public class SuccessfulPasswordLoginEvent<T> : SuccessfulLoginEvent<T> { }
+    public class SuccessfulCertificateLoginEvent<T> : SuccessfulLoginEvent<T>
     {
         public UserCertificate UserCertificate { get; set; }
         public X509Certificate2 Certificate { get; set; }
     }
-    public class SuccessfulTwoFactorAuthCodeLoginEvent : SuccessfulLoginEvent { }
+    public class SuccessfulTwoFactorAuthCodeLoginEvent<T> : SuccessfulLoginEvent<T> { }
 
-    public abstract class FailedLoginEvent : UserAccountEvent { }
-    public class AccountNotVerifiedEvent : FailedLoginEvent { }
-    public class AccountLockedEvent : FailedLoginEvent { }
-    public class TooManyRecentPasswordFailuresEvent : FailedLoginEvent { }
-    public class InvalidPasswordEvent : FailedLoginEvent { }
-    public class InvalidCertificateEvent : FailedLoginEvent
+    public abstract class FailedLoginEvent<T> : UserAccountEvent<T> { }
+    public class AccountNotVerifiedEvent<T> : FailedLoginEvent<T> { }
+    public class AccountLockedEvent<T> : FailedLoginEvent<T> { }
+    public class TooManyRecentPasswordFailuresEvent<T> : FailedLoginEvent<T> { }
+    public class InvalidPasswordEvent<T> : FailedLoginEvent<T> { }
+    public class InvalidCertificateEvent<T> : FailedLoginEvent<T>
     {
         public X509Certificate2 Certificate { get; set; }
     }

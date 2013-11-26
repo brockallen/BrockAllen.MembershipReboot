@@ -438,7 +438,7 @@ namespace BrockAllen.MembershipReboot
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
             var key = SetVerificationKey(account, VerificationKeyPurpose.VerifyAccount);
 
-            this.AddEvent(new AccountCreatedEvent { Account = account, VerificationKey = key });
+            this.AddEvent(new AccountCreatedEvent<T> { Account = account, VerificationKey = key });
         }
 
         public virtual bool VerifyAccount(string key, string password)
@@ -958,7 +958,7 @@ namespace BrockAllen.MembershipReboot
             secret.Answer = CryptoHelper.Hash(answer);
             account.PasswordResetSecrets.Add(secret);
 
-            this.AddEvent(new PasswordResetSecretAddedEvent { Account = account, Secret = secret });
+            this.AddEvent(new PasswordResetSecretAddedEvent<T> { Account = account, Secret = secret });
 
             Update(account);
         }
@@ -974,7 +974,7 @@ namespace BrockAllen.MembershipReboot
             if (item != null)
             {
                 account.PasswordResetSecrets.Remove(item);
-                this.AddEvent(new PasswordResetSecretRemovedEvent { Account = account, Secret = item });
+                this.AddEvent(new PasswordResetSecretRemovedEvent<T> { Account = account, Secret = item });
                 Update(account);
             }
         }
@@ -1008,7 +1008,7 @@ namespace BrockAllen.MembershipReboot
                 account.LastFailedPasswordReset = UtcNow;
                 account.FailedPasswordResetCount++;
 
-                this.AddEvent(new PasswordResetFailedEvent { Account = account });
+                this.AddEvent(new PasswordResetFailedEvent<T> { Account = account });
 
                 Update(account);
 
@@ -1039,7 +1039,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     account.FailedPasswordResetCount++;
                 }
-                this.AddEvent(new PasswordResetFailedEvent { Account = account });
+                this.AddEvent(new PasswordResetFailedEvent<T> { Account = account });
             }
             else
             {
@@ -1326,7 +1326,7 @@ namespace BrockAllen.MembershipReboot
         {
             account.IsAccountVerified = true;
             ClearVerificationKey(account);
-            this.AddEvent(new AccountVerifiedEvent { Account = account });
+            this.AddEvent(new AccountVerifiedEvent<T> { Account = account });
         }
 
         protected internal virtual bool CancelNewAccount(T account, string key)
@@ -1368,7 +1368,7 @@ namespace BrockAllen.MembershipReboot
             account.PasswordChanged = UtcNow;
             account.RequiresPasswordReset = false;
 
-            this.AddEvent(new PasswordChangedEvent { Account = account, NewPassword = password });
+            this.AddEvent(new PasswordChangedEvent<T> { Account = account, NewPassword = password });
         }
 
         protected internal virtual void ResetPassword(T account)
@@ -1384,7 +1384,7 @@ namespace BrockAllen.MembershipReboot
                 // instead raise an event as if the account was just created to 
                 // the user re-recieves their notification
                 Tracing.Verbose("[UserAccount.ResetPassword] account not verified -- raising account create to resend notification");
-                this.AddEvent(new AccountCreatedEvent { Account = account, VerificationKey = key });
+                this.AddEvent(new AccountCreatedEvent<T> { Account = account, VerificationKey = key });
             }
             else
             {
@@ -1393,7 +1393,7 @@ namespace BrockAllen.MembershipReboot
 
                 Tracing.Verbose("[UserAccount.ResetPassword] account verified -- raising event to send reset notification");
 
-                this.AddEvent(new PasswordResetRequestedEvent { Account = account, VerificationKey = key });
+                this.AddEvent(new PasswordResetRequestedEvent<T> { Account = account, VerificationKey = key });
             }
         }
 
@@ -1440,7 +1440,7 @@ namespace BrockAllen.MembershipReboot
             if (!account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccount.Authenticate] failed -- account not verified");
-                this.AddEvent(new AccountNotVerifiedEvent { Account = account });
+                this.AddEvent(new AccountNotVerifiedEvent<T> { Account = account });
                 return false;
             }
 
@@ -1453,7 +1453,7 @@ namespace BrockAllen.MembershipReboot
             if (!account.IsLoginAllowed)
             {
                 Tracing.Error("[UserAccount.Authenticate] failed -- account not allowed to login");
-                this.AddEvent(new AccountLockedEvent { Account = account });
+                this.AddEvent(new AccountLockedEvent<T> { Account = account });
                 return false;
             }
 
@@ -1462,7 +1462,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
 
                 account.FailedLoginCount++;
-                this.AddEvent(new TooManyRecentPasswordFailuresEvent { Account = account });
+                this.AddEvent(new TooManyRecentPasswordFailuresEvent<T> { Account = account });
 
                 return false;
             }
@@ -1475,7 +1475,7 @@ namespace BrockAllen.MembershipReboot
                 account.LastLogin = UtcNow;
                 account.FailedLoginCount = 0;
 
-                this.AddEvent(new SuccessfulPasswordLoginEvent { Account = account });
+                this.AddEvent(new SuccessfulPasswordLoginEvent<T> { Account = account });
             }
             else
             {
@@ -1485,7 +1485,7 @@ namespace BrockAllen.MembershipReboot
                 if (account.FailedLoginCount > 0) account.FailedLoginCount++;
                 else account.FailedLoginCount = 1;
 
-                this.AddEvent(new InvalidPasswordEvent { Account = account });
+                this.AddEvent(new InvalidPasswordEvent<T> { Account = account });
             }
 
             return valid;
@@ -1512,7 +1512,7 @@ namespace BrockAllen.MembershipReboot
             if (!(certificate.NotBefore < UtcNow && UtcNow < certificate.NotAfter))
             {
                 Tracing.Error("[UserAccount.Authenticate] failed -- invalid certificate dates");
-                this.AddEvent(new InvalidCertificateEvent { Account = account, Certificate = certificate });
+                this.AddEvent(new InvalidCertificateEvent<T> { Account = account, Certificate = certificate });
                 return false;
             }
 
@@ -1520,7 +1520,7 @@ namespace BrockAllen.MembershipReboot
             if (match == null)
             {
                 Tracing.Error("[UserAccount.Authenticate] failed -- no certificate thumbprint match");
-                this.AddEvent(new InvalidCertificateEvent { Account = account, Certificate = certificate });
+                this.AddEvent(new InvalidCertificateEvent<T> { Account = account, Certificate = certificate });
                 return false;
             }
 
@@ -1529,7 +1529,7 @@ namespace BrockAllen.MembershipReboot
             account.LastLogin = UtcNow;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
 
-            this.AddEvent(new SuccessfulCertificateLoginEvent { Account = account, UserCertificate = match, Certificate = certificate });
+            this.AddEvent(new SuccessfulCertificateLoginEvent<T> { Account = account, UserCertificate = match, Certificate = certificate });
 
             return true;
         }
@@ -1620,7 +1620,7 @@ namespace BrockAllen.MembershipReboot
 
                 Tracing.Verbose("[UserAccount.RequestChangeMobilePhoneNumber] success");
 
-                this.AddEvent(new MobilePhoneChangeRequestedEvent { Account = account, NewMobilePhoneNumber = newMobilePhoneNumber, Code = code });
+                this.AddEvent(new MobilePhoneChangeRequestedEvent<T> { Account = account, NewMobilePhoneNumber = newMobilePhoneNumber, Code = code });
             }
             else
             {
@@ -1658,7 +1658,7 @@ namespace BrockAllen.MembershipReboot
             ClearVerificationKey(account);
             ClearMobileAuthCode(account);
 
-            this.AddEvent(new MobilePhoneChangedEvent { Account = account });
+            this.AddEvent(new MobilePhoneChangedEvent<T> { Account = account });
 
             return true;
         }
@@ -1686,7 +1686,7 @@ namespace BrockAllen.MembershipReboot
             account.MobilePhoneNumber = null;
             account.MobilePhoneNumberChanged = UtcNow;
 
-            this.AddEvent(new MobilePhoneRemovedEvent { Account = account });
+            this.AddEvent(new MobilePhoneRemovedEvent<T> { Account = account });
         }
 
         protected internal virtual void ConfigureTwoFactorAuthentication(T account, TwoFactorAuthMode mode)
@@ -1723,12 +1723,12 @@ namespace BrockAllen.MembershipReboot
                 RemoveTwoFactorAuthTokens(account);
 
                 Tracing.Verbose("[UserAccount.ConfigureTwoFactorAuthentication] success -- two factor auth disabled");
-                this.AddEvent(new TwoFactorAuthenticationDisabledEvent { Account = account });
+                this.AddEvent(new TwoFactorAuthenticationDisabledEvent<T> { Account = account });
             }
             else
             {
                 Tracing.Verbose("[UserAccount.ConfigureTwoFactorAuthentication] success -- two factor auth enabled, mode: {0}", mode);
-                this.AddEvent(new TwoFactorAuthenticationEnabledEvent { Account = account, Mode = mode });
+                this.AddEvent(new TwoFactorAuthenticationEnabledEvent<T> { Account = account, Mode = mode });
             }
         }
 
@@ -1817,7 +1817,7 @@ namespace BrockAllen.MembershipReboot
 
                 Tracing.Verbose("[UserAccount.RequestTwoFactorAuthCode] success");
 
-                this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent { Account = account, Code = code });
+                this.AddEvent(new TwoFactorAuthenticationCodeNotificationEvent<T> { Account = account, Code = code });
             }
             else
             {
@@ -1880,7 +1880,7 @@ namespace BrockAllen.MembershipReboot
             account.LastLogin = UtcNow;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
 
-            this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent { Account = account });
+            this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent<T> { Account = account });
 
             return true;
         }
@@ -1889,7 +1889,7 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccount.SendAccountNameReminder] called for accountID: {0}", account.ID);
 
-            this.AddEvent(new UsernameReminderRequestedEvent { Account = account });
+            this.AddEvent(new UsernameReminderRequestedEvent<T> { Account = account });
         }
 
         protected internal virtual void ChangeUsername(T account, string newUsername)
@@ -1906,7 +1906,7 @@ namespace BrockAllen.MembershipReboot
 
             account.Username = newUsername;
 
-            this.AddEvent(new UsernameChangedEvent { Account = account });
+            this.AddEvent(new UsernameChangedEvent<T> { Account = account });
         }
 
         protected internal virtual void ChangeEmailRequest(T account, string newEmail)
@@ -1931,7 +1931,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccount.ChangeEmailRequest] success");
 
-            this.AddEvent(new EmailChangeRequestedEvent { Account = account, NewEmail = newEmail, VerificationKey = key });
+            this.AddEvent(new EmailChangeRequestedEvent<T> { Account = account, NewEmail = newEmail, VerificationKey = key });
         }
 
         protected internal virtual bool ChangeEmailFromKey(T account, string key)
@@ -1963,7 +1963,7 @@ namespace BrockAllen.MembershipReboot
 
             ClearVerificationKey(account);
 
-            this.AddEvent(new EmailChangedEvent { Account = account, OldEmail = oldEmail });
+            this.AddEvent(new EmailChangedEvent<T> { Account = account, OldEmail = oldEmail });
 
             return true;
         }
@@ -1985,7 +1985,7 @@ namespace BrockAllen.MembershipReboot
                 account.IsAccountClosed = true;
                 account.AccountClosed = UtcNow;
 
-                this.AddEvent(new AccountClosedEvent { Account = account });
+                this.AddEvent(new AccountClosedEvent<T> { Account = account });
             }
             else
             {
@@ -2023,7 +2023,7 @@ namespace BrockAllen.MembershipReboot
                 claim.Type = type;
                 claim.Value = value;
                 account.Claims.Add(claim);
-                this.AddEvent(new ClaimAddedEvent { Account = account, Claim = claim });
+                this.AddEvent(new ClaimAddedEvent<T> { Account = account, Claim = claim });
             }
         }
 
@@ -2052,7 +2052,7 @@ namespace BrockAllen.MembershipReboot
             foreach (var claim in claimsToRemove.ToArray())
             {
                 account.Claims.Remove(claim);
-                this.AddEvent(new ClaimRemovedEvent { Account = account, Claim = claim });
+                this.AddEvent(new ClaimRemovedEvent<T> { Account = account, Claim = claim });
             }
         }
 
@@ -2086,7 +2086,7 @@ namespace BrockAllen.MembershipReboot
             foreach (var claim in claimsToRemove.ToArray())
             {
                 account.Claims.Remove(claim);
-                this.AddEvent(new ClaimRemovedEvent { Account = account, Claim = claim });
+                this.AddEvent(new ClaimRemovedEvent<T> { Account = account, Claim = claim });
             }
         }
 
@@ -2118,7 +2118,7 @@ namespace BrockAllen.MembershipReboot
                 linked.ProviderName = provider;
                 linked.ProviderAccountID = id;
                 account.LinkedAccounts.Add(linked);
-                this.AddEvent(new LinkedAccountAddedEvent { Account = account, LinkedAccount = linked });
+                this.AddEvent(new LinkedAccountAddedEvent<T> { Account = account, LinkedAccount = linked });
 
                 Tracing.Verbose("[UserAccount.AddOrUpdateLinkedAccount] linked account added");
             }
@@ -2162,7 +2162,7 @@ namespace BrockAllen.MembershipReboot
             foreach (var item in linked)
             {
                 account.LinkedAccounts.Remove(item);
-                this.AddEvent(new LinkedAccountRemovedEvent { Account = account, LinkedAccount = item });
+                this.AddEvent(new LinkedAccountRemovedEvent<T> { Account = account, LinkedAccount = item });
             }
         }
 
@@ -2182,7 +2182,7 @@ namespace BrockAllen.MembershipReboot
             if (linked != null)
             {
                 account.LinkedAccounts.Remove(linked);
-                this.AddEvent(new LinkedAccountRemovedEvent { Account = account, LinkedAccount = linked });
+                this.AddEvent(new LinkedAccountRemovedEvent<T> { Account = account, LinkedAccount = linked });
             }
         }
 
@@ -2232,7 +2232,7 @@ namespace BrockAllen.MembershipReboot
             cert.Subject = subject;
             account.Certificates.Add(cert);
 
-            this.AddEvent(new CertificateAddedEvent { Account = account, Certificate = cert });
+            this.AddEvent(new CertificateAddedEvent<T> { Account = account, Certificate = cert });
         }
 
         public virtual void RemoveCertificate(Guid accountID, X509Certificate2 certificate)
@@ -2282,7 +2282,7 @@ namespace BrockAllen.MembershipReboot
             var certs = account.Certificates.Where(x => x.Thumbprint.Equals(thumbprint, StringComparison.OrdinalIgnoreCase)).ToArray();
             foreach (var cert in certs)
             {
-                this.AddEvent(new CertificateRemovedEvent { Account = account, Certificate = cert });
+                this.AddEvent(new CertificateRemovedEvent<T> { Account = account, Certificate = cert });
                 account.Certificates.Remove(cert);
             }
 
@@ -2312,7 +2312,7 @@ namespace BrockAllen.MembershipReboot
             item.Issued = UtcNow;
             account.TwoFactorAuthTokens.Add(item);
 
-            this.AddEvent(new TwoFactorAuthenticationTokenCreatedEvent { Account = account, Token = value });
+            this.AddEvent(new TwoFactorAuthenticationTokenCreatedEvent<T> { Account = account, Token = value });
         }
 
         internal virtual bool VerifyTwoFactorAuthToken(T account, string token)
