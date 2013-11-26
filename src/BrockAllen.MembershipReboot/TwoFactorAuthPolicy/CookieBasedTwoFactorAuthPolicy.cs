@@ -7,10 +7,15 @@ using System;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class CookieBasedTwoFactorAuthPolicy :
+    public abstract class CookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy<UserAccount>
+    {
+    }
+
+    public abstract class CookieBasedTwoFactorAuthPolicy<T> :
         ITwoFactorAuthenticationPolicy,
-        IEventHandler<TwoFactorAuthenticationTokenCreatedEvent<UserAccount>>,
-        IEventHandler<TwoFactorAuthenticationDisabledEvent<UserAccount>>
+        IEventHandler<TwoFactorAuthenticationTokenCreatedEvent<T>>,
+        IEventHandler<TwoFactorAuthenticationDisabledEvent<T>>
+        where T: UserAccount
     {
         public CookieBasedTwoFactorAuthPolicy()
         {
@@ -29,7 +34,7 @@ namespace BrockAllen.MembershipReboot
             return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
         }
 
-        public void Handle(TwoFactorAuthenticationTokenCreatedEvent<UserAccount> evt)
+        public void Handle(TwoFactorAuthenticationTokenCreatedEvent<T> evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
             if (evt.Token == null) throw new ArgumentNullException("Token");
@@ -38,12 +43,18 @@ namespace BrockAllen.MembershipReboot
             IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant, evt.Token);
         }
         
-        public void Handle(TwoFactorAuthenticationDisabledEvent<UserAccount> evt)
+        public void Handle(TwoFactorAuthenticationDisabledEvent<T> evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
             if (evt.Account == null) throw new ArgumentNullException("account");
 
             RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant);
+        }
+
+        public void Register(MembershipRebootConfiguration<T> config)
+        {
+            config.TwoFactorAuthenticationPolicy = this;
+            config.AddEventHandler(this);
         }
     }
 }

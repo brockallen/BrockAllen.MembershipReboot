@@ -81,10 +81,10 @@ namespace BrockAllen.MembershipReboot.Mvc
 
     // this shows the extensibility point of being notified of account activity
     public class AuthenticationAuditEventHandler :
-        IEventHandler<SuccessfulLoginEvent>,
-        IEventHandler<FailedLoginEvent>
+        IEventHandler<SuccessfulLoginEvent<CustomUserAccount>>,
+        IEventHandler<FailedLoginEvent<CustomUserAccount>>
     {
-        public void Handle(SuccessfulLoginEvent evt)
+        public void Handle(SuccessfulLoginEvent<CustomUserAccount> evt)
         {
             using (var db = new CustomDatabase())
             {
@@ -100,7 +100,7 @@ namespace BrockAllen.MembershipReboot.Mvc
             }
         }
 
-        public void Handle(FailedLoginEvent evt)
+        public void Handle(FailedLoginEvent<CustomUserAccount> evt)
         {
             using (var db = new CustomDatabase())
             {
@@ -118,9 +118,9 @@ namespace BrockAllen.MembershipReboot.Mvc
     }
 
     public class NotifyAccountOwnerWhenTooManyFailedLoginAttempts
-        : IEventHandler<TooManyRecentPasswordFailuresEvent>
+        : IEventHandler<TooManyRecentPasswordFailuresEvent<CustomUserAccount>>
     {
-        public void Handle(TooManyRecentPasswordFailuresEvent evt)
+        public void Handle(TooManyRecentPasswordFailuresEvent<CustomUserAccount> evt)
         {
             var smtp = new SmtpMessageDelivery();
             var msg = new Message
@@ -134,9 +134,9 @@ namespace BrockAllen.MembershipReboot.Mvc
     }
 
     public class PasswordChanging :
-        IEventHandler<PasswordChangedEvent>
+        IEventHandler<PasswordChangedEvent<CustomUserAccount>>
     {
-        public void Handle(PasswordChangedEvent evt)
+        public void Handle(PasswordChangedEvent<CustomUserAccount> evt)
         {
             using (var db = new CustomDatabase())
             {
@@ -155,9 +155,9 @@ namespace BrockAllen.MembershipReboot.Mvc
     }
 
     public class PasswordChanged :
-        IEventHandler<PasswordChangedEvent>
+        IEventHandler<PasswordChangedEvent<CustomUserAccount>>
     {
-        public void Handle(PasswordChangedEvent evt)
+        public void Handle(PasswordChangedEvent<CustomUserAccount> evt)
         {
             using (var db = new CustomDatabase())
             {
@@ -174,26 +174,26 @@ namespace BrockAllen.MembershipReboot.Mvc
     }
 
     // customize default email messages
-    public class CustomEmailMessageFormatter : EmailMessageFormatter
+    public class CustomEmailMessageFormatter : EmailMessageFormatter<CustomUserAccount>
     {
         public CustomEmailMessageFormatter(ApplicationInformation info)
             : base(info)
         {
         }
 
-        protected override string GetBody(UserAccountEvent evt, dynamic extra)
+        protected override string GetBody(UserAccountEvent<CustomUserAccount> evt, dynamic extra)
         {
-            if (evt is AccountVerifiedEvent)
+            if (evt is AccountVerifiedEvent<CustomUserAccount>)
             {
                 return "your account was verified with " + this.ApplicationInformation.ApplicationName + ". good for you.";
             }
 
-            if (evt is AccountClosedEvent)
+            if (evt is AccountClosedEvent<CustomUserAccount>)
             {
                 return FormatValue(evt, "your account was closed with {applicationName}. good riddance.", extra);
             }
 
-            Func<UserAccountEvent, dynamic, string> f = base.GetBody;
+            Func<UserAccountEvent<CustomUserAccount>, dynamic, string> f = base.GetBody;
             return f(evt, extra);
         }
     }

@@ -12,9 +12,7 @@ namespace BrockAllen.MembershipReboot
         public static void ConfigureCookieBasedTwoFactorAuthPolicy(this MembershipRebootConfiguration config, CookieBasedTwoFactorAuthPolicy policy)
         {
             if (config == null) throw new ArgumentNullException("config");
-
-            config.TwoFactorAuthenticationPolicy = policy;
-            config.AddEventHandler(policy);
+            policy.Register(config);
         }
 
         public static void ConfigurePasswordComplexity(this MembershipRebootConfiguration config)

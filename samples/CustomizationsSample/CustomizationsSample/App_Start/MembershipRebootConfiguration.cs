@@ -49,14 +49,17 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 
             if (settings.RequireAccountVerification)
             {
-                config.AddEventHandler(new EmailAccountCreatedEventHandler(formatter, delivery));
+                config.AddEventHandler(new EmailAccountCreatedEventHandler<CustomUserAccount>(formatter, delivery));
             }
-            config.AddEventHandler(new EmailAccountEventsHandler(formatter, delivery));
+            config.AddEventHandler(new EmailAccountEventsHandler<CustomUserAccount>(formatter, delivery));
             config.AddEventHandler(new AuthenticationAuditEventHandler());
             config.AddEventHandler(new NotifyAccountOwnerWhenTooManyFailedLoginAttempts());
 
             config.AddValidationHandler(new PasswordChanging());
             config.AddEventHandler(new PasswordChanged());
+
+            var policy = new AspNetCookieBasedTwoFactorAuthPolicy<CustomUserAccount>();
+            policy.Register(config);
 
             return config;
         }
