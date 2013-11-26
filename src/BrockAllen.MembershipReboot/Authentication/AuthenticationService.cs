@@ -108,6 +108,12 @@ namespace BrockAllen.MembershipReboot
                  select new Claim(uc.Type, uc.Value)).ToList();
             claims.AddRange(otherClaims);
 
+            // get custom claims from properties
+            if (this.UserAccountService.Configuration.CustomUserPropertiesToClaimsMap != null)
+            {
+                claims.AddRange(this.UserAccountService.Configuration.CustomUserPropertiesToClaimsMap(account));
+            }
+
             // create principal/identity
             var id = new ClaimsIdentity(claims, method);
             var cp = new ClaimsPrincipal(id);

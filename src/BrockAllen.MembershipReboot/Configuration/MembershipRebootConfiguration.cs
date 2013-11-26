@@ -4,6 +4,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -96,5 +98,6 @@ namespace BrockAllen.MembershipReboot
         
         public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
         public ICrypto Crypto { get; set; }
+        public Func<T, IEnumerable<Claim>> CustomUserPropertiesToClaimsMap { get; set; }
     }
 }

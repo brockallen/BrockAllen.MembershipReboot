@@ -7,11 +7,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [Authorize]
     public class ChangeUsernameController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<CustomUserAccount> userAccountService;
+        AuthenticationService<CustomUserAccount> authSvc;
 
         public ChangeUsernameController(
-            UserAccountService userAccountService, AuthenticationService authSvc)
+            UserAccountService<CustomUserAccount> userAccountService, AuthenticationService<CustomUserAccount> authSvc)
         {
             this.userAccountService = userAccountService;
             this.authSvc = authSvc;

@@ -6,8 +6,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
 {
     public class HomeController : Controller
     {
-        IUserAccountRepository userAccountRepository;
-        public HomeController(IUserAccountRepository userAccountRepository)
+        IUserAccountRepository<CustomUserAccount> userAccountRepository;
+        public HomeController(IUserAccountRepository<CustomUserAccount> userAccountRepository)
         {
             this.userAccountRepository = userAccountRepository;
         }
@@ -25,6 +25,5 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
             var account = userAccountRepository.Get(id);
             return View("Detail", account);
         }
-
     }
 }

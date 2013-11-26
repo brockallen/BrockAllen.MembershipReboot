@@ -7,8 +7,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [AllowAnonymous]
     public class PasswordResetController : Controller
     {
-        UserAccountService userAccountService;
-        public PasswordResetController(UserAccountService userAccountService)
+        UserAccountService<CustomUserAccount> userAccountService;
+        public PasswordResetController(UserAccountService<CustomUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

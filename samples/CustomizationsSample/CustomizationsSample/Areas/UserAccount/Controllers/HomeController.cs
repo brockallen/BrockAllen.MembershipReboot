@@ -6,11 +6,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class HomeController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<CustomUserAccount> userAccountService;
+        AuthenticationService<CustomUserAccount> authSvc;
 
         public HomeController(
-            UserAccountService userAccountService, AuthenticationService authSvc)
+            UserAccountService<CustomUserAccount> userAccountService, AuthenticationService<CustomUserAccount> authSvc)
         {
             this.userAccountService = userAccountService;
             this.authSvc = authSvc;

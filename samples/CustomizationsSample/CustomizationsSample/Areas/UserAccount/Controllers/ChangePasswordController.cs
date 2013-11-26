@@ -7,8 +7,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [Authorize]
     public class ChangePasswordController : Controller
     {
-        UserAccountService userAccountService;
-        public ChangePasswordController(UserAccountService userAccountService)
+        UserAccountService<CustomUserAccount> userAccountService;
+        public ChangePasswordController(UserAccountService<CustomUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

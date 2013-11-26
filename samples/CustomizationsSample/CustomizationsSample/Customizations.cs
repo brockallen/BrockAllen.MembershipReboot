@@ -32,11 +32,11 @@ namespace BrockAllen.MembershipReboot.Mvc
         public string PasswordHash { get; set; }
     }
 
-    //public class CustomUserAccount : UserAccount
-    //{
-    //    public string FirstName { get; set; }
-    //    public string LastName { get; set; }
-    //}
+    public class CustomUserAccount : UserAccount
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
 
     public class CustomDatabase : DbContext
     {
@@ -56,12 +56,12 @@ namespace BrockAllen.MembershipReboot.Mvc
         }
         
         public DbSet<SomeOtherEntity> OtherStuff { get; set; }
-        public DbSet<UserAccount> UserAccountsTableWithSomeOtherName { get; set; }
+        public DbSet<CustomUserAccount> UserAccountsTableWithSomeOtherName { get; set; }
         public DbSet<AuthenticationAudit> Audits { get; set; }
         public DbSet<PasswordHistory> PasswordHistory { get; set; }
     }
 
-    public class CustomRepository : DbContextUserAccountRepository<CustomDatabase>
+    public class CustomRepository : DbContextUserAccountRepository<CustomDatabase, CustomUserAccount>, IUserAccountRepository<CustomUserAccount>
     {
         // you can do either style ctor (or none) -- depends how much control 
         // you want over instantiating the CustomDatabase instance

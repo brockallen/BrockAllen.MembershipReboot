@@ -6,9 +6,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class SendUsernameReminderController : Controller
     {
-        UserAccountService userAccountService;
+        UserAccountService<CustomUserAccount> userAccountService;
 
-        public SendUsernameReminderController(UserAccountService userAccountService)
+        public SendUsernameReminderController(UserAccountService<CustomUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

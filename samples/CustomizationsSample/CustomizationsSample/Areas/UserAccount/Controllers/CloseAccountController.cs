@@ -6,8 +6,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [Authorize]
     public class CloseAccountController : Controller
     {
-        UserAccountService userAccountService;
-        public CloseAccountController(UserAccountService userAccountService)
+        UserAccountService<CustomUserAccount> userAccountService;
+        public CloseAccountController(UserAccountService<CustomUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

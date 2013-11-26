@@ -6,12 +6,12 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [AllowAnonymous]
     public class LoginController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<CustomUserAccount> userAccountService;
+        AuthenticationService<CustomUserAccount> authSvc;
 
         public LoginController(
-            UserAccountService userService, 
-            AuthenticationService authSvc)
+            UserAccountService<CustomUserAccount> userService,
+            AuthenticationService<CustomUserAccount> authSvc)
         {
             this.userAccountService = userService;
             this.authSvc = authSvc;
@@ -28,7 +28,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (ModelState.IsValid)
             {
-                BrockAllen.MembershipReboot.UserAccount account;
+                CustomUserAccount account;
                 if (userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password, out account))
                 {
                     authSvc.SignIn(account);
