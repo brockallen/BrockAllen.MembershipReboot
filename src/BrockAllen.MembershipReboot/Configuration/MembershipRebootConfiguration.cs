@@ -9,19 +9,6 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class MembershipRebootConfiguration : MembershipRebootConfiguration<UserAccount>
-    {
-        public MembershipRebootConfiguration()
-            : this(SecuritySettings.Instance)
-        {
-        }
-
-        public MembershipRebootConfiguration(SecuritySettings securitySettings)
-            : base(securitySettings)
-        {
-        }
-    }
-
     public class MembershipRebootConfiguration<T>
         where T : UserAccount
     {
@@ -99,5 +86,18 @@ namespace BrockAllen.MembershipReboot
         public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
         public ICrypto Crypto { get; set; }
         public Func<T, IEnumerable<Claim>> CustomUserPropertiesToClaimsMap { get; set; }
+    }
+    
+    public class MembershipRebootConfiguration : MembershipRebootConfiguration<UserAccount>
+    {
+        public MembershipRebootConfiguration()
+            : this(SecuritySettings.Instance)
+        {
+        }
+
+        public MembershipRebootConfiguration(SecuritySettings securitySettings)
+            : base(securitySettings)
+        {
+        }
     }
 }

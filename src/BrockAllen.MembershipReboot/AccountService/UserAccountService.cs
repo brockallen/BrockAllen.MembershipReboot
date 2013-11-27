@@ -12,19 +12,6 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class UserAccountService : UserAccountService<UserAccount>
-    {
-        public UserAccountService(IUserAccountRepository userRepository)
-            : this(new MembershipRebootConfiguration(), userRepository)
-        {
-        }
-
-        public UserAccountService(MembershipRebootConfiguration configuration, IUserAccountRepository userRepository)
-            : base(configuration, userRepository)
-        {
-        }
-    }
-
     public class UserAccountService<T> : IEventSource
         where T : UserAccount
     {
@@ -2408,6 +2395,19 @@ namespace BrockAllen.MembershipReboot
                 s = s.Replace(ugly, "");
             }
             return s;
+        }
+    }
+    
+    public class UserAccountService : UserAccountService<UserAccount>
+    {
+        public UserAccountService(IUserAccountRepository userRepository)
+            : this(new MembershipRebootConfiguration(), userRepository)
+        {
+        }
+
+        public UserAccountService(MembershipRebootConfiguration configuration, IUserAccountRepository userRepository)
+            : base(configuration, userRepository)
+        {
         }
     }
 }

@@ -7,10 +7,6 @@ using System;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class CookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy<UserAccount>
-    {
-    }
-
     public abstract class CookieBasedTwoFactorAuthPolicy<T> :
         ITwoFactorAuthenticationPolicy,
         IEventHandler<TwoFactorAuthenticationTokenCreatedEvent<T>>,
@@ -50,5 +46,9 @@ namespace BrockAllen.MembershipReboot
 
             RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant);
         }
+    }
+    
+    public abstract class CookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy<UserAccount>
+    {
     }
 }

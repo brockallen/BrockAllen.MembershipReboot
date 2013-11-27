@@ -7,14 +7,6 @@ using System;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class SmsEventHandler : SmsEventHandler<UserAccount>
-    {
-        public SmsEventHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-    }
-
     public abstract class SmsEventHandler<T> :
         IEventHandler<MobilePhoneChangeRequestedEvent<T>>,
         IEventHandler<TwoFactorAuthenticationCodeNotificationEvent<T>>
@@ -59,6 +51,14 @@ namespace BrockAllen.MembershipReboot
         public void Handle(TwoFactorAuthenticationCodeNotificationEvent<T> evt)
         {
             Process(evt, new { evt.Code });
+        }
+    }
+    
+    public abstract class SmsEventHandler : SmsEventHandler<UserAccount>
+    {
+        public SmsEventHandler(IMessageFormatter<UserAccount> messageFormatter)
+            : base(messageFormatter)
+        {
         }
     }
 }

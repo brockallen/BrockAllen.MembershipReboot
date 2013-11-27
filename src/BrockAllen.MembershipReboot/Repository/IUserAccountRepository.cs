@@ -8,10 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 namespace BrockAllen.MembershipReboot
 {
-    public interface IUserAccountRepository : IUserAccountRepository<UserAccount> { }
-
     public interface IUserAccountRepository<T> : IRepository<T>
         where T : UserAccount
     {
     }
+    
+    public interface IUserAccountRepository : IUserAccountRepository<UserAccount> { }
 }

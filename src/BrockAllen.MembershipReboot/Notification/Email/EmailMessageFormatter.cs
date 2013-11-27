@@ -9,18 +9,6 @@ using System.IO;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class EmailMessageFormatter : EmailMessageFormatter<UserAccount>
-    {
-        public EmailMessageFormatter(ApplicationInformation appInfo)
-            : base(appInfo)
-        {
-        }
-        public EmailMessageFormatter(Lazy<ApplicationInformation> appInfo)
-            : base(appInfo)
-        {
-        }
-    }
-
     public class EmailMessageFormatter<T> : IMessageFormatter<T>
         where T: UserAccount
     {
@@ -214,6 +202,18 @@ namespace BrockAllen.MembershipReboot
                     return sr.ReadToEnd();
                 }
             }
+        }
+    }
+
+    public class EmailMessageFormatter : EmailMessageFormatter<UserAccount>
+    {
+        public EmailMessageFormatter(ApplicationInformation appInfo)
+            : base(appInfo)
+        {
+        }
+        public EmailMessageFormatter(Lazy<ApplicationInformation> appInfo)
+            : base(appInfo)
+        {
         }
     }
 }

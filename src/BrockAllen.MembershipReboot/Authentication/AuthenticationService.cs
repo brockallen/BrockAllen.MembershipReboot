@@ -12,25 +12,6 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class AuthenticationService : AuthenticationService<UserAccount>
-    {
-        public new UserAccountService UserAccountService
-        {
-            get { return (UserAccountService)base.UserAccountService; }
-            set { base.UserAccountService = value; }
-        }
-        
-        public AuthenticationService(UserAccountService userService)
-            : this(userService, null)
-        {
-        }
-
-        public AuthenticationService(UserAccountService userService, ClaimsAuthenticationManager claimsAuthenticationManager)
-            : base(userService, claimsAuthenticationManager)
-        {
-        }
-    }
-
     public abstract class AuthenticationService<T>
         where T : UserAccount
     {
@@ -242,6 +223,25 @@ namespace BrockAllen.MembershipReboot
 
             // clear cookie
             RevokeToken();
+        }
+    }
+    
+    public abstract class AuthenticationService : AuthenticationService<UserAccount>
+    {
+        public new UserAccountService UserAccountService
+        {
+            get { return (UserAccountService)base.UserAccountService; }
+            set { base.UserAccountService = value; }
+        }
+
+        public AuthenticationService(UserAccountService userService)
+            : this(userService, null)
+        {
+        }
+
+        public AuthenticationService(UserAccountService userService, ClaimsAuthenticationManager claimsAuthenticationManager)
+            : base(userService, claimsAuthenticationManager)
+        {
         }
     }
 }
