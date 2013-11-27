@@ -208,7 +208,15 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.RequireAccountVerification = true;
             configuration.AllowLoginAfterAccountCreation = true;
             subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            try
+            {
+                subject.Authenticate("test", "pass");
+                Assert.Fail();
+            }
+            catch(ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.AccountNotVerified, ex.Message);
+            }
         }
 
         [TestMethod]
@@ -281,9 +289,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.UsernameAlreadyInUse, ex.Message);
             }
         }
-        
+
         [TestMethod]
-        public void CreateAccount_EmptyEmail_FailsValidation()
+        public void CreateAccount_EmptyEmailWhenAccountVerificationRequired_FailsValidation()
         {
             try
             {
@@ -294,6 +302,13 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             {
                 Assert.AreEqual(Resources.ValidationMessages.EmailRequired, ex.Message);
             }
+        }
+
+        [TestMethod]
+        public void CreateAccount_EmptyEmailWhenAccountVerificationNotRequired_Allowed()
+        {
+            configuration.RequireAccountVerification = false;
+            subject.CreateAccount("test", "pass", "");
         }
         
         [TestMethod]
@@ -373,11 +388,18 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void VerifiyAccount_InvalidPassword_DoesNotAllowUserToLogin()
         {
-            configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = true;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             subject.VerifyAccount(LastVerificationKey, "bad value");
-            Assert.IsFalse(subject.Authenticate("test", "pass"));
+
+            try
+            {
+                subject.Authenticate("test", "pass");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.AccountNotVerified, ex.Message);
+            }
         }
         
         [TestMethod]
@@ -444,7 +466,15 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.VerifyAccount(LastVerificationKey, "pass");
             subject.ChangeEmailRequest(acct.ID, "test2@test.com");
 
-            Assert.IsFalse(subject.CancelNewAccount(LastVerificationKey));
+            try
+            {
+                subject.CancelNewAccount(LastVerificationKey);
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.AccountAlreadyVerified, ex.Message);
+            }
         }
 
         [TestMethod]
@@ -960,8 +990,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void ResetPassword_AllowsPasswordToBeReset()
         {
             configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyAccount(LastVerificationKey, "pass");
 
             subject.ResetPassword("test@test.com");
             var key = LastVerificationKey;
@@ -983,7 +1013,6 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var key = LastVerificationKey;
 
             Assert.IsFalse(subject.ChangePasswordFromResetKey(key, "pass2"));
-            Assert.IsFalse(subject.Authenticate("test", "pass2"));
         }
 
         [TestMethod]
@@ -1133,9 +1162,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailRequest_AllowsEmailToBeChanged()
         {
-            configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyAccount(LastVerificationKey, "pass");
 
             subject.ChangeEmailRequest(id, "test2@test.com");
             subject.ChangeEmailFromKey(id, "pass", LastVerificationKey);
@@ -1146,10 +1174,10 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailRequest_NonuniqueEmail_FailsValidation()
         {
-            configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = false;
             var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            subject.VerifyAccount(LastVerificationKey, "pass"); 
             var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
+            subject.VerifyAccount(LastVerificationKey, "pass");
 
             try
             {
@@ -1199,9 +1227,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangeEmailFromKey_Success_ReturnsTrue()
         {
-            configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyAccount(LastVerificationKey, "pass");
 
             subject.ChangeEmailRequest(id, "test2@test.com");
             Assert.IsTrue(subject.ChangeEmailFromKey(id, "pass", LastVerificationKey));
@@ -1211,9 +1238,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void ChangeEmailFromKey_SecuritySettingsEmailIsUsername_ChangesUsername()
         {
             configuration.EmailIsUsername = true;
-            configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyAccount(LastVerificationKey, "pass");
 
             subject.ChangeEmailRequest(id, "test2@test.com");
             subject.ChangeEmailFromKey(id, "pass", LastVerificationKey);
@@ -1244,8 +1270,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void ChangeEmailFromKey_InvalidPassword_ValidationFails()
         {
             configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyAccount(LastVerificationKey, "pass");
 
             subject.ChangeEmailRequest(id, "test2@test.com");
             try

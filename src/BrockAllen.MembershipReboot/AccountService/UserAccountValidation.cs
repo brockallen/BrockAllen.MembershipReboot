@@ -23,11 +23,11 @@ namespace BrockAllen.MembershipReboot
                 }
                 return null;
             });
-        
+
         public static readonly IValidator<TAccount> UsernameOnlyContainsLettersAndDigits =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
-                if (!value.All(x=>Char.IsLetterOrDigit(x)) || value.All(x=>Char.IsDigit(x)))
+                if (!value.All(x => Char.IsLetterOrDigit(x)) || value.All(x => Char.IsDigit(x)))
                 {
                     Tracing.Verbose("[UserAccountValidation.UsernameOnlyContainsLettersAndDigits] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
@@ -51,7 +51,7 @@ namespace BrockAllen.MembershipReboot
         public static readonly IValidator<TAccount> EmailRequired =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
-                if (service.Configuration.RequireAccountVerification && 
+                if (service.Configuration.RequireAccountVerification &&
                     String.IsNullOrWhiteSpace(value))
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailRequired] validation failed: {0}, {1}", account.Tenant, account.Username);
@@ -60,11 +60,11 @@ namespace BrockAllen.MembershipReboot
                 }
                 return null;
             });
-        
+
         public static readonly IValidator<TAccount> EmailIsValidFormat =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
-                if(!String.IsNullOrWhiteSpace(value))
+                if (!String.IsNullOrWhiteSpace(value))
                 {
                     EmailAddressAttribute validator = new EmailAddressAttribute();
                     if (!validator.IsValid(value))
@@ -77,13 +77,29 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
+        public static readonly IValidator<TAccount> EmailIsRequiredIfRequireAccountVerificationEnabled =
+            new DelegateValidator<TAccount>((service, account, value) =>
+            {
+                if (service.Configuration.RequireAccountVerification && String.IsNullOrWhiteSpace(value))
+                {
+                    EmailAddressAttribute validator = new EmailAddressAttribute();
+                    if (!validator.IsValid(value))
+                    {
+                        Tracing.Verbose("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
+
+                        return new ValidationResult(Resources.ValidationMessages.EmailRequired);
+                    }
+                }
+                return null;
+            });
+
         public static readonly IValidator<TAccount> EmailMustNotAlreadyExist =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
-                if (String.IsNullOrWhiteSpace(value) && service.EmailExists(account.Tenant, value))
+                if (!String.IsNullOrWhiteSpace(value) && service.EmailExists(account.Tenant, value))
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
-                    
+
                     return new ValidationResult(Resources.ValidationMessages.EmailAlreadyInUse);
                 }
                 return null;

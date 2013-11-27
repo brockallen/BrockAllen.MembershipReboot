@@ -57,6 +57,7 @@ namespace BrockAllen.MembershipReboot
             this.emailValidator = new Lazy<AggregateValidator<TAccount>>(() =>
             {
                 var val = new AggregateValidator<TAccount>();
+                val.Add(UserAccountValidation<TAccount>.EmailIsRequiredIfRequireAccountVerificationEnabled);
                 val.Add(UserAccountValidation<TAccount>.EmailIsValidFormat);
                 val.Add(UserAccountValidation<TAccount>.EmailMustNotAlreadyExist);
                 val.Add(configuration.EmailValidator);
