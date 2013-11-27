@@ -231,6 +231,9 @@
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
     <value>Username cannot contain the '@' character.</value>
   </data>
+  <data name="UsernameOnlyContainLettersAndDigits" xml:space="preserve">
+    <value>Username can only contain letters and digits.</value>
+  </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Username is required.</value>
   </data>
