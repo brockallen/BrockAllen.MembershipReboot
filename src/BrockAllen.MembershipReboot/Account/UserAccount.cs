@@ -33,19 +33,27 @@ namespace BrockAllen.MembershipReboot
         [StringLength(100)]
         [Required]
         public virtual string Username { get; internal set; }
-        [EmailAddress]
-        [StringLength(100)]
-        public virtual string Email { get; internal set; }
-
+        
         public virtual DateTime Created { get; internal set; }
         public virtual DateTime LastUpdated { get; internal set; }
+        public virtual bool IsAccountClosed { get; internal set; }
+        public virtual DateTime? AccountClosed { get; internal set; }
+
+        public virtual bool IsLoginAllowed { get; set; }
+        public virtual DateTime? LastLogin { get; internal set; }
+        public virtual DateTime? LastFailedLogin { get; internal set; }
+        public virtual int FailedLoginCount { get; internal set; }
+        
         public virtual DateTime PasswordChanged { get; internal set; }
         public virtual bool RequiresPasswordReset { get; set; }
 
+        [EmailAddress]
+        [StringLength(100)]
+        public virtual string Email { get; internal set; }
         public virtual bool IsAccountVerified { get; internal set; }
-        public virtual bool IsLoginAllowed { get; set; }
-        public virtual bool IsAccountClosed { get; internal set; }
-        public virtual DateTime? AccountClosed { get; internal set; }
+
+        public virtual DateTime? LastFailedPasswordReset { get; internal set; }
+        public virtual int FailedPasswordResetCount { get; internal set; }
 
         [StringLength(100)]
         public virtual string MobileCode { get; internal set; }
@@ -56,13 +64,6 @@ namespace BrockAllen.MembershipReboot
 
         public virtual TwoFactorAuthMode AccountTwoFactorAuthMode { get; internal set; }
         public virtual TwoFactorAuthMode CurrentTwoFactorAuthStatus { get; internal set; }
-
-        public virtual DateTime? LastLogin { get; internal set; }
-        public virtual DateTime? LastFailedLogin { get; internal set; }
-        public virtual int FailedLoginCount { get; internal set; }
-
-        public virtual DateTime? LastFailedPasswordReset { get; internal set; }
-        public virtual int FailedPasswordResetCount { get; internal set; }
 
         [StringLength(100)]
         public virtual string VerificationKey { get; internal set; }

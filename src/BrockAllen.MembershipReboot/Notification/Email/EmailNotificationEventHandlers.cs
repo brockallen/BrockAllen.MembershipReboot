@@ -43,19 +43,6 @@ namespace BrockAllen.MembershipReboot
         }
     }
 
-    public class EmailAccountCreatedEventHandler : EmailAccountCreatedEventHandler<UserAccount>
-    {
-        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-
-        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
-        }
-    }
-
     public class EmailAccountCreatedEventHandler<T>
         : EmailEventHandler<T>, IEventHandler<AccountCreatedEvent<T>>
         where T : UserAccount
@@ -72,19 +59,7 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(AccountCreatedEvent<T> evt)
         {
-            Process(evt, new { evt.VerificationKey });
-        }
-    }
-
-    public class EmailAccountEventsHandler : EmailAccountEventsHandler<UserAccount>
-    {
-        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
+            Process(evt, new { evt.InitialPassword });
         }
     }
 
@@ -183,6 +158,31 @@ namespace BrockAllen.MembershipReboot
         public void Handle(LinkedAccountRemovedEvent<T> evt)
         {
             Process(evt);
+        }
+    }
+
+    public class EmailAccountCreatedEventHandler : EmailAccountCreatedEventHandler<UserAccount>
+    {
+        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter)
+            : base(messageFormatter)
+        {
+        }
+
+        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
+            : base(messageFormatter, messageDelivery)
+        {
+        }
+    }
+    
+    public class EmailAccountEventsHandler : EmailAccountEventsHandler<UserAccount>
+    {
+        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter)
+            : base(messageFormatter)
+        {
+        }
+        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
+            : base(messageFormatter, messageDelivery)
+        {
         }
     }
 }

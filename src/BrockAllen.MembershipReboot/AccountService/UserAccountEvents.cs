@@ -11,6 +11,7 @@ namespace BrockAllen.MembershipReboot
 
     public abstract class UserAccountEvent<T> : IEvent
     {
+        //public UserAccountService<T> UserAccountService { get; set; }
         public T Account { get; set; }
     }
 
@@ -20,6 +21,9 @@ namespace BrockAllen.MembershipReboot
         // notification for account created (when user tries to
         // reset password before verifying their account)
         public string InitialPassword { get; set; }
+    }
+    public class AccountVerificationEvent<T> : UserAccountEvent<T> 
+    {
         public string VerificationKey { get; set; }
     }
     public class AccountVerifiedEvent<T> : UserAccountEvent<T> { }
@@ -116,7 +120,6 @@ namespace BrockAllen.MembershipReboot
     public class SuccessfulTwoFactorAuthCodeLoginEvent<T> : SuccessfulLoginEvent<T> { }
 
     public abstract class FailedLoginEvent<T> : UserAccountEvent<T> { }
-    public class AccountNotVerifiedEvent<T> : FailedLoginEvent<T> { }
     public class AccountLockedEvent<T> : FailedLoginEvent<T> { }
     public class TooManyRecentPasswordFailuresEvent<T> : FailedLoginEvent<T> { }
     public class InvalidPasswordEvent<T> : FailedLoginEvent<T> { }

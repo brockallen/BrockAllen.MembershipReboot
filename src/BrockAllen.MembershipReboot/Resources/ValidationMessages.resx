@@ -210,6 +210,9 @@
   <data name="PasswordRequired" xml:space="preserve">
     <value>Password is required.</value>
   </data>
+  <data name="PasswordResetErrorNoEmail" xml:space="preserve">
+    <value>Password reset is not possible since there is no verified email address for this account.</value>
+  </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
     <value>Register a mobile phone number to enable mobile two factor authentication.</value>
   </data>

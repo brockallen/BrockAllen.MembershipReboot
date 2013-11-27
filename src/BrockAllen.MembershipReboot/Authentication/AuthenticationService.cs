@@ -50,11 +50,6 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
 
-            if (!account.IsAccountVerified)
-            {
-                throw new ValidationException(Resources.ValidationMessages.AccountNotVerified);
-            }
-
             if (!account.IsLoginAllowed)
             {
                 throw new ValidationException(Resources.ValidationMessages.LoginNotAllowed);

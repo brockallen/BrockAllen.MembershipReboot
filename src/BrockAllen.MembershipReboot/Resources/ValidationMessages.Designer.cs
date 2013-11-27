@@ -340,6 +340,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Password reset is not possible since there is no verified email address for this account..
+        /// </summary>
+        internal static string PasswordResetErrorNoEmail {
+            get {
+                return ResourceManager.GetString("PasswordResetErrorNoEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Register a mobile phone number to enable mobile two factor authentication..
         /// </summary>
         internal static string RegisterMobileForTwoFactor {

@@ -37,7 +37,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         class KeyNotification : 
-            IEventHandler<AccountCreatedEvent<UserAccount>>,
+            IEventHandler<AccountVerificationEvent<UserAccount>>,
             IEventHandler<PasswordResetRequestedEvent<UserAccount>>,
             IEventHandler<EmailChangeRequestedEvent<UserAccount>>,
             IEventHandler<MobilePhoneChangeRequestedEvent<UserAccount>>,
@@ -49,7 +49,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 this.instance = instance;
             }
 
-            public void Handle(AccountCreatedEvent<UserAccount> evt)
+            public void Handle(AccountVerificationEvent<UserAccount> evt)
             {
                 instance.LastVerificationKey = evt.VerificationKey;
             }
