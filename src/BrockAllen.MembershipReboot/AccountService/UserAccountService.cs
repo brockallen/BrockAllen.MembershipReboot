@@ -1495,7 +1495,7 @@ namespace BrockAllen.MembershipReboot
                 result = account.LastFailedLogin >= UtcNow.Subtract(Configuration.AccountLockoutDuration);
             }
 
-            if (!result)
+            if (result)
             {
                 account.FailedLoginCount++;
             }
