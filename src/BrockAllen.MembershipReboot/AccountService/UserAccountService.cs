@@ -1005,7 +1005,6 @@ namespace BrockAllen.MembershipReboot
             if (account.FailedPasswordResetCount >= Configuration.AccountLockoutFailedLoginAttempts &&
                 account.LastFailedPasswordReset >= UtcNow.Subtract(Configuration.AccountLockoutDuration))
             {
-                account.LastFailedPasswordReset = UtcNow;
                 account.FailedPasswordResetCount++;
 
                 this.AddEvent(new PasswordResetFailedEvent<T> { Account = account });
@@ -1085,7 +1084,8 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByEmail(tenant, email);
             if (account == null) throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
 
-            SendAccountNameReminder(account);
+            this.AddEvent(new UsernameReminderRequestedEvent<T> { Account = account });
+            
             Update(account);
         }
 
@@ -1461,7 +1461,6 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[UserAccount.Authenticate] failed -- account in lockout due to failed login attempts");
 
-                account.FailedLoginCount++;
                 this.AddEvent(new TooManyRecentPasswordFailuresEvent<T> { Account = account });
 
                 return false;
@@ -1472,8 +1471,7 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Verbose("[UserAccount.Authenticate] authentication success");
 
-                account.LastLogin = UtcNow;
-                account.FailedLoginCount = 0;
+                RecordSuccessfulLogin(account);
 
                 this.AddEvent(new SuccessfulPasswordLoginEvent<T> { Account = account });
             }
@@ -1481,9 +1479,7 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[UserAccount.Authenticate] failed -- invalid password");
 
-                account.LastFailedLogin = UtcNow;
-                if (account.FailedLoginCount > 0) account.FailedLoginCount++;
-                else account.FailedLoginCount = 1;
+                RecordInvalidLoginAttempt(account);
 
                 this.AddEvent(new InvalidPasswordEvent<T> { Account = account });
             }
@@ -1493,12 +1489,37 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool HasTooManyRecentPasswordFailures(T account)
         {
+            var result = false;
             if (Configuration.AccountLockoutFailedLoginAttempts <= account.FailedLoginCount)
             {
-                return account.LastFailedLogin >= UtcNow.Subtract(Configuration.AccountLockoutDuration);
+                result = account.LastFailedLogin >= UtcNow.Subtract(Configuration.AccountLockoutDuration);
             }
 
-            return false;
+            if (!result)
+            {
+                account.FailedLoginCount++;
+            }
+
+            return result;
+        }
+
+        protected internal virtual void RecordSuccessfulLogin(T account)
+        {
+            account.LastLogin = UtcNow;
+            account.FailedLoginCount = 0;
+        }
+
+        protected internal virtual void RecordInvalidLoginAttempt(T account)
+        {
+            account.LastFailedLogin = UtcNow;
+            if (account.FailedLoginCount <= 0)
+            {
+                account.FailedLoginCount = 1;
+            }
+            else
+            {
+                account.FailedLoginCount++;
+            }
         }
 
         protected internal virtual bool Authenticate(T account, X509Certificate2 certificate)
@@ -1551,12 +1572,21 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
+            if (HasTooManyRecentPasswordFailures(account))
+            {
+                Tracing.Error("[UserAccount.VerifyMobileCode] failed -- TooManyRecentPasswordFailures");
+                return false;
+            }
+
             var result = CryptoHelper.VerifyHashedPassword(account.MobileCode, code);
             if (!result)
             {
+                RecordInvalidLoginAttempt(account);
                 Tracing.Error("[UserAccount.VerifyMobileCode] failed -- mobile code invalid");
                 return false;
             }
+
+            RecordSuccessfulLogin(account);
 
             Tracing.Verbose("[UserAccount.VerifyMobileCode] success -- mobile code valid");
             return true;
@@ -1635,9 +1665,9 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(code))
             {
                 Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- no code");
-                return false;
+                throw new ValidationException(Resources.ValidationMessages.CodeRequired);
             }
-
+            
             if (account.VerificationPurpose != VerificationKeyPurpose.ChangeMobile)
             {
                 Tracing.Error("[UserAccount.ConfirmMobilePhoneNumberFromCode] failed -- invalid verification key purpose");
@@ -1883,13 +1913,6 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent<T> { Account = account });
 
             return true;
-        }
-
-        protected internal virtual void SendAccountNameReminder(T account)
-        {
-            Tracing.Information("[UserAccount.SendAccountNameReminder] called for accountID: {0}", account.ID);
-
-            this.AddEvent(new UsernameReminderRequestedEvent<T> { Account = account });
         }
 
         protected internal virtual void ChangeUsername(T account, string newUsername)
