@@ -20,7 +20,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             return View(new RegisterInputModel());
         }
-        
+
         [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Index(RegisterInputModel model)
@@ -37,7 +37,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     else
                     {
                         authSvc.SignIn(account);
-                        return View("ConfirmResult", true);
+                        return RedirectToAction("ConfirmResult", new { success = true });
                     }
                 }
                 catch (ValidationException ex)
@@ -46,6 +46,27 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 }
             }
             return View(model);
+        }
+
+        public ActionResult Verify()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Verify(string foo)
+        {
+            try
+            {
+                this.userAccountService.RequestAccountVerification(User.GetUserID());
+                return View("Success");
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View();
         }
 
         public ActionResult Confirm(string id)

@@ -61,7 +61,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Account is already verified..
+        ///   Looks up a localized string similar to The email address for this account is already verified..
         /// </summary>
         internal static string AccountAlreadyVerified {
             get {
@@ -88,7 +88,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Account not yet verified..
+        ///   Looks up a localized string similar to The email address for this account is not yet verified..
         /// </summary>
         internal static string AccountNotVerified {
             get {

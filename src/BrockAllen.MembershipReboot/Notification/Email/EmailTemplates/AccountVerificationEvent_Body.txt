@@ -1,4 +1,4 @@
-﻿You (or someone) requested an account to be created with {applicationName}. 
+﻿This email is to verify your email address for your account with {applicationName}. 
 
 Username: {username}
 

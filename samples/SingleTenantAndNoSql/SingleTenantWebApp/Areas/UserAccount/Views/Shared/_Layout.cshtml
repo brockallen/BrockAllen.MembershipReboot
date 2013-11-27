@@ -12,6 +12,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <li>@Html.ActionLink("Logout", "Index", "Logout")</li>
+            <li>@Html.ActionLink("Verify Your Email Account", "Verify", "Register")</li>
             <li>@Html.ActionLink("Change Password", "Index", "ChangePassword")</li>
             <li>@Html.ActionLink("Change Password Reset Secret", "Index", "ChangeSecretQuestion")</li>
             <li>@Html.ActionLink("Change Username", "Index", "ChangeUsername")</li>
@@ -29,7 +30,6 @@
             <li>@Html.ActionLink("Email Username", "Index", "SendUsernameReminder")</li>
             <li>@Html.ActionLink("Register", "Index", "Register")</li>
             <li>@Html.ActionLink("Reset Password", "Index", "PasswordReset")</li>
-            <li>@Html.ActionLink("Reset Password From Secret", "ResetWithSecret", "PasswordReset")</li>
         }
         <li>@Html.ActionLink("Admin Account Lookup", "Index", "Home", new { area="Admin" }, null)</li>
     </ul>

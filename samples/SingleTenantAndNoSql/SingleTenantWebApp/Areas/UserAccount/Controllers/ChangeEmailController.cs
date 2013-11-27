@@ -30,7 +30,14 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     this.userAccountService.ChangeEmailRequest(User.GetUserID(), model.NewEmail);
-                    return View("ChangeRequestSuccess", (object)model.NewEmail);
+                    if (userAccountService.Configuration.RequireAccountVerification)
+                    {
+                        return View("ChangeRequestSuccess", (object)model.NewEmail);
+                    }
+                    else
+                    {
+                        return View("Success");
+                    }
                 }
                 catch (ValidationException ex)
                 {

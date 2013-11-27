@@ -9,8 +9,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
     {
         public static MembershipRebootConfiguration Create()
         {
-            var settings = SecuritySettings.FromConfiguration();
-            var config = new MembershipRebootConfiguration(settings);
+            var config = new MembershipRebootConfiguration();
+            config.RequireAccountVerification = true;
 
             var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
                 "UserAccount/Login", 
@@ -19,11 +19,6 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                 "UserAccount/PasswordReset/Confirm/",
                 "UserAccount/ChangeEmail/Confirm/");
             var emailFormatter = new EmailMessageFormatter(appinfo);
-            if (settings.RequireAccountVerification)
-            {
-                // uncomment if you want email notifications -- also update smtp settings in web.config
-                //config.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
-            }
             // uncomment if you want email notifications -- also update smtp settings in web.config
             //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
             //config.AddEventHandler(new TwilloSmsEventHandler(appinfo));

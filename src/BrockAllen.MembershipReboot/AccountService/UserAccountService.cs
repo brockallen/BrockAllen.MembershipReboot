@@ -424,12 +424,29 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, InitialPassword = password });
         }
 
+        public virtual void RequestAccountVerification(Guid accountID)
+        {
+            Tracing.Information("[UserAccountService.RequestAccountVerification] called for account id: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.RequestAccountVerification] invalid account id");
+                throw new Exception("Invalid Account ID");
+            }
+
+            RequestAccountVerification(account);
+            Update(account);
+        }
+
         protected internal virtual void RequestAccountVerification(TAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
+            
             if (account.IsAccountVerified)
             {
-                throw new Exception("Account already verified");
+                Tracing.Error("[UserAccountService.RequestAccountVerification] account already verified");
+                throw new ValidationException(Resources.ValidationMessages.AccountAlreadyVerified);
             }
 
             Tracing.Verbose("[UserAccountService.RequestAccountVerification] creating a new reset key");
@@ -1228,7 +1245,11 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByEmail(tenant, email);
             if (account == null) throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
 
-            // TODO -- should we send verification request if not verified?
+            if (!account.IsAccountVerified)
+            {
+                Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- account not verified");
+                throw new ValidationException(Resources.ValidationMessages.AccountNotVerified);
+            }
 
             this.AddEvent(new UsernameReminderRequestedEvent<TAccount> { Account = account });
             

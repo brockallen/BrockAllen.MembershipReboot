@@ -43,48 +43,10 @@ namespace BrockAllen.MembershipReboot
         }
     }
 
-    public class EmailAccountCreatedEventHandler<T>
-        : EmailEventHandler<T>, IEventHandler<AccountCreatedEvent<T>>
-        where T : UserAccount
-    {
-        public EmailAccountCreatedEventHandler(IMessageFormatter<T> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-
-        public EmailAccountCreatedEventHandler(IMessageFormatter<T> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
-        }
-
-        public void Handle(AccountCreatedEvent<T> evt)
-        {
-            Process(evt, new { evt.InitialPassword });
-        }
-    }
-
-    public class EmailAccountVerificationEventHandler<T>
-            : EmailEventHandler<T>, IEventHandler<AccountVerificationEvent<T>>
-            where T : UserAccount
-    {
-        public EmailAccountVerificationEventHandler(IMessageFormatter<T> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-
-        public EmailAccountVerificationEventHandler(IMessageFormatter<T> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
-        }
-
-        public void Handle(AccountVerificationEvent<T> evt)
-        {
-            Process(evt, new { evt.VerificationKey });
-        }
-    }
-
     public class EmailAccountEventsHandler<T> :
         EmailEventHandler<T>,
+        IEventHandler<AccountCreatedEvent<T>>,        
+        IEventHandler<AccountVerificationEvent<T>>,
         IEventHandler<AccountVerifiedEvent<T>>,
         IEventHandler<PasswordResetRequestedEvent<T>>,
         IEventHandler<PasswordChangedEvent<T>>,
@@ -110,6 +72,16 @@ namespace BrockAllen.MembershipReboot
         {
         }
 
+        public void Handle(AccountVerificationEvent<T> evt)
+        {
+            Process(evt, new { evt.VerificationKey });
+        }
+
+        public void Handle(AccountCreatedEvent<T> evt)
+        {
+            Process(evt, new { evt.InitialPassword });
+        }
+        
         public void Handle(AccountVerifiedEvent<T> evt)
         {
             Process(evt);
@@ -181,32 +153,6 @@ namespace BrockAllen.MembershipReboot
         }
     }
 
-    public class EmailAccountCreatedEventHandler : EmailAccountCreatedEventHandler<UserAccount>
-    {
-        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-
-        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
-        }
-    }
-
-    public class EmailAccountVerificationEventHandler : EmailAccountVerificationEventHandler<UserAccount>
-    {
-        public EmailAccountVerificationEventHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-
-        public EmailAccountVerificationEventHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
-        }
-    }
-    
     public class EmailAccountEventsHandler : EmailAccountEventsHandler<UserAccount>
     {
         public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter)
