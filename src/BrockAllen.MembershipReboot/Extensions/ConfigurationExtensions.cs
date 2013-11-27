@@ -9,22 +9,26 @@ namespace BrockAllen.MembershipReboot
 {
     public static class ConfigurationExtensions
     {
-        public static void ConfigureCookieBasedTwoFactorAuthPolicy(this MembershipRebootConfiguration config, CookieBasedTwoFactorAuthPolicy policy)
+        public static void ConfigureCookieBasedTwoFactorAuthPolicy<T>(this MembershipRebootConfiguration<T> config, CookieBasedTwoFactorAuthPolicy<T> policy)
+            where T : UserAccount
         {
             if (config == null) throw new ArgumentNullException("config");
-            policy.Register(config);
+            config.TwoFactorAuthenticationPolicy = policy;
+            config.AddEventHandler(policy);
         }
 
-        public static void ConfigurePasswordComplexity(this MembershipRebootConfiguration config)
+        public static void ConfigurePasswordComplexity<T>(this MembershipRebootConfiguration<T> config)
+            where T : UserAccount
         {
             if (config == null) throw new ArgumentNullException("config");
-            config.RegisterPasswordValidator(new PasswordComplexityValidator<UserAccount>());
+            config.RegisterPasswordValidator(new PasswordComplexityValidator<T>());
         }
 
-        public static void ConfigurePasswordComplexity(this MembershipRebootConfiguration config, int minimumLength, int minimumNumberOfComplexityRules)
+        public static void ConfigurePasswordComplexity<T>(this MembershipRebootConfiguration<T> config, int minimumLength, int minimumNumberOfComplexityRules)
+            where T : UserAccount
         {
             if (config == null) throw new ArgumentNullException("config");
-            config.RegisterPasswordValidator(new PasswordComplexityValidator<UserAccount>(minimumLength, minimumNumberOfComplexityRules));
+            config.RegisterPasswordValidator(new PasswordComplexityValidator<T>(minimumLength, minimumNumberOfComplexityRules));
         }
     }
 }

@@ -58,8 +58,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             config.AddValidationHandler(new PasswordChanging());
             config.AddEventHandler(new PasswordChanged());
 
-            var policy = new AspNetCookieBasedTwoFactorAuthPolicy<CustomUserAccount>();
-            policy.Register(config);
+            config.ConfigureCookieBasedTwoFactorAuthPolicy(new AspNetCookieBasedTwoFactorAuthPolicy<CustomUserAccount>());
 
             return config;
         }

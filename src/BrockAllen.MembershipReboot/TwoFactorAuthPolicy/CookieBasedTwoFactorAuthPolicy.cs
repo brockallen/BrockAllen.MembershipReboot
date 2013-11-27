@@ -50,11 +50,5 @@ namespace BrockAllen.MembershipReboot
 
             RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant);
         }
-
-        public void Register(MembershipRebootConfiguration<T> config)
-        {
-            config.TwoFactorAuthenticationPolicy = this;
-            config.AddEventHandler(this);
-        }
     }
 }
