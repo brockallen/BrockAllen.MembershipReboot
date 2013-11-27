@@ -29,14 +29,15 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    this.userAccountService.CreateAccount(model.Username, model.Password, model.Email);
+                    var account = this.userAccountService.CreateAccount(model.Username, model.Password, model.Email);
                     if (userAccountService.Configuration.RequireAccountVerification)
                     {
                         return View("Success", model);
                     }
                     else
                     {
-                        return View("Confirm", true);
+                        authSvc.SignIn(account);
+                        return View("ConfirmResult", true);
                     }
                 }
                 catch (ValidationException ex)

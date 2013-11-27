@@ -35,15 +35,31 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
+        public static readonly IValidator<T> EmailRequired =
+            new DelegateValidator<T>((service, account, value) =>
+            {
+                if (service.Configuration.RequireAccountVerification && 
+                    String.IsNullOrWhiteSpace(value))
+                {
+                    Tracing.Verbose("[UserAccountValidation.EmailRequired] validation failed: {0}, {1}", account.Tenant, account.Username);
+
+                    return new ValidationResult(Resources.ValidationMessages.EmailRequired);
+                }
+                return null;
+            });
+        
         public static readonly IValidator<T> EmailIsValidFormat =
             new DelegateValidator<T>((service, account, value) =>
             {
-                EmailAddressAttribute validator = new EmailAddressAttribute();
-                if (!validator.IsValid(value))
+                if(!String.IsNullOrWhiteSpace(value))
                 {
-                    Tracing.Verbose("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
+                    EmailAddressAttribute validator = new EmailAddressAttribute();
+                    if (!validator.IsValid(value))
+                    {
+                        Tracing.Verbose("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult(Resources.ValidationMessages.InvalidEmail);
+                        return new ValidationResult(Resources.ValidationMessages.InvalidEmail);
+                    }
                 }
                 return null;
             });
@@ -51,7 +67,7 @@ namespace BrockAllen.MembershipReboot
         public static readonly IValidator<T> EmailMustNotAlreadyExist =
             new DelegateValidator<T>((service, account, value) =>
             {
-                if (service.EmailExists(account.Tenant, value))
+                if (String.IsNullOrWhiteSpace(value) && service.EmailExists(account.Tenant, value))
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
                     

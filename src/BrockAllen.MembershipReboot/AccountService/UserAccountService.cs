@@ -412,11 +412,6 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccount.Init] failed -- no password");
                 throw new ValidationException(Resources.ValidationMessages.PasswordRequired);
             }
-            if (String.IsNullOrWhiteSpace(email))
-            {
-                Tracing.Error("[UserAccount.Init] failed -- no email");
-                throw new ValidationException(Resources.ValidationMessages.EmailRequired);
-            }
 
             if (account.ID != Guid.Empty)
             {

@@ -35,7 +35,10 @@ namespace BrockAllen.MembershipReboot
             if (msg != null)
             {
                 msg.To = d.NewEmail ?? evt.Account.Email;
-                this.messageDelivery.Send(msg);
+                if (!String.IsNullOrWhiteSpace(msg.To))
+                {
+                    this.messageDelivery.Send(msg);
+                }
             }
         }
     }

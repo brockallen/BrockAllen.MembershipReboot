@@ -4,7 +4,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
 {
     public class ChangeEmailRequestInputModel
     {
-        [Required]
+        //[Required]
         [EmailAddress]
         public string NewEmail { get; set; }
     }
