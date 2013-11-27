@@ -7,14 +7,14 @@ using System;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class SmsEventHandler<T> :
-        IEventHandler<MobilePhoneChangeRequestedEvent<T>>,
-        IEventHandler<TwoFactorAuthenticationCodeNotificationEvent<T>>
-        where T: UserAccount
+    public abstract class SmsEventHandler<TAccount> :
+        IEventHandler<MobilePhoneChangeRequestedEvent<TAccount>>,
+        IEventHandler<TwoFactorAuthenticationCodeNotificationEvent<TAccount>>
+        where TAccount: UserAccount
     {
-        IMessageFormatter<T> messageFormatter;
+        IMessageFormatter<TAccount> messageFormatter;
 
-        public SmsEventHandler(IMessageFormatter<T> messageFormatter)
+        public SmsEventHandler(IMessageFormatter<TAccount> messageFormatter)
         {
             if (messageFormatter == null) throw new ArgumentNullException("messageFormatter");
 
@@ -23,7 +23,7 @@ namespace BrockAllen.MembershipReboot
 
         protected abstract void SendSms(Message message);
 
-        public virtual void Process(UserAccountEvent<T> evt, object data = null)
+        public virtual void Process(UserAccountEvent<TAccount> evt, object data = null)
         {
             dynamic d = new DynamicDictionary(data);
             var msg = CreateMessage(evt, d);
@@ -33,7 +33,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual Message CreateMessage(UserAccountEvent<T> evt, dynamic extra)
+        protected virtual Message CreateMessage(UserAccountEvent<TAccount> evt, dynamic extra)
         {
             var msg = this.messageFormatter.Format(evt, extra);
             if (msg != null)
@@ -43,12 +43,12 @@ namespace BrockAllen.MembershipReboot
             return msg;
         }
 
-        public void Handle(MobilePhoneChangeRequestedEvent<T> evt)
+        public void Handle(MobilePhoneChangeRequestedEvent<TAccount> evt)
         {
             Process(evt, new { evt.NewMobilePhoneNumber, evt.Code });
         }
 
-        public void Handle(TwoFactorAuthenticationCodeNotificationEvent<T> evt)
+        public void Handle(TwoFactorAuthenticationCodeNotificationEvent<TAccount> evt)
         {
             Process(evt, new { evt.Code });
         }

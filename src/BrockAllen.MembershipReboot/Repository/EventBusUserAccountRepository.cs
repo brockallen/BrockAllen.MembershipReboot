@@ -9,15 +9,15 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class EventBusUserAccountRepository<T> : IUserAccountRepository<T>
-        where T : UserAccount
+    public class EventBusUserAccountRepository<TAccount> : IUserAccountRepository<TAccount>
+        where TAccount : UserAccount
     {
         IEventSource source;
-        IUserAccountRepository<T> inner;
+        IUserAccountRepository<TAccount> inner;
         IEventBus validationBus;
         IEventBus eventBus;
 
-        public EventBusUserAccountRepository(IEventSource source, IUserAccountRepository<T> inner, IEventBus validationBus, IEventBus eventBus)
+        public EventBusUserAccountRepository(IEventSource source, IUserAccountRepository<TAccount> inner, IEventBus validationBus, IEventBus eventBus)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (inner == null) throw new ArgumentNullException("inner");
@@ -48,36 +48,36 @@ namespace BrockAllen.MembershipReboot
             source.Clear();
         }
 
-        public IQueryable<T> GetAll()
+        public IQueryable<TAccount> GetAll()
         {
             return inner.GetAll();
         }
 
-        public T Get(Guid key)
+        public TAccount Get(Guid key)
         {
             return inner.Get(key);
         }
 
-        public T Create()
+        public TAccount Create()
         {
             return inner.Create();
         }
 
-        public void Add(T item)
+        public void Add(TAccount item)
         {
             RaiseValidation();
             inner.Add(item);
             RaiseEvents();
         }
 
-        public void Remove(T item)
+        public void Remove(TAccount item)
         {
             RaiseValidation();
             inner.Remove(item);
             RaiseEvents();
         }
 
-        public void Update(T item)
+        public void Update(TAccount item)
         {
             RaiseValidation();
             inner.Update(item);

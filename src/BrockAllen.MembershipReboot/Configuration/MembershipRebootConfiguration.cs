@@ -9,8 +9,8 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class MembershipRebootConfiguration<T>
-        where T : UserAccount
+    public class MembershipRebootConfiguration<TAccount>
+        where TAccount : UserAccount
     {
         public MembershipRebootConfiguration()
             : this(SecuritySettings.Instance)
@@ -48,26 +48,26 @@ namespace BrockAllen.MembershipReboot
         public int PasswordHashingIterationCount { get; set; }
         public int PasswordResetFrequency { get; set; }
 
-        AggregateValidator<T> usernameValidators = new AggregateValidator<T>();
-        public void RegisterUsernameValidator(params IValidator<T>[] items)
+        AggregateValidator<TAccount> usernameValidators = new AggregateValidator<TAccount>();
+        public void RegisterUsernameValidator(params IValidator<TAccount>[] items)
         {
             usernameValidators.AddRange(items);
         }
-        public IValidator<T> UsernameValidator { get { return usernameValidators; } }
+        public IValidator<TAccount> UsernameValidator { get { return usernameValidators; } }
 
-        AggregateValidator<T> passwordValidators = new AggregateValidator<T>();
-        public void RegisterPasswordValidator(params IValidator<T>[] items)
+        AggregateValidator<TAccount> passwordValidators = new AggregateValidator<TAccount>();
+        public void RegisterPasswordValidator(params IValidator<TAccount>[] items)
         {
             passwordValidators.AddRange(items);
         }
-        public IValidator<T> PasswordValidator { get { return passwordValidators; } }
+        public IValidator<TAccount> PasswordValidator { get { return passwordValidators; } }
 
-        AggregateValidator<T> emailValidators = new AggregateValidator<T>();
-        public void RegisterEmailValidator(params IValidator<T>[] items)
+        AggregateValidator<TAccount> emailValidators = new AggregateValidator<TAccount>();
+        public void RegisterEmailValidator(params IValidator<TAccount>[] items)
         {
             emailValidators.AddRange(items);
         }
-        public IValidator<T> EmailValidator { get { return emailValidators; } }
+        public IValidator<TAccount> EmailValidator { get { return emailValidators; } }
 
         EventBus eventBus = new EventBus();
         public IEventBus EventBus { get { return eventBus; } }
@@ -85,7 +85,7 @@ namespace BrockAllen.MembershipReboot
         
         public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
         public ICrypto Crypto { get; set; }
-        public Func<T, IEnumerable<Claim>> CustomUserPropertiesToClaimsMap { get; set; }
+        public Func<TAccount, IEnumerable<Claim>> CustomUserPropertiesToClaimsMap { get; set; }
     }
     
     public class MembershipRebootConfiguration : MembershipRebootConfiguration<UserAccount>

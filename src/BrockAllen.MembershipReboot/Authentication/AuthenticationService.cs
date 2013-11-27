@@ -12,18 +12,18 @@ using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class AuthenticationService<T>
-        where T : UserAccount
+    public abstract class AuthenticationService<TAccount>
+        where TAccount : UserAccount
     {
-        public UserAccountService<T> UserAccountService { get; set; }
+        public UserAccountService<TAccount> UserAccountService { get; set; }
         public ClaimsAuthenticationManager ClaimsAuthenticationManager { get; set; }
 
-        public AuthenticationService(UserAccountService<T> userService)
+        public AuthenticationService(UserAccountService<TAccount> userService)
             : this(userService, null)
         {
         }
 
-        public AuthenticationService(UserAccountService<T> userService, ClaimsAuthenticationManager claimsAuthenticationManager)
+        public AuthenticationService(UserAccountService<TAccount> userService, ClaimsAuthenticationManager claimsAuthenticationManager)
         {
             this.UserAccountService = userService;
             this.ClaimsAuthenticationManager = claimsAuthenticationManager;
@@ -40,12 +40,12 @@ namespace BrockAllen.MembershipReboot
             SignIn(account, AuthenticationMethods.Password);
         }
 
-        public virtual void SignIn(T account)
+        public virtual void SignIn(TAccount account)
         {
             SignIn(account, AuthenticationMethods.Password);
         }
 
-        public virtual void SignIn(T account, string method)
+        public virtual void SignIn(TAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
@@ -104,7 +104,7 @@ namespace BrockAllen.MembershipReboot
             IssueToken(cp);
         }
 
-        private static List<Claim> GetBasicClaims(T account, string method)
+        private static List<Claim> GetBasicClaims(TAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -118,7 +118,7 @@ namespace BrockAllen.MembershipReboot
             return claims;
         }
 
-        private void IssuePartialSignInToken(T account, string method)
+        private void IssuePartialSignInToken(TAccount account, string method)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -156,7 +156,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
             if (claims == null) throw new ArgumentNullException("claims");
 
-            T account = null;
+            TAccount account = null;
             var user = ClaimsPrincipal.Current;
             if (user.Identity.IsAuthenticated)
             {

@@ -8,18 +8,18 @@ using System.Collections.Generic;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class EmailEventHandler<T>
-        where T: UserAccount
+    public class EmailEventHandler<TAccount>
+        where TAccount: UserAccount
     {
-        IMessageFormatter<T> messageFormatter;
+        IMessageFormatter<TAccount> messageFormatter;
         IMessageDelivery messageDelivery;
 
-        public EmailEventHandler(IMessageFormatter<T> messageFormatter)
+        public EmailEventHandler(IMessageFormatter<TAccount> messageFormatter)
             : this(messageFormatter, new SmtpMessageDelivery())
         {
         }
 
-        public EmailEventHandler(IMessageFormatter<T> messageFormatter, IMessageDelivery messageDelivery)
+        public EmailEventHandler(IMessageFormatter<TAccount> messageFormatter, IMessageDelivery messageDelivery)
         {
             if (messageFormatter == null) throw new ArgumentNullException("messageFormatter");
             if (messageDelivery == null) throw new ArgumentNullException("messageDelivery");
@@ -28,7 +28,7 @@ namespace BrockAllen.MembershipReboot
             this.messageDelivery = messageDelivery;
         }
 
-        public virtual void Process(UserAccountEvent<T> evt, object extra = null)
+        public virtual void Process(UserAccountEvent<TAccount> evt, object extra = null)
         {
             dynamic d = new DynamicDictionary(extra);
             var msg = this.messageFormatter.Format(evt, d);

@@ -9,8 +9,8 @@ using System.IO;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class SmsMessageFormatter<T> : IMessageFormatter<T>
-        where T : UserAccount
+    public class SmsMessageFormatter<TAccount> : IMessageFormatter<TAccount>
+        where TAccount : UserAccount
     {
         Lazy<ApplicationInformation> appInfo;
         public SmsMessageFormatter(ApplicationInformation appInfo)
@@ -31,7 +31,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public Message Format(UserAccountEvent<T> accountEvent, dynamic extra)
+        public Message Format(UserAccountEvent<TAccount> accountEvent, dynamic extra)
         {
             if (accountEvent == null) throw new ArgumentNullException("accountEvent");
 
@@ -43,7 +43,7 @@ namespace BrockAllen.MembershipReboot
             };
         }
 
-        private string GetMessageBody(UserAccountEvent<T> accountEvent, dynamic extra)
+        private string GetMessageBody(UserAccountEvent<TAccount> accountEvent, dynamic extra)
         {
             var txt = LoadTemplate();
             

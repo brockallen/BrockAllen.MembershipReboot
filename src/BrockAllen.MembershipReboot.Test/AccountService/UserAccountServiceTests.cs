@@ -1291,8 +1291,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 subject.ChangeEmailFromKey(Guid.NewGuid(), "pass", LastVerificationKey);
                 Assert.Fail();
             }
-            catch (ArgumentException)
+            catch (ValidationException ex)
             {
+                Assert.AreEqual(Resources.ValidationMessages.InvalidKey, ex.Message);
             }
         }
 

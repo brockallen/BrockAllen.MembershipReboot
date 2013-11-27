@@ -9,11 +9,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
-    internal class UserAccountValidation<T>
-        where T : UserAccount
+    internal class UserAccountValidation<TAccount>
+        where TAccount : UserAccount
     {
-        public static readonly IValidator<T> UsernameDoesNotContainAtSign =
-            new DelegateValidator<T>((service, account, value) =>
+        public static readonly IValidator<TAccount> UsernameDoesNotContainAtSign =
+            new DelegateValidator<TAccount>((service, account, value) =>
             {
                 if (value.Contains("@"))
                 {
@@ -24,8 +24,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
         
-        public static readonly IValidator<T> UsernameOnlyContainsLettersAndDigits =
-            new DelegateValidator<T>((service, account, value) =>
+        public static readonly IValidator<TAccount> UsernameOnlyContainsLettersAndDigits =
+            new DelegateValidator<TAccount>((service, account, value) =>
             {
                 if (!value.All(x=>Char.IsLetterOrDigit(x)) || value.All(x=>Char.IsDigit(x)))
                 {
@@ -36,8 +36,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator<T> UsernameMustNotAlreadyExist =
-            new DelegateValidator<T>((service, account, value) =>
+        public static readonly IValidator<TAccount> UsernameMustNotAlreadyExist =
+            new DelegateValidator<TAccount>((service, account, value) =>
             {
                 if (service.UsernameExists(account.Tenant, value))
                 {
@@ -48,8 +48,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator<T> EmailRequired =
-            new DelegateValidator<T>((service, account, value) =>
+        public static readonly IValidator<TAccount> EmailRequired =
+            new DelegateValidator<TAccount>((service, account, value) =>
             {
                 if (service.Configuration.RequireAccountVerification && 
                     String.IsNullOrWhiteSpace(value))
@@ -61,8 +61,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
         
-        public static readonly IValidator<T> EmailIsValidFormat =
-            new DelegateValidator<T>((service, account, value) =>
+        public static readonly IValidator<TAccount> EmailIsValidFormat =
+            new DelegateValidator<TAccount>((service, account, value) =>
             {
                 if(!String.IsNullOrWhiteSpace(value))
                 {
@@ -77,8 +77,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator<T> EmailMustNotAlreadyExist =
-            new DelegateValidator<T>((service, account, value) =>
+        public static readonly IValidator<TAccount> EmailMustNotAlreadyExist =
+            new DelegateValidator<TAccount>((service, account, value) =>
             {
                 if (String.IsNullOrWhiteSpace(value) && service.EmailExists(account.Tenant, value))
                 {
@@ -89,8 +89,8 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator<T> PasswordMustBeDifferentThanCurrent =
-            new DelegateValidator<T>((service, account, value) =>
+        public static readonly IValidator<TAccount> PasswordMustBeDifferentThanCurrent =
+            new DelegateValidator<TAccount>((service, account, value) =>
         {
             // Use LastLogin null-check to see if it's a new account
             // we don't want to run this logic if it's a new account

@@ -9,10 +9,10 @@ namespace BrockAllen.MembershipReboot
 {
     interface IAllowMultiple { }
 
-    public abstract class UserAccountEvent<T> : IEvent
+    public abstract class UserAccountEvent<TAccount> : IEvent
     {
         //public UserAccountService<T> UserAccountService { get; set; }
-        public T Account { get; set; }
+        public TAccount Account { get; set; }
     }
 
     public class AccountCreatedEvent<T> : UserAccountEvent<T>
