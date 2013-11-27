@@ -21,7 +21,7 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
             Assert.AreEqual(false, settings.UsernamesUniqueAcrossTenants);
             Assert.AreEqual(true, settings.RequireAccountVerification);
             Assert.AreEqual(true, settings.AllowLoginAfterAccountCreation);
-            Assert.AreEqual(10, settings.AccountLockoutFailedLoginAttempts);
+            Assert.AreEqual(5, settings.AccountLockoutFailedLoginAttempts);
             Assert.AreEqual(TimeSpan.FromMinutes(5), settings.AccountLockoutDuration);
             Assert.AreEqual(true, settings.AllowAccountDeletion);
             Assert.AreEqual(0, settings.PasswordHashingIterationCount);
