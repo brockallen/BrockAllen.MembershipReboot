@@ -438,7 +438,7 @@ namespace BrockAllen.MembershipReboot
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
             var key = SetVerificationKey(account, VerificationKeyPurpose.VerifyAccount);
 
-            this.AddEvent(new AccountCreatedEvent<T> { Account = account, VerificationKey = key });
+            this.AddEvent(new AccountCreatedEvent<T> { Account = account, InitialPassword = password, VerificationKey = key });
         }
 
         public virtual bool VerifyAccount(string key, string password)

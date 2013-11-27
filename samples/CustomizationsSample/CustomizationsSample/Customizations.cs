@@ -145,7 +145,7 @@ namespace BrockAllen.MembershipReboot.Mvc
                 for (var i = 0; i < 3 && oldEntires.Length > i; i++)
                 {
                     var oldHash = oldEntires[i].PasswordHash;
-                    if (MembershipReboot.CryptoHelper.VerifyHashedPassword(oldHash, evt.NewPassword))
+                    if (new DefaultCrypto().VerifyHashedPassword(oldHash, evt.NewPassword))
                     {
                         throw new ValidationException("New Password must not be same as the past three");
                     }
@@ -155,17 +155,31 @@ namespace BrockAllen.MembershipReboot.Mvc
     }
 
     public class PasswordChanged :
+        IEventHandler<AccountCreatedEvent<CustomUserAccount>>,
         IEventHandler<PasswordChangedEvent<CustomUserAccount>>
     {
+        public void Handle(AccountCreatedEvent<CustomUserAccount> evt)
+        {
+            if (evt.InitialPassword != null)
+            {
+                AddPasswordHistoryEntry(evt.Account.ID, evt.InitialPassword);
+            }
+        }
+       
         public void Handle(PasswordChangedEvent<CustomUserAccount> evt)
+        {
+            AddPasswordHistoryEntry(evt.Account.ID, evt.NewPassword);
+        }
+
+        private static void AddPasswordHistoryEntry(Guid accountID, string password)
         {
             using (var db = new CustomDatabase())
             {
                 var pw = new PasswordHistory
                 {
-                    UserID = evt.Account.ID,
+                    UserID = accountID,
                     DateChanged = DateTime.UtcNow,
-                    PasswordHash = evt.Account.HashedPassword
+                    PasswordHash = new DefaultCrypto().HashPassword(password, 1000)
                 };
                 db.PasswordHistory.Add(pw);
                 db.SaveChanges();

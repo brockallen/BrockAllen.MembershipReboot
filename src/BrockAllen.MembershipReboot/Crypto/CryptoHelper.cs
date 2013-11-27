@@ -66,7 +66,7 @@ namespace BrockAllen.MembershipReboot
             return EncodeIterations(count) + PasswordHashingIterationCountSeparator + result;
         }
 
-        public static bool VerifyHashedPassword(string hashedPassword, string password)
+        internal static bool VerifyHashedPassword(string hashedPassword, string password)
         {
             if (hashedPassword.Contains(PasswordHashingIterationCountSeparator))
             {

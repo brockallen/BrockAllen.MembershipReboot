@@ -16,6 +16,8 @@ namespace BrockAllen.MembershipReboot
 
     public class AccountCreatedEvent<T> : UserAccountEvent<T>
     {
+        // InitialPassword might be null
+        public string InitialPassword { get; set; }
         public string VerificationKey { get; set; }
     }
     public class AccountVerifiedEvent<T> : UserAccountEvent<T> { }
