@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
@@ -19,6 +20,18 @@ namespace BrockAllen.MembershipReboot
                     Tracing.Verbose("[UserAccountValidation.UsernameDoesNotContainAtSign] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
                     return new ValidationResult(Resources.ValidationMessages.UsernameCannotContainAtSign);
+                }
+                return null;
+            });
+        
+        public static readonly IValidator<T> UsernameOnlyContainsLettersAndDigits =
+            new DelegateValidator<T>((service, account, value) =>
+            {
+                if (!value.All(x=>Char.IsLetterOrDigit(x)) || value.All(x=>Char.IsDigit(x)))
+                {
+                    Tracing.Verbose("[UserAccountValidation.UsernameOnlyContainsLettersAndDigits] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
+
+                    return new ValidationResult(Resources.ValidationMessages.UsernameOnlyContainLettersAndDigits);
                 }
                 return null;
             });

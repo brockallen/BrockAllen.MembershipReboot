@@ -403,6 +403,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Username can only contain letters and digits..
+        /// </summary>
+        internal static string UsernameOnlyContainLettersAndDigits {
+            get {
+                return ResourceManager.GetString("UsernameOnlyContainLettersAndDigits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Username is required..
         /// </summary>
         internal static string UsernameRequired {

@@ -61,6 +61,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     val.Add(UserAccountValidation<T>.UsernameDoesNotContainAtSign);
                 }
+                val.Add(UserAccountValidation<T>.UsernameOnlyContainsLettersAndDigits);
                 val.Add(UserAccountValidation<T>.UsernameMustNotAlreadyExist);
                 val.Add(configuration.UsernameValidator);
                 return val;
