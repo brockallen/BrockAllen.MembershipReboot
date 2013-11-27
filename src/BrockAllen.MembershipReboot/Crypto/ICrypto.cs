@@ -17,7 +17,7 @@ namespace BrockAllen.MembershipReboot
         string Hash(string value, string key);
         string GenerateNumericCode(int digits);
         string GenerateSalt();
-        string HashPassword(string password);
+        string HashPassword(string password, int iterations);
         bool VerifyHashedPassword(string hashedPassword, string password);
         bool SlowEquals(string a, string b);
     }
@@ -44,9 +44,9 @@ namespace BrockAllen.MembershipReboot
             return CryptoHelper.GenerateSalt();
         }
 
-        public string HashPassword(string password)
+        public string HashPassword(string password, int iterations)
         {
-            return CryptoHelper.HashPassword(password);
+            return CryptoHelper.HashPassword(password, iterations);
         }
 
         public bool VerifyHashedPassword(string hashedPassword, string password)

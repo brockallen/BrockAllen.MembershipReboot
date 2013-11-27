@@ -55,9 +55,9 @@ namespace BrockAllen.MembershipReboot
             return Crypto.GenerateSalt();
         }
 
-        internal static string HashPassword(string password)
+        internal static string HashPassword(string password, int iterations)
         {
-            var count = SecuritySettings.Instance.PasswordHashingIterationCount;
+            var count = iterations;
             if (count <= 0)
             {
                 count = GetIterationsFromYear(GetCurrentYear());

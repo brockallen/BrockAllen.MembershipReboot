@@ -430,7 +430,7 @@ namespace BrockAllen.MembershipReboot
             account.Email = email;
             account.Created = UtcNow;
             account.LastUpdated = account.Created;
-            account.HashedPassword = Configuration.Crypto.HashPassword(password);
+            account.HashedPassword = Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount);
             account.PasswordChanged = account.Created;
             account.IsAccountVerified = false;
             account.IsLoginAllowed = false;
@@ -1364,7 +1364,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccount.SetPassword] setting new password hash");
 
-            account.HashedPassword = Configuration.Crypto.HashPassword(password);
+            account.HashedPassword = Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount);
             account.PasswordChanged = UtcNow;
             account.RequiresPasswordReset = false;
 
@@ -1537,7 +1537,7 @@ namespace BrockAllen.MembershipReboot
         string IssueMobileCode(T account)
         {
             string code = CryptoHelper.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
-            account.MobileCode = CryptoHelper.HashPassword(code);
+            account.MobileCode = CryptoHelper.HashPassword(code, this.Configuration.PasswordHashingIterationCount);
             account.MobileCodeSent = UtcNow;
 
             return code;
