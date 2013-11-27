@@ -138,6 +138,9 @@
   <data name="CertificateAlreadyInUse" xml:space="preserve">
     <value>That certificate is already in use by a different account.</value>
   </data>
+  <data name="CodeRequired" xml:space="preserve">
+    <value>Code required.</value>
+  </data>
   <data name="EmailAlreadyInUse" xml:space="preserve">
     <value>Email already in use.</value>
   </data>
