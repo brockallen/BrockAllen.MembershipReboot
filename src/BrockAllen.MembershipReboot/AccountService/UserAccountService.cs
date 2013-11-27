@@ -369,9 +369,9 @@ namespace BrockAllen.MembershipReboot
             account.IsLoginAllowed = Configuration.AllowLoginAfterAccountCreation;
             Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.AllowLoginAfterAccountCreation is set to: {0}", account.IsLoginAllowed);
 
-            if (Configuration.RequireAccountVerification)
+            if (!String.IsNullOrWhiteSpace(account.Email))
             {
-                Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.RequireAccountVerification is true, so sending email verification request");
+                Tracing.Verbose("[UserAccountService.CreateAccount] Email was provided, so sending email verification request");
                 RequestAccountVerification(account);
             }
 
@@ -447,6 +447,12 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[UserAccountService.RequestAccountVerification] account already verified");
                 throw new ValidationException(Resources.ValidationMessages.AccountAlreadyVerified);
+            }
+
+            if (String.IsNullOrWhiteSpace(account.Email))
+            {
+                Tracing.Error("[UserAccountService.RequestAccountVerification] email empty");
+                throw new ValidationException(Resources.ValidationMessages.EmailRequired);
             }
 
             Tracing.Verbose("[UserAccountService.RequestAccountVerification] creating a new reset key");
@@ -1290,7 +1296,7 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.ChangeEmailRequest] called: {0}, {1}", accountID, newEmail);
 
-            if (String.IsNullOrWhiteSpace(newEmail))
+            if (String.IsNullOrWhiteSpace(newEmail) && Configuration.RequireAccountVerification)
             {
                 Tracing.Error("[UserAccountService.ChangeEmailRequest] failed -- null newEmail");
                 throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
@@ -1301,20 +1307,20 @@ namespace BrockAllen.MembershipReboot
 
             ValidateEmail(account, newEmail);
 
-            if (String.IsNullOrWhiteSpace(newEmail))
-            {
-                Tracing.Error("[UserAccountService.ChangeEmailRequest] failed -- invalid newEmail");
-                throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
-            }
-
             if (!Configuration.RequireAccountVerification)
             {
-                // TODO: should we set isverified back to false?
-                // TODO: if isverified then should we do another email verification?
+                account.IsAccountVerified = false;
+                
                 var oldEmail = account.Email;
                 account.Email = newEmail;
-                ClearVerificationKey(account);
                 this.AddEvent(new EmailChangedEvent<TAccount> { Account = account, OldEmail = oldEmail });
+                
+                ClearVerificationKey(account);
+
+                if (!String.IsNullOrWhiteSpace(account.Email))
+                {
+                    RequestAccountVerification(account);
+                }
             }
             else
             {
