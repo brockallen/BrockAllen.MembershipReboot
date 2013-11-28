@@ -373,15 +373,6 @@ namespace BrockAllen.MembershipReboot
             ValidateUsername(account, username);
             ValidatePassword(account, password);
 
-            account.IsLoginAllowed = Configuration.AllowLoginAfterAccountCreation;
-            Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.AllowLoginAfterAccountCreation is set to: {0}", account.IsLoginAllowed);
-
-            if (!String.IsNullOrWhiteSpace(account.Email))
-            {
-                Tracing.Verbose("[UserAccountService.CreateAccount] Email was provided, so sending email verification request");
-                this.ChangeEmailRequest(account, account.Email);
-            }
-
             Tracing.Verbose("[UserAccountService.CreateAccount] success");
 
             this.userRepository.Add(account);
@@ -424,11 +415,20 @@ namespace BrockAllen.MembershipReboot
             account.HashedPassword = Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount);
             account.PasswordChanged = account.Created;
             account.IsAccountVerified = false;
-            account.IsLoginAllowed = false;
             account.AccountTwoFactorAuthMode = TwoFactorAuthMode.None;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
 
-            this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, InitialPassword = password });
+            account.IsLoginAllowed = Configuration.AllowLoginAfterAccountCreation;
+            Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.AllowLoginAfterAccountCreation is set to: {0}", account.IsLoginAllowed);
+
+            string key = null;
+            if (!String.IsNullOrWhiteSpace(account.Email))
+            {
+                Tracing.Verbose("[UserAccountService.CreateAccount] Email was provided, so creating email verification request");
+                key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+            }
+
+            this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, InitialPassword = password, VerificationKey = key });
         }
 
         public virtual void RequestAccountVerification(Guid accountID)
@@ -454,40 +454,35 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.AccountAlreadyVerified);
             }
 
-            ChangeEmailRequest(account, account.Email);
+            Tracing.Verbose("[UserAccountService.RequestAccountVerification] creating a new verification key");
+            var key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+            this.AddEvent(new EmailChangeRequestedEvent<TAccount> { Account = account, NewEmail = account.Email, VerificationKey = key });
+
             Update(account);
         }
 
-        public virtual void CancelNewAccount(string key)
+        public virtual void CancelVerification(string key)
         {
-            Tracing.Information("[UserAccountService.CancelNewAccount] called: {0}", key);
+            bool closed;
+            CancelVerification(key, out closed);
+        }
+
+        public virtual void CancelVerification(string key, out bool accountClosed)
+        {
+            accountClosed = false;
+
+            Tracing.Information("[UserAccountService.CancelVerification] called: {0}", key);
 
             var account = this.GetByVerificationKey(key);
             if (account == null)
             {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- account not found from key");
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- account not found from key");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
-            if (account.IsAccountVerified)
+            if (account.VerificationPurpose == null)
             {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- account already verified");
-                throw new ValidationException(Resources.ValidationMessages.AccountAlreadyVerified);
-            }
-            
-            if (account.LastLogin != null)
-            {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- user has already logged in -- account isn't new");
-                throw new ValidationException(Resources.ValidationMessages.AccountAlreadyVerified);
-            }
-
-            // this is the one place where we don't want to check how stale the 
-            // verification key is -- if the user has never logged in we want
-            // to allow the old verification key to allow account cancellation
-            if (account.VerificationPurpose != VerificationKeyPurpose.VerifyAccount &&
-                account.VerificationPurpose != VerificationKeyPurpose.ChangeEmail)
-            {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- verification purpose invalid");
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- no purpose");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
@@ -495,13 +490,24 @@ namespace BrockAllen.MembershipReboot
             var result = Configuration.Crypto.SlowEquals(account.VerificationKey, hashedKey);
             if (!result)
             {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- key verification failed");
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- key verification failed");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
-            Tracing.Verbose("[UserAccountService.CancelNewAccount] succeeded (deleting account)");
-
-            DeleteAccount(account);
+            if (account.VerificationPurpose == VerificationKeyPurpose.ChangeEmail && 
+                account.LastLogin == null)
+            {
+                // if last login is null then they've never logged in so we can delete the account
+                Tracing.Verbose("[UserAccountService.CancelVerification] succeeded (deleting account)");
+                DeleteAccount(account);
+                accountClosed = true;
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccountService.CancelVerification] succeeded");
+                ClearVerificationKey(account);
+                Update(account);
+            }
         }
 
         public virtual void DeleteAccount(Guid accountID)
@@ -1272,7 +1278,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccountService.ChangeEmailRequest] RequireAccountVerification false, changing email");
                 account.IsAccountVerified = false;
                 account.Email = newEmail;
-                this.AddEvent(new EmailChangedEvent<TAccount> { Account = account, OldEmail = oldEmail });
+                this.AddEvent(new EmailChangedEvent<TAccount> { Account = account, OldEmail = oldEmail, VerificationKey = key });
             }
             else
             {
@@ -1531,8 +1537,18 @@ namespace BrockAllen.MembershipReboot
             {
                 // if they've not yet verified then don't allow password reset
                 // instead request an initial account verification
-                Tracing.Verbose("[UserAccountService.ResetPassword] account not verified -- raising account verification event to resend notification");
-                ChangeEmailRequest(account, account.Email);
+                if (account.LastLogin == null) 
+                {
+                    Tracing.Verbose("[UserAccountService.ResetPassword] account not verified -- raising account created email event to resend initial email");
+                    var key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+                    this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, VerificationKey = key });
+                }
+                else
+                {
+                    Tracing.Verbose("[UserAccountService.ResetPassword] account not verified -- raising change email event to resend email verification");
+                    var key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+                    this.AddEvent(new EmailChangeRequestedEvent<TAccount> { Account = account, NewEmail = account.Email, VerificationKey = key });
+                }
             }
             else
             {

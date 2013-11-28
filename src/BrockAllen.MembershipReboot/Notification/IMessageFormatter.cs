@@ -10,6 +10,6 @@ namespace BrockAllen.MembershipReboot
     public interface IMessageFormatter<TAccount>
         where TAccount : UserAccount
     {
-        Message Format(UserAccountEvent<TAccount> accountEvent, dynamic extra);
+        Message Format(UserAccountEvent<TAccount> accountEvent, IDictionary<string, string> values);
     }
 }

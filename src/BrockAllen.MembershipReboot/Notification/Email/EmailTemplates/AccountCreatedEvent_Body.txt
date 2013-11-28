@@ -2,9 +2,13 @@
 
 Username: {username}
 
-You can now login at this address:
+Please click here to confirm your email address:
 
-{loginUrl}
+{confirmChangeEmailUrl}
+
+If this was in error or not requested then click to cancel the request:
+
+{cancelVerificationUrl}
 
 Thanks!
 

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -30,11 +31,31 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void Process(UserAccountEvent<TAccount> evt, object extra = null)
         {
-            dynamic d = new DynamicDictionary(extra);
-            var msg = this.messageFormatter.Format(evt, d);
+            var data = new Dictionary<string, string>();
+            if (extra != null)
+            {
+                foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(extra))
+                {
+                    object obj2 = descriptor.GetValue(extra);
+                    if (obj2 != null)
+                    {
+                        data.Add(descriptor.Name, obj2.ToString());
+                    }
+                }
+            }
+
+            var msg = this.messageFormatter.Format(evt, data);
             if (msg != null)
             {
-                msg.To = d.NewEmail ?? evt.Account.Email;
+                if (data.ContainsKey("NewEmail"))
+                {
+                    msg.To = data["NewEmail"];
+                }
+                else
+                {
+                    msg.To = evt.Account.Email;
+                }
+                
                 if (!String.IsNullOrWhiteSpace(msg.To))
                 {
                     this.messageDelivery.Send(msg);
@@ -75,7 +96,7 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(AccountCreatedEvent<T> evt)
         {
-            Process(evt, new { evt.InitialPassword });
+            Process(evt, new { evt.InitialPassword, evt.VerificationKey });
         }
         
         public void Handle(PasswordResetRequestedEvent<T> evt)
@@ -120,7 +141,7 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(EmailChangedEvent<T> evt)
         {
-            Process(evt);
+            Process(evt, new { evt.OldEmail, evt.VerificationKey });
         }
         
         public void Handle(EmailVerifiedEvent<T> evt)

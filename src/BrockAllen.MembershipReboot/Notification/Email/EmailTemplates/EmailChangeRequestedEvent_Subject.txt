@@ -1,1 +1,1 @@
-﻿[{applicationName}] Change Email Request
+﻿[{applicationName}] Confirm Email Request

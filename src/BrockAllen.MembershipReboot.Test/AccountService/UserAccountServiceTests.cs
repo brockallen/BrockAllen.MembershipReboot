@@ -36,7 +36,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject = new UserAccountService(configuration, repository);
         }
 
-        class KeyNotification : 
+        class KeyNotification :
+            IEventHandler<AccountCreatedEvent<UserAccount>>,
             IEventHandler<PasswordResetRequestedEvent<UserAccount>>,
             IEventHandler<EmailChangeRequestedEvent<UserAccount>>,
             IEventHandler<MobilePhoneChangeRequestedEvent<UserAccount>>,
@@ -66,6 +67,11 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             public void Handle(TwoFactorAuthenticationCodeNotificationEvent<UserAccount> evt)
             {
                 instance.LastMobileCode = evt.Code;
+            }
+
+            public void Handle(AccountCreatedEvent<UserAccount> evt)
+            {
+                instance.LastVerificationKey = evt.VerificationKey;
             }
         }
 
@@ -428,35 +434,35 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
-        public void CancelNewAccount_CloseAccount()
+        public void CancelVerification_CloseAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.CancelNewAccount(LastVerificationKey);
+            subject.CancelVerification(LastVerificationKey);
             Assert.IsTrue(acct.IsAccountClosed);
         }
         
         [TestMethod]
-        public void CancelNewAccount_DeletesAccount()
+        public void CancelVerification_DeletesAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsNotNull(repository.Get(acct.ID));
-            subject.CancelNewAccount(LastVerificationKey);
+            subject.CancelVerification(LastVerificationKey);
             Assert.IsNull(repository.Get(acct.ID));
         }
         
         [TestMethod]
-        public void CancelNewAccount_ValidKey_ReturnsTrue()
+        public void CancelVerification_ValidKey_ReturnsTrue()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.CancelNewAccount(LastVerificationKey);
+            subject.CancelVerification(LastVerificationKey);
         }
         
         [TestMethod]
-        public void CancelNewAccount_InvalidKey_ReturnsFalse()
+        public void CancelVerification_InvalidKey_ReturnsFalse()
         {
             try
             {
-                subject.CancelNewAccount("123");
+                subject.CancelVerification("123");
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -466,15 +472,16 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
-        public void CancelNewAccount_KeyUsedForAnotherPurpose_Fails()
+        public void CancelVerification_KeyUsedForAnotherPurpose_Fails()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            var key = LastVerificationKey;
             subject.ChangeEmailRequest(acct.ID, "test2@test.com");
 
             try
             {
-                subject.CancelNewAccount(LastVerificationKey);
+                subject.CancelVerification(key);
                 Assert.Fail();
             }
             catch (ValidationException)

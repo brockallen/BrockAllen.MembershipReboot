@@ -48,6 +48,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return View("Index", model);
         }
 
+        [AllowAnonymous]
         public ActionResult Confirm(string id)
         {
             var vm = new ChangeEmailFromKeyInputModel();
@@ -55,6 +56,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return View("Confirm", vm);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Confirm(ChangeEmailFromKeyInputModel model)
@@ -63,12 +65,13 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    this.userAccountService.VerifyEmailFromKey(model.Key, model.Password);
+                    BrockAllen.MembershipReboot.UserAccount account;
+                    this.userAccountService.VerifyEmailFromKey(model.Key, model.Password, out account);
+                    
                     // since we've changed the email, we need to re-issue the cookie that
                     // contains the claims.
-                    var account = this.userAccountService.GetByID(User.GetUserID());
                     authSvc.SignIn(account);
-                    return View("Success");
+                    return RedirectToAction("Success");
                 }
                 catch (ValidationException ex)
                 {
@@ -77,6 +80,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             }
             
             return View("Confirm", model);
+        }
+
+        public ActionResult Success()
+        {
+            return View();
         }
     }
 }

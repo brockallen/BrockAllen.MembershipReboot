@@ -4,6 +4,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -23,22 +25,41 @@ namespace BrockAllen.MembershipReboot
 
         protected abstract void SendSms(Message message);
 
-        public virtual void Process(UserAccountEvent<TAccount> evt, object data = null)
+        public virtual void Process(UserAccountEvent<TAccount> evt, object extra = null)
         {
-            dynamic d = new DynamicDictionary(data);
-            var msg = CreateMessage(evt, d);
+            var data = new Dictionary<string, string>();
+            if (extra != null)
+            {
+                foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(extra))
+                {
+                    object obj2 = descriptor.GetValue(extra);
+                    if (obj2 != null)
+                    {
+                        data.Add(descriptor.Name, obj2.ToString());
+                    }
+                }
+            }
+
+            var msg = CreateMessage(evt, data);
             if (msg != null)
             {
                 SendSms(msg);
             }
         }
 
-        protected virtual Message CreateMessage(UserAccountEvent<TAccount> evt, dynamic extra)
+        protected virtual Message CreateMessage(UserAccountEvent<TAccount> evt, IDictionary<string, string> extra)
         {
             var msg = this.messageFormatter.Format(evt, extra);
             if (msg != null)
             {
-                msg.To = extra.NewMobilePhoneNumber ?? evt.Account.MobilePhoneNumber;
+                if (extra.ContainsKey("NewMobilePhoneNumber"))
+                {
+                    msg.To = extra["NewMobilePhoneNumber"];
+                }
+                else
+                {
+                    msg.To = evt.Account.MobilePhoneNumber;
+                }
             }
             return msg;
         }

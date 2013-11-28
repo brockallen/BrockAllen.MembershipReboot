@@ -82,13 +82,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (service.Configuration.RequireAccountVerification && String.IsNullOrWhiteSpace(value))
                 {
-                    EmailAddressAttribute validator = new EmailAddressAttribute();
-                    if (!validator.IsValid(value))
-                    {
-                        Tracing.Verbose("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
-
-                        return new ValidationResult(Resources.ValidationMessages.EmailRequired);
-                    }
+                    return new ValidationResult(Resources.ValidationMessages.EmailRequired);
                 }
                 return null;
             });

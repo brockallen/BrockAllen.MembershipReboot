@@ -4,6 +4,7 @@
 }
 
 <h2>Registration Success</h2>
+@if(true.Equals(ViewData["RequireAccountVerification"])) { 
 <p>
     You should recieve an email shortly
     @if(Model != null)
@@ -13,4 +14,10 @@
     It will contain instructions to verify your account
     so that you can login.
 </p>
+}
+else
+{
+    <p>You can now login @Html.ActionLink("here", "Index", "Login").</p>
+}
 <p>Thanks!</p>
+    

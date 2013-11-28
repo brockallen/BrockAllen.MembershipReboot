@@ -9,10 +9,9 @@ namespace BrockAllen.MembershipReboot
     public abstract class RelativePathApplicationInformation : ApplicationInformation
     {
         public string RelativeLoginUrl { get; set; }
-        public string RelativeVerifyAccountUrl { get; set; }
-        public string RelativeCancelNewAccountUrl { get; set; }
         public string RelativeConfirmPasswordResetUrl { get; set; }
         public string RelativeConfirmChangeEmailUrl { get; set; }
+        public string RelativeCancelVerificationUrl { get; set; }
 
         protected abstract string GetApplicationBaseUrl();
 
@@ -68,38 +67,6 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public override string VerifyAccountUrl
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(base.VerifyAccountUrl))
-                {
-                    VerifyAccountUrl = BaseUrl + CleanupPath(RelativeVerifyAccountUrl);
-                }
-                return base.VerifyAccountUrl;
-            }
-            set
-            {
-                base.VerifyAccountUrl = value;
-            }
-        }
-
-        public override string CancelNewAccountUrl
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(base.CancelNewAccountUrl))
-                {
-                    CancelNewAccountUrl = BaseUrl + CleanupPath(RelativeCancelNewAccountUrl);
-                }
-                return base.CancelNewAccountUrl;
-            }
-            set
-            {
-                base.CancelNewAccountUrl = value;
-            }
-        }
-
         public override string ConfirmPasswordResetUrl
         {
             get
@@ -129,6 +96,22 @@ namespace BrockAllen.MembershipReboot
             set
             {
                 base.ConfirmChangeEmailUrl = value;
+            }
+        }
+
+        public override string CancelVerificationUrl
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(base.CancelVerificationUrl))
+                {
+                    CancelVerificationUrl = BaseUrl + CleanupPath(RelativeCancelVerificationUrl);
+                }
+                return base.CancelVerificationUrl;
+            }
+            set
+            {
+                base.CancelVerificationUrl = value;
             }
         }
     }

@@ -11,9 +11,9 @@ namespace BrockAllen.MembershipReboot
         public virtual string EmailSignature { get; set; }
 
         public virtual string LoginUrl { get; set; }
-        public virtual string VerifyAccountUrl { get; set; }
-        public virtual string CancelNewAccountUrl { get; set; }
+
         public virtual string ConfirmPasswordResetUrl { get; set; }
         public virtual string ConfirmChangeEmailUrl { get; set; }
+        public virtual string CancelVerificationUrl { get; set; }
     }
 }

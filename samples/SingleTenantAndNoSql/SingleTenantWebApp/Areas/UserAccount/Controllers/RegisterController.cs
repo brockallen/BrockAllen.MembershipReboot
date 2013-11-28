@@ -30,15 +30,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     var account = this.userAccountService.CreateAccount(model.Username, model.Password, model.Email);
-                    if (userAccountService.Configuration.RequireAccountVerification)
-                    {
-                        return View("Success", model);
-                    }
-                    else
-                    {
-                        authSvc.SignIn(account);
-                        return RedirectToAction("ConfirmResult", new { success = true });
-                    }
+                    ViewData["RequireAccountVerification"] = this.userAccountService.Configuration.RequireAccountVerification;
+                    return View("Success", model);
                 }
                 catch (ValidationException ex)
                 {
@@ -69,37 +62,26 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return View();
         }
 
-        public ActionResult Confirm(string id)
-        {
-            return View("Confirm");
-        }
-
-        [HttpPost]
-        public ActionResult Confirm(string id, string password)
-        {
-            BrockAllen.MembershipReboot.UserAccount account;
-            this.userAccountService.VerifyEmailFromKey(id, password, out account);
-            authSvc.SignIn(account);
-
-            return RedirectToAction("ConfirmResult", new { success = true });
-        }
-
-        public ActionResult ConfirmResult(bool success)
-        {
-            return View("ConfirmResult", success);
-        }
-
         public ActionResult Cancel(string id)
         {
             try
             {
-                this.userAccountService.CancelNewAccount(id);
+                bool closed;
+                this.userAccountService.CancelVerification(id, out closed);
+                if (closed)
+                {
+                    return View("Closed");
+                }
+                else
+                {
+                    return View("Cancel");
+                }
             }
             catch(ValidationException ex)
             {
                 ModelState.AddModelError("", ex.Message);
             }
-            return View("Cancel");
+            return View("Error");
         }
     }
 }

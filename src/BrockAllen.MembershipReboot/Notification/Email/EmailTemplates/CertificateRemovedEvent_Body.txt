@@ -1,8 +1,8 @@
 ﻿This email is to confirm that a client certificate has been removed from your account with {applicationName}.
 
 Username: {username}
-Certificate Subject: {subject}
-Certificate Thumbprint: {thumbprint}
+Certificate Subject: {Subject}
+Certificate Thumbprint: {Thumbprint}
 
 Thanks!
 

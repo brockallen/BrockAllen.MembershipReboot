@@ -1,7 +1,7 @@
 ﻿This email is to confirm that an external login provider has been added to your account with {applicationName}.
 
 Username: {username}
-Login provider: {provider}
+Login provider: {ProviderName}
 
 Thanks!
 

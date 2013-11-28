@@ -1,7 +1,11 @@
 ﻿This email is to confirm that your email has been changed for your account with {applicationName}.
 
 Username: {username}
-New Email: {newEmail}
+Email: {email}
+
+It will be helpful for you to confirm this new email address by following this link:
+
+{confirmChangeEmailUrl}
 
 Thanks!
 

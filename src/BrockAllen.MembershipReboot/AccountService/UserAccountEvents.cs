@@ -21,6 +21,7 @@ namespace BrockAllen.MembershipReboot
         // notification for account created (when user tries to
         // reset password before verifying their account)
         public string InitialPassword { get; set; }
+        public string VerificationKey { get; set; }
     }
 
     public class PasswordResetFailedEvent<T> : UserAccountEvent<T> { }
@@ -63,6 +64,7 @@ namespace BrockAllen.MembershipReboot
     public class EmailChangedEvent<T> : UserAccountEvent<T>
     {
         public string OldEmail { get; set; }
+        public string VerificationKey { get; set; }
     }
     public class EmailVerifiedEvent<T> : UserAccountEvent<T> { }
 

@@ -10,14 +10,13 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         public static MembershipRebootConfiguration Create()
         {
             var config = new MembershipRebootConfiguration();
-            config.RequireAccountVerification = true;
+            config.RequireAccountVerification = false;
 
             var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
                 "UserAccount/Login", 
-                "UserAccount/Register/Confirm/",
-                "UserAccount/Register/Cancel/",
                 "UserAccount/PasswordReset/Confirm/",
-                "UserAccount/ChangeEmail/Confirm/");
+                "UserAccount/ChangeEmail/Confirm/",
+                "UserAccount/Register/Cancel/");
             var emailFormatter = new EmailMessageFormatter(appinfo);
             // uncomment if you want email notifications -- also update smtp settings in web.config
             //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
