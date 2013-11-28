@@ -7,15 +7,11 @@ using System;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class CookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy<UserAccount>
-    {
-    }
-
-    public abstract class CookieBasedTwoFactorAuthPolicy<T> :
+    public abstract class CookieBasedTwoFactorAuthPolicy<TAccount> :
         ITwoFactorAuthenticationPolicy,
-        IEventHandler<TwoFactorAuthenticationTokenCreatedEvent<T>>,
-        IEventHandler<TwoFactorAuthenticationDisabledEvent<T>>
-        where T: UserAccount
+        IEventHandler<TwoFactorAuthenticationTokenCreatedEvent<TAccount>>,
+        IEventHandler<TwoFactorAuthenticationDisabledEvent<TAccount>>
+        where TAccount: UserAccount
     {
         public CookieBasedTwoFactorAuthPolicy()
         {
@@ -34,7 +30,7 @@ namespace BrockAllen.MembershipReboot
             return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
         }
 
-        public void Handle(TwoFactorAuthenticationTokenCreatedEvent<T> evt)
+        public void Handle(TwoFactorAuthenticationTokenCreatedEvent<TAccount> evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
             if (evt.Token == null) throw new ArgumentNullException("Token");
@@ -43,12 +39,16 @@ namespace BrockAllen.MembershipReboot
             IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant, evt.Token);
         }
         
-        public void Handle(TwoFactorAuthenticationDisabledEvent<T> evt)
+        public void Handle(TwoFactorAuthenticationDisabledEvent<TAccount> evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
             if (evt.Account == null) throw new ArgumentNullException("account");
 
             RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + evt.Account.Tenant);
         }
+    }
+    
+    public abstract class CookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy<UserAccount>
+    {
     }
 }

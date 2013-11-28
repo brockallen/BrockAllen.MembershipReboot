@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAlreadyVerified" xml:space="preserve">
-    <value>Account is already verified.</value>
+    <value>The email address for this account is already verified.</value>
   </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
     <value>Can't create an account because there was no email from the identity provider.</value>
@@ -127,7 +127,7 @@
     <value>This account is not configured with a secret question or answer.</value>
   </data>
   <data name="AccountNotVerified" xml:space="preserve">
-    <value>Account not yet verified.</value>
+    <value>The email address for this account is not yet verified.</value>
   </data>
   <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
     <value>This account requires a secret question and answer to reset the password.</value>
@@ -209,6 +209,9 @@
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Password is required.</value>
+  </data>
+  <data name="PasswordResetErrorNoEmail" xml:space="preserve">
+    <value>Password reset is not possible since there is no verified email address for this account.</value>
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
     <value>Register a mobile phone number to enable mobile two factor authentication.</value>

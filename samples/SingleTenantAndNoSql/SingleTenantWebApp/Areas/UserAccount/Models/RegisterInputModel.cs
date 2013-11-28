@@ -7,7 +7,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
         [ScaffoldColumn(false)]
         public string Username { get; set; }
         
-        [Required]
+        //[Required]
         [EmailAddress]
         public string Email { get; set; }
         

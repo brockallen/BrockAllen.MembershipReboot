@@ -5,21 +5,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class EmailEventHandler<T>
-        where T: UserAccount
+    public class EmailEventHandler<TAccount>
+        where TAccount: UserAccount
     {
-        IMessageFormatter<T> messageFormatter;
+        IMessageFormatter<TAccount> messageFormatter;
         IMessageDelivery messageDelivery;
 
-        public EmailEventHandler(IMessageFormatter<T> messageFormatter)
+        public EmailEventHandler(IMessageFormatter<TAccount> messageFormatter)
             : this(messageFormatter, new SmtpMessageDelivery())
         {
         }
 
-        public EmailEventHandler(IMessageFormatter<T> messageFormatter, IMessageDelivery messageDelivery)
+        public EmailEventHandler(IMessageFormatter<TAccount> messageFormatter, IMessageDelivery messageDelivery)
         {
             if (messageFormatter == null) throw new ArgumentNullException("messageFormatter");
             if (messageDelivery == null) throw new ArgumentNullException("messageDelivery");
@@ -28,80 +29,61 @@ namespace BrockAllen.MembershipReboot
             this.messageDelivery = messageDelivery;
         }
 
-        public virtual void Process(UserAccountEvent<T> evt, object extra = null)
+        public virtual void Process(UserAccountEvent<TAccount> evt, object extra = null)
         {
-            dynamic d = new DynamicDictionary(extra);
-            var msg = this.messageFormatter.Format(evt, d);
+            var data = new Dictionary<string, string>();
+            if (extra != null)
+            {
+                foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(extra))
+                {
+                    object obj2 = descriptor.GetValue(extra);
+                    if (obj2 != null)
+                    {
+                        data.Add(descriptor.Name, obj2.ToString());
+                    }
+                }
+            }
+
+            var msg = this.messageFormatter.Format(evt, data);
             if (msg != null)
             {
-                msg.To = d.NewEmail ?? evt.Account.Email;
-                this.messageDelivery.Send(msg);
+                if (data.ContainsKey("NewEmail"))
+                {
+                    msg.To = data["NewEmail"];
+                }
+                else
+                {
+                    msg.To = evt.Account.Email;
+                }
+                
+                if (!String.IsNullOrWhiteSpace(msg.To))
+                {
+                    this.messageDelivery.Send(msg);
+                }
             }
-        }
-    }
-
-    public class EmailAccountCreatedEventHandler : EmailAccountCreatedEventHandler<UserAccount>
-    {
-        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-
-        public EmailAccountCreatedEventHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
-        }
-    }
-
-    public class EmailAccountCreatedEventHandler<T>
-        : EmailEventHandler<T>, IEventHandler<AccountCreatedEvent<T>>
-        where T : UserAccount
-    {
-        public EmailAccountCreatedEventHandler(IMessageFormatter<T> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-
-        public EmailAccountCreatedEventHandler(IMessageFormatter<T> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
-        }
-
-        public void Handle(AccountCreatedEvent<T> evt)
-        {
-            Process(evt, new { evt.VerificationKey });
-        }
-    }
-
-    public class EmailAccountEventsHandler : EmailAccountEventsHandler<UserAccount>
-    {
-        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
-        {
-        }
-        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
-            : base(messageFormatter, messageDelivery)
-        {
         }
     }
 
     public class EmailAccountEventsHandler<T> :
         EmailEventHandler<T>,
-        IEventHandler<AccountVerifiedEvent<T>>,
+        IEventHandler<AccountCreatedEvent<T>>,        
         IEventHandler<PasswordResetRequestedEvent<T>>,
         IEventHandler<PasswordChangedEvent<T>>,
+        IEventHandler<PasswordResetSecretAddedEvent<T>>,
+        IEventHandler<PasswordResetSecretRemovedEvent<T>>,
         IEventHandler<UsernameReminderRequestedEvent<T>>,
         IEventHandler<AccountClosedEvent<T>>,
         IEventHandler<UsernameChangedEvent<T>>,
         IEventHandler<EmailChangeRequestedEvent<T>>,
         IEventHandler<EmailChangedEvent<T>>,
+        IEventHandler<EmailVerifiedEvent<T>>,
         IEventHandler<MobilePhoneChangedEvent<T>>,
         IEventHandler<MobilePhoneRemovedEvent<T>>,
         IEventHandler<CertificateAddedEvent<T>>,
         IEventHandler<CertificateRemovedEvent<T>>,
         IEventHandler<LinkedAccountAddedEvent<T>>,
         IEventHandler<LinkedAccountRemovedEvent<T>>
-        where T: UserAccount
+        where T : UserAccount
     {
         public EmailAccountEventsHandler(IMessageFormatter<T> messageFormatter)
             : base(messageFormatter)
@@ -112,11 +94,11 @@ namespace BrockAllen.MembershipReboot
         {
         }
 
-        public void Handle(AccountVerifiedEvent<T> evt)
+        public void Handle(AccountCreatedEvent<T> evt)
         {
-            Process(evt);
+            Process(evt, new { evt.InitialPassword, evt.VerificationKey });
         }
-
+        
         public void Handle(PasswordResetRequestedEvent<T> evt)
         {
             Process(evt, new { evt.VerificationKey });
@@ -127,6 +109,16 @@ namespace BrockAllen.MembershipReboot
             Process(evt);
         }
 
+        public void Handle(PasswordResetSecretAddedEvent<T> evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(PasswordResetSecretRemovedEvent<T> evt)
+        {
+            Process(evt);
+        }
+        
         public void Handle(UsernameReminderRequestedEvent<T> evt)
         {
             Process(evt);
@@ -144,10 +136,15 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(EmailChangeRequestedEvent<T> evt)
         {
-            Process(evt, new{evt.NewEmail, evt.VerificationKey});
+            Process(evt, new{evt.OldEmail, evt.NewEmail, evt.VerificationKey});
         }
 
         public void Handle(EmailChangedEvent<T> evt)
+        {
+            Process(evt, new { evt.OldEmail, evt.VerificationKey });
+        }
+        
+        public void Handle(EmailVerifiedEvent<T> evt)
         {
             Process(evt);
         }
@@ -180,6 +177,18 @@ namespace BrockAllen.MembershipReboot
         public void Handle(LinkedAccountRemovedEvent<T> evt)
         {
             Process(evt);
+        }
+    }
+
+    public class EmailAccountEventsHandler : EmailAccountEventsHandler<UserAccount>
+    {
+        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter)
+            : base(messageFormatter)
+        {
+        }
+        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
+            : base(messageFormatter, messageDelivery)
+        {
         }
     }
 }

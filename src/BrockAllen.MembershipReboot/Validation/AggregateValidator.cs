@@ -9,10 +9,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class AggregateValidator<T> : List<IValidator<T>>, IValidator<T>
-        where T : UserAccount
+    public class AggregateValidator<TAccount> : List<IValidator<TAccount>>, IValidator<TAccount>
+        where TAccount : UserAccount
     {
-        public ValidationResult Validate(UserAccountService<T> service, T account, string value)
+        public ValidationResult Validate(UserAccountService<TAccount> service, TAccount account, string value)
         {
             if (service == null) throw new ArgumentNullException("service");
             if (account == null) throw new ArgumentNullException("account");

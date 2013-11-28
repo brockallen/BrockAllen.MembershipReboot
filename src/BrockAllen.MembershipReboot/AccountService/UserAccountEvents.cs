@@ -9,23 +9,29 @@ namespace BrockAllen.MembershipReboot
 {
     interface IAllowMultiple { }
 
-    public abstract class UserAccountEvent<T> : IEvent
+    public abstract class UserAccountEvent<TAccount> : IEvent
     {
-        public T Account { get; set; }
+        //public UserAccountService<T> UserAccountService { get; set; }
+        public TAccount Account { get; set; }
     }
 
     public class AccountCreatedEvent<T> : UserAccountEvent<T>
     {
-        // InitialPassword might be null
+        // InitialPassword might be null if this is a re-send
+        // notification for account created (when user tries to
+        // reset password before verifying their account)
         public string InitialPassword { get; set; }
         public string VerificationKey { get; set; }
     }
-    public class AccountVerifiedEvent<T> : UserAccountEvent<T> { }
 
     public class PasswordResetFailedEvent<T> : UserAccountEvent<T> { }
     public class PasswordResetRequestedEvent<T> : UserAccountEvent<T>
     {
         public string VerificationKey { get; set; }
+    }
+    public class PasswordChangedEvent<T> : UserAccountEvent<T>
+    {
+        public string NewPassword { get; set; }
     }
     public class PasswordResetSecretAddedEvent<T> : UserAccountEvent<T>
     {
@@ -36,11 +42,6 @@ namespace BrockAllen.MembershipReboot
         public PasswordResetSecret Secret { get; set; }
     }
     
-    
-    public class PasswordChangedEvent<T> : UserAccountEvent<T>
-    {
-        public string NewPassword { get; set; }
-    }
     public class CertificateAddedEvent<T> : UserAccountEvent<T>, IAllowMultiple
     {
         public UserCertificate Certificate { get; set; }
@@ -53,15 +54,19 @@ namespace BrockAllen.MembershipReboot
     public class UsernameReminderRequestedEvent<T> : UserAccountEvent<T> { }
     public class AccountClosedEvent<T> : UserAccountEvent<T> { }
     public class UsernameChangedEvent<T> : UserAccountEvent<T> { }
+    
     public class EmailChangeRequestedEvent<T> : UserAccountEvent<T>
     {
+        public string OldEmail { get; set; }
         public string NewEmail { get; set; }
         public string VerificationKey { get; set; }
     }
     public class EmailChangedEvent<T> : UserAccountEvent<T>
     {
         public string OldEmail { get; set; }
+        public string VerificationKey { get; set; }
     }
+    public class EmailVerifiedEvent<T> : UserAccountEvent<T> { }
 
     public class MobilePhoneChangeRequestedEvent<T> : UserAccountEvent<T>
     {
@@ -114,7 +119,6 @@ namespace BrockAllen.MembershipReboot
     public class SuccessfulTwoFactorAuthCodeLoginEvent<T> : SuccessfulLoginEvent<T> { }
 
     public abstract class FailedLoginEvent<T> : UserAccountEvent<T> { }
-    public class AccountNotVerifiedEvent<T> : FailedLoginEvent<T> { }
     public class AccountLockedEvent<T> : FailedLoginEvent<T> { }
     public class TooManyRecentPasswordFailuresEvent<T> : FailedLoginEvent<T> { }
     public class InvalidPasswordEvent<T> : FailedLoginEvent<T> { }

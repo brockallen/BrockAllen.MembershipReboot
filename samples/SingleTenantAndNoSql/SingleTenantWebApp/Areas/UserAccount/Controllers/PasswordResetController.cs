@@ -29,33 +29,15 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    this.userAccountService.ResetPassword(model.Email);
-                    return View("ResetSuccess");
-                }
-                catch (ValidationException ex)
-                {
-                    ModelState.AddModelError("", ex.Message);
-                }
-            }
-            return View();
-        }
-
-        public ActionResult ResetWithSecret()
-        {
-            return View("ResetWithSecret");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ResetWithSecret(PasswordResetInputModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
                     var account = this.userAccountService.GetByEmail(model.Email);
                     if (account != null)
                     {
+                        if (account.PasswordResetSecrets.Count == 0)
+                        {
+                            this.userAccountService.ResetPassword(model.Email);
+                            return View("ResetSuccess");
+                        }
+
                         var vm = new PasswordResetWithSecretInputModel(account.ID);
                         vm.Questions =
                             account.PasswordResetSecrets.Select(
@@ -77,9 +59,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     ModelState.AddModelError("", ex.Message);
                 }
             }
-            return View("ResetWithSecret");
+            return View("Index"); 
         }
 
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ResetWithQuestions(PasswordResetWithSecretInputModel model)

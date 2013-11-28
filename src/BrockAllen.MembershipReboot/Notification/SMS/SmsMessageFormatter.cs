@@ -9,20 +9,8 @@ using System.IO;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class SmsMessageFormatter : SmsMessageFormatter<UserAccount>
-    {
-        public SmsMessageFormatter(ApplicationInformation appInfo)
-            : base(appInfo)
-        {
-        }
-        public SmsMessageFormatter(Lazy<ApplicationInformation> appInfo)
-            : base(appInfo)
-        {
-        }
-    }
-
-    public class SmsMessageFormatter<T> : IMessageFormatter<T>
-        where T : UserAccount
+    public class SmsMessageFormatter<TAccount> : IMessageFormatter<TAccount>
+        where TAccount : UserAccount
     {
         Lazy<ApplicationInformation> appInfo;
         public SmsMessageFormatter(ApplicationInformation appInfo)
@@ -43,11 +31,11 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public Message Format(UserAccountEvent<T> accountEvent, dynamic extra)
+        public Message Format(UserAccountEvent<TAccount> accountEvent, IDictionary<string, string> values)
         {
             if (accountEvent == null) throw new ArgumentNullException("accountEvent");
 
-            var message = GetMessageBody(accountEvent, extra);
+            var message = GetMessageBody(accountEvent, values);
             return new Message
             {
                 Subject = message,
@@ -55,12 +43,15 @@ namespace BrockAllen.MembershipReboot
             };
         }
 
-        private string GetMessageBody(UserAccountEvent<T> accountEvent, dynamic extra)
+        private string GetMessageBody(UserAccountEvent<TAccount> accountEvent, IDictionary<string, string> values)
         {
             var txt = LoadTemplate();
             
             txt = txt.Replace("{applicationName}", ApplicationInformation.ApplicationName);
-            txt = txt.Replace("{code}", extra.Code);
+            if (values.ContainsKey("Code"))
+            {
+                txt = txt.Replace("{code}", values["Code"]);
+            }
 
             return txt;
         }
@@ -77,6 +68,18 @@ namespace BrockAllen.MembershipReboot
                     return sr.ReadToEnd();
                 }
             }
+        }
+    }
+    
+    public class SmsMessageFormatter : SmsMessageFormatter<UserAccount>
+    {
+        public SmsMessageFormatter(ApplicationInformation appInfo)
+            : base(appInfo)
+        {
+        }
+        public SmsMessageFormatter(Lazy<ApplicationInformation> appInfo)
+            : base(appInfo)
+        {
         }
     }
 }

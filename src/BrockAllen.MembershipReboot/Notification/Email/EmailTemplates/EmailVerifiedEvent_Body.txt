@@ -1,4 +1,4 @@
-﻿Your account has been verified with {applicationName}.
+﻿Your email address has been verified with {applicationName}.
 
 Username: {username}
 

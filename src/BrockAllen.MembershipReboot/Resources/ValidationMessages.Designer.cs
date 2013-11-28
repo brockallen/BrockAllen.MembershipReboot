@@ -61,7 +61,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Account is already verified..
+        ///   Looks up a localized string similar to The email address for this account is already verified..
         /// </summary>
         internal static string AccountAlreadyVerified {
             get {
@@ -88,7 +88,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Account not yet verified..
+        ///   Looks up a localized string similar to The email address for this account is not yet verified..
         /// </summary>
         internal static string AccountNotVerified {
             get {
@@ -336,6 +336,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         internal static string PasswordRequired {
             get {
                 return ResourceManager.GetString("PasswordRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password reset is not possible since there is no verified email address for this account..
+        /// </summary>
+        internal static string PasswordResetErrorNoEmail {
+            get {
+                return ResourceManager.GetString("PasswordResetErrorNoEmail", resourceCulture);
             }
         }
         

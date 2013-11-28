@@ -20,7 +20,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             return View(new RegisterInputModel());
         }
-        
+
         [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Index(RegisterInputModel model)
@@ -29,15 +29,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    this.userAccountService.CreateAccount(model.Username, model.Password, model.Email);
-                    if (userAccountService.Configuration.RequireAccountVerification)
-                    {
-                        return View("Success", model);
-                    }
-                    else
-                    {
-                        return View("Confirm", true);
-                    }
+                    var account = this.userAccountService.CreateAccount(model.Username, model.Password, model.Email);
+                    ViewData["RequireAccountVerification"] = this.userAccountService.Configuration.RequireAccountVerification;
+                    return View("Success", model);
                 }
                 catch (ValidationException ex)
                 {
@@ -47,33 +41,47 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return View(model);
         }
 
-        public ActionResult Confirm(string id)
+        public ActionResult Verify()
         {
-            return View("Confirm");
+            return View();
         }
 
         [HttpPost]
-        public ActionResult Confirm(string id, string password)
+        [ValidateAntiForgeryToken]
+        public ActionResult Verify(string foo)
         {
-            BrockAllen.MembershipReboot.UserAccount account;
-            var result = this.userAccountService.VerifyAccount(id, password, out account);
-            if (result)
+            try
             {
-                authSvc.SignIn(account);
+                this.userAccountService.RequestAccountVerification(User.GetUserID());
+                return View("Success");
             }
-
-            return RedirectToAction("ConfirmResult", new { success = result });
-        }
-
-        public ActionResult ConfirmResult(bool success)
-        {
-            return View("ConfirmResult", success);
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View();
         }
 
         public ActionResult Cancel(string id)
         {
-            var result = this.userAccountService.CancelNewAccount(id);
-            return View("Cancel", result);
+            try
+            {
+                bool closed;
+                this.userAccountService.CancelVerification(id, out closed);
+                if (closed)
+                {
+                    return View("Closed");
+                }
+                else
+                {
+                    return View("Cancel");
+                }
+            }
+            catch(ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View("Error");
         }
     }
 }

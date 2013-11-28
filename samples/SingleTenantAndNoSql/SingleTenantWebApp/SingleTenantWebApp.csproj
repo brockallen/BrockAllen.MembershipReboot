@@ -213,7 +213,6 @@
     <Content Include="Areas\UserAccount\Views\PasswordReset\ResetSuccess.cshtml" />
     <Content Include="Areas\UserAccount\Views\PasswordReset\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Cancel.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Register\Confirm.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\RegisterInputModel.cshtml" />
@@ -246,12 +245,13 @@
     <Content Include="Areas\UserAccount\Views\LinkedAccount\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\LinkedAccount\SignInError.cshtml" />
     <Content Include="Areas\UserAccount\Views\LinkedAccount\Manage.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Register\ConfirmResult.cshtml" />
-    <Content Include="Areas\UserAccount\Views\PasswordReset\ResetWithSecret.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Add.cshtml" />
     <Content Include="Areas\UserAccount\Views\PasswordReset\ResetWithQuestions.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\Verify.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\Closed.cshtml" />
+    <Content Include="Areas\UserAccount\Views\Register\Error.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="configuring_client_certs_readme.txt" />
     <Content Include="Content\Site.css">
