@@ -78,13 +78,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         public ActionResult Confirm(string id, string password)
         {
             BrockAllen.MembershipReboot.UserAccount account;
-            var result = this.userAccountService.VerifyAccount(id, password, out account);
-            if (result)
-            {
-                authSvc.SignIn(account);
-            }
+            this.userAccountService.VerifyEmailFromKey(id, password, out account);
+            authSvc.SignIn(account);
 
-            return RedirectToAction("ConfirmResult", new { success = result });
+            return RedirectToAction("ConfirmResult", new { success = true });
         }
 
         public ActionResult ConfirmResult(bool success)
@@ -94,8 +91,15 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         public ActionResult Cancel(string id)
         {
-            var result = this.userAccountService.CancelNewAccount(id);
-            return View("Cancel", result);
+            try
+            {
+                this.userAccountService.CancelNewAccount(id);
+            }
+            catch(ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View("Cancel");
         }
     }
 }

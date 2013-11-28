@@ -96,7 +96,7 @@ namespace BrockAllen.MembershipReboot
         public static readonly IValidator<TAccount> EmailMustNotAlreadyExist =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
-                if (!String.IsNullOrWhiteSpace(value) && service.EmailExists(account.Tenant, value))
+                if (!String.IsNullOrWhiteSpace(value) && service.EmailExistsOtherThan(account, value))
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 

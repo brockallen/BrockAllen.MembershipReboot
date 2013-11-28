@@ -46,22 +46,23 @@ namespace BrockAllen.MembershipReboot
     public class EmailAccountEventsHandler<T> :
         EmailEventHandler<T>,
         IEventHandler<AccountCreatedEvent<T>>,        
-        IEventHandler<AccountVerificationEvent<T>>,
-        IEventHandler<AccountVerifiedEvent<T>>,
         IEventHandler<PasswordResetRequestedEvent<T>>,
         IEventHandler<PasswordChangedEvent<T>>,
+        IEventHandler<PasswordResetSecretAddedEvent<T>>,
+        IEventHandler<PasswordResetSecretRemovedEvent<T>>,
         IEventHandler<UsernameReminderRequestedEvent<T>>,
         IEventHandler<AccountClosedEvent<T>>,
         IEventHandler<UsernameChangedEvent<T>>,
         IEventHandler<EmailChangeRequestedEvent<T>>,
         IEventHandler<EmailChangedEvent<T>>,
+        IEventHandler<EmailVerifiedEvent<T>>,
         IEventHandler<MobilePhoneChangedEvent<T>>,
         IEventHandler<MobilePhoneRemovedEvent<T>>,
         IEventHandler<CertificateAddedEvent<T>>,
         IEventHandler<CertificateRemovedEvent<T>>,
         IEventHandler<LinkedAccountAddedEvent<T>>,
         IEventHandler<LinkedAccountRemovedEvent<T>>
-        where T: UserAccount
+        where T : UserAccount
     {
         public EmailAccountEventsHandler(IMessageFormatter<T> messageFormatter)
             : base(messageFormatter)
@@ -72,21 +73,11 @@ namespace BrockAllen.MembershipReboot
         {
         }
 
-        public void Handle(AccountVerificationEvent<T> evt)
-        {
-            Process(evt, new { evt.VerificationKey });
-        }
-
         public void Handle(AccountCreatedEvent<T> evt)
         {
             Process(evt, new { evt.InitialPassword });
         }
         
-        public void Handle(AccountVerifiedEvent<T> evt)
-        {
-            Process(evt);
-        }
-
         public void Handle(PasswordResetRequestedEvent<T> evt)
         {
             Process(evt, new { evt.VerificationKey });
@@ -97,6 +88,16 @@ namespace BrockAllen.MembershipReboot
             Process(evt);
         }
 
+        public void Handle(PasswordResetSecretAddedEvent<T> evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(PasswordResetSecretRemovedEvent<T> evt)
+        {
+            Process(evt);
+        }
+        
         public void Handle(UsernameReminderRequestedEvent<T> evt)
         {
             Process(evt);
@@ -114,10 +115,15 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(EmailChangeRequestedEvent<T> evt)
         {
-            Process(evt, new{evt.NewEmail, evt.VerificationKey});
+            Process(evt, new{evt.OldEmail, evt.NewEmail, evt.VerificationKey});
         }
 
         public void Handle(EmailChangedEvent<T> evt)
+        {
+            Process(evt);
+        }
+        
+        public void Handle(EmailVerifiedEvent<T> evt)
         {
             Process(evt);
         }
