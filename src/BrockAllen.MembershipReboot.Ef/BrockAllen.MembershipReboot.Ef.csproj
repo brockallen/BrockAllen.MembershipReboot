@@ -59,9 +59,9 @@
     <Compile Include="Migrations\201311222357350_InitialCreate.Designer.cs">
       <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201311252112327_v5.cs" />
-    <Compile Include="Migrations\201311252112327_v5.Designer.cs">
-      <DependentUpon>201311252112327_v5.cs</DependentUpon>
+    <Compile Include="Migrations\201311290143004_v5.cs" />
+    <Compile Include="Migrations\201311290143004_v5.Designer.cs">
+      <DependentUpon>201311290143004_v5.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,8 +76,8 @@
     <EmbeddedResource Include="Migrations\201311222357350_InitialCreate.resx">
       <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311252112327_v5.resx">
-      <DependentUpon>201311252112327_v5.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201311290143004_v5.resx">
+      <DependentUpon>201311290143004_v5.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

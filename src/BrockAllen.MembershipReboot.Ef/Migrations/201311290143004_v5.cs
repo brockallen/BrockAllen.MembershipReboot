@@ -16,6 +16,8 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropPrimaryKey("dbo.LinkedAccountClaims");
             DropPrimaryKey("dbo.LinkedAccounts");
 
+            
+            
             CreateTable(
                 "dbo.PasswordResetSecrets",
                 c => new
@@ -45,11 +47,13 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             AddColumn("dbo.UserAccounts", "FailedPasswordResetCount", c => c.Int(nullable: false));
             AddColumn("dbo.UserAccounts", "MobilePhoneNumberChanged", c => c.DateTime());
             AddColumn("dbo.UserAccounts", "VerificationStorage", c => c.String(maxLength: 100));
+            AlterColumn("dbo.UserAccounts", "Email", c => c.String(maxLength: 100));
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String(maxLength: 100));
             AlterColumn("dbo.UserAccounts", "MobilePhoneNumber", c => c.String(maxLength: 20));
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 30));
             AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 30));
-
+            
+            
             
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
@@ -74,6 +78,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropPrimaryKey("dbo.LinkedAccounts");
 
             
+            
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.PasswordResetSecrets", "UserAccountID", "dbo.UserAccounts");
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccountID" });
@@ -82,6 +87,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 50));
             AlterColumn("dbo.UserAccounts", "MobilePhoneNumber", c => c.String());
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String());
+            AlterColumn("dbo.UserAccounts", "Email", c => c.String(nullable: false, maxLength: 100));
             DropColumn("dbo.UserAccounts", "VerificationStorage");
             DropColumn("dbo.UserAccounts", "MobilePhoneNumberChanged");
             DropColumn("dbo.UserAccounts", "FailedPasswordResetCount");
