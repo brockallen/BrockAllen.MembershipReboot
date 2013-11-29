@@ -195,7 +195,7 @@ namespace BrockAllen.MembershipReboot
                     // this is slightly dangerous if we don't do email account verification, so if email account
                     // verification is disabled then we need to be very confident that the external provider has
                     // provided us with a verified email
-                    var pwd = CryptoHelper.GenerateSalt();
+                    var pwd = this.UserAccountService.Configuration.Crypto.GenerateSalt();
                     account = this.UserAccountService.CreateAccount(tenant, name, pwd, email);
                 }
             }

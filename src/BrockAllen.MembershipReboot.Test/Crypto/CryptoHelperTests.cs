@@ -13,12 +13,16 @@ namespace BrockAllen.MembershipReboot.Test.Crypto
     [TestClass]
     public class CryptoHelperTests
     {
-        [TestInitialize]
-        public void Init()
+        public class TestCrypto : DefaultCrypto
         {
-            SecuritySettings.Instance = new SecuritySettings();
-            CryptoHelper.GetCurrentYear = () => 2012;
+            public override int GetCurrentYear()
+            {
+                return 2012;
+            }
         }
+
+        TestCrypto crypto = new TestCrypto();
+        MembershipRebootConfiguration config = new MembershipRebootConfiguration();
 
         const int IterationsForCurrentYear = 64000;
 
@@ -26,120 +30,120 @@ namespace BrockAllen.MembershipReboot.Test.Crypto
         public void HashPassword_CountStoredInHashedPassword()
         {
             {
-                var result = CryptoHelper.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(IterationsForCurrentYear) + CryptoHelper.PasswordHashingIterationCountSeparator);
+                var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator);
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 5000;
-                var result = CryptoHelper.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(5000) + CryptoHelper.PasswordHashingIterationCountSeparator);
+                var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(5000) + DefaultCrypto.PasswordHashingIterationCountSeparator);
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 10000;
-                var result = CryptoHelper.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(10000) + CryptoHelper.PasswordHashingIterationCountSeparator);
+                var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(10000) + DefaultCrypto.PasswordHashingIterationCountSeparator);
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 50;
-                var result = CryptoHelper.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(50) + CryptoHelper.PasswordHashingIterationCountSeparator);
+                var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(50) + DefaultCrypto.PasswordHashingIterationCountSeparator);
             }
         }
 
         [TestMethod]
         public void NegativeCount_UsesCurrentYearPrefix()
         {
-            var result = CryptoHelper.HashPassword("pass", -1);
-            StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(IterationsForCurrentYear) + CryptoHelper.PasswordHashingIterationCountSeparator);
+            var result = crypto.HashPassword("pass", -1);
+            StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator);
         }
 
         [TestMethod]
         public void ZeroCount_UsesCurrentYearPrefix()
         {
-            var result = CryptoHelper.HashPassword("pass", 0);
-            StringAssert.StartsWith(result, CryptoHelper.EncodeIterations(IterationsForCurrentYear) + CryptoHelper.PasswordHashingIterationCountSeparator);
+            var result = crypto.HashPassword("pass", 0);
+            StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator);
         }
 
         [TestMethod]
         public void HashedPassword_Verifies()
         {
-            var hash = CryptoHelper.HashPassword("pass", 5000);
-            Assert.IsTrue(CryptoHelper.VerifyHashedPassword(hash, "pass"));
+            var hash = crypto.HashPassword("pass", 5000);
+            Assert.IsTrue(crypto.VerifyHashedPassword(hash, "pass"));
         }
 
         [TestMethod]
         public void IncorrectPassword_DoesNotVerify()
         {
-            var hash = CryptoHelper.HashPassword("pass1", 5000);
-            Assert.IsFalse(CryptoHelper.VerifyHashedPassword(hash, "pass2"));
+            var hash = crypto.HashPassword("pass1", 5000);
+            Assert.IsFalse(crypto.VerifyHashedPassword(hash, "pass2"));
         }
         
         [TestMethod]
         public void PasswordHashingIterationCountChangedAfterHash_StillVerifies()
         {
-            var hash = CryptoHelper.HashPassword("pass", 5000);
-            Assert.IsTrue(CryptoHelper.VerifyHashedPassword(hash, "pass"));
+            var hash = crypto.HashPassword("pass", 5000);
+            Assert.IsTrue(crypto.VerifyHashedPassword(hash, "pass"));
         }
 
         [TestMethod]
         public void PasswordWithoutPrefix_StillValidatesWithDefault()
         {
-            var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
-            Assert.IsTrue(CryptoHelper.VerifyHashedPassword(hash, "pass"));
+            var hash = crypto.HashPassword("pass", config.PasswordHashingIterationCount);
+            Assert.IsTrue(crypto.VerifyHashedPassword(hash, "pass"));
         }
 
         [TestMethod]
         public void IncorrectPrefix_DoesNotVerify()
         {
             {
-                var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
-                Assert.IsFalse(CryptoHelper.VerifyHashedPassword(CryptoHelper.EncodeIterations(5000) + "." + hash, "pass"));
+                var hash = crypto.HashPassword("pass", config.PasswordHashingIterationCount);
+                Assert.IsFalse(crypto.VerifyHashedPassword(crypto.EncodeIterations(5000) + "." + hash, "pass"));
             }
             {
-                var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
-                Assert.IsFalse(CryptoHelper.VerifyHashedPassword(CryptoHelper.EncodeIterations(5000) + ".5." + hash, "pass"));
+                var hash = crypto.HashPassword("pass", config.PasswordHashingIterationCount);
+                Assert.IsFalse(crypto.VerifyHashedPassword(crypto.EncodeIterations(5000) + ".5." + hash, "pass"));
             }
             {
-                var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
-                Assert.IsFalse(CryptoHelper.VerifyHashedPassword("hello." + hash, "pass"));
+                var hash = crypto.HashPassword("pass", config.PasswordHashingIterationCount);
+                Assert.IsFalse(crypto.VerifyHashedPassword("hello." + hash, "pass"));
             }
             {
-                var hash = BrockAllen.MembershipReboot.Helpers.Crypto.HashPassword("pass");
-                Assert.IsFalse(CryptoHelper.VerifyHashedPassword("-1." + hash, "pass"));
+                var hash = crypto.HashPassword("pass", config.PasswordHashingIterationCount);
+                Assert.IsFalse(crypto.VerifyHashedPassword("-1." + hash, "pass"));
             }
             {
-                var hash = CryptoHelper.HashPassword("pass", 10000);
-                hash = hash.Replace(CryptoHelper.EncodeIterations(10000), CryptoHelper.EncodeIterations(5000));
-                Assert.IsFalse(CryptoHelper.VerifyHashedPassword(hash, "pass"));
+                var hash = crypto.HashPassword("pass", 10000);
+                hash = hash.Replace(crypto.EncodeIterations(10000), crypto.EncodeIterations(5000));
+                Assert.IsFalse(crypto.VerifyHashedPassword(hash, "pass"));
             }
         }
 
         [TestMethod]
         public void GetIterationsFromYear_CalculatesCorrectValues()
         {
-            Assert.AreEqual(1000, CryptoHelper.GetIterationsFromYear(-1));
-            Assert.AreEqual(1000, CryptoHelper.GetIterationsFromYear(1999));
-            Assert.AreEqual(1000, CryptoHelper.GetIterationsFromYear(2000));
-            Assert.AreEqual(1000, CryptoHelper.GetIterationsFromYear(2001));
-            
-            Assert.AreEqual(2000, CryptoHelper.GetIterationsFromYear(2002));
-            Assert.AreEqual(2000, CryptoHelper.GetIterationsFromYear(2003));
-            
-            Assert.AreEqual(4000, CryptoHelper.GetIterationsFromYear(2004));
-            
-            Assert.AreEqual(8000, CryptoHelper.GetIterationsFromYear(2006));
-            
-            Assert.AreEqual(16000, CryptoHelper.GetIterationsFromYear(2008));
+            Assert.AreEqual(1000, crypto.GetIterationsFromYear(-1));
+            Assert.AreEqual(1000, crypto.GetIterationsFromYear(1999));
+            Assert.AreEqual(1000, crypto.GetIterationsFromYear(2000));
+            Assert.AreEqual(1000, crypto.GetIterationsFromYear(2001));
 
-            Assert.AreEqual(32000, CryptoHelper.GetIterationsFromYear(2010));
+            Assert.AreEqual(2000, crypto.GetIterationsFromYear(2002));
+            Assert.AreEqual(2000, crypto.GetIterationsFromYear(2003));
 
-            Assert.AreEqual(64000, CryptoHelper.GetIterationsFromYear(2012));
+            Assert.AreEqual(4000, crypto.GetIterationsFromYear(2004));
 
-            Assert.AreEqual(2097152000, CryptoHelper.GetIterationsFromYear(2042));
-            
-            Assert.AreEqual(Int32.MaxValue, CryptoHelper.GetIterationsFromYear(2044));
-            Assert.AreEqual(Int32.MaxValue, CryptoHelper.GetIterationsFromYear(2045));
-            Assert.AreEqual(Int32.MaxValue, CryptoHelper.GetIterationsFromYear(2046));
+            Assert.AreEqual(8000, crypto.GetIterationsFromYear(2006));
+
+            Assert.AreEqual(16000, crypto.GetIterationsFromYear(2008));
+
+            Assert.AreEqual(32000, crypto.GetIterationsFromYear(2010));
+
+            Assert.AreEqual(64000, crypto.GetIterationsFromYear(2012));
+
+            Assert.AreEqual(2097152000, crypto.GetIterationsFromYear(2042));
+
+            Assert.AreEqual(Int32.MaxValue, crypto.GetIterationsFromYear(2044));
+            Assert.AreEqual(Int32.MaxValue, crypto.GetIterationsFromYear(2045));
+            Assert.AreEqual(Int32.MaxValue, crypto.GetIterationsFromYear(2046));
         }
     }
 }

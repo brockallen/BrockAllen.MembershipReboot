@@ -22,7 +22,7 @@ namespace BrockAllen.MembershipReboot.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ValidationMessages {
+    public class ValidationMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BrockAllen.MembershipReboot.Resources.ValidationMessages", typeof(ValidationMessages).Assembly);
@@ -51,7 +51,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The email address for this account is already verified..
         /// </summary>
-        internal static string AccountAlreadyVerified {
+        public static string AccountAlreadyVerified {
             get {
                 return ResourceManager.GetString("AccountAlreadyVerified", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t create an account because there was no email from the identity provider..
         /// </summary>
-        internal static string AccountCreateFailNoEmailFromIdp {
+        public static string AccountCreateFailNoEmailFromIdp {
             get {
                 return ResourceManager.GetString("AccountCreateFailNoEmailFromIdp", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to This account is not configured with a secret question or answer..
         /// </summary>
-        internal static string AccountNotConfiguredWithSecretQuestion {
+        public static string AccountNotConfiguredWithSecretQuestion {
             get {
                 return ResourceManager.GetString("AccountNotConfiguredWithSecretQuestion", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The email address for this account is not yet verified..
         /// </summary>
-        internal static string AccountNotVerified {
+        public static string AccountNotVerified {
             get {
                 return ResourceManager.GetString("AccountNotVerified", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to This account requires a secret question and answer to reset the password..
         /// </summary>
-        internal static string AccountPasswordResetRequiresSecretQuestion {
+        public static string AccountPasswordResetRequiresSecretQuestion {
             get {
                 return ResourceManager.GetString("AccountPasswordResetRequiresSecretQuestion", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Add a client certificate to enable certificate two factor authentication..
         /// </summary>
-        internal static string AddClientCertForTwoFactor {
+        public static string AddClientCertForTwoFactor {
             get {
                 return ResourceManager.GetString("AddClientCertForTwoFactor", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to That certificate is already in use by a different account..
         /// </summary>
-        internal static string CertificateAlreadyInUse {
+        public static string CertificateAlreadyInUse {
             get {
                 return ResourceManager.GetString("CertificateAlreadyInUse", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Code required..
         /// </summary>
-        internal static string CodeRequired {
+        public static string CodeRequired {
             get {
                 return ResourceManager.GetString("CodeRequired", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email already in use..
         /// </summary>
-        internal static string EmailAlreadyInUse {
+        public static string EmailAlreadyInUse {
             get {
                 return ResourceManager.GetString("EmailAlreadyInUse", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email is required..
         /// </summary>
-        internal static string EmailRequired {
+        public static string EmailRequired {
             get {
                 return ResourceManager.GetString("EmailRequired", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid email..
         /// </summary>
-        internal static string InvalidEmail {
+        public static string InvalidEmail {
             get {
                 return ResourceManager.GetString("InvalidEmail", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid key..
         /// </summary>
-        internal static string InvalidKey {
+        public static string InvalidKey {
             get {
                 return ResourceManager.GetString("InvalidKey", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid name..
         /// </summary>
-        internal static string InvalidName {
+        public static string InvalidName {
             get {
                 return ResourceManager.GetString("InvalidName", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid new password..
         /// </summary>
-        internal static string InvalidNewPassword {
+        public static string InvalidNewPassword {
             get {
                 return ResourceManager.GetString("InvalidNewPassword", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid old password..
         /// </summary>
-        internal static string InvalidOldPassword {
+        public static string InvalidOldPassword {
             get {
                 return ResourceManager.GetString("InvalidOldPassword", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid password..
         /// </summary>
-        internal static string InvalidPassword {
+        public static string InvalidPassword {
             get {
                 return ResourceManager.GetString("InvalidPassword", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid phone number..
         /// </summary>
-        internal static string InvalidPhone {
+        public static string InvalidPhone {
             get {
                 return ResourceManager.GetString("InvalidPhone", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid secret question or answer..
         /// </summary>
-        internal static string InvalidQuestionOrAnswer {
+        public static string InvalidQuestionOrAnswer {
             get {
                 return ResourceManager.GetString("InvalidQuestionOrAnswer", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid tenant..
         /// </summary>
-        internal static string InvalidTenant {
+        public static string InvalidTenant {
             get {
                 return ResourceManager.GetString("InvalidTenant", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid username..
         /// </summary>
-        internal static string InvalidUsername {
+        public static string InvalidUsername {
             get {
                 return ResourceManager.GetString("InvalidUsername", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t login with this provider because the email is already associated with another account. Please login with your local account and then associate the provider..
         /// </summary>
-        internal static string LoginFailEmailAlreadyAssociated {
+        public static string LoginFailEmailAlreadyAssociated {
             get {
                 return ResourceManager.GetString("LoginFailEmailAlreadyAssociated", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Login not allowed for this account..
         /// </summary>
-        internal static string LoginNotAllowed {
+        public static string LoginNotAllowed {
             get {
                 return ResourceManager.GetString("LoginNotAllowed", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to That mobile phone is already in use by a different account..
         /// </summary>
-        internal static string MobilePhoneAlreadyInUse {
+        public static string MobilePhoneAlreadyInUse {
             get {
                 return ResourceManager.GetString("MobilePhoneAlreadyInUse", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Mobile phone number must be different then the current..
         /// </summary>
-        internal static string MobilePhoneMustBeDifferent {
+        public static string MobilePhoneMustBeDifferent {
             get {
                 return ResourceManager.GetString("MobilePhoneMustBeDifferent", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Mobile phone number required..
         /// </summary>
-        internal static string MobilePhoneRequired {
+        public static string MobilePhoneRequired {
             get {
                 return ResourceManager.GetString("MobilePhoneRequired", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to That name is already in use..
         /// </summary>
-        internal static string NameAlreadyInUse {
+        public static string NameAlreadyInUse {
             get {
                 return ResourceManager.GetString("NameAlreadyInUse", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Name is required..
         /// </summary>
-        internal static string NameRequired {
+        public static string NameRequired {
             get {
                 return ResourceManager.GetString("NameRequired", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The new password must be different than the old password..
         /// </summary>
-        internal static string NewPasswordMustBeDifferent {
+        public static string NewPasswordMustBeDifferent {
             get {
                 return ResourceManager.GetString("NewPasswordMustBeDifferent", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Password must contain at least {0} of the follwing characters: one upper, one lower, one digit and one other..
         /// </summary>
-        internal static string PasswordComplexityRules {
+        public static string PasswordComplexityRules {
             get {
                 return ResourceManager.GetString("PasswordComplexityRules", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Password must be at least {0} characters long..
         /// </summary>
-        internal static string PasswordLength {
+        public static string PasswordLength {
             get {
                 return ResourceManager.GetString("PasswordLength", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Password is required..
         /// </summary>
-        internal static string PasswordRequired {
+        public static string PasswordRequired {
             get {
                 return ResourceManager.GetString("PasswordRequired", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Password reset is not possible since there is no verified email address for this account..
         /// </summary>
-        internal static string PasswordResetErrorNoEmail {
+        public static string PasswordResetErrorNoEmail {
             get {
                 return ResourceManager.GetString("PasswordResetErrorNoEmail", resourceCulture);
             }
@@ -351,7 +351,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Register a mobile phone number to enable mobile two factor authentication..
         /// </summary>
-        internal static string RegisterMobileForTwoFactor {
+        public static string RegisterMobileForTwoFactor {
             get {
                 return ResourceManager.GetString("RegisterMobileForTwoFactor", resourceCulture);
             }
@@ -360,7 +360,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Secret answer required..
         /// </summary>
-        internal static string SecretAnswerRequired {
+        public static string SecretAnswerRequired {
             get {
                 return ResourceManager.GetString("SecretAnswerRequired", resourceCulture);
             }
@@ -369,7 +369,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to That password reset secret question is already being used..
         /// </summary>
-        internal static string SecretQuestionAlreadyInUse {
+        public static string SecretQuestionAlreadyInUse {
             get {
                 return ResourceManager.GetString("SecretQuestionAlreadyInUse", resourceCulture);
             }
@@ -378,7 +378,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Secret question required..
         /// </summary>
-        internal static string SecretQuestionRequired {
+        public static string SecretQuestionRequired {
             get {
                 return ResourceManager.GetString("SecretQuestionRequired", resourceCulture);
             }
@@ -387,7 +387,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Tenant is required..
         /// </summary>
-        internal static string TenantRequired {
+        public static string TenantRequired {
             get {
                 return ResourceManager.GetString("TenantRequired", resourceCulture);
             }
@@ -396,7 +396,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Username already in use..
         /// </summary>
-        internal static string UsernameAlreadyInUse {
+        public static string UsernameAlreadyInUse {
             get {
                 return ResourceManager.GetString("UsernameAlreadyInUse", resourceCulture);
             }
@@ -405,7 +405,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Username cannot contain the &apos;@&apos; character..
         /// </summary>
-        internal static string UsernameCannotContainAtSign {
+        public static string UsernameCannotContainAtSign {
             get {
                 return ResourceManager.GetString("UsernameCannotContainAtSign", resourceCulture);
             }
@@ -414,7 +414,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Username can only contain letters and digits..
         /// </summary>
-        internal static string UsernameOnlyContainLettersAndDigits {
+        public static string UsernameOnlyContainLettersAndDigits {
             get {
                 return ResourceManager.GetString("UsernameOnlyContainLettersAndDigits", resourceCulture);
             }
@@ -423,7 +423,7 @@ namespace BrockAllen.MembershipReboot.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Username is required..
         /// </summary>
-        internal static string UsernameRequired {
+        public static string UsernameRequired {
             get {
                 return ResourceManager.GetString("UsernameRequired", resourceCulture);
             }

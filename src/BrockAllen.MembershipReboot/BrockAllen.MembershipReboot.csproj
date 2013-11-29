@@ -48,6 +48,7 @@
     <Compile Include="Account\PasswordResetSecret.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Configuration\RelativePathApplicationInformation.cs" />
+    <Compile Include="Crypto\DefaultCrypto.cs" />
     <Compile Include="Crypto\ICrypto.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\LinkedAccountExtensions.cs" />
@@ -85,7 +86,6 @@
     <Compile Include="Bus\EventBus.cs" />
     <Compile Include="Bus\Events.cs" />
     <Compile Include="Crypto\System.Web.Helpers.Crypto.cs" />
-    <Compile Include="Crypto\CryptoHelper.cs" />
     <Compile Include="Configuration\ApplicationInformation.cs" />
     <Compile Include="Notification\Message.cs" />
     <Compile Include="Notification\IMessageDelivery.cs" />
@@ -140,7 +140,7 @@
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Body.txt" />
     <EmbeddedResource Include="Resources\ValidationMessages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
