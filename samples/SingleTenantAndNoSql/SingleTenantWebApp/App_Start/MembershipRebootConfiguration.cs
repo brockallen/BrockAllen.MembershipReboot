@@ -12,6 +12,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var config = new MembershipRebootConfiguration();
             config.RequireAccountVerification = false;
 
+            config.AddEventHandler(new DebuggerEventHandler());
+
             var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
                 "UserAccount/Login", 
                 "UserAccount/PasswordReset/Confirm/",
