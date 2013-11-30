@@ -146,6 +146,8 @@ namespace BrockAllen.MembershipReboot
                 tenant = Configuration.DefaultTenant;
             }
 
+            Tracing.Information("[UserAccountService.GetAll] called for tenant: {0}", tenant);
+            
             if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<TAccount>().AsQueryable();
 
             return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
@@ -163,6 +165,8 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccountService.GetByUsername] applying default tenant");
                 tenant = Configuration.DefaultTenant;
             }
+
+            Tracing.Information("[UserAccountService.GetByUsername] called for tenant: {0}, username: {1}", tenant, username);
 
             if (!Configuration.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(username)) return null;
@@ -194,6 +198,8 @@ namespace BrockAllen.MembershipReboot
                 tenant = Configuration.DefaultTenant;
             }
 
+            Tracing.Information("[UserAccountService.GetByEmail] called for tenant: {0}, email: {1}", tenant, email);
+            
             if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(email)) return null;
 
@@ -207,6 +213,8 @@ namespace BrockAllen.MembershipReboot
 
         public virtual TAccount GetByID(Guid id)
         {
+            Tracing.Information("[UserAccountService.GetByID] called for id: {0}", id);
+
             var account = this.userRepository.Get(id);
             if (account == null)
             {
@@ -217,6 +225,8 @@ namespace BrockAllen.MembershipReboot
 
         public virtual TAccount GetByVerificationKey(string key)
         {
+            Tracing.Information("[UserAccountService.GetByVerificationKey] called for key: {0}", key);
+
             if (String.IsNullOrWhiteSpace(key)) return null;
 
             key =  this.Configuration.Crypto.Hash(key);
@@ -241,6 +251,8 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccountService.GetByLinkedAccount] applying default tenant");
                 tenant = Configuration.DefaultTenant;
             }
+
+            Tracing.Information("[UserAccountService.GetByLinkedAccount] called for tenant: {0}, provider; {1}, id: {2}", tenant, provider, id);
 
             if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(provider)) return null;
@@ -274,6 +286,8 @@ namespace BrockAllen.MembershipReboot
                 tenant = Configuration.DefaultTenant;
             }
 
+            Tracing.Information("[UserAccountService.GetByCertificate] called for tenant: {0}, thumbprint; {1}", tenant, thumbprint);
+
             if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(thumbprint)) return null;
 
@@ -299,6 +313,8 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool UsernameExists(string tenant, string username)
         {
+            Tracing.Information("[UserAccountService.UsernameExists] called for tenant: {0}, username; {1}", tenant, username);
+
             if (String.IsNullOrWhiteSpace(username)) return false;
 
             if (Configuration.UsernamesUniqueAcrossTenants)
@@ -332,6 +348,8 @@ namespace BrockAllen.MembershipReboot
                 tenant = Configuration.DefaultTenant;
             }
 
+            Tracing.Information("[UserAccountService.EmailExists] called for tenant: {0}, email; {1}", tenant, email);
+
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(email)) return false;
 
@@ -340,6 +358,10 @@ namespace BrockAllen.MembershipReboot
         
         internal protected virtual bool EmailExistsOtherThan(TAccount account, string email)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
+            Tracing.Information("[UserAccountService.EmailExistsOtherThan] called for account id: {0}, email; {1}", account.ID, email);
+            
             if (String.IsNullOrWhiteSpace(email)) return false;
 
             return this.userRepository.GetAll().Where(x => x.Tenant == account.Tenant && x.Email == email && x.ID != account.ID).Any();
@@ -469,9 +491,9 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void CancelVerification(string key, out bool accountClosed)
         {
-            accountClosed = false;
-
             Tracing.Information("[UserAccountService.CancelVerification] called: {0}", key);
+
+            accountClosed = false;
 
             var account = this.GetByVerificationKey(key);
             if (account == null)
@@ -525,6 +547,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
 
             Tracing.Verbose("[UserAccountService.DeleteAccount] marking account as closed: {0}", account.ID);
+            
             CloseAccount(account);
             Update(account);
 
@@ -563,7 +586,11 @@ namespace BrockAllen.MembershipReboot
 
             if (!Configuration.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(username)) return false;
-            if (String.IsNullOrWhiteSpace(password)) return false;
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- empty password");
+                return false;
+            }
 
             account = this.GetByUsername(tenant, username);
             if (account == null) return false;
@@ -599,7 +626,11 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(email)) return false;
-            if (String.IsNullOrWhiteSpace(password)) return false;
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithEmail] failed -- empty password");
+                return false;
+            }
 
             account = this.GetByEmail(tenant, email);
             if (account == null) return false;
@@ -626,7 +657,11 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(userNameOrEmail)) return false;
-            if (String.IsNullOrWhiteSpace(password)) return false;
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithUsernameOrEmail] failed -- empty password");
+                return false;
+            }
 
             if (!Configuration.EmailIsUsername && userNameOrEmail.Contains("@"))
             {
@@ -663,6 +698,8 @@ namespace BrockAllen.MembershipReboot
                 bool shouldRequestTwoFactorAuthCode = true;
                 if (this.Configuration.TwoFactorAuthenticationPolicy != null)
                 {
+                    Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy configured");
+
                     var token = this.Configuration.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
                     if (!String.IsNullOrWhiteSpace(token))
                     {
@@ -691,6 +728,7 @@ namespace BrockAllen.MembershipReboot
                 }
                 else
                 {
+                    Tracing.Verbose("[UserAccountService.Authenticate] setting two factor auth status to None");
                     account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
                 }
             }
@@ -834,6 +872,7 @@ namespace BrockAllen.MembershipReboot
 
             if (!certificate.Validate())
             {
+                Tracing.Error("[UserAccountService.AuthenticateWithCertificate] failed -- cert failed to validate");
                 account = null;
                 return false;
             }
@@ -859,7 +898,12 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.AuthenticateWithCertificate] called for userID: {0}", accountID);
 
-            certificate.Validate();
+            if (!certificate.Validate())
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCertificate] failed -- cert failed to validate");
+                account = null;
+                return false;
+            }
 
             account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
@@ -876,7 +920,11 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.Authenticate] certificate auth called for account ID: {0}", account.ID);
 
-            certificate.Validate();
+            if (!certificate.Validate())
+            {
+                Tracing.Error("[UserAccountService.Authenticate] failed -- cert failed to validate");
+                return false;
+            }
 
             Tracing.Verbose("[UserAccountService.Authenticate] cert: {0}", certificate.Thumbprint);
 
@@ -922,6 +970,8 @@ namespace BrockAllen.MembershipReboot
 
             SetPassword(account, newPassword);
             Update(account);
+            
+            Tracing.Verbose("[UserAccountService.SetPassword] success");
         }
 
         public virtual void ChangePassword(Guid accountID, string oldPassword, string newPassword)
@@ -949,6 +999,8 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- failed authN");
                 throw new ValidationException(Resources.ValidationMessages.InvalidOldPassword);
             }
+
+            Tracing.Verbose("[UserAccountService.ChangePassword] success");
 
             SetPassword(account, newPassword);
             Update(account);
@@ -985,10 +1037,12 @@ namespace BrockAllen.MembershipReboot
 
             if (account.PasswordResetSecrets.Count > 0)
             {
-                Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- account configured for secret question/answer");
+                Tracing.Error("[UserAccountService.ResetPassword] failed -- account configured for secret question/answer");
                 throw new ValidationException(Resources.ValidationMessages.AccountPasswordResetRequiresSecretQuestion);
             }
 
+            Tracing.Verbose("[UserAccountService.ResetPassword] success");
+            
             ResetPassword(account);
             Update(account);
         }
@@ -1071,6 +1125,8 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.SecretQuestionAlreadyInUse);
             }
 
+            Tracing.Verbose("[UserAccountService.AddPasswordResetSecret] success");
+
             var secret = new PasswordResetSecret();
             secret.PasswordResetSecretID = Guid.NewGuid();
             secret.UserAccountID = account.ID;
@@ -1093,9 +1149,15 @@ namespace BrockAllen.MembershipReboot
             var item = account.PasswordResetSecrets.SingleOrDefault(x => x.PasswordResetSecretID == questionID);
             if (item != null)
             {
+                Tracing.Verbose("[UserAccountService.RemovePasswordResetSecret] success -- item removed");
+
                 account.PasswordResetSecrets.Remove(item);
                 this.AddEvent(new PasswordResetSecretRemovedEvent<TAccount> { Account = account, Secret = item });
                 Update(account);
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccountService.RemovePasswordResetSecret] no matching item found");
             }
         }
 
@@ -1149,6 +1211,7 @@ namespace BrockAllen.MembershipReboot
                 if (secret == null ||
                     !this.Configuration.Crypto.SlowEquals(secret.Answer, this.Configuration.Crypto.Hash(answer.Answer)))
                 {
+                    Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed on question id: {0}", answer.QuestionID);
                     failed = true;
                 }
             }
@@ -1168,6 +1231,8 @@ namespace BrockAllen.MembershipReboot
             }
             else
             {
+                Tracing.Verbose("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] success");
+                
                 account.LastFailedPasswordReset = null;
                 account.FailedPasswordResetCount = 0;
                 ResetPassword(account);
@@ -1216,6 +1281,8 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.AccountNotVerified);
             }
 
+            Tracing.Verbose("[UserAccountService.SendUsernameReminder] success");
+
             this.AddEvent(new UsernameReminderRequestedEvent<TAccount> { Account = account });
             
             Update(account);
@@ -1223,7 +1290,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ChangeUsername(Guid accountID, string newUsername)
         {
-            Tracing.Information("[UserAccountService.ChangeUsername] called: {0}", accountID);
+            Tracing.Information("[UserAccountService.ChangeUsername] called account id: {0}, new username: {1}", accountID, newUsername);
 
             if (Configuration.EmailIsUsername)
             {
@@ -1258,14 +1325,6 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            ChangeEmailRequest(account, newEmail);
-            Update(account);
-        }
-
-        protected virtual void ChangeEmailRequest(TAccount account, string newEmail)
-        {
-            Tracing.Information("[UserAccountService.ChangeEmailRequest] called: account id: {0}", account.ID);
-
             ValidateEmail(account, newEmail);
 
             var oldEmail = account.Email;
@@ -1287,6 +1346,8 @@ namespace BrockAllen.MembershipReboot
             }
 
             Tracing.Verbose("[UserAccountService.ChangeEmailRequest] success");
+            
+            Update(account);
         }
 
         public virtual void VerifyEmailFromKey(string key, string password)
@@ -1370,6 +1431,7 @@ namespace BrockAllen.MembershipReboot
 
             ClearMobilePhoneNumber(account);
 
+            Tracing.Verbose("[UserAccountService.RemoveMobilePhone] success");
             Update(account);
         }
 
@@ -1386,7 +1448,31 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            RequestChangeMobilePhoneNumber(account, newMobilePhoneNumber);
+            if (account.MobilePhoneNumber == newMobilePhoneNumber)
+            {
+                Tracing.Error("[UserAccountService.RequestChangeMobilePhoneNumber] mobile phone same as current");
+                throw new ValidationException(Resources.ValidationMessages.MobilePhoneMustBeDifferent);
+            }
+
+            if (!IsVerificationPurposeValid(account, VerificationKeyPurpose.ChangeMobile) ||
+                IsMobileCodeStale(account) ||
+                newMobilePhoneNumber != account.VerificationStorage ||
+                account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile)
+            {
+                ClearMobileAuthCode(account);
+
+                SetVerificationKey(account, VerificationKeyPurpose.ChangeMobile, state: newMobilePhoneNumber);
+                var code = IssueMobileCode(account);
+
+                Tracing.Verbose("[UserAccountService.RequestChangeMobilePhoneNumber] success");
+
+                this.AddEvent(new MobilePhoneChangeRequestedEvent<TAccount> { Account = account, NewMobilePhoneNumber = newMobilePhoneNumber, Code = code });
+            }
+            else
+            {
+                Tracing.Verbose("[UserAccountService.RequestChangeMobilePhoneNumber] complete, but not issuing a new code");
+            }
+
             Update(account);
         }
 
@@ -1423,13 +1509,27 @@ namespace BrockAllen.MembershipReboot
         {
             if (account == null) throw new ArgumentNullException("account");
 
-            if (account.RequiresPasswordReset) return true;
+            Tracing.Information("[UserAccountService.IsPasswordExpired] called: {0}", account.ID);
 
-            if (Configuration.PasswordResetFrequency <= 0) return false;
+            if (account.RequiresPasswordReset)
+            {
+                Tracing.Verbose("[UserAccountService.IsPasswordExpired] RequiresPasswordReset set, returning true");
+                return true;
+            }
+
+            if (Configuration.PasswordResetFrequency <= 0)
+            {
+                Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] PasswordResetFrequency not set, returning false");
+                return false;
+            }
 
             var now = UtcNow;
             var last = account.PasswordChanged;
-            return last.AddDays(Configuration.PasswordResetFrequency) <= now;
+            var result = last.AddDays(Configuration.PasswordResetFrequency) <= now;
+
+            Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] result: {0}", result);
+            
+            return result;
         }
 
         internal string SetVerificationKey(TAccount account, VerificationKeyPurpose purpose, string key = null, string state = null)
@@ -1506,6 +1606,8 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void SetPassword(TAccount account, string password)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.SetPassword] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(password))
@@ -1525,6 +1627,8 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void ResetPassword(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.ResetPassword] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(account.Email))
@@ -1562,6 +1666,8 @@ namespace BrockAllen.MembershipReboot
 
         string IssueMobileCode(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             string code = this.Configuration.Crypto.GenerateNumericCode(MembershipRebootConstants.UserAccount.MobileCodeLength);
             account.MobileCode = this.Configuration.Crypto.HashPassword(code, this.Configuration.PasswordHashingIterationCount);
             account.MobileCodeSent = UtcNow;
@@ -1571,6 +1677,9 @@ namespace BrockAllen.MembershipReboot
 
         bool VerifyMobileCode(TAccount account, string code)
         {
+            if (account == null) throw new ArgumentNullException("account");
+            if (String.IsNullOrWhiteSpace(code)) return false;
+
             if (IsMobileCodeStale(account))
             {
                 Tracing.Error("[UserAccountService.VerifyMobileCode] failed -- mobile code stale");
@@ -1599,6 +1708,10 @@ namespace BrockAllen.MembershipReboot
 
         void ClearMobileAuthCode(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
+            Tracing.Verbose("[UserAccountService.ClearMobileAuthCode] called for account id {0}", account.ID);
+
             account.MobileCode = null;
             account.MobileCodeSent = null;
             if (account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile)
@@ -1613,6 +1726,8 @@ namespace BrockAllen.MembershipReboot
 
         protected virtual bool IsMobileCodeStale(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             if (account.MobileCodeSent == null || String.IsNullOrWhiteSpace(account.MobileCode))
             {
                 return true;
@@ -1626,45 +1741,10 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        protected internal virtual void RequestChangeMobilePhoneNumber(TAccount account, string newMobilePhoneNumber)
-        {
-            Tracing.Information("[UserAccountService.RequestChangeMobilePhoneNumber] called for accountID: {0}", account.ID);
-
-            if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
-            {
-                Tracing.Error("[UserAccountService.RequestChangeMobilePhoneNumber] invalid mobile phone");
-                throw new ValidationException(Resources.ValidationMessages.MobilePhoneRequired);
-            }
-
-            if (account.MobilePhoneNumber == newMobilePhoneNumber)
-            {
-                Tracing.Error("[UserAccountService.RequestChangeMobilePhoneNumber] mobile phone same as current");
-                throw new ValidationException(Resources.ValidationMessages.MobilePhoneMustBeDifferent);
-            }
-
-
-            if (!IsVerificationPurposeValid(account, VerificationKeyPurpose.ChangeMobile) ||
-                IsMobileCodeStale(account) ||
-                newMobilePhoneNumber != account.VerificationStorage ||
-                account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile)
-            {
-                ClearMobileAuthCode(account);
-
-                SetVerificationKey(account, VerificationKeyPurpose.ChangeMobile, state: newMobilePhoneNumber);
-                var code = IssueMobileCode(account);
-
-                Tracing.Verbose("[UserAccountService.RequestChangeMobilePhoneNumber] success");
-
-                this.AddEvent(new MobilePhoneChangeRequestedEvent<TAccount> { Account = account, NewMobilePhoneNumber = newMobilePhoneNumber, Code = code });
-            }
-            else
-            {
-                Tracing.Verbose("[UserAccountService.RequestChangeMobilePhoneNumber] complete, but not issuing a new code");
-            }
-        }
-
         protected internal virtual bool ConfirmMobilePhoneNumberFromCode(TAccount account, string code)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.ConfirmMobilePhoneNumberFromCode] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(code))
@@ -1700,6 +1780,8 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void ClearMobilePhoneNumber(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.ClearMobilePhoneNumber] called for accountID: {0}", account.ID);
 
             if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
@@ -1733,10 +1815,14 @@ namespace BrockAllen.MembershipReboot
 
             ConfigureTwoFactorAuthentication(account, mode);
             Update(account);
+            
+            Tracing.Verbose("[UserAccountService.ConfigureTwoFactorAuthentication] success");
         }
 
         protected internal virtual void ConfigureTwoFactorAuthentication(TAccount account, TwoFactorAuthMode mode)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.ConfigureTwoFactorAuthentication] called for accountID: {0}, mode: {1}", account.ID, mode);
 
             if (account.AccountTwoFactorAuthMode == mode)
@@ -1780,6 +1866,8 @@ namespace BrockAllen.MembershipReboot
         
         protected internal virtual bool RequestTwoFactorAuthCertificate(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.RequestTwoFactorAuthCertificate] called for accountID: {0}", account.ID);
 
             if (account.IsAccountClosed)
@@ -1815,6 +1903,8 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual bool RequestTwoFactorAuthCode(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.RequestTwoFactorAuthCode] called for accountID: {0}", account.ID);
 
             if (account.IsAccountClosed)
@@ -1874,6 +1964,8 @@ namespace BrockAllen.MembershipReboot
         
         protected internal virtual bool VerifyTwoFactorAuthCode(TAccount account, string code)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.VerifyTwoFactorAuthCode] called for accountID: {0}", account.ID);
 
             if (code == null)
@@ -1926,6 +2018,8 @@ namespace BrockAllen.MembershipReboot
 
         protected internal virtual void CloseAccount(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.CloseAccount] called for accountID: {0}", account.ID);
 
             ClearVerificationKey(account);
@@ -1959,6 +2053,8 @@ namespace BrockAllen.MembershipReboot
         }
         protected virtual void AddClaim(TAccount account, string type, string value)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.AddClaim] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(type))
@@ -1993,6 +2089,8 @@ namespace BrockAllen.MembershipReboot
         }
         protected virtual void RemoveClaim(TAccount account, string type)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.RemoveClaim] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(type))
@@ -2022,6 +2120,8 @@ namespace BrockAllen.MembershipReboot
         }
         protected virtual void RemoveClaim(TAccount account, string type, string value)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.RemoveClaim] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(type))
@@ -2048,11 +2148,15 @@ namespace BrockAllen.MembershipReboot
 
         protected virtual LinkedAccount GetLinkedAccount(TAccount account, string provider, string id)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             return account.LinkedAccounts.Where(x => x.ProviderName == provider && x.ProviderAccountID == id).SingleOrDefault();
         }
 
         public virtual void AddOrUpdateLinkedAccount(TAccount account, string provider, string id, IEnumerable<Claim> claims = null)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.AddOrUpdateLinkedAccount] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(provider))
@@ -2185,6 +2289,8 @@ namespace BrockAllen.MembershipReboot
         }
         protected virtual void RemoveCertificate(TAccount account, X509Certificate2 certificate)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.RemoveCertificate] called for accountID: {0}", account.ID);
 
             if (certificate == null)
@@ -2211,6 +2317,8 @@ namespace BrockAllen.MembershipReboot
         }
         protected virtual void RemoveCertificate(TAccount account, string thumbprint)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.RemoveCertificate] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(thumbprint))
@@ -2236,6 +2344,8 @@ namespace BrockAllen.MembershipReboot
 
         internal virtual void CreateTwoFactorAuthToken(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] called for accountID: {0}", account.ID);
 
             if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
@@ -2257,6 +2367,8 @@ namespace BrockAllen.MembershipReboot
 
         internal virtual bool VerifyTwoFactorAuthToken(TAccount account, string token)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.VerifyTwoFactorAuthToken] called for accountID: {0}", account.ID);
 
             if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
@@ -2304,6 +2416,8 @@ namespace BrockAllen.MembershipReboot
 
         internal virtual void RemoveTwoFactorAuthTokens(TAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
+
             Tracing.Information("[UserAccountService.RemoveTwoFactorAuthTokens] called for accountID: {0}", account.ID);
 
             foreach (var item in account.TwoFactorAuthTokens.ToArray())
