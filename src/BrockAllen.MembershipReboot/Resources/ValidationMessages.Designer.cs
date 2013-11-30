@@ -151,6 +151,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid certificate..
+        /// </summary>
+        public static string InvalidCertificate {
+            get {
+                return ResourceManager.GetString("InvalidCertificate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid email..
         /// </summary>
         public static string InvalidEmail {

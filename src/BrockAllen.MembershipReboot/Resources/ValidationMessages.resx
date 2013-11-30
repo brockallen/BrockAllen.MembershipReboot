@@ -147,6 +147,9 @@
   <data name="EmailRequired" xml:space="preserve">
     <value>Email is required.</value>
   </data>
+  <data name="InvalidCertificate" xml:space="preserve">
+    <value>Invalid certificate.</value>
+  </data>
   <data name="InvalidEmail" xml:space="preserve">
     <value>Invalid email.</value>
   </data>
