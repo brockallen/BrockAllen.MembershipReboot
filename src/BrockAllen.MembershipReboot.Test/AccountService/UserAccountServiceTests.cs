@@ -1455,7 +1455,15 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeMobilePhoneRequest(id, "123");
 
-            Assert.IsFalse(subject.ChangeMobilePhoneFromCode(id, ""));
+            try
+            {
+                subject.ChangeMobilePhoneFromCode(id, "");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.CodeRequired, ex.Message);
+            }
         }
 
 

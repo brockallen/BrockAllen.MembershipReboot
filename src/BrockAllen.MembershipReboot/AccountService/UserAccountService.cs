@@ -686,6 +686,7 @@ namespace BrockAllen.MembershipReboot
                 !account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
+                this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
                 result = false;
             }
 
@@ -753,6 +754,7 @@ namespace BrockAllen.MembershipReboot
             if (account.IsAccountClosed)
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- account closed");
+                this.AddEvent(new InvalidAccountEvent<TAccount> { Account = account });
                 return false;
             }
 
@@ -766,9 +768,7 @@ namespace BrockAllen.MembershipReboot
             if (HasTooManyRecentPasswordFailures(account))
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- account in lockout due to failed login attempts");
-
                 this.AddEvent(new TooManyRecentPasswordFailuresEvent<TAccount> { Account = account });
-
                 return false;
             }
 
@@ -776,17 +776,13 @@ namespace BrockAllen.MembershipReboot
             if (valid)
             {
                 Tracing.Verbose("[UserAccountService.Authenticate] authentication success");
-
                 RecordSuccessfulLogin(account);
-
                 this.AddEvent(new SuccessfulPasswordLoginEvent<TAccount> { Account = account });
             }
             else
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- invalid password");
-
                 RecordInvalidLoginAttempt(account);
-
                 this.AddEvent(new InvalidPasswordEvent<TAccount> { Account = account });
             }
 
@@ -846,10 +842,54 @@ namespace BrockAllen.MembershipReboot
             account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            var result = VerifyTwoFactorAuthCode(account, code);
-            Tracing.Verbose("[UserAccountService.AuthenticateWithCode] result {0}", result);
+            Tracing.Information("[UserAccountService.AuthenticateWithCode] called for accountID: {0}", account.ID);
 
-            if (result && this.Configuration.TwoFactorAuthenticationPolicy != null)
+            if (code == null)
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed - null code");
+                return false;
+            }
+
+            if (account.IsAccountClosed)
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- account closed");
+                return false;
+            }
+
+            if (!account.IsLoginAllowed)
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- login not allowed");
+                return false;
+            }
+
+            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- two factor auth mode not mobile");
+                return false;
+            }
+
+            if (account.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- current auth status not mobile");
+                return false;
+            }
+
+            if (!VerifyMobileCode(account, code))
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- mobile code failed to verify");
+                return false;
+            }
+
+            ClearMobileAuthCode(account);
+
+            account.LastLogin = UtcNow;
+            account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
+
+            this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent<TAccount> { Account = account });
+
+            Tracing.Verbose("[UserAccountService.AuthenticateWithCode] success ");
+
+            if (this.Configuration.TwoFactorAuthenticationPolicy != null)
             {
                 CreateTwoFactorAuthToken(account);
                 Tracing.Verbose("[UserAccountService.AuthenticateWithCode] TwoFactorAuthenticationPolicy issuing a new two factor auth token");
@@ -857,7 +897,7 @@ namespace BrockAllen.MembershipReboot
 
             Update(account);
 
-            return result;
+            return true;
         }
 
         public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate)
@@ -1429,9 +1469,29 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            ClearMobilePhoneNumber(account);
+            Tracing.Information("[UserAccountService.ClearMobilePhoneNumber] called for accountID: {0}", account.ID);
 
-            Tracing.Verbose("[UserAccountService.RemoveMobilePhone] success");
+            if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
+            {
+                Tracing.Verbose("[UserAccountService.ClearMobilePhoneNumber] disabling two factor auth");
+                ConfigureTwoFactorAuthentication(account, TwoFactorAuthMode.None);
+            }
+
+            if (String.IsNullOrWhiteSpace(account.MobilePhoneNumber))
+            {
+                Tracing.Warning("[UserAccountService.ClearMobilePhoneNumber] nothing to do -- no mobile associated with account");
+                return;
+            }
+
+            Tracing.Verbose("[UserAccountService.ClearMobilePhoneNumber] success");
+
+            ClearMobileAuthCode(account);
+
+            account.MobilePhoneNumber = null;
+            account.MobilePhoneNumberChanged = UtcNow;
+
+            this.AddEvent(new MobilePhoneRemovedEvent<TAccount> { Account = account });
+
             Update(account);
         }
 
@@ -1483,18 +1543,39 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(code))
             {
                 Tracing.Error("[UserAccountService.ChangeMobileFromCode] failed -- null code");
-                return false;
+                throw new ValidationException(Resources.ValidationMessages.CodeRequired);
             }
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            var result = ConfirmMobilePhoneNumberFromCode(account, code);
+            Tracing.Information("[UserAccountService.ConfirmMobilePhoneNumberFromCode] called for accountID: {0}", account.ID);
+
+            if (account.VerificationPurpose != VerificationKeyPurpose.ChangeMobile)
+            {
+                Tracing.Error("[UserAccountService.ConfirmMobilePhoneNumberFromCode] failed -- invalid verification key purpose");
+                return false;
+            }
+
+            if (!VerifyMobileCode(account, code))
+            {
+                Tracing.Error("[UserAccountService.ConfirmMobilePhoneNumberFromCode] failed -- mobile code failed to verify");
+                return false;
+            }
+
+            Tracing.Verbose("[UserAccountService.ConfirmMobilePhoneNumberFromCode] success");
+
+            account.MobilePhoneNumber = account.VerificationStorage;
+            account.MobilePhoneNumberChanged = UtcNow;
+
+            ClearVerificationKey(account);
+            ClearMobileAuthCode(account);
+
+            this.AddEvent(new MobilePhoneChangedEvent<TAccount> { Account = account });
+
             Update(account);
 
-            Tracing.Verbose("[UserAccountService.ChangeMobileFromCode] result: {0}", result);
-
-            return result;
+            return true;
         }
 
         public virtual bool IsPasswordExpired(Guid accountID)
@@ -1741,71 +1822,6 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        protected virtual bool ConfirmMobilePhoneNumberFromCode(TAccount account, string code)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.ConfirmMobilePhoneNumberFromCode] called for accountID: {0}", account.ID);
-
-            if (String.IsNullOrWhiteSpace(code))
-            {
-                Tracing.Error("[UserAccountService.ConfirmMobilePhoneNumberFromCode] failed -- no code");
-                throw new ValidationException(Resources.ValidationMessages.CodeRequired);
-            }
-            
-            if (account.VerificationPurpose != VerificationKeyPurpose.ChangeMobile)
-            {
-                Tracing.Error("[UserAccountService.ConfirmMobilePhoneNumberFromCode] failed -- invalid verification key purpose");
-                return false;
-            }
-
-            if (!VerifyMobileCode(account, code))
-            {
-                Tracing.Error("[UserAccountService.ConfirmMobilePhoneNumberFromCode] failed -- mobile code failed to verify");
-                return false;
-            }
-
-            Tracing.Verbose("[UserAccountService.ConfirmMobilePhoneNumberFromCode] success");
-
-            account.MobilePhoneNumber = account.VerificationStorage;
-            account.MobilePhoneNumberChanged = UtcNow;
-
-            ClearVerificationKey(account);
-            ClearMobileAuthCode(account);
-
-            this.AddEvent(new MobilePhoneChangedEvent<TAccount> { Account = account });
-
-            return true;
-        }
-
-        protected virtual void ClearMobilePhoneNumber(TAccount account)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.ClearMobilePhoneNumber] called for accountID: {0}", account.ID);
-
-            if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
-            {
-                Tracing.Verbose("[UserAccountService.ClearMobilePhoneNumber] disabling two factor auth");
-                ConfigureTwoFactorAuthentication(account, TwoFactorAuthMode.None);
-            }
-
-            if (String.IsNullOrWhiteSpace(account.MobilePhoneNumber))
-            {
-                Tracing.Warning("[UserAccountService.ClearMobilePhoneNumber] nothing to do -- no mobile associated with account");
-                return;
-            }
-
-            Tracing.Verbose("[UserAccountService.ClearMobilePhoneNumber] success");
-
-            ClearMobileAuthCode(account);
-
-            account.MobilePhoneNumber = null;
-            account.MobilePhoneNumberChanged = UtcNow;
-
-            this.AddEvent(new MobilePhoneRemovedEvent<TAccount> { Account = account });
-        }
-
         public virtual void ConfigureTwoFactorAuthentication(Guid accountID, TwoFactorAuthMode mode)
         {
             Tracing.Information("[UserAccountService.ConfigureTwoFactorAuthentication] called: {0}", accountID);
@@ -1962,60 +1978,6 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
         
-        protected virtual bool VerifyTwoFactorAuthCode(TAccount account, string code)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.VerifyTwoFactorAuthCode] called for accountID: {0}", account.ID);
-
-            if (code == null)
-            {
-                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthCode] failed - null code");
-                return false;
-            }
-
-            if (account.IsAccountClosed)
-            {
-                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthCode] failed -- account closed");
-                return false;
-            }
-
-            if (!account.IsLoginAllowed)
-            {
-                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthCode] failed -- login not allowed");
-                return false;
-            }
-
-            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
-            {
-                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthCode] failed -- two factor auth mode not mobile");
-                return false;
-            }
-
-            if (account.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
-            {
-                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthCode] failed -- current auth status not mobile");
-                return false;
-            }
-
-            if (!VerifyMobileCode(account, code))
-            {
-                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthCode] failed -- mobile code failed to verify");
-                return false;
-            }
-
-            Tracing.Verbose("[UserAccountService.VerifyTwoFactorAuthCode] success");
-
-            ClearMobileAuthCode(account);
-
-            account.LastLogin = UtcNow;
-            account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
-
-            this.AddEvent(new SuccessfulTwoFactorAuthCodeLoginEvent<TAccount> { Account = account });
-
-            return true;
-        }
-
         protected virtual void CloseAccount(TAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
@@ -2050,20 +2012,12 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            AddClaim(account, type, value);
-            Update(account);
-        }
-        protected virtual void AddClaim(TAccount account, string type, string value)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.AddClaim] called for accountID: {0}", account.ID);
-
             if (String.IsNullOrWhiteSpace(type))
             {
                 Tracing.Error("[UserAccountService.AddClaim] failed -- null type");
                 throw new ArgumentException("type");
             }
+
             if (String.IsNullOrWhiteSpace(value))
             {
                 Tracing.Error("[UserAccountService.AddClaim] failed -- null value");
@@ -2080,7 +2034,9 @@ namespace BrockAllen.MembershipReboot
                 this.AddEvent(new ClaimAddedEvent<TAccount> { Account = account, Claim = claim });
 
                 Tracing.Verbose("[UserAccountService.AddClaim] claim added");
-            }
+            } 
+            
+            Update(account);
         }
 
         public virtual void RemoveClaim(Guid accountID, string type)
@@ -2089,15 +2045,6 @@ namespace BrockAllen.MembershipReboot
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
-
-            RemoveClaim(account, type);
-            Update(account);
-        }
-        protected virtual void RemoveClaim(TAccount account, string type)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.RemoveClaim] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(type))
             {
@@ -2114,7 +2061,9 @@ namespace BrockAllen.MembershipReboot
                 account.Claims.Remove(claim);
                 this.AddEvent(new ClaimRemovedEvent<TAccount> { Account = account, Claim = claim });
                 Tracing.Verbose("[UserAccountService.RemoveClaim] claim removed");
-            }
+            } 
+            
+            Update(account);
         }
 
         public virtual void RemoveClaim(Guid accountID, string type, string value)
@@ -2123,15 +2072,6 @@ namespace BrockAllen.MembershipReboot
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
-
-            RemoveClaim(account, type, value);
-            Update(account);
-        }
-        protected virtual void RemoveClaim(TAccount account, string type, string value)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.RemoveClaim] called for accountID: {0}", account.ID);
 
             if (String.IsNullOrWhiteSpace(type))
             {
@@ -2153,9 +2093,11 @@ namespace BrockAllen.MembershipReboot
                 account.Claims.Remove(claim);
                 this.AddEvent(new ClaimRemovedEvent<TAccount> { Account = account, Claim = claim });
                 Tracing.Verbose("[UserAccountService.RemoveClaim] claim removed");
-            }
+            } 
+            
+            Update(account);
         }
-
+       
         protected virtual LinkedAccount GetLinkedAccount(TAccount account, string provider, string id)
         {
             if (account == null) throw new ArgumentNullException("account");

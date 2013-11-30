@@ -119,7 +119,9 @@ namespace BrockAllen.MembershipReboot
     public class SuccessfulTwoFactorAuthCodeLoginEvent<T> : SuccessfulLoginEvent<T> { }
 
     public abstract class FailedLoginEvent<T> : UserAccountEvent<T> { }
+    public class AccountNotVerifiedEvent<T> : FailedLoginEvent<T> { }
     public class AccountLockedEvent<T> : FailedLoginEvent<T> { }
+    public class InvalidAccountEvent<T> : FailedLoginEvent<T> { }
     public class TooManyRecentPasswordFailuresEvent<T> : FailedLoginEvent<T> { }
     public class InvalidPasswordEvent<T> : FailedLoginEvent<T> { }
     public class InvalidCertificateEvent<T> : FailedLoginEvent<T>
