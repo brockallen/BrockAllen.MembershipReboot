@@ -39,13 +39,13 @@ namespace BrockAllen.MembershipReboot
         public virtual bool IsAccountClosed { get; internal set; }
         public virtual DateTime? AccountClosed { get; internal set; }
 
-        public virtual bool IsLoginAllowed { get; set; }
+        public virtual bool IsLoginAllowed { get; internal set; }
         public virtual DateTime? LastLogin { get; internal set; }
         public virtual DateTime? LastFailedLogin { get; internal set; }
         public virtual int FailedLoginCount { get; internal set; }
         
         public virtual DateTime PasswordChanged { get; internal set; }
-        public virtual bool RequiresPasswordReset { get; set; }
+        public virtual bool RequiresPasswordReset { get; internal set; }
 
         [EmailAddress]
         [StringLength(100)]

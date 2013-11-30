@@ -993,6 +993,34 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
+        public virtual void SetIsLoginAllowed(Guid accountID, bool isLoginAllowed)
+        {
+            Tracing.Information("[UserAccountService.SetIsLoginAllowed] called: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            account.IsLoginAllowed = isLoginAllowed;
+
+            Tracing.Verbose("[UserAccountService.SetIsLoginAllowed] success");
+
+            Update(account);
+        }
+
+        public virtual void SetRequiresPasswordReset(Guid accountID, bool requiresPasswordReset)
+        {
+            Tracing.Information("[UserAccountService.SetRequiresPasswordReset] called: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            account.RequiresPasswordReset = requiresPasswordReset;
+
+            Tracing.Verbose("[UserAccountService.SetRequiresPasswordReset] success");
+
+            Update(account);
+        }
+
         public virtual void SetPassword(Guid accountID, string newPassword)
         {
             Tracing.Information("[UserAccountService.SetPassword] called: {0}", accountID);
