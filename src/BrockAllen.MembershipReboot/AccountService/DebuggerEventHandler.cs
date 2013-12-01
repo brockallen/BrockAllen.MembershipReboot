@@ -17,32 +17,32 @@ namespace BrockAllen.MembershipReboot
     {
         public void Handle(AccountCreatedEvent<TAccount> evt)
         {
-            Debugger.Log(0, "DebuggerEventHandler", "AccountCreatedEvent: " + evt.VerificationKey);
+            Debug.WriteLine("AccountCreatedEvent: " + evt.VerificationKey);
         }
 
         public void Handle(PasswordResetRequestedEvent<TAccount> evt)
         {
-            Debugger.Log(0, "DebuggerEventHandler", "PasswordResetRequestedEvent: " + evt.VerificationKey);
+            Debug.WriteLine("PasswordResetRequestedEvent: " + evt.VerificationKey);
         }
 
         public void Handle(EmailChangeRequestedEvent<TAccount> evt)
         {
-            Debugger.Log(0, "DebuggerEventHandler", "EmailChangeRequestedEvent: " + evt.VerificationKey);
+            Debug.WriteLine("EmailChangeRequestedEvent: " + evt.VerificationKey);
         }
 
         public void Handle(EmailChangedEvent<TAccount> evt)
         {
-            Debugger.Log(0, "DebuggerEventHandler", "EmailChangedEvent: " + evt.VerificationKey);
+            Debug.WriteLine("EmailChangedEvent: " + evt.VerificationKey);
         }
 
         public void Handle(MobilePhoneChangeRequestedEvent<TAccount> evt)
         {
-            Debugger.Log(0, "DebuggerEventHandler", "MobilePhoneChangeRequestedEvent: " + evt.Code);
+            Debug.WriteLine("MobilePhoneChangeRequestedEvent: " + evt.Code);
         }
 
         public void Handle(TwoFactorAuthenticationCodeNotificationEvent<TAccount> evt)
         {
-            Debugger.Log(0, "DebuggerEventHandler", "TwoFactorAuthenticationCodeNotificationEvent: " + evt.Code);
+            Debug.WriteLine("TwoFactorAuthenticationCodeNotificationEvent: " + evt.Code);
         }
     }
 
