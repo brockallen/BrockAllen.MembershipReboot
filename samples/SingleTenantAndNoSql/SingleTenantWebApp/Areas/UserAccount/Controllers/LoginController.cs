@@ -115,6 +115,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             
             if (button == "resend")
             {
+                ModelState.Clear();
                 this.userAccountService.SendTwoFactorAuthenticationCode(this.User.GetUserID());
             }
 
