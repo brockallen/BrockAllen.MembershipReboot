@@ -16,12 +16,12 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 
             var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
                 "UserAccount/Login", 
-                "UserAccount/PasswordReset/Confirm/",
                 "UserAccount/ChangeEmail/Confirm/",
-                "UserAccount/Register/Cancel/");
+                "UserAccount/Register/Cancel/",
+                "UserAccount/PasswordReset/Confirm/");
             var emailFormatter = new EmailMessageFormatter(appinfo);
             // uncomment if you want email notifications -- also update smtp settings in web.config
-            //config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+            config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
             //config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
             // set to false for production
             config.ConfigureAspNetCookieBasedTwoFactorAuthPolicy(debugging:true);

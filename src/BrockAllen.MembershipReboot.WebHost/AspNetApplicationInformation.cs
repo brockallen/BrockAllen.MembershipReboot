@@ -13,16 +13,17 @@ namespace BrockAllen.MembershipReboot.WebHost
             string appName,
             string emailSig,
             string relativeLoginUrl,
-            string relativeConfirmPasswordResetUrl,
             string relativeConfirmChangeEmailUrl,
-            string relativeCancelVerificationUrl)
+            string relativeCancelVerificationUrl,
+            string relativeConfirmPasswordResetUrl
+        )
         {
             this.ApplicationName = appName;
             this.EmailSignature = emailSig;
             this.RelativeLoginUrl = relativeLoginUrl;
-            this.RelativeConfirmPasswordResetUrl = relativeConfirmPasswordResetUrl;
             this.RelativeConfirmChangeEmailUrl = relativeConfirmChangeEmailUrl;
             this.RelativeCancelVerificationUrl = relativeCancelVerificationUrl;
+            this.RelativeConfirmPasswordResetUrl = relativeConfirmPasswordResetUrl;
         }
 
         protected override string GetApplicationBaseUrl()
