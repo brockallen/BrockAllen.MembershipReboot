@@ -32,6 +32,7 @@ namespace BrockAllen.MembershipReboot
         {
             internal const int VerificationKeyStaleDurationMinutes = 20;
             internal const int MobileCodeLength = 6;
+            internal const int MobileCodeResendDelayMinutes = 1;
             internal const int MobileCodeStaleDurationMinutes = 10;
             internal const int TwoFactorAuthTokenDurationDays = 30;
         }

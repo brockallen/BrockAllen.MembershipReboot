@@ -1543,7 +1543,7 @@ namespace BrockAllen.MembershipReboot
             }
 
             if (!IsVerificationPurposeValid(account, VerificationKeyPurpose.ChangeMobile) ||
-                IsMobileCodeStale(account) ||
+                CanResendMobileCode(account) ||
                 newMobilePhoneNumber != account.VerificationStorage ||
                 account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile)
             {
@@ -1789,7 +1789,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(code)) return false;
 
-            if (IsMobileCodeStale(account))
+            if (IsMobileCodeExpired(account))
             {
                 Tracing.Error("[UserAccountService.VerifyMobileCode] failed -- mobile code stale");
                 return false;
@@ -1833,7 +1833,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual bool IsMobileCodeStale(TAccount account)
+        protected virtual bool IsMobileCodeOlderThan(TAccount account, int duration)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -1842,12 +1842,22 @@ namespace BrockAllen.MembershipReboot
                 return true;
             }
 
-            if (account.MobileCodeSent < UtcNow.AddMinutes(-MembershipRebootConstants.UserAccount.MobileCodeStaleDurationMinutes))
+            if (account.MobileCodeSent < UtcNow.AddMinutes(-duration))
             {
                 return true;
             }
 
             return false;
+        }
+
+        protected virtual bool IsMobileCodeExpired(TAccount account)
+        {
+            return IsMobileCodeOlderThan(account, MembershipRebootConstants.UserAccount.MobileCodeStaleDurationMinutes);
+        }
+        
+        protected virtual bool CanResendMobileCode(TAccount account)
+        {
+            return IsMobileCodeOlderThan(account, MembershipRebootConstants.UserAccount.MobileCodeResendDelayMinutes);
         }
 
         public virtual void ConfigureTwoFactorAuthentication(Guid accountID, TwoFactorAuthMode mode)
@@ -1945,7 +1955,7 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        protected virtual bool RequestTwoFactorAuthCode(TAccount account)
+        protected virtual bool RequestTwoFactorAuthCode(TAccount account, bool force = false)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -1975,7 +1985,8 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (IsMobileCodeStale(account) || account.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
+            if (CanResendMobileCode(account) || 
+                account.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
             {
                 ClearMobileAuthCode(account);
 
@@ -2002,7 +2013,7 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            RequestTwoFactorAuthCode(account);
+            RequestTwoFactorAuthCode(account, true);
             Update(account);
         }
         
