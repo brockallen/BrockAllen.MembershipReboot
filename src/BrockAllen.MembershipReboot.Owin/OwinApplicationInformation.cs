@@ -26,8 +26,8 @@ namespace BrockAllen.MembershipReboot.Owin
             this.ApplicationName = appName;
             this.EmailSignature = emailSig;
             this.RelativeLoginUrl = relativeLoginUrl;
-            this.RelativeVerifyAccountUrl = relativeVerifyAccountUrl;
-            this.RelativeCancelNewAccountUrl = relativeCancelNewAccountUrl;
+            this.VerifyAccountUrl = relativeVerifyAccountUrl;
+            this.CancelVerificationUrl = relativeCancelNewAccountUrl;
             this.RelativeConfirmPasswordResetUrl = relativeConfirmPasswordResetUrl;
             this.RelativeConfirmChangeEmailUrl = relativeConfirmChangeEmailUrl;
         }
