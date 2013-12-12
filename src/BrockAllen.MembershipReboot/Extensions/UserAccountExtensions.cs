@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public static class IUserAccountExtensions
+    public static class UserAccountExtensions
     {
         public static bool HasClaim(this UserAccount account, string type)
         {
@@ -74,6 +74,18 @@ namespace BrockAllen.MembershipReboot
             return
                 account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile &&
                 account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile;
+        }
+
+        public static bool HasPassword(this UserAccount account)
+        {
+            if (account == null) throw new ArgumentException("account");
+            return !String.IsNullOrWhiteSpace(account.HashedPassword);
+        }
+        
+        public static bool IsNew(this UserAccount account)
+        {
+            if (account == null) throw new ArgumentException("account");
+            return account.LastLogin == null;
         }
     }
 }
