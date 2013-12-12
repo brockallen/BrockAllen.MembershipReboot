@@ -44,7 +44,7 @@ namespace BrockAllen.MembershipReboot
         public virtual DateTime? LastFailedLogin { get; internal set; }
         public virtual int FailedLoginCount { get; internal set; }
         
-        public virtual DateTime PasswordChanged { get; internal set; }
+        public virtual DateTime? PasswordChanged { get; internal set; }
         public virtual bool RequiresPasswordReset { get; internal set; }
 
         [EmailAddress]
@@ -72,7 +72,6 @@ namespace BrockAllen.MembershipReboot
         [StringLength(100)]
         public virtual string VerificationStorage { get; internal set; }
 
-        [Required]
         [StringLength(200)]
         public virtual string HashedPassword { get; internal set; }
 

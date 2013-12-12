@@ -411,12 +411,14 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccountService.Init] failed -- no tenant");
                 throw new ArgumentNullException("tenant");
             }
+            
             if (String.IsNullOrWhiteSpace(username))
             {
                 Tracing.Error("[UserAccountService.Init] failed -- no username");
                 throw new ValidationException(Resources.ValidationMessages.UsernameRequired);
             }
-            if (String.IsNullOrWhiteSpace(password))
+
+            if (password != null && String.IsNullOrWhiteSpace(password.Trim()))
             {
                 Tracing.Error("[UserAccountService.Init] failed -- no password");
                 throw new ValidationException(Resources.ValidationMessages.PasswordRequired);
@@ -434,8 +436,9 @@ namespace BrockAllen.MembershipReboot
             account.Email = email;
             account.Created = UtcNow;
             account.LastUpdated = account.Created;
-            account.HashedPassword = Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount);
-            account.PasswordChanged = account.Created;
+            account.HashedPassword = password != null ?
+                Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount) : null;
+            account.PasswordChanged = password != null ? account.Created : (DateTime?)null;
             account.IsAccountVerified = false;
             account.AccountTwoFactorAuthMode = TwoFactorAuthMode.None;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
@@ -517,7 +520,7 @@ namespace BrockAllen.MembershipReboot
             }
 
             if (account.VerificationPurpose == VerificationKeyPurpose.ChangeEmail && 
-                account.LastLogin == null)
+                account.IsNew())
             {
                 // if last login is null then they've never logged in so we can delete the account
                 Tracing.Verbose("[UserAccountService.CancelVerification] succeeded (deleting account)");
@@ -551,7 +554,7 @@ namespace BrockAllen.MembershipReboot
             CloseAccount(account);
             Update(account);
 
-            if (Configuration.AllowAccountDeletion || account.LastLogin == null)
+            if (Configuration.AllowAccountDeletion || account.IsNew())
             {
                 Tracing.Verbose("[UserAccountService.DeleteAccount] removing account record: {0}", account.ID);
                 this.userRepository.Remove(account);
@@ -751,6 +754,12 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
+            if (!account.HasPassword())
+            {
+                Tracing.Error("[UserAccountService.Authenticate] failed -- account does not have a password");
+                return false;
+            }
+            
             if (account.IsAccountClosed)
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- account closed");
@@ -1418,6 +1427,17 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
+        public virtual void VerifyEmailFromKey(string key)
+        {
+            TAccount account;
+            VerifyEmailFromKey(key, out account);
+        }
+        
+        public virtual void VerifyEmailFromKey(string key, out TAccount account)
+        {
+            VerifyEmailFromKey(key, null, out account);
+        }
+
         public virtual void VerifyEmailFromKey(string key, string password)
         {
             TAccount account;
@@ -1435,13 +1455,6 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
-            if (String.IsNullOrWhiteSpace(password))
-            {
-                Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- null password");
-                account = null;
-                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
-            }
-
             account = this.GetByVerificationKey(key);
             if (account == null)
             {
@@ -1451,13 +1464,20 @@ namespace BrockAllen.MembershipReboot
             
             Tracing.Information("[UserAccountService.VerifyEmailFromKey] account located: id: {0}", account.ID);
 
+            if (account.HasPassword() && String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- null password");
+                account = null;
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
+            }
+
             if (!IsVerificationKeyValid(account, VerificationKeyPurpose.ChangeEmail, key))
             {
                 Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- key verification failed");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
-            if (!Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
+            if (account.HasPassword() && !Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
             {
                 Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- authN failed");
                 throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
@@ -1632,8 +1652,20 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
+            if (String.IsNullOrWhiteSpace(account.HashedPassword))
+            {
+                Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] HashedPassword is null, returning false");
+                return false;
+            }
+
+            if (account.PasswordChanged == null)
+            {
+                Tracing.Warning("[UserAccountService.PasswordResetFrequency ] PasswordChanged is null, returning false");
+                return false;
+            }
+
             var now = UtcNow;
-            var last = account.PasswordChanged;
+            var last = account.PasswordChanged.Value;
             var result = last.AddDays(Configuration.PasswordResetFrequency) <= now;
 
             Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] result: {0}", result);
@@ -1750,7 +1782,7 @@ namespace BrockAllen.MembershipReboot
             {
                 // if they've not yet verified then don't allow password reset
                 // instead request an initial account verification
-                if (account.LastLogin == null) 
+                if (account.IsNew())
                 {
                     Tracing.Verbose("[UserAccountService.ResetPassword] account not verified -- raising account created email event to resend initial email");
                     var key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);

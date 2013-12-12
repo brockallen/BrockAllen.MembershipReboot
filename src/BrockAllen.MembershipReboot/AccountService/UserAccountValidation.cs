@@ -104,7 +104,7 @@ namespace BrockAllen.MembershipReboot
         {
             // Use LastLogin null-check to see if it's a new account
             // we don't want to run this logic if it's a new account
-            if (account.LastLogin != null && service.VerifyHashedPassword(account, value))
+            if (!account.IsNew() && service.VerifyHashedPassword(account, value))
             {
                 Tracing.Verbose("[UserAccountValidation.PasswordMustBeDifferentThanCurrent] validation failed: {0}, {1}", account.Tenant, account.Username);
 

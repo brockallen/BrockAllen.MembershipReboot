@@ -252,6 +252,7 @@
     <Content Include="Areas\UserAccount\Views\Register\Verify.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Closed.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Error.cshtml" />
+    <Content Include="Areas\UserAccount\Views\LinkedAccount\NotLoggedIn.cshtml" />
     <None Include="Content\Site.less" />
     <Content Include="configuring_client_certs_readme.txt" />
     <Content Include="Content\Site.css">

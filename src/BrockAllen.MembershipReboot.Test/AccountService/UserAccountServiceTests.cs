@@ -355,6 +355,34 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.PasswordRequired, ex.Message);
             }
         }
+
+        [TestMethod]
+        public void CreateAccount_WhitespacePassword_FailsValidation()
+        {
+            try
+            {
+                subject.CreateAccount("test", "   ", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.PasswordRequired, ex.Message);
+            }
+        }
+        
+        [TestMethod]
+        public void CreateAccount_WhitespaceUsername_FailsValidation()
+        {
+            try
+            {
+                subject.CreateAccount("    ", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameRequired, ex.Message);
+            }
+        }
         
         [TestMethod]
         public void CreateAccount_SettingsRequireEmailIsUsername_UsernameIsEmail()

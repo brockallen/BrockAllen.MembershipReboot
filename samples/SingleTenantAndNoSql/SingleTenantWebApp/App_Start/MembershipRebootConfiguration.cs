@@ -10,7 +10,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         public static MembershipRebootConfiguration Create()
         {
             var config = new MembershipRebootConfiguration();
-            config.RequireAccountVerification = false;
+            //config.RequireAccountVerification = false;
 
             config.AddEventHandler(new DebuggerEventHandler());
 

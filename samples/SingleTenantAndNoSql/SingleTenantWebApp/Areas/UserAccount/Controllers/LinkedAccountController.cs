@@ -92,7 +92,13 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     var claims = result.Claims;
                     var id = claims.GetValue(ClaimTypes.NameIdentifier);
 
-                    this.authenticationService.SignInWithLinkedAccount(provider, id, claims);
+                    BrockAllen.MembershipReboot.UserAccount account;
+                    this.authenticationService.SignInWithLinkedAccount(provider, id, claims, out account);
+
+                    if (!account.IsAccountVerified && userAccountService.Configuration.RequireAccountVerification)
+                    {
+                        return View("NotLoggedIn", account);
+                    }
 
                     if (result.ReturnUrl != null)
                     {

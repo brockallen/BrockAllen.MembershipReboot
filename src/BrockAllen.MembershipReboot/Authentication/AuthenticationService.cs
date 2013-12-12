@@ -55,6 +55,11 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.LoginNotAllowed);
             }
 
+            if (!account.IsAccountVerified && UserAccountService.Configuration.RequireAccountVerification)
+            {
+                throw new ValidationException(Resources.ValidationMessages.AccountNotVerified);
+            }
+
             if (account.RequiresTwoFactorAuthToSignIn() || 
                 account.RequiresPasswordReset || 
                 this.UserAccountService.IsPasswordExpired(account))
@@ -141,11 +146,33 @@ namespace BrockAllen.MembershipReboot
         }
 
         public void SignInWithLinkedAccount(
+           string providerName,
+           string providerAccountID,
+           IEnumerable<Claim> externalClaims,
+           out TAccount account)
+        {
+            SignInWithLinkedAccount(null, providerName, providerAccountID, externalClaims, out account);
+        }
+
+        public void SignInWithLinkedAccount(
             string tenant,
             string providerName,
             string providerAccountID,
             IEnumerable<Claim> claims)
         {
+            TAccount account;
+            SignInWithLinkedAccount(null, providerName, providerAccountID, claims, out account);
+        }
+
+        public void SignInWithLinkedAccount(
+            string tenant,
+            string providerName,
+            string providerAccountID,
+            IEnumerable<Claim> claims,
+            out TAccount account)
+        {
+            account = null;
+
             if (!UserAccountService.Configuration.MultiTenant)
             {
                 tenant = UserAccountService.Configuration.DefaultTenant;
@@ -156,7 +183,6 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
             if (claims == null) throw new ArgumentNullException("claims");
 
-            TAccount account = null;
             var user = ClaimsPrincipal.Current;
             if (user.Identity.IsAuthenticated)
             {
@@ -195,8 +221,7 @@ namespace BrockAllen.MembershipReboot
                     // this is slightly dangerous if we don't do email account verification, so if email account
                     // verification is disabled then we need to be very confident that the external provider has
                     // provided us with a verified email
-                    var pwd = this.UserAccountService.Configuration.Crypto.GenerateSalt();
-                    account = this.UserAccountService.CreateAccount(tenant, name, pwd, email);
+                    account = this.UserAccountService.CreateAccount(tenant, name, null, email);
                 }
             }
 
@@ -206,10 +231,14 @@ namespace BrockAllen.MembershipReboot
             this.UserAccountService.AddOrUpdateLinkedAccount(account, providerName, providerAccountID, claims);
             //this.UserAccountService.Update(account);
 
-            // signin from the account
-            // if we want to include the provider's claims, then perhaps this
-            // should be done in the claims transformer
-            this.SignIn(account, providerName);
+            // log them in if the account if they're verified
+            if (account.IsAccountVerified || !UserAccountService.Configuration.RequireAccountVerification)
+            {
+                // signin from the account
+                // if we want to include the provider's claims, then perhaps this
+                // should be done in the claims transformer
+                this.SignIn(account, providerName);
+            }
         }
 
         public virtual void SignOut()

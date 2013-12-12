@@ -51,9 +51,29 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [AllowAnonymous]
         public ActionResult Confirm(string id)
         {
-            var vm = new ChangeEmailFromKeyInputModel();
-            vm.Key = id;
-            return View("Confirm", vm);
+            var account = this.userAccountService.GetByVerificationKey(id);
+            if (account.HasPassword())
+            {
+                var vm = new ChangeEmailFromKeyInputModel();
+                vm.Key = id;
+                return View("Confirm", vm);
+            }
+            else
+            {
+                try
+                {
+                    userAccountService.VerifyEmailFromKey(id, out account);
+                    // since we've changed the email, we need to re-issue the cookie that
+                    // contains the claims.
+                    authSvc.SignIn(account);
+                    return RedirectToAction("Success");
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+                return View("Confirm", null);
+            }
         }
 
         [AllowAnonymous]
