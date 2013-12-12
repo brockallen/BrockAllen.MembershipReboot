@@ -14,9 +14,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropIndex("dbo.LinkedAccounts", "UserAccountID");
 
             DropPrimaryKey("dbo.LinkedAccountClaims");
-            DropPrimaryKey("dbo.LinkedAccounts");
-
-            
+            DropPrimaryKey("dbo.LinkedAccounts"); 
             
             CreateTable(
                 "dbo.PasswordResetSecrets",
@@ -48,13 +46,16 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             AddColumn("dbo.UserAccounts", "MobilePhoneNumberChanged", c => c.DateTime());
             AddColumn("dbo.UserAccounts", "VerificationStorage", c => c.String(maxLength: 100));
             AlterColumn("dbo.UserAccounts", "Email", c => c.String(maxLength: 100));
+            AlterColumn("dbo.UserAccounts", "PasswordChanged", c => c.DateTime());
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String(maxLength: 100));
             AlterColumn("dbo.UserAccounts", "MobilePhoneNumber", c => c.String(maxLength: 20));
+            AlterColumn("dbo.UserAccounts", "HashedPassword", c => c.String(maxLength: 200));
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 30));
             AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 30));
-            
-            
-            
+
+
+
+
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
 
@@ -78,15 +79,16 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropPrimaryKey("dbo.LinkedAccounts");
 
             
-            
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.PasswordResetSecrets", "UserAccountID", "dbo.UserAccounts");
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccountID" });
             DropIndex("dbo.PasswordResetSecrets", new[] { "UserAccountID" });
             AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 50));
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 50));
+            AlterColumn("dbo.UserAccounts", "HashedPassword", c => c.String(nullable: false, maxLength: 200));
             AlterColumn("dbo.UserAccounts", "MobilePhoneNumber", c => c.String());
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String());
+            AlterColumn("dbo.UserAccounts", "PasswordChanged", c => c.DateTime(nullable: false));
             AlterColumn("dbo.UserAccounts", "Email", c => c.String(nullable: false, maxLength: 100));
             DropColumn("dbo.UserAccounts", "VerificationStorage");
             DropColumn("dbo.UserAccounts", "MobilePhoneNumberChanged");
