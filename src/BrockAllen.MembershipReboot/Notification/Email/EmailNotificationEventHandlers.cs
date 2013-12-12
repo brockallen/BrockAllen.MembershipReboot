@@ -161,22 +161,22 @@ namespace BrockAllen.MembershipReboot
 
         public void Handle(CertificateAddedEvent<T> evt)
         {
-            Process(evt);
+            Process(evt, new { evt.Certificate.Thumbprint, evt.Certificate.Subject });
         }
 
         public void Handle(CertificateRemovedEvent<T> evt)
         {
-            Process(evt);
+            Process(evt, new { evt.Certificate.Thumbprint, evt.Certificate.Subject });
         }
 
         public void Handle(LinkedAccountAddedEvent<T> evt)
         {
-            Process(evt);
+            Process(evt, new { evt.LinkedAccount.ProviderName });
         }
 
         public void Handle(LinkedAccountRemovedEvent<T> evt)
         {
-            Process(evt);
+            Process(evt, new { evt.LinkedAccount.ProviderName });
         }
     }
 
