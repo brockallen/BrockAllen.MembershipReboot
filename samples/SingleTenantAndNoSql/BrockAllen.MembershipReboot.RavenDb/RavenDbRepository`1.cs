@@ -40,10 +40,10 @@ namespace BrockAllen.MembershipReboot.RavenDb
             return items;
         }
 
-        public virtual T Get(params object[] keys)
+        public virtual T Get(Guid key)
         {
             CheckDisposed();
-            return items.SingleOrDefault(x => x.In(keys));
+            return items.SingleOrDefault(x => x.In(new object[]{key}));
         }
 
         T IRepository<T>.Create()

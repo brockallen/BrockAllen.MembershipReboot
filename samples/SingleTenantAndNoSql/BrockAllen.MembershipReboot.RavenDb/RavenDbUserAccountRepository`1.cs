@@ -18,11 +18,11 @@ namespace BrockAllen.MembershipReboot.RavenDb
         {
         }
         
-        public override UserAccount Get(params object[] keys)
+        public override UserAccount Get(Guid key)
         {
             CheckDisposed();
             IUserAccountRepository r = this;
-            return r.GetAll().Where(x => x.ID == (Guid)keys[0]).SingleOrDefault();
+            return r.GetAll().Where(x => x.ID == key).SingleOrDefault();
         }
     }
 }

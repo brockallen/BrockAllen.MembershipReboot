@@ -23,9 +23,9 @@ namespace BrockAllen.MembershipReboot.MongoDb
             return _db.Users().FindAll().AsQueryable();
         }
 
-        public UserAccount Get(params object[] keys)
+        public UserAccount Get(Guid key)
         {
-            return _db.Users().FindOne(Query<UserAccount>.EQ(e => e.ID, (Guid)keys[0]));
+            return _db.Users().FindOne(Query<UserAccount>.EQ(e => e.ID, key));
         }
 
         public void Add(UserAccount item)

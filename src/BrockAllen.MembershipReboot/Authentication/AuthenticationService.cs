@@ -210,6 +210,10 @@ namespace BrockAllen.MembershipReboot
                     {
                         name = email;
                     }
+                    else
+                    {
+                        name = name.Replace(" ", "");
+                    }
 
                     // check to see if email already exists
                     if (this.UserAccountService.EmailExists(tenant, email))

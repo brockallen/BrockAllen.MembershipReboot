@@ -23,9 +23,9 @@ namespace BrockAllen.MembershipReboot.MongoDb
             return _db.Groups().FindAll().AsQueryable();
         }
 
-        public Group Get(params object[] keys)
+        public Group Get(Guid key)
         {
-            return _db.Groups().FindOne(Query<Group>.EQ(e => e.ID, (Guid)keys[0]));
+            return _db.Groups().FindOne(Query<Group>.EQ(e => e.ID, key));
         }
 
         public void Add(Group item)

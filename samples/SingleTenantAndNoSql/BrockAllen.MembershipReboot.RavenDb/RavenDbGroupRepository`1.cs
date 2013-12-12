@@ -18,11 +18,11 @@ namespace BrockAllen.MembershipReboot.RavenDb
         {
         }
         
-        public override Group Get(params object[] keys)
+        public override Group Get(Guid key)
         {
             CheckDisposed();
             IGroupRepository r = this;
-            return r.GetAll().Where(x => x.ID == (Guid)keys[0]).SingleOrDefault();
+            return r.GetAll().Where(x => x.ID == key).SingleOrDefault();
         }
     }
 }

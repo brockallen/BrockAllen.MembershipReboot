@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Test", "..\..\src\BrockAllen.MembershipReboot.Test\BrockAllen.MembershipReboot.Test.csproj", "{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.RavenDb", "BrockAllen.MembershipReboot.RavenDb\BrockAllen.MembershipReboot.RavenDb.csproj", "{4A778329-6308-45E3-B5CD-3C89B7D139D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.MongoDb", "BrockAllen.MembershipReboot.MongoDb\BrockAllen.MembershipReboot.MongoDb.csproj", "{239CE743-DA22-4A3C-8A31-699CC33476CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6F1F1D0-766B-4AF8-B0DB-2E9675B8EAA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A778329-6308-45E3-B5CD-3C89B7D139D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{239CE743-DA22-4A3C-8A31-699CC33476CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{239CE743-DA22-4A3C-8A31-699CC33476CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{239CE743-DA22-4A3C-8A31-699CC33476CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{239CE743-DA22-4A3C-8A31-699CC33476CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
