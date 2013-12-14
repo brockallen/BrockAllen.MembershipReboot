@@ -4,6 +4,8 @@ using System.Linq;
 using System.Data.Entity;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {
@@ -36,6 +38,17 @@ namespace BrockAllen.MembershipReboot.Mvc
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Email
+        {
+            get
+            {
+                return this.GetClaimValue(ClaimTypes.Email);
+            }
+            set
+            {
+                
+            }
+        }
     }
 
     public class CustomDatabase : DbContext
@@ -195,20 +208,19 @@ namespace BrockAllen.MembershipReboot.Mvc
         {
         }
 
-        protected override string GetBody(UserAccountEvent<CustomUserAccount> evt, dynamic extra)
+        protected override string GetBody(UserAccountEvent<CustomUserAccount> evt, IDictionary<string, string> values)
         {
-            if (evt is AccountVerifiedEvent<CustomUserAccount>)
+            if (evt is EmailVerifiedEvent<CustomUserAccount>)
             {
                 return "your account was verified with " + this.ApplicationInformation.ApplicationName + ". good for you.";
             }
 
             if (evt is AccountClosedEvent<CustomUserAccount>)
             {
-                return FormatValue(evt, "your account was closed with {applicationName}. good riddance.", extra);
+                return FormatValue(evt, "your account was closed with {applicationName}. good riddance.", values);
             }
 
-            Func<UserAccountEvent<CustomUserAccount>, dynamic, string> f = base.GetBody;
-            return f(evt, extra);
+            return base.GetBody(evt, values);
         }
     }
 }

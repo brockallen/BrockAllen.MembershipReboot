@@ -40,25 +40,18 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var delivery = new SmtpMessageDelivery();
 
             var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
-                "UserAccount/Login", 
-                "UserAccount/Register/Confirm/",
+                "UserAccount/Login",
+                "UserAccount/ChangeEmail/Confirm/",
                 "UserAccount/Register/Cancel/",
-                "UserAccount/PasswordReset/Confirm/",
-                "UserAccount/ChangeEmail/Confirm/");
+                "UserAccount/PasswordReset/Confirm/");
             var formatter = new CustomEmailMessageFormatter(appinfo);
 
-            if (settings.RequireAccountVerification)
-            {
-                config.AddEventHandler(new EmailAccountCreatedEventHandler<CustomUserAccount>(formatter, delivery));
-            }
             config.AddEventHandler(new EmailAccountEventsHandler<CustomUserAccount>(formatter, delivery));
             config.AddEventHandler(new AuthenticationAuditEventHandler());
             config.AddEventHandler(new NotifyAccountOwnerWhenTooManyFailedLoginAttempts());
 
             config.AddValidationHandler(new PasswordChanging());
             config.AddEventHandler(new PasswordChanged());
-
-            config.ConfigureCookieBasedTwoFactorAuthPolicy(new AspNetCookieBasedTwoFactorAuthPolicy<CustomUserAccount>());
 
             return config;
         }

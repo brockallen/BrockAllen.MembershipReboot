@@ -51,22 +51,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return View(model);
         }
 
-        public ActionResult Confirm(string id)
-        {
-            return View("Confirm");
-        }
-
-        [HttpPost]
-        public ActionResult Confirm(string id, string password)
-        {
-            var result = this.userAccountService.VerifyAccount(id, password);
-            return View("ConfirmResult", result);
-        }
-        
         public ActionResult Cancel(string id)
         {
-            var result = this.userAccountService.CancelNewAccount(id);
-            return View("Cancel", result);
+            this.userAccountService.CancelNewAccount(id);
+            return View("Cancel");
         }
     }
 }
