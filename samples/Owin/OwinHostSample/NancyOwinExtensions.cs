@@ -38,29 +38,6 @@ namespace OwinHostSample
         public static Guid GetUserID(this IUserIdentity user)
         {
             return ((ClaimsUserIdentity)user).Principal.GetUserID();
-       }
-
-        public static void ConfigureMembershipReboot(this IAppBuilder app)
-        {
-            app.UseMembershipReboot(Microsoft.Owin.Security.Cookies.CookieSecureOption.SameAsRequest);
-            app.Use<MembershipRebootConfigurationMiddleware>();
-        }
-
-        public static void SetUserAccountService(this IOwinContext ctx, UserAccountService svc)
-        {
-            ctx.Set("mr.UserAccountService", svc);
-        }
-        public static UserAccountService GetUserAccountService(this IOwinContext ctx)
-        {
-            return ctx.Get<UserAccountService>("mr.UserAccountService");
-        }
-        public static void SetAuthenticationService(this IOwinContext ctx, AuthenticationService svc)
-        {
-            ctx.Set("mr.UserAuthenticationService", svc);
-        }
-        public static AuthenticationService GetAuthenticationService(this IOwinContext ctx)
-        {
-            return ctx.Get<AuthenticationService>("mr.UserAuthenticationService");
         }
     }
 }

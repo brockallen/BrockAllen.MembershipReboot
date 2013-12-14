@@ -1,4 +1,9 @@
-﻿using Microsoft.Owin;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using Microsoft.Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +14,10 @@ namespace BrockAllen.MembershipReboot.Owin
 {
     public class OwinApplicationInformation : RelativePathApplicationInformation
     {
-        OwinContext owinContext;
+        IOwinContext owinContext;
 
         public OwinApplicationInformation(
-            IDictionary<string, object> env,
+            IOwinContext ctx,
             string appName,
             string emailSig,
             string relativeLoginUrl,
@@ -20,8 +25,7 @@ namespace BrockAllen.MembershipReboot.Owin
             string relativeCancelNewAccountUrl,
             string relativeConfirmPasswordResetUrl)
         {
-            this.owinContext = new OwinContext(env);
-
+            this.owinContext = ctx;
             this.ApplicationName = appName;
             this.EmailSignature = emailSig;
             this.RelativeLoginUrl = relativeLoginUrl;

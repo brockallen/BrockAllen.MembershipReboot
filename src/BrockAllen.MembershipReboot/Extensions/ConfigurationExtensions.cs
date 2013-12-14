@@ -9,14 +9,6 @@ namespace BrockAllen.MembershipReboot
 {
     public static class ConfigurationExtensions
     {
-        public static void ConfigureCookieBasedTwoFactorAuthPolicy<TAccount>(this MembershipRebootConfiguration<TAccount> config, CookieBasedTwoFactorAuthPolicy<TAccount> policy)
-            where TAccount : UserAccount
-        {
-            if (config == null) throw new ArgumentNullException("config");
-            config.TwoFactorAuthenticationPolicy = policy;
-            config.AddEventHandler(policy);
-        }
-
         public static void ConfigurePasswordComplexity<TAccount>(this MembershipRebootConfiguration<TAccount> config)
             where TAccount : UserAccount
         {

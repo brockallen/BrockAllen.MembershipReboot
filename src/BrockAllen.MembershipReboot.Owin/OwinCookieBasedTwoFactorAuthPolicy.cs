@@ -1,4 +1,9 @@
-﻿using Microsoft.Owin;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using Microsoft.Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +14,11 @@ namespace BrockAllen.MembershipReboot.Owin
 {
     public class OwinCookieBasedTwoFactorAuthPolicy : CookieBasedTwoFactorAuthPolicy
     {
-        OwinContext owinContext;
+        IOwinContext owinContext;
 
-        public OwinCookieBasedTwoFactorAuthPolicy(IDictionary<string, object> env)
+        public OwinCookieBasedTwoFactorAuthPolicy(IOwinContext ctx)
         {
-            owinContext = new OwinContext(env);
+            this.owinContext = ctx;
         }
 
         protected override string GetCookie(string name)

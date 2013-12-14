@@ -15,17 +15,27 @@ namespace BrockAllen.MembershipReboot
 
         protected abstract string GetApplicationBaseUrl();
 
+        public bool HasBaseUrl
+        {
+            get { return baseUrl != null; }
+        }
+
+        protected void SetBaseUrl(string url)
+        {
+            this.baseUrl = url;
+        }
+
         string baseUrl;
         object urlLock = new object();
         string BaseUrl
         {
             get
             {
-                if (baseUrl == null)
+                if (!HasBaseUrl)
                 {
                     lock (urlLock)
                     {
-                        if (baseUrl == null)
+                        if (!HasBaseUrl)
                         {
                             // build URL
                             var tmp = GetApplicationBaseUrl();

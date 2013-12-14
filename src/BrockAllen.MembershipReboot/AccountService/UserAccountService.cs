@@ -23,6 +23,8 @@ namespace BrockAllen.MembershipReboot
         Lazy<AggregateValidator<TAccount>> emailValidator;
         Lazy<AggregateValidator<TAccount>> passwordValidator;
 
+        public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
+
         public UserAccountService(IUserAccountRepository<TAccount> userRepository)
             : this(new MembershipRebootConfiguration<TAccount>(), userRepository)
         {
@@ -701,11 +703,11 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username);
 
                 bool shouldRequestTwoFactorAuthCode = true;
-                if (this.Configuration.TwoFactorAuthenticationPolicy != null)
+                if (this.TwoFactorAuthenticationPolicy != null)
                 {
                     Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy configured");
 
-                    var token = this.Configuration.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
+                    var token = this.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
                     if (!String.IsNullOrWhiteSpace(token))
                     {
                         shouldRequestTwoFactorAuthCode = !VerifyTwoFactorAuthToken(account, token);
@@ -899,7 +901,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccountService.AuthenticateWithCode] success ");
 
-            if (this.Configuration.TwoFactorAuthenticationPolicy != null)
+            if (this.TwoFactorAuthenticationPolicy != null)
             {
                 CreateTwoFactorAuthToken(account);
                 Tracing.Verbose("[UserAccountService.AuthenticateWithCode] TwoFactorAuthenticationPolicy issuing a new two factor auth token");

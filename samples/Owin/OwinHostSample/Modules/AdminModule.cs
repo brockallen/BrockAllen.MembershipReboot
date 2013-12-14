@@ -8,6 +8,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
+using Owin;
+using BrockAllen.MembershipReboot;
 
 namespace OwinHostSample.Modules
 {
@@ -18,7 +20,7 @@ namespace OwinHostSample.Modules
         {
             this.Get[""] = ctx =>
                 {
-                    var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
+                    var userAccountService = this.Context.ToOwinContext().GetUserAccountService<UserAccount>();
                     var names =
                         from a in userAccountService.GetAll()
                         select a;
@@ -28,7 +30,7 @@ namespace OwinHostSample.Modules
             this.Get["Detail/{id}"] = ctx =>
             {
                 var id = ctx.id;
-                var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
+                var userAccountService = this.Context.ToOwinContext().GetUserAccountService<UserAccount>();
                 var account = userAccountService.GetByID(Guid.Parse(id));
 
                 return View["Detail", new { account }];

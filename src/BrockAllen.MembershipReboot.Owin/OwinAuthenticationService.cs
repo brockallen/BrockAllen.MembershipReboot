@@ -16,23 +16,35 @@ namespace BrockAllen.MembershipReboot.Owin
 {
     public class OwinAuthenticationService : AuthenticationService
     {
-        OwinContext context;
+        IOwinContext context;
+        string authenticationType;
 
         public OwinAuthenticationService(
+            string authenticationType,
             UserAccountService svc,
-            IDictionary<string, object> environment,
+            IOwinContext ctx,
             ClaimsAuthenticationManager transformer
         )
             : base(svc, transformer)
         {
-            context = new OwinContext(environment);
+            this.authenticationType = authenticationType;
+            context = ctx;
         }
-        
+
+        public OwinAuthenticationService(
+            string authenticationType,
+            UserAccountService svc,
+            IOwinContext ctx
+        )
+            : this(authenticationType, svc, ctx, null)
+        {
+        }
+
         public OwinAuthenticationService(
             UserAccountService svc,
-            IDictionary<string, object> environment
+            IOwinContext ctx
         )
-            : this(svc, environment, null)
+            : this(MembershipRebootOwinConstants.AuthenticationType, svc, ctx, null)
         {
         }
 
@@ -43,7 +55,7 @@ namespace BrockAllen.MembershipReboot.Owin
 
             if (principal.Identity.IsAuthenticated) 
             {
-                IssueCookie(principal.Claims, MembershipRebootOwinConstants.AuthenticationType, tokenLifetime, persistentCookie);
+                IssueCookie(principal.Claims, authenticationType, tokenLifetime, persistentCookie);
             }
             else
             {
@@ -67,7 +79,7 @@ namespace BrockAllen.MembershipReboot.Owin
         protected override void RevokeToken()
         {
             context.Authentication.SignOut(
-                MembershipRebootOwinConstants.AuthenticationType, 
+                this.authenticationType,
                 MembershipRebootOwinConstants.AuthenticationTwoFactorType);
         }
     }

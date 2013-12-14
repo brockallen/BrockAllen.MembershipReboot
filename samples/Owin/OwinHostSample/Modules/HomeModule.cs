@@ -23,7 +23,7 @@ namespace OwinHostSample.Modules
             this.Post[""] = ctx =>
             {
                 var gender = (string)this.Request.Form["gender"];
-                var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
+                var userAccountService = this.Context.ToOwinContext().GetUserAccountService<UserAccount>();
 
                 if (String.IsNullOrWhiteSpace(gender))
                 {
@@ -38,7 +38,7 @@ namespace OwinHostSample.Modules
 
                 // since we've changed the claims, we need to re-issue the cookie that
                 // contains the claims.
-                var authSvc = this.Context.ToOwinContext().GetAuthenticationService();
+                var authSvc = this.Context.ToOwinContext().GetAuthenticationService<UserAccount>();
                 authSvc.SignIn(this.Context.CurrentUser.GetUserID());
 
                 return this.Response.AsRedirect("~/");

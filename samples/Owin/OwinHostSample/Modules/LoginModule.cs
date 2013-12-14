@@ -26,11 +26,11 @@ namespace OwinHostSample.Modules
             {
                 var model = this.Bind<LoginInputModel>();
 
-                var userSvc = this.Context.ToOwinContext().GetUserAccountService();
+                var userSvc = this.Context.ToOwinContext().GetUserAccountService<UserAccount>();
                 UserAccount account;
                 if (userSvc.Authenticate(model.Username, model.Password, out account))
-                { 
-                    var authSvc = this.Context.ToOwinContext().GetAuthenticationService();
+                {
+                    var authSvc = this.Context.ToOwinContext().GetAuthenticationService<UserAccount>();
                     authSvc.SignIn(account);
 
                     return this.Response.AsRedirect("~/");

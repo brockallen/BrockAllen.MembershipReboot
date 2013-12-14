@@ -52,7 +52,8 @@
     <Reference Include="System.IdentityModel" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppBuilderExtensions.cs" />
+    <Compile Include="MembershipRebootMiddleware.cs" />
+    <Compile Include="MembershipRebootOwinExtensions.cs" />
     <Compile Include="OwinApplicationInformation.cs" />
     <Compile Include="OwinAuthenticationService.cs" />
     <Compile Include="MembershipRebootOwinConstants.cs" />

@@ -121,7 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClaimsUserIdentity.cs" />
-    <Compile Include="MembershipRebootConfigurationMiddleware.cs" />
     <Compile Include="Models\LoginInputModel.cs" />
     <Compile Include="Models\RegisterInputModel.cs" />
     <Compile Include="Modules\AdminModule.cs" />
