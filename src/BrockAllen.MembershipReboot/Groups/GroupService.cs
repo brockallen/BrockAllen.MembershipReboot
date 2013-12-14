@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class GroupService<T>
+    public class GroupService
     {
         MembershipRebootConfiguration<UserAccount> configuration;
         IGroupRepository groupRepository;
