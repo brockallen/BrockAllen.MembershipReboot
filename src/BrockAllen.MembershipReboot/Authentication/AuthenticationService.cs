@@ -32,20 +32,20 @@ namespace BrockAllen.MembershipReboot
         protected abstract void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null);
         protected abstract void RevokeToken();
 
-        public virtual void SignIn(Guid userID)
+        public virtual void SignIn(Guid userID, bool persistent = false)
         {
             var account = this.UserAccountService.GetByID(userID);
             if (account == null) throw new ArgumentException("Invalid userID");
 
-            SignIn(account, AuthenticationMethods.Password);
+            SignIn(account, AuthenticationMethods.Password, persistent);
         }
 
-        public virtual void SignIn(TAccount account)
+        public virtual void SignIn(TAccount account, bool persistent = false)
         {
-            SignIn(account, AuthenticationMethods.Password);
+            SignIn(account, AuthenticationMethods.Password, persistent);
         }
 
-        public virtual void SignIn(TAccount account, string method)
+        public virtual void SignIn(TAccount account, string method, bool persistent = false)
         {
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
@@ -106,7 +106,7 @@ namespace BrockAllen.MembershipReboot
             }
 
             // issue cookie
-            IssueToken(cp);
+            IssueToken(cp, persistentCookie:persistent);
         }
 
         private static List<Claim> GetBasicClaims(TAccount account, string method)

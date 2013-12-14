@@ -32,7 +32,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 BrockAllen.MembershipReboot.UserAccount account;
                 if (userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password, out account))
                 {
-                    authSvc.SignIn(account);
+                    authSvc.SignIn(account, model.RememberMe);
 
                     if (account.RequiresTwoFactorAuthCodeToSignIn())
                     {

@@ -10,6 +10,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        public bool RememberMe { get; set; }
+
         [ScaffoldColumn(false)]
         public string ReturnUrl { get; set; }
     }
