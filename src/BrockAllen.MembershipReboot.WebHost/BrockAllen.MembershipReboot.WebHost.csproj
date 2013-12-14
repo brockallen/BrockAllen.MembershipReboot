@@ -40,7 +40,6 @@
   <ItemGroup>
     <Compile Include="AspNetApplicationInformation.cs" />
     <Compile Include="AspNetCookieBasedTwoFactorAuthPolicy.cs" />
-    <Compile Include="ConfigurationExtensions.cs" />
     <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SamAuthenticationService.cs" />

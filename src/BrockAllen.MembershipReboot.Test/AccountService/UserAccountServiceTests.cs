@@ -465,7 +465,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CancelVerification_CloseAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.CancelVerification(LastVerificationKey);
+            subject.CancelNewAccount(LastVerificationKey);
             Assert.IsTrue(acct.IsAccountClosed);
         }
         
@@ -474,7 +474,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsNotNull(repository.Get(acct.ID));
-            subject.CancelVerification(LastVerificationKey);
+            subject.CancelNewAccount(LastVerificationKey);
             Assert.IsNull(repository.Get(acct.ID));
         }
         
@@ -482,7 +482,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CancelVerification_ValidKey_ReturnsTrue()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            subject.CancelVerification(LastVerificationKey);
+            subject.CancelNewAccount(LastVerificationKey);
         }
         
         [TestMethod]
@@ -490,7 +490,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             try
             {
-                subject.CancelVerification("123");
+                subject.CancelNewAccount("123");
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -509,7 +509,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             try
             {
-                subject.CancelVerification(key);
+                subject.CancelNewAccount(key);
                 Assert.Fail();
             }
             catch (ValidationException)
