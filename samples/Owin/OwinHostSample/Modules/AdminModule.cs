@@ -20,7 +20,7 @@ namespace OwinHostSample.Modules
         {
             this.Get[""] = ctx =>
                 {
-                    var userAccountService = this.Context.ToOwinContext().GetUserAccountService<UserAccount>();
+                    var userAccountService = this.Context.GetUserAccountService();
                     var names =
                         from a in userAccountService.GetAll()
                         select a;
@@ -30,7 +30,7 @@ namespace OwinHostSample.Modules
             this.Get["Detail/{id}"] = ctx =>
             {
                 var id = ctx.id;
-                var userAccountService = this.Context.ToOwinContext().GetUserAccountService<UserAccount>();
+                var userAccountService = this.Context.GetUserAccountService();
                 var account = userAccountService.GetByID(Guid.Parse(id));
 
                 return View["Detail", new { account }];

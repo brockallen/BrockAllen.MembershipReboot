@@ -3,15 +3,10 @@
  * see license.txt
  */
 
-using BrockAllen.MembershipReboot;
-using BrockAllen.MembershipReboot.Owin;
-using Microsoft.Owin;
+using Owin;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using Owin;
 
 namespace BrockAllen.MembershipReboot.Owin
 {
@@ -19,13 +14,13 @@ namespace BrockAllen.MembershipReboot.Owin
         where TAccount : UserAccount
     {
         Func<IDictionary<string, object>, Task> next;
-        Func<IOwinContext, UserAccountService<TAccount>> userAccountServiceFactory;
-        Func<IOwinContext, AuthenticationService<TAccount>> authenticationServiceFactory;
+        Func<IDictionary<string, object>, UserAccountService<TAccount>> userAccountServiceFactory;
+        Func<IDictionary<string, object>, AuthenticationService<TAccount>> authenticationServiceFactory;
 
         public MembershipRebootMiddleware(
             Func<IDictionary<string, object>, Task> next, 
-            Func<IOwinContext, UserAccountService<TAccount>> userAccountServiceFactory,
-            Func<IOwinContext, AuthenticationService<TAccount>> authenticationServiceFactory = null)
+            Func<IDictionary<string, object>, UserAccountService<TAccount>> userAccountServiceFactory,
+            Func<IDictionary<string, object>, AuthenticationService<TAccount>> authenticationServiceFactory = null)
         {
             this.next = next;
             this.userAccountServiceFactory = userAccountServiceFactory;
@@ -34,15 +29,13 @@ namespace BrockAllen.MembershipReboot.Owin
 
         public async Task Invoke(IDictionary<string, object> env)
         {
-            var ctx = new OwinContext(env);
-
-            ctx.SetUserAccountService(() =>
+            env.SetUserAccountService(() =>
             {
-                return this.userAccountServiceFactory(ctx);
+                return this.userAccountServiceFactory(env);
             });
-            ctx.SetAuthenticationService(() =>
+            env.SetAuthenticationService(() =>
             {
-                return this.authenticationServiceFactory(ctx);
+                return this.authenticationServiceFactory(env);
             });
 
             await next(env);
@@ -53,8 +46,8 @@ namespace BrockAllen.MembershipReboot.Owin
     { 
         public MembershipRebootMiddleware(
             Func<IDictionary<string, object>, Task> next,
-            Func<IOwinContext, UserAccountService<UserAccount>> userAccountServiceFactory,
-            Func<IOwinContext, AuthenticationService<UserAccount>> authenticationServiceFactory = null)
+            Func<IDictionary<string, object>, UserAccountService<UserAccount>> userAccountServiceFactory,
+            Func<IDictionary<string, object>, AuthenticationService<UserAccount>> authenticationServiceFactory = null)
             : base(next, userAccountServiceFactory, authenticationServiceFactory)
         {
         }

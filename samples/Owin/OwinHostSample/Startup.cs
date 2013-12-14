@@ -28,10 +28,10 @@ namespace OwinHostSample
             {
                 AuthenticationType = MembershipRebootOwinConstants.AuthenticationType
             };
-            Func<IOwinContext, UserAccountService> uaFunc = ctx =>
+            Func<IDictionary<string, object>, UserAccountService> uaFunc = env =>
             {
                 var appInfo = new OwinApplicationInformation(
-                    ctx,
+                    env,
                     "Test",
                     "Test Email Signature",
                     "/Login",
@@ -45,12 +45,12 @@ namespace OwinHostSample
                 config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
 
                 var svc = new UserAccountService(config, new DefaultUserAccountRepository());
-                svc.TwoFactorAuthenticationPolicy = new OwinCookieBasedTwoFactorAuthPolicy(ctx);
+                svc.TwoFactorAuthenticationPolicy = new OwinCookieBasedTwoFactorAuthPolicy(env);
                 return svc;
             };
-            Func<IOwinContext, AuthenticationService> authFunc = ctx =>
+            Func<IDictionary<string, object>, AuthenticationService> authFunc = env =>
             {
-                return new OwinAuthenticationService(cookieOptions.AuthenticationType, uaFunc(ctx), ctx);
+                return new OwinAuthenticationService(cookieOptions.AuthenticationType, uaFunc(env), env);
             };
 
             app.UseMembershipReboot(cookieOptions, uaFunc, authFunc);

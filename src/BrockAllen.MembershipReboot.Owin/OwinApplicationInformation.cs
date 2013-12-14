@@ -4,11 +4,7 @@
  */
 
 using Microsoft.Owin;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot.Owin
 {
@@ -17,7 +13,7 @@ namespace BrockAllen.MembershipReboot.Owin
         IOwinContext owinContext;
 
         public OwinApplicationInformation(
-            IOwinContext ctx,
+            IDictionary<string, object> env,
             string appName,
             string emailSig,
             string relativeLoginUrl,
@@ -25,7 +21,7 @@ namespace BrockAllen.MembershipReboot.Owin
             string relativeCancelNewAccountUrl,
             string relativeConfirmPasswordResetUrl)
         {
-            this.owinContext = ctx;
+            this.owinContext = new OwinContext(env);
             this.ApplicationName = appName;
             this.EmailSignature = emailSig;
             this.RelativeLoginUrl = relativeLoginUrl;

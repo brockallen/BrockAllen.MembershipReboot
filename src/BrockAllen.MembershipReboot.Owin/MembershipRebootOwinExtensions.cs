@@ -5,23 +5,18 @@
 
 using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Owin;
-using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Owin;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Microsoft.Owin
+namespace Owin
 {
     public static class MembershipRebootOwinExtensions
     {
         public static void UseMembershipReboot<TAccount>(
             this IAppBuilder app,
-            Func<IOwinContext, UserAccountService<TAccount>> userAccountServiceFactory,
-            Func<IOwinContext, AuthenticationService<TAccount>> authenticationServiceFactory = null
+            Func<IDictionary<string, object>, UserAccountService<TAccount>> userAccountServiceFactory,
+            Func<IDictionary<string, object>, AuthenticationService<TAccount>> authenticationServiceFactory = null
         )
             where TAccount : UserAccount
         {
@@ -32,8 +27,8 @@ namespace Microsoft.Owin
         public static void UseMembershipReboot<TAccount>(
             this IAppBuilder app,
             CookieAuthenticationOptions cookieOptions,
-            Func<IOwinContext, UserAccountService<TAccount>> userAccountServiceFactory,
-            Func<IOwinContext, AuthenticationService<TAccount>> authenticationServiceFactory = null
+            Func<IDictionary<string, object>, UserAccountService<TAccount>> userAccountServiceFactory,
+            Func<IDictionary<string, object>, AuthenticationService<TAccount>> authenticationServiceFactory = null
         )
             where TAccount : UserAccount
         {
@@ -68,41 +63,49 @@ namespace Microsoft.Owin
             });
         }
 
-        public static void SetUserAccountService<TAccount>(this IOwinContext ctx, Func<UserAccountService<TAccount>> func)
+        public static void SetUserAccountService<TAccount>(this IDictionary<string, object> env, Func<UserAccountService<TAccount>> func)
             where TAccount : UserAccount
         {
-            ctx.SetService(func);
+            env.SetService(func);
         }
-        public static UserAccountService<TAccount> GetUserAccountService<TAccount>(this IOwinContext ctx)
+        public static UserAccountService<TAccount> GetUserAccountService<TAccount>(this IDictionary<string, object> env)
             where TAccount : UserAccount
         {
-            return ctx.GetService<UserAccountService<TAccount>>();
-        }
-        
-        public static void SetAuthenticationService<TAccount>(this IOwinContext ctx, Func<AuthenticationService<TAccount>> func)
-            where TAccount : UserAccount
-        {
-            ctx.SetService(func);
-        }
-        public static AuthenticationService<TAccount> GetAuthenticationService<TAccount>(this IOwinContext ctx)
-            where TAccount : UserAccount
-        {
-            return ctx.GetService<AuthenticationService<TAccount>>();
+            return env.GetService<UserAccountService<TAccount>>();
         }
 
-        public static void SetService<T>(this IOwinContext ctx, Func<T> f)
+        public static void SetAuthenticationService<TAccount>(this IDictionary<string, object> env, Func<AuthenticationService<TAccount>> func)
+            where TAccount : UserAccount
+        {
+            env.SetService(func);
+        }
+        public static AuthenticationService<TAccount> GetAuthenticationService<TAccount>(this IDictionary<string, object> env)
+            where TAccount : UserAccount
+        {
+            return env.GetService<AuthenticationService<TAccount>>();
+        }
+
+        public static void SetService<T>(this IDictionary<string, object> env, Func<T> f)
         {
             var key = "mr.Service." + typeof(T).FullName;
-            if (!ctx.Environment.Keys.Contains(key))
+
+            object val;
+            if (!env.TryGetValue(key, out val))
             {
-                ctx.Set(key, new Lazy<T>(f));
+                env[key] = new Lazy<T>(f);
             }
         }
-        public static T GetService<T>(this IOwinContext ctx)
+        public static T GetService<T>(this IDictionary<string, object> env)
         {
             var key = "mr.Service." + typeof(T).FullName;
-            var lazy = ctx.Get<Lazy<T>>(key);
-            if (lazy != null) return lazy.Value;
+
+            object val;
+            if (env.TryGetValue(key, out val))
+            {
+                var lazy = (Lazy<T>)val;
+                if (lazy != null) return lazy.Value;
+            }
+
             return default(T);
         }
     }

@@ -6,9 +6,6 @@
 using Microsoft.Owin;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot.Owin
 {
@@ -16,9 +13,9 @@ namespace BrockAllen.MembershipReboot.Owin
     {
         IOwinContext owinContext;
 
-        public OwinCookieBasedTwoFactorAuthPolicy(IOwinContext ctx)
+        public OwinCookieBasedTwoFactorAuthPolicy(IDictionary<string, object> env)
         {
-            this.owinContext = ctx;
+            this.owinContext = new OwinContext(env);
         }
 
         protected override string GetCookie(string name)

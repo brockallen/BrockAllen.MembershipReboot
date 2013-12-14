@@ -7,10 +7,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot.Owin
 {
@@ -22,29 +19,29 @@ namespace BrockAllen.MembershipReboot.Owin
         public OwinAuthenticationService(
             string authenticationType,
             UserAccountService svc,
-            IOwinContext ctx,
+            IDictionary<string, object> env,
             ClaimsAuthenticationManager transformer
         )
             : base(svc, transformer)
         {
             this.authenticationType = authenticationType;
-            context = ctx;
+            context = new OwinContext(env);
         }
 
         public OwinAuthenticationService(
             string authenticationType,
             UserAccountService svc,
-            IOwinContext ctx
+            IDictionary<string, object> env
         )
-            : this(authenticationType, svc, ctx, null)
+            : this(authenticationType, svc, env, null)
         {
         }
 
         public OwinAuthenticationService(
             UserAccountService svc,
-            IOwinContext ctx
+            IDictionary<string, object> env
         )
-            : this(MembershipRebootOwinConstants.AuthenticationType, svc, ctx, null)
+            : this(MembershipRebootOwinConstants.AuthenticationType, svc, env, null)
         {
         }
 
