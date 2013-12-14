@@ -27,8 +27,7 @@ namespace OwinHostSample.Modules
                 if (Request.Form["button"] == "yes")
                 {
                     var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
-                    var acct = userAccountService.GetByUsername(this.Context.CurrentUser.UserName);
-                    userAccountService.DeleteAccount(acct.ID);
+                    userAccountService.DeleteAccount(this.Context.CurrentUser.GetUserID());
                     return this.Response.AsRedirect("~/Logout");
                 }
                 return View["Index"];

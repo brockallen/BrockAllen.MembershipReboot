@@ -4,6 +4,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Nancy;
 using Nancy.Owin;
+using Nancy.Security;
 using Owin;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,11 @@ namespace OwinHostSample
             var auth = context.GetOwinAuthentication();
             return auth.User;
         }
+
+        public static Guid GetUserID(this IUserIdentity user)
+        {
+            return ((ClaimsUserIdentity)user).Principal.GetUserID();
+       }
 
         public static void ConfigureMembershipReboot(this IAppBuilder app)
         {

@@ -4,25 +4,11 @@
     ViewBag.Title = "Confirm";
 }
 
-@if (Model)
-{
-    <h2>Registration Confirmed</h2>
+<h2>Confirm Registration</h2>
+<form method="post">
     <p>
-        Your account is confirmed. You can now login 
-        <a href="~/Login">here</a>.
+        <label for="pass">Re-Enter your password</label>
+        <input type="password" id="pass" name="pass">
     </p>
-}
-else
-{
-    <h2>Error confirming registration</h2>
-    <p>
-        There was an error confirming the registration. If you have already confirmed your account
-        then you should recieve a confirmation email and should be able to login 
-        <a href="~/Login">here</a>.
-    </p>
-    <p>
-        If you would like to re-register click 
-        <a href="~/Register">here</a>.
-    </p>
-}
-<p>Thanks!</p>
+    <p><button>Confirm</button></p>
+</form>

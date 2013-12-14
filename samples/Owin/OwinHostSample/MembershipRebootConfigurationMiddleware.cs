@@ -32,15 +32,9 @@ namespace OwinHostSample
                     "/Login",
                     "/Register/Confirm/",
                     "/Register/Cancel/",
-                    "/PasswordReset/Confirm/",
-                    "/ChangeEmail/Confirm/");
+                    "/PasswordReset/Confirm/");
 
                 var emailFormatter = new EmailMessageFormatter(appInfo);
-                if (settings.RequireAccountVerification)
-                {
-                    // uncomment if you want email notifications -- also update smtp settings in web.config
-                    mrConfig.AddEventHandler(new EmailAccountCreatedEventHandler(emailFormatter));
-                }
                 // uncomment if you want email notifications -- also update smtp settings in web.config
                 mrConfig.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
 

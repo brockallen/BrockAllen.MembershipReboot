@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
+using BrockAllen.MembershipReboot;
 
 namespace OwinHostSample.Modules
 {
@@ -23,23 +24,22 @@ namespace OwinHostSample.Modules
             {
                 var gender = (string)this.Request.Form["gender"];
                 var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
-                var account = userAccountService.GetByUsername(this.Context.CurrentUser.UserName);
+
                 if (String.IsNullOrWhiteSpace(gender))
                 {
-                    account.RemoveClaim(ClaimTypes.Gender);
+                    userAccountService.RemoveClaim(this.Context.CurrentUser.GetUserID(), ClaimTypes.Gender);
                 }
                 else
                 {
                     // if you only want one of these claim types, uncomment the next line
                     //account.RemoveClaim(ClaimTypes.Gender);
-                    account.AddClaim(ClaimTypes.Gender, gender);
+                    userAccountService.AddClaim(this.Context.CurrentUser.GetUserID(), ClaimTypes.Gender, gender);
                 }
-                userAccountService.Update(account);
 
                 // since we've changed the claims, we need to re-issue the cookie that
                 // contains the claims.
                 var authSvc = this.Context.ToOwinContext().GetAuthenticationService();
-                authSvc.SignIn(account);
+                authSvc.SignIn(this.Context.CurrentUser.GetUserID());
 
                 return this.Response.AsRedirect("~/");
             };

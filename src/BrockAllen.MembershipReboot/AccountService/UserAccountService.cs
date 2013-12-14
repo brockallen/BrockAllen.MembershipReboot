@@ -486,28 +486,28 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        public virtual void CancelVerification(string key)
+        public virtual void CancelNewAccount(string key)
         {
             bool closed;
-            CancelVerification(key, out closed);
+            CancelNewAccount(key, out closed);
         }
 
-        public virtual void CancelVerification(string key, out bool accountClosed)
+        public virtual void CancelNewAccount(string key, out bool accountClosed)
         {
-            Tracing.Information("[UserAccountService.CancelVerification] called: {0}", key);
+            Tracing.Information("[UserAccountService.CancelNewAccount] called: {0}", key);
 
             accountClosed = false;
 
             var account = this.GetByVerificationKey(key);
             if (account == null)
             {
-                Tracing.Error("[UserAccountService.CancelVerification] failed -- account not found from key");
+                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- account not found from key");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
             if (account.VerificationPurpose == null)
             {
-                Tracing.Error("[UserAccountService.CancelVerification] failed -- no purpose");
+                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- no purpose");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
@@ -515,7 +515,7 @@ namespace BrockAllen.MembershipReboot
             var result = Configuration.Crypto.SlowEquals(account.VerificationKey, hashedKey);
             if (!result)
             {
-                Tracing.Error("[UserAccountService.CancelVerification] failed -- key verification failed");
+                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- key verification failed");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
 
@@ -523,15 +523,16 @@ namespace BrockAllen.MembershipReboot
                 account.IsNew())
             {
                 // if last login is null then they've never logged in so we can delete the account
-                Tracing.Verbose("[UserAccountService.CancelVerification] succeeded (deleting account)");
+                Tracing.Verbose("[UserAccountService.CancelNewAccount] succeeded (deleting account)");
                 DeleteAccount(account);
                 accountClosed = true;
             }
             else
             {
-                Tracing.Verbose("[UserAccountService.CancelVerification] succeeded");
-                ClearVerificationKey(account);
-                Update(account);
+                Tracing.Verbose("[UserAccountService.CancelNewAccount] succeeded");
+                //ClearVerificationKey(account);
+                //Update(account);
+                throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
         }
 

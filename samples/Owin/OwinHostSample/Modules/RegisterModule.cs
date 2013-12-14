@@ -28,7 +28,7 @@ namespace OwinHostSample.Modules
                 {
                     var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
                     userAccountService.CreateAccount(model.Username, model.Password, model.Email);
-                    if (userAccountService.Configuration.SecuritySettings.RequireAccountVerification)
+                    if (userAccountService.Configuration.RequireAccountVerification)
                     {
                         return View["Success", model];
                     }
@@ -48,28 +48,32 @@ namespace OwinHostSample.Modules
             this.Post["Confirm"] = ctx =>
             {
                 var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
-                var result = userAccountService.VerifyAccount((string)this.Request.Form["id"]);
-                return View["Confirm", result];
+                userAccountService.VerifyEmailFromKey((string)this.Request.Form["id"]);
+                return View["Confirm"];
             };
 
             this.Post["Cancel"] = ctx =>
             {
                 var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
-                var result = userAccountService.CancelNewAccount((string)this.Request.Form["id"]);
-                return View["Cancel", result];
+                userAccountService.CancelNewAccount((string)this.Request.Form["id"]);
+                return View["Cancel"];
             };
             this.Get["Confirm/{id}"] = ctx =>
             {
+                return View["Confirm"];
+            };
+            this.Post["Confirm/{id}"] = ctx =>
+            {
                 var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
-                var result = userAccountService.VerifyAccount((string)ctx.id);
-                return View["Confirm", result];
+                userAccountService.VerifyEmailFromKey((string)ctx.id, Request.Form["pass"]);
+                return View["Confirmed"];
             };
 
             this.Get["Cancel/{id}"] = ctx =>
             {
                 var userAccountService = this.Context.ToOwinContext().GetUserAccountService();
-                var result = userAccountService.CancelNewAccount((string)ctx.id);
-                return View["Cancel", result];
+                userAccountService.CancelNewAccount((string)ctx.id);
+                return View["Cancel"];
             };
         }
     }
