@@ -1,6 +1,8 @@
 ﻿using BrockAllen.MembershipReboot.Mvc.App_Start;
 using System.Data.Entity;
+using System.Globalization;
 using System.Security.Claims;
+using System.Threading;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -21,6 +23,13 @@ namespace BrockAllen.MembershipReboot.Mvc
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+        }
+
+        void Application_BeginRequest()
+        {
+            //Thread.CurrentThread.CurrentCulture =
+            //    Thread.CurrentThread.CurrentUICulture =
+            //    CultureInfo.CreateSpecificCulture("ru-ru");
         }
     }
 }

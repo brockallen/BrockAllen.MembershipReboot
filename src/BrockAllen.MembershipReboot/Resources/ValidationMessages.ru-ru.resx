@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccountAlreadyVerified" xml:space="preserve">
+    <value>Email для данного аккаунта уже подтвержден.</value>
+  </data>
+  <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
+    <value>Невозможно создать аккаунт, т.к. отсутствует email в идентификационном провайдере.</value>
+  </data>
+  <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
+    <value>Этот аккаунт не настроен на использование секретного вопроса и ответа.</value>
+  </data>
+  <data name="AccountNotVerified" xml:space="preserve">
+    <value>Email для данного аккаунта еще не подтвержден.</value>
+  </data>
+  <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
+    <value>Для сброса пароля данного аккаунта необходимо наличие секретного вопроса и ответа.</value>
+  </data>
+  <data name="AddClientCertForTwoFactor" xml:space="preserve">
+    <value>Добавьте пользовательский сертификат, чтобы настроить двухфакторную аутентификацию.</value>
+  </data>
+  <data name="CertificateAlreadyInUse" xml:space="preserve">
+    <value>Этот сертификат уже используется другим аккаунтом.</value>
+  </data>
+  <data name="CodeRequired" xml:space="preserve">
+    <value>Необходимо указать код.</value>
+  </data>
+  <data name="EmailAlreadyInUse" xml:space="preserve">
+    <value>Этот email уже зарегистрирован.</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Необходимо указать email.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Невалидный email.</value>
+  </data>
+  <data name="InvalidKey" xml:space="preserve">
+    <value>Невалидный ключ.</value>
+  </data>
+  <data name="InvalidName" xml:space="preserve">
+    <value>Невалидное имя.</value>
+  </data>
+  <data name="InvalidNewPassword" xml:space="preserve">
+    <value>Невалидный новый пароль.</value>
+  </data>
+  <data name="InvalidOldPassword" xml:space="preserve">
+    <value>Невалидный старый пароль.</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Невалидный пароль.</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>Невалидный номер телефона.</value>
+  </data>
+  <data name="InvalidQuestionOrAnswer" xml:space="preserve">
+    <value>Невалидный секретный вопрос или ответ.</value>
+  </data>
+  <data name="InvalidTenant" xml:space="preserve">
+    <value>Невалидный арендатор.</value>
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value>Невалидное имя пользователя.</value>
+  </data>
+  <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
+    <value>Невозможно войти с данным поставщиком, т.к. email уже ассоциирован с другим аккаунтом. Пожалуйста, войдите под своим локальным аккаунтом, а затем ассоциируйте поставщика.</value>
+  </data>
+  <data name="LoginNotAllowed" xml:space="preserve">
+    <value>Для данного аккаунта вход не разрешен.</value>
+  </data>
+  <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
+    <value>Этот номер телефона уже используется другим аккаунтом.</value>
+  </data>
+  <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
+    <value>Номер телефона должен отличаться от текущего.</value>
+  </data>
+  <data name="MobilePhoneRequired" xml:space="preserve">
+    <value>Необходимо указать номер мобильного телефона.</value>
+  </data>
+  <data name="NameAlreadyInUse" xml:space="preserve">
+    <value>Это имя уже используется.</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Необходимо указать имя.</value>
+  </data>
+  <data name="NewPasswordMustBeDifferent" xml:space="preserve">
+    <value>Новый пароль должен отличаться от текущего.</value>
+  </data>
+  <data name="PasswordComplexityRules" xml:space="preserve">
+    <value>Пароль должен содержать как минимум {0} следующих символов: один в верхнем регистре, один - в нижнем, одну цифру и одну другую.</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>Пароль должен содержать как минимум {0} символов.</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Необходимо указать пароль.</value>
+  </data>
+  <data name="PasswordResetErrorNoEmail" xml:space="preserve">
+    <value>Сброс пароля невозможен, т.к. email для данного аккаунта не подтвержден.</value>
+  </data>
+  <data name="RegisterMobileForTwoFactor" xml:space="preserve">
+    <value>Укажите номер мобильного телефона, чтобы использовать мобильную двухфакторную аутентификацию.</value>
+  </data>
+  <data name="SecretAnswerRequired" xml:space="preserve">
+    <value>Необходимо указать секретный ответ.</value>
+  </data>
+  <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
+    <value>Этот секретный вопрос для сброса пароля уже используется.</value>
+  </data>
+  <data name="SecretQuestionRequired" xml:space="preserve">
+    <value>Необходимо указать секретный вопрос.</value>
+  </data>
+  <data name="TenantRequired" xml:space="preserve">
+    <value>Необходимо указать арендатора.</value>
+  </data>
+  <data name="UsernameAlreadyInUse" xml:space="preserve">
+    <value>Это имя пользователя уже используется.</value>
+  </data>
+  <data name="UsernameCannotContainAtSign" xml:space="preserve">
+    <value>Имя пользователя не может содержать символ '@'.</value>
+  </data>
+  <data name="UsernameOnlyContainLettersAndDigits" xml:space="preserve">
+    <value>Имя пользователя может содержать только буквы и цифры.</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>Необходимо указать имя пользователя.</value>
+  </data>
+</root>

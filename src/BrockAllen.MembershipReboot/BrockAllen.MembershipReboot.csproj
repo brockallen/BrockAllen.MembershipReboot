@@ -62,6 +62,11 @@
     <Compile Include="Groups\GroupService.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Resources\ValidationMessages.ru-ru.Designer.cs">
+      <DependentUpon>ValidationMessages.ru-ru.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Resources\ValidationMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -140,6 +145,11 @@
     <EmbeddedResource Include="Notification\Email\EmailTemplates\EmailVerifiedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Body.txt" />
+    <EmbeddedResource Include="Resources\ValidationMessages.ru-ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ValidationMessages.ru-ru.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\ValidationMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
