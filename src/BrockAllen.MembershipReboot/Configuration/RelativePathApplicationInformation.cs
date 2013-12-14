@@ -6,14 +6,25 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class RelativePathApplicationInformation : ApplicationInformation
+    public class RelativePathApplicationInformation : ApplicationInformation
     {
+        public RelativePathApplicationInformation()
+        {
+        }
+        public RelativePathApplicationInformation(string baseUrl)
+        {
+            this.baseUrl = baseUrl;
+        }
+
         public string RelativeLoginUrl { get; set; }
         public string RelativeConfirmPasswordResetUrl { get; set; }
         public string RelativeConfirmChangeEmailUrl { get; set; }
         public string RelativeCancelVerificationUrl { get; set; }
 
-        protected abstract string GetApplicationBaseUrl();
+        protected virtual string GetApplicationBaseUrl()
+        {
+            throw new NotImplementedException("Either set baseUrl as ctor param or derive and override GetApplicationBaseUrl");
+        }
 
         public bool HasBaseUrl
         {
