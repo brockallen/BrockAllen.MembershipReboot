@@ -97,57 +97,90 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
         
         public override void Down()
         {
-            AddColumn("dbo.LinkedAccountClaims", "ProviderAccountID", c => c.String(nullable: false, maxLength: 100));
-            AddColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 50));
+            //AddColumn("dbo.LinkedAccountClaims", "ProviderAccountID", c => c.String(nullable: false, maxLength: 100));
+            //AddColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 50));
             AddColumn("dbo.LinkedAccountClaims", "UserAccountID", c => c.Guid(nullable: false));
-            AddColumn("dbo.LinkedAccounts", "UserAccountID", c => c.Guid(nullable: false));
-            AddColumn("dbo.UserClaims", "UserAccountID", c => c.Guid(nullable: false));
-            AddColumn("dbo.UserCertificates", "UserAccountID", c => c.Guid(nullable: false));
+            //AddColumn("dbo.LinkedAccounts", "UserAccountID", c => c.Guid(nullable: false));
+            //AddColumn("dbo.UserClaims", "UserAccountID", c => c.Guid(nullable: false));
+            //AddColumn("dbo.UserCertificates", "UserAccountID", c => c.Guid(nullable: false));
+            
             DropForeignKey("dbo.LinkedAccountClaims", new[] { "LinkedAccount_ProviderName", "LinkedAccount_ProviderAccountID" }, "dbo.LinkedAccounts");
             DropForeignKey("dbo.LinkedAccounts", "UserAccount_ID", "dbo.UserAccounts");
             DropForeignKey("dbo.UserClaims", "UserAccount_ID", "dbo.UserAccounts");
             DropForeignKey("dbo.UserCertificates", "UserAccount_ID", "dbo.UserAccounts");
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccount_ID", "dbo.UserAccounts");
             DropForeignKey("dbo.PasswordResetSecrets", "UserAccount_ID", "dbo.UserAccounts");
+            
             DropIndex("dbo.LinkedAccountClaims", new[] { "LinkedAccount_ProviderName", "LinkedAccount_ProviderAccountID" });
             DropIndex("dbo.LinkedAccounts", new[] { "UserAccount_ID" });
             DropIndex("dbo.UserClaims", new[] { "UserAccount_ID" });
             DropIndex("dbo.UserCertificates", new[] { "UserAccount_ID" });
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccount_ID" });
             DropIndex("dbo.PasswordResetSecrets", new[] { "UserAccount_ID" });
+
             DropPrimaryKey("dbo.LinkedAccountClaims");
-            AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             DropPrimaryKey("dbo.LinkedAccounts");
-            AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
             DropPrimaryKey("dbo.UserClaims");
-            AddPrimaryKey("dbo.UserClaims", new[] { "UserAccountID", "Type", "Value" });
             DropPrimaryKey("dbo.UserCertificates");
+
+            RenameColumn("dbo.UserCertificates", "UserAccount_ID", "UserAccountID");
+            RenameColumn("dbo.UserClaims", "UserAccount_ID", "UserAccountID");
+            RenameColumn("dbo.LinkedAccounts", "UserAccount_ID", "UserAccountID");
+            RenameColumn("dbo.LinkedAccountClaims", "LinkedAccount_ProviderName", "ProviderName");
+            AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 50));
+            RenameColumn("dbo.LinkedAccountClaims", "LinkedAccount_ProviderAccountID", "ProviderAccountID");
+
+            AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
+            AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
+            AddPrimaryKey("dbo.UserClaims", new[] { "UserAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.UserCertificates", new[] { "UserAccountID", "Thumbprint" });
+            
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 50));
             AlterColumn("dbo.UserAccounts", "HashedPassword", c => c.String(nullable: false, maxLength: 200));
             AlterColumn("dbo.UserAccounts", "MobilePhoneNumber", c => c.String());
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String());
             AlterColumn("dbo.UserAccounts", "PasswordChanged", c => c.DateTime(nullable: false));
             AlterColumn("dbo.UserAccounts", "Email", c => c.String(nullable: false, maxLength: 100));
-            DropColumn("dbo.LinkedAccountClaims", "LinkedAccount_ProviderAccountID");
-            DropColumn("dbo.LinkedAccountClaims", "LinkedAccount_ProviderName");
-            DropColumn("dbo.LinkedAccounts", "UserAccount_ID");
-            DropColumn("dbo.UserClaims", "UserAccount_ID");
-            DropColumn("dbo.UserCertificates", "UserAccount_ID");
+            
+            //DropColumn("dbo.LinkedAccountClaims", "LinkedAccount_ProviderAccountID");
+            //DropColumn("dbo.LinkedAccountClaims", "LinkedAccount_ProviderName");
+            //DropColumn("dbo.LinkedAccounts", "UserAccount_ID");
+            //DropColumn("dbo.UserClaims", "UserAccount_ID");
+            //DropColumn("dbo.UserCertificates", "UserAccount_ID");
+
             DropColumn("dbo.UserAccounts", "VerificationStorage");
             DropColumn("dbo.UserAccounts", "MobilePhoneNumberChanged");
             DropColumn("dbo.UserAccounts", "FailedPasswordResetCount");
             DropColumn("dbo.UserAccounts", "LastFailedPasswordReset");
+            
             DropTable("dbo.TwoFactorAuthTokens");
             DropTable("dbo.PasswordResetSecrets");
+            
             CreateIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
             CreateIndex("dbo.LinkedAccounts", "UserAccountID");
             CreateIndex("dbo.UserClaims", "UserAccountID");
             CreateIndex("dbo.UserCertificates", "UserAccountID");
-            AddForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, cascadeDelete: true);
+
             AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", "ID", cascadeDelete: true);
             AddForeignKey("dbo.UserClaims", "UserAccountID", "dbo.UserAccounts", "ID", cascadeDelete: true);
             AddForeignKey("dbo.UserCertificates", "UserAccountID", "dbo.UserAccounts", "ID", cascadeDelete: true);
+            this.Sql(@"
+DECLARE @userid uniqueidentifier, @name nvarchar(50), @id nvarchar(100);
+
+DECLARE tmp_cursor CURSOR FOR SELECT distinct [UserAccountID],[ProviderName],[ProviderAccountID] FROM [MembershipReboot].[dbo].[LinkedAccounts]
+OPEN tmp_cursor
+
+FETCH NEXT FROM tmp_cursor INTO @userid, @name, @id;
+WHILE @@FETCH_STATUS = 0
+BEGIN
+	--print  @name + ',' +  @id;
+	update [dbo].[LinkedAccountClaims] set UserAccountID = @userid where [ProviderName] = @name and [ProviderAccountID] = @id
+	FETCH NEXT FROM tmp_cursor INTO @userid, @name, @id;
+END
+CLOSE tmp_cursor;
+DEALLOCATE tmp_cursor;
+");
+            AddForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, cascadeDelete: true);
         }
     }
 }
