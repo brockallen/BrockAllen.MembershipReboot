@@ -6,6 +6,7 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {
@@ -31,22 +32,22 @@ namespace BrockAllen.MembershipReboot.Mvc
         public int ID { get; set; }
         public Guid UserID { get; set; }
         public DateTime DateChanged { get; set; }
+        [Required]
         public string PasswordHash { get; set; }
     }
 
     public class CustomUserAccount : UserAccount
     {
+        public int NonGuidPrimaryKey { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Email
+        
+        [NotMapped]
+        public string OtherFirstName
         {
             get
             {
-                return this.GetClaimValue(ClaimTypes.Email);
-            }
-            set
-            {
-                
+                return this.GetClaimValue(ClaimTypes.GivenName);
             }
         }
     }
@@ -72,6 +73,12 @@ namespace BrockAllen.MembershipReboot.Mvc
         public DbSet<CustomUserAccount> UserAccountsTableWithSomeOtherName { get; set; }
         public DbSet<AuthenticationAudit> Audits { get; set; }
         public DbSet<PasswordHistory> PasswordHistory { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.ConfigureMembershipReboot<CustomUserAccount>();
+            modelBuilder.Entity<CustomUserAccount>().HasKey(x => x.NonGuidPrimaryKey);
+        }
     }
 
     public class CustomRepository : DbContextUserAccountRepository<CustomDatabase, CustomUserAccount>, IUserAccountRepository<CustomUserAccount>

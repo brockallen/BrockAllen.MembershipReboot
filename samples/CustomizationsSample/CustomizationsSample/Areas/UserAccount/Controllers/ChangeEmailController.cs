@@ -10,10 +10,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         UserAccountService<CustomUserAccount> userAccountService;
         AuthenticationService<CustomUserAccount> authSvc;
 
-        public ChangeEmailController(
-            UserAccountService<CustomUserAccount> userAccountService, AuthenticationService<CustomUserAccount> authSvc)
+        public ChangeEmailController(AuthenticationService<CustomUserAccount> authSvc)
         {
-            this.userAccountService = userAccountService;
+            this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;
         }
 
@@ -31,7 +30,14 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     this.userAccountService.ChangeEmailRequest(User.GetUserID(), model.NewEmail);
-                    return View("ChangeRequestSuccess", (object)model.NewEmail);
+                    if (userAccountService.Configuration.RequireAccountVerification)
+                    {
+                        return View("ChangeRequestSuccess", (object)model.NewEmail);
+                    }
+                    else
+                    {
+                        return View("Success");
+                    }
                 }
                 catch (ValidationException ex)
                 {
@@ -42,13 +48,35 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             return View("Index", model);
         }
 
+        [AllowAnonymous]
         public ActionResult Confirm(string id)
         {
-            var vm = new ChangeEmailFromKeyInputModel();
-            vm.Key = id;
-            return View("Confirm", vm);
+            var account = this.userAccountService.GetByVerificationKey(id);
+            if (account.HasPassword())
+            {
+                var vm = new ChangeEmailFromKeyInputModel();
+                vm.Key = id;
+                return View("Confirm", vm);
+            }
+            else
+            {
+                try
+                {
+                    userAccountService.VerifyEmailFromKey(id, out account);
+                    // since we've changed the email, we need to re-issue the cookie that
+                    // contains the claims.
+                    authSvc.SignIn(account);
+                    return RedirectToAction("Success");
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+                return View("Confirm", null);
+            }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Confirm(ChangeEmailFromKeyInputModel model)
@@ -57,12 +85,13 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    this.userAccountService.VerifyEmailFromKey(model.Key, model.Password);
+                    CustomUserAccount account;
+                    this.userAccountService.VerifyEmailFromKey(model.Key, model.Password, out account);
+                    
                     // since we've changed the email, we need to re-issue the cookie that
                     // contains the claims.
-                    var account = this.userAccountService.GetByID(User.GetUserID());
                     authSvc.SignIn(account);
-                    return View("Success");
+                    return RedirectToAction("Success");
                 }
                 catch (ValidationException ex)
                 {
@@ -71,6 +100,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             }
             
             return View("Confirm", model);
+        }
+
+        public ActionResult Success()
+        {
+            return View();
         }
     }
 }

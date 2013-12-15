@@ -25,7 +25,6 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [HttpPost]
         public ActionResult Index(string gender)
         {
-            var account = userAccountService.GetByUsername(User.Identity.Name);
             if (String.IsNullOrWhiteSpace(gender))
             {
                 userAccountService.RemoveClaim(User.GetUserID(), ClaimTypes.Gender);
@@ -36,11 +35,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 //account.RemoveClaim(ClaimTypes.Gender);
                 userAccountService.AddClaim(User.GetUserID(), ClaimTypes.Gender, gender);
             }
-            userAccountService.Update(account);
 
             // since we've changed the claims, we need to re-issue the cookie that
             // contains the claims.
-            authSvc.SignIn(account);
+            authSvc.SignIn(User.GetUserID());
 
             return RedirectToAction("Index");
         }

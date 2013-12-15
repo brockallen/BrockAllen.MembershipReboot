@@ -11,24 +11,14 @@ namespace BrockAllen.MembershipReboot
 {
     public class PasswordResetSecret
     {
-        internal protected PasswordResetSecret()
-        {
-        }
-
-        [Key]
-        [Column(Order = 1)]
-        public virtual Guid PasswordResetSecretID { get; internal set; }
-
-        [Key]
-        [Column(Order = 2)]
-        public virtual Guid UserAccountID { get; internal set; }
+        public virtual Guid PasswordResetSecretID { get; protected internal set; }
 
         [StringLength(150)]
         [Required]
-        public virtual string Question { get; internal set; }
+        public virtual string Question { get; protected internal set; }
 
         [StringLength(150)]
         [Required]
-        public virtual string Answer { get; internal set; }
+        public virtual string Answer { get; protected internal set; }
     }
 }

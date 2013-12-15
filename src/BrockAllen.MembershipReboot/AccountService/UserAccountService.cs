@@ -408,6 +408,18 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.Init] called");
 
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.Init] failed -- null account");
+                throw new ArgumentNullException("account");
+            }
+            
+            if (account.Claims == null) account.Claims = new HashSet<UserClaim>();
+            if (account.LinkedAccounts == null) account.LinkedAccounts = new HashSet<LinkedAccount>();
+            if (account.Certificates == null) account.Certificates = new HashSet<UserCertificate>();
+            if (account.TwoFactorAuthTokens == null) account.TwoFactorAuthTokens = new HashSet<TwoFactorAuthToken>();
+            if (account.PasswordResetSecrets == null) account.PasswordResetSecrets = new HashSet<PasswordResetSecret>();
+
             if (String.IsNullOrWhiteSpace(tenant))
             {
                 Tracing.Error("[UserAccountService.Init] failed -- no tenant");
@@ -531,9 +543,7 @@ namespace BrockAllen.MembershipReboot
             }
             else
             {
-                Tracing.Verbose("[UserAccountService.CancelNewAccount] succeeded");
-                //ClearVerificationKey(account);
-                //Update(account);
+                Tracing.Error("[UserAccountService.CancelNewAccount] account not new");
                 throw new ValidationException(Resources.ValidationMessages.InvalidKey);
             }
         }
@@ -1209,7 +1219,6 @@ namespace BrockAllen.MembershipReboot
 
             var secret = new PasswordResetSecret();
             secret.PasswordResetSecretID = Guid.NewGuid();
-            secret.UserAccountID = account.ID;
             secret.Question = question;
             secret.Answer = this.Configuration.Crypto.Hash(answer);
             account.PasswordResetSecrets.Add(secret);
@@ -2101,7 +2110,6 @@ namespace BrockAllen.MembershipReboot
             if (!account.HasClaim(type, value))
             {
                 var claim = new UserClaim();
-                claim.UserAccountID = account.ID;
                 claim.Type = type;
                 claim.Value = value;
                 account.Claims.Add(claim);
@@ -2202,7 +2210,7 @@ namespace BrockAllen.MembershipReboot
             if (linked == null)
             {
                 linked = new LinkedAccount();
-                linked.UserAccountID = account.ID;
+                if (linked.Claims == null) linked.Claims = new HashSet<LinkedAccountClaim>();
                 linked.ProviderName = provider;
                 linked.ProviderAccountID = id;
                 account.LinkedAccounts.Add(linked);
@@ -2220,9 +2228,6 @@ namespace BrockAllen.MembershipReboot
             foreach (var c in claims)
             {
                 var claim = new LinkedAccountClaim();
-                claim.UserAccountID = linked.UserAccountID;
-                claim.ProviderAccountID = linked.ProviderAccountID;
-                claim.ProviderName = linked.ProviderName;
                 claim.Type = c.Type;
                 claim.Value = c.Value;
                 linked.Claims.Add(claim);
@@ -2313,7 +2318,6 @@ namespace BrockAllen.MembershipReboot
             }
 
             var cert = new UserCertificate();
-            cert.UserAccountID = account.ID;
             cert.Thumbprint = thumbprint;
             cert.Subject = subject;
             account.Certificates.Add(cert);
@@ -2404,7 +2408,6 @@ namespace BrockAllen.MembershipReboot
             var value = this.Configuration.Crypto.GenerateSalt();
 
             var item = new TwoFactorAuthToken();
-            item.UserAccountID = account.ID;
             item.Token = this.Configuration.Crypto.Hash(value);
             item.Issued = UtcNow;
             account.TwoFactorAuthTokens.Add(item);

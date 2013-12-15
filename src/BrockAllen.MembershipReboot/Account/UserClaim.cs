@@ -11,20 +11,9 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserClaim
     {
-        internal protected UserClaim()
-        {
-        }
-
-        [Key]
-        [Column(Order = 1)]
-        public virtual Guid UserAccountID { get; internal set; }
-        [Key]
-        [Column(Order = 2)]
         [StringLength(150)]
-        public virtual string Type { get; internal set; }
-        [Key]
-        [Column(Order = 3)]
+        public virtual string Type { get; protected internal set; }
         [StringLength(150)]
-        public virtual string Value { get; internal set; }
+        public virtual string Value { get; protected internal set; }
     }
 }
