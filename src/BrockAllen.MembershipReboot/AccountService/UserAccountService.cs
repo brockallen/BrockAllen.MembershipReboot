@@ -1217,7 +1217,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccountService.AddPasswordResetSecret] success");
 
-            var secret = new PasswordResetSecret();
+            var secret = NewPasswordResetSecret();
             secret.PasswordResetSecretID = Guid.NewGuid();
             secret.Question = question;
             secret.Answer = this.Configuration.Crypto.Hash(answer);
@@ -2209,7 +2209,7 @@ namespace BrockAllen.MembershipReboot
             var linked = GetLinkedAccount(account, provider, id);
             if (linked == null)
             {
-                linked = new LinkedAccount();
+                linked = NewLinkedAccount();
                 if (linked.Claims == null) linked.Claims = new HashSet<LinkedAccountClaim>();
                 linked.ProviderName = provider;
                 linked.ProviderAccountID = id;
@@ -2227,7 +2227,7 @@ namespace BrockAllen.MembershipReboot
 
             foreach (var c in claims)
             {
-                var claim = new LinkedAccountClaim();
+                var claim = NewLinkedAccountClaim();
                 claim.Type = c.Type;
                 claim.Value = c.Value;
                 linked.Claims.Add(claim);
@@ -2317,7 +2317,7 @@ namespace BrockAllen.MembershipReboot
                 throw new ArgumentNullException("subject");
             }
 
-            var cert = new UserCertificate();
+            var cert = NewUserCertificate();
             cert.Thumbprint = thumbprint;
             cert.Subject = subject;
             account.Certificates.Add(cert);
@@ -2407,7 +2407,7 @@ namespace BrockAllen.MembershipReboot
 
             var value = this.Configuration.Crypto.GenerateSalt();
 
-            var item = new TwoFactorAuthToken();
+            var item = NewTwoFactorAuthToken();
             item.Token = this.Configuration.Crypto.Hash(value);
             item.Issued = UtcNow;
             account.TwoFactorAuthTokens.Add(item);
@@ -2496,6 +2496,27 @@ namespace BrockAllen.MembershipReboot
                 s = s.Replace(ugly, "");
             }
             return s;
+        }
+
+        protected virtual LinkedAccount NewLinkedAccount()
+        {
+            return new LinkedAccount();
+        }
+        protected virtual LinkedAccountClaim NewLinkedAccountClaim()
+        {
+            return new LinkedAccountClaim();
+        }
+        protected virtual PasswordResetSecret NewPasswordResetSecret()
+        {
+            return new PasswordResetSecret();
+        }
+        protected virtual TwoFactorAuthToken NewTwoFactorAuthToken()
+        {
+            return new TwoFactorAuthToken();
+        }
+        protected virtual UserCertificate NewUserCertificate()
+        {
+            return new UserCertificate();
         }
     }
     
