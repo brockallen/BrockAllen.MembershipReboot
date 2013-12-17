@@ -390,7 +390,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email);
 
-            var account = this.userRepository.Create();
+            var account = NewUserAccount();
             Init(account, tenant, username, password, email);
 
             ValidateEmail(account, email);
@@ -2498,24 +2498,53 @@ namespace BrockAllen.MembershipReboot
             return s;
         }
 
+        protected virtual TAccount NewUserAccount()
+        {
+            return this.userRepository.Create();
+        }
         protected virtual LinkedAccount NewLinkedAccount()
         {
+            var factory = this.userRepository as IUserAccountFactory;
+            if (factory != null)
+            {
+                return factory.CreateLinkedAccount();
+            }
             return new LinkedAccount();
         }
         protected virtual LinkedAccountClaim NewLinkedAccountClaim()
         {
+            var factory = this.userRepository as IUserAccountFactory;
+            if (factory != null)
+            {
+                return factory.CreateLinkedAccountClaim();
+            }
             return new LinkedAccountClaim();
         }
         protected virtual PasswordResetSecret NewPasswordResetSecret()
         {
+            var factory = this.userRepository as IUserAccountFactory;
+            if (factory != null)
+            {
+                return factory.CreatePasswordResetSecret();
+            }
             return new PasswordResetSecret();
         }
         protected virtual TwoFactorAuthToken NewTwoFactorAuthToken()
         {
+            var factory = this.userRepository as IUserAccountFactory;
+            if (factory != null)
+            {
+                return factory.CreateTwoFactorAuthToken();
+            }
             return new TwoFactorAuthToken();
         }
         protected virtual UserCertificate NewUserCertificate()
         {
+            var factory = this.userRepository as IUserAccountFactory;
+            if (factory != null)
+            {
+                return factory.CreateUserCertificate();
+            }
             return new UserCertificate();
         }
     }

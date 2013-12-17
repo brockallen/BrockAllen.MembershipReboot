@@ -12,6 +12,15 @@ namespace BrockAllen.MembershipReboot
         where TAccount : UserAccount
     {
     }
-    
+
     public interface IUserAccountRepository : IUserAccountRepository<UserAccount> { }
+    
+    public interface IUserAccountFactory
+    {
+        LinkedAccount CreateLinkedAccount();
+        LinkedAccountClaim CreateLinkedAccountClaim();
+        PasswordResetSecret CreatePasswordResetSecret();
+        TwoFactorAuthToken CreateTwoFactorAuthToken();
+        UserCertificate CreateUserCertificate();
+    }
 }
