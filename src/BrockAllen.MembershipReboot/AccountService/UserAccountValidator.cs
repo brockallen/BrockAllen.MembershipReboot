@@ -54,16 +54,14 @@ namespace BrockAllen.MembershipReboot
             ValidateMobileNumber(evt.Account, evt.Account.MobilePhoneNumber);
         }
 
-        void ValidateMobileNumber(UserAccount account, string mobile)
+        void ValidateMobileNumber(TAccount account, string mobile)
         {
             if (!String.IsNullOrWhiteSpace(mobile))
             {
-                var query =
-                    from a in userAccountService.GetAll(account.Tenant)
-                    where a.MobilePhoneNumber == mobile && a.ID != account.ID
-                    select a;
 
-                if (query.Any())
+                var isUnique = userAccountService.IsMobilePhoneNumberUnique(account, mobile);
+
+                if (!isUnique)
                 {
                     Tracing.Verbose("[UserAccountValidation.MobilePhoneMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
                     throw new ValidationException(Resources.ValidationMessages.MobilePhoneAlreadyInUse);

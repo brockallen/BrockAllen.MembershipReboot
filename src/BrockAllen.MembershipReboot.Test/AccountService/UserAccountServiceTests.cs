@@ -14,11 +14,14 @@ using System.IO;
 
 namespace BrockAllen.MembershipReboot.Test.AccountService
 {
+    using BrockAllen.MembershipReboot.Repository;
+
     [TestClass]
     public class UserAccountServiceTests
     {
         UserAccountService subject;
         FakeUserAccountRepository repository;
+        SimpleUserAccountRepository simple;
         MembershipRebootConfiguration configuration;
         public string LastVerificationKey { get; set; }
         public string LastMobileCode { get; set; }
@@ -32,8 +35,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             configuration = new MembershipRebootConfiguration();
             configuration.AddEventHandler(new KeyNotification(this));
-            repository = new FakeUserAccountRepository(); 
-            subject = new UserAccountService(configuration, repository);
+            repository = new FakeUserAccountRepository();
+            simple = new SimpleUserAccountRepository(repository);
+            subject = new UserAccountService(configuration, simple);
         }
 
         class KeyNotification :
@@ -86,7 +90,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             try
             {
-                new UserAccountService(null, repository);
+                new UserAccountService(null, simple);
                 Assert.Fail();
             }
             catch (ArgumentNullException ex)
