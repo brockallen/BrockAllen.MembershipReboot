@@ -27,7 +27,8 @@ namespace BrockAllen.MembershipReboot.Ef
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureMembershipReboot<UserAccount>();
+            modelBuilder.ConfigureMembershipRebootUserAccounts<UserAccount>();
+            modelBuilder.ConfigureMembershipRebootGroups<Group>();
         }
     }
 }

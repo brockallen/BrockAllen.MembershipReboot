@@ -9,7 +9,7 @@ namespace System.Data.Entity
 {
     public static class DbModelBuilderExtensions
     {
-        public static void ConfigureMembershipReboot<TAccount>(this DbModelBuilder modelBuilder)
+        public static void ConfigureMembershipRebootUserAccounts<TAccount>(this DbModelBuilder modelBuilder)
             where TAccount : UserAccount
         {
             modelBuilder.Entity<TAccount>().HasKey(x => x.ID);
@@ -30,6 +30,15 @@ namespace System.Data.Entity
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.Claims).WithRequired();
             modelBuilder.Entity<UserClaim>().HasKey(x => new { x.Type, x.Value });
+        }
+        
+        public static void ConfigureMembershipRebootGroups<TGroup>(this DbModelBuilder modelBuilder)
+            where TGroup : Group
+        {
+            modelBuilder.Entity<TGroup>().HasKey(x => x.ID);
+
+            modelBuilder.Entity<TGroup>().HasMany(x => x.Children).WithRequired();
+            modelBuilder.Entity<GroupChild>().HasKey(x => new { x.GroupID, x.ChildGroupID });
         }
     }
 }

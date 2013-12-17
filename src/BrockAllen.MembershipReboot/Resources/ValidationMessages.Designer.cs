@@ -322,6 +322,24 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parent group is already a child of the child group..
+        /// </summary>
+        public static string ParentGroupAlreadyChild {
+            get {
+                return ResourceManager.GetString("ParentGroupAlreadyChild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parent and child are the same groups..
+        /// </summary>
+        public static string ParentGroupSameAsChild {
+            get {
+                return ResourceManager.GetString("ParentGroupSameAsChild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password must contain at least {0} of the follwing characters: one upper, one lower, one digit and one other..
         /// </summary>
         public static string PasswordComplexityRules {
