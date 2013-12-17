@@ -62,6 +62,7 @@
     <Compile Include="Groups\GroupService.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\SimpleUserAccountRepository.cs" />
     <Compile Include="Resources\ValidationMessages.ru-ru.Designer.cs">
       <DependentUpon>ValidationMessages.ru-ru.resx</DependentUpon>
       <AutoGen>True</AutoGen>

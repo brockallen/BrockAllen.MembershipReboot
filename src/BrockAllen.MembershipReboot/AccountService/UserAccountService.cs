@@ -17,7 +17,7 @@ namespace BrockAllen.MembershipReboot
     {
         public MembershipRebootConfiguration<TAccount> Configuration { get; set; }
 
-        IUserAccountRepository<TAccount> userRepository;
+        ISimpleUserAccountRepository<TAccount> userRepository;
 
         Lazy<AggregateValidator<TAccount>> usernameValidator;
         Lazy<AggregateValidator<TAccount>> emailValidator;
@@ -25,12 +25,12 @@ namespace BrockAllen.MembershipReboot
 
         public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
 
-        public UserAccountService(IUserAccountRepository<TAccount> userRepository)
+        public UserAccountService(ISimpleUserAccountRepository<TAccount> userRepository)
             : this(new MembershipRebootConfiguration<TAccount>(), userRepository)
         {
         }
 
-        public UserAccountService(MembershipRebootConfiguration<TAccount> configuration, IUserAccountRepository<TAccount> userRepository)
+        public UserAccountService(MembershipRebootConfiguration<TAccount> configuration, ISimpleUserAccountRepository<TAccount> userRepository)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
             if (userRepository == null) throw new ArgumentNullException("userRepository");
@@ -121,10 +121,11 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public virtual IQueryable<TAccount> GetAll()
-        {
-            return GetAll(null);
-        }
+        // I don't want to expose IQueryable
+        //public virtual IQueryable<TAccount> GetAll()
+        //{
+        //    return GetAll(null);
+        //}
 
         public virtual void Update(TAccount account)
         {
@@ -140,20 +141,21 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Update(account);
         }
 
-        public virtual IQueryable<TAccount> GetAll(string tenant)
-        {
-            if (!Configuration.MultiTenant)
-            {
-                Tracing.Verbose("[UserAccountService.GetAll] applying default tenant");
-                tenant = Configuration.DefaultTenant;
-            }
+        // I don't want to expose IQueryable
+        //public virtual IQueryable<TAccount> GetAll(string tenant)
+        //{
+        //    if (!Configuration.MultiTenant)
+        //    {
+        //        Tracing.Verbose("[UserAccountService.GetAll] applying default tenant");
+        //        tenant = Configuration.DefaultTenant;
+        //    }
 
-            Tracing.Information("[UserAccountService.GetAll] called for tenant: {0}", tenant);
+        //    Tracing.Information("[UserAccountService.GetAll] called for tenant: {0}", tenant);
             
-            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<TAccount>().AsQueryable();
+        //    if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<TAccount>().AsQueryable();
 
-            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
-        }
+        //    return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
+        //}
 
         public virtual TAccount GetByUsername(string username)
         {
@@ -173,13 +175,7 @@ namespace BrockAllen.MembershipReboot
             if (!Configuration.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(username)) return null;
 
-            var query = userRepository.GetAll().Where(x => x.Username == username);
-            if (!Configuration.UsernamesUniqueAcrossTenants)
-            {
-                query = query.Where(x => x.Tenant == tenant);
-            }
-
-            var account = query.SingleOrDefault();
+            var account = userRepository.GetByUsername(tenant, username, Configuration.UsernamesUniqueAcrossTenants);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByUsername] failed to locate account: {0}, {1}", tenant, username);
@@ -205,7 +201,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(email)) return null;
 
-            var account = userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).SingleOrDefault();
+            var account = userRepository.GetByEmail(tenant, email);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByEmail] failed to locate account: {0}, {1}", tenant, email);
@@ -233,7 +229,7 @@ namespace BrockAllen.MembershipReboot
 
             key =  this.Configuration.Crypto.Hash(key);
 
-            var account = userRepository.GetAll().Where(x => x.VerificationKey == key).SingleOrDefault();
+            var account = userRepository.GetByVerificationKey(key);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByVerificationKey] failed to locate account: {0}", key);
@@ -260,14 +256,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(provider)) return null;
             if (String.IsNullOrWhiteSpace(id)) return null;
 
-            var query =
-                from u in userRepository.GetAll()
-                where u.Tenant == tenant
-                from l in u.LinkedAccounts
-                where l.ProviderName == provider && l.ProviderAccountID == id
-                select u;
-
-            var account = query.SingleOrDefault();
+            var account = userRepository.GetByLinkedAccount(tenant, provider, id);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByLinkedAccount] failed to locate by tenant: {0}, provider: {1}, id: {2}", tenant, provider, id);
@@ -293,14 +282,8 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(thumbprint)) return null;
 
-            var query =
-                from u in userRepository.GetAll()
-                where u.Tenant == tenant
-                from c in u.Certificates
-                where c.Thumbprint == thumbprint
-                select u;
 
-            var account = query.SingleOrDefault();
+            var account = userRepository.GetByCertificate(tenant, thumbprint);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByCertificate] failed to locate by certificate thumbprint: {0}, {1}", tenant, thumbprint);
@@ -321,7 +304,7 @@ namespace BrockAllen.MembershipReboot
 
             if (Configuration.UsernamesUniqueAcrossTenants)
             {
-                return this.userRepository.GetAll().Where(x => x.Username == username).Any();
+                return userRepository.UsernameExistsAcrossTenants(username);
             }
             else
             {
@@ -333,7 +316,8 @@ namespace BrockAllen.MembershipReboot
 
                 if (String.IsNullOrWhiteSpace(tenant)) return false;
 
-                return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).Any();
+                
+                return userRepository.UsernameExists(tenant, username);
             }
         }
 
@@ -355,7 +339,8 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(email)) return false;
 
-            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).Any();
+            
+            return userRepository.EmailExists(tenant, email);
         }
         
         protected internal bool EmailExistsOtherThan(TAccount account, string email)
@@ -366,7 +351,27 @@ namespace BrockAllen.MembershipReboot
             
             if (String.IsNullOrWhiteSpace(email)) return false;
 
-            return this.userRepository.GetAll().Where(x => x.Tenant == account.Tenant && x.Email == email && x.ID != account.ID).Any();
+            return this.userRepository.EmailExistsOtherThan(account, email);
+        }
+
+        public virtual bool IsMobilePhoneNumberUnique(TAccount account, string mobile)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            string tenant = account.Tenant;
+
+            if (!Configuration.MultiTenant)
+            {
+                Tracing.Verbose("[UserAccountService.GetAll] applying default tenant");
+                tenant = Configuration.DefaultTenant;
+            }
+
+            Tracing.Information("[UserAccountService.GetAll] called for tenant: {0}", tenant);
+
+            if (String.IsNullOrWhiteSpace(tenant)) return true;
+
+            return this.userRepository.IsMobilePhoneNumberUnique(tenant, account.ID, mobile);
+
         }
 
         public virtual TAccount CreateAccount(string username, string password, string email)
@@ -2547,16 +2552,17 @@ namespace BrockAllen.MembershipReboot
             }
             return new UserCertificate();
         }
+
     }
     
     public class UserAccountService : UserAccountService<UserAccount>
     {
-        public UserAccountService(IUserAccountRepository userRepository)
+        public UserAccountService(ISimpleUserAccountRepository<UserAccount> userRepository)
             : this(new MembershipRebootConfiguration(), userRepository)
         {
         }
 
-        public UserAccountService(MembershipRebootConfiguration configuration, IUserAccountRepository userRepository)
+        public UserAccountService(MembershipRebootConfiguration configuration, ISimpleUserAccountRepository<UserAccount> userRepository)
             : base(configuration, userRepository)
         {
         }

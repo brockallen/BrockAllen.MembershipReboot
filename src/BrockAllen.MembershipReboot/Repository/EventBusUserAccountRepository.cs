@@ -9,15 +9,15 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class EventBusUserAccountRepository<TAccount> : IUserAccountRepository<TAccount>
+    public class EventBusUserAccountRepository<TAccount> : ISimpleUserAccountRepository<TAccount>
         where TAccount : UserAccount
     {
         IEventSource source;
-        IUserAccountRepository<TAccount> inner;
+        ISimpleUserAccountRepository<TAccount> inner;
         IEventBus validationBus;
         IEventBus eventBus;
 
-        public EventBusUserAccountRepository(IEventSource source, IUserAccountRepository<TAccount> inner, IEventBus validationBus, IEventBus eventBus)
+        public EventBusUserAccountRepository(IEventSource source, ISimpleUserAccountRepository<TAccount> inner, IEventBus validationBus, IEventBus eventBus)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (inner == null) throw new ArgumentNullException("inner");
@@ -48,10 +48,10 @@ namespace BrockAllen.MembershipReboot
             source.Clear();
         }
 
-        public IQueryable<TAccount> GetAll()
-        {
-            return inner.GetAll();
-        }
+        //public IQueryable<TAccount> GetAll()
+        //{
+        //    return inner.GetAll();
+        //}
 
         public TAccount Get(Guid key)
         {
@@ -82,6 +82,56 @@ namespace BrockAllen.MembershipReboot
             RaiseValidation();
             inner.Update(item);
             RaiseEvents();
+        }
+
+        public TAccount GetByUsername(string tenant, string username, bool usernamesUniqueAcrossTenants)
+        {
+            return inner.GetByUsername(tenant, username, usernamesUniqueAcrossTenants);
+        }
+
+        public TAccount GetByEmail(string tenant, string email)
+        {
+            return inner.GetByEmail(tenant, email);
+        }
+
+        public TAccount GetByVerificationKey(string key)
+        {
+            return inner.GetByVerificationKey(key);
+        }
+
+        public TAccount GetByLinkedAccount(string tenant, string provider, string id)
+        {
+            return inner.GetByLinkedAccount(tenant, provider, id);
+        }
+
+        public TAccount GetByCertificate(string tenant, string thumbprint)
+        {
+            return inner.GetByCertificate(tenant, thumbprint);
+        }
+
+        public bool UsernameExistsAcrossTenants(string username)
+        {
+            return inner.UsernameExistsAcrossTenants(username);
+        }
+
+        public bool UsernameExists(string tenant, string username)
+        {
+            return inner.UsernameExists(tenant, username);
+        }
+
+        public bool EmailExists(string tenant, string email)
+        {
+            return inner.EmailExists(tenant, email);
+        }
+
+        public bool EmailExistsOtherThan(TAccount account, string email)
+        {
+            return inner.EmailExistsOtherThan(account, email);
+        }
+
+        public bool IsMobilePhoneNumberUnique(string tenant, Guid accountId, string mobile)
+        {
+            return inner.IsMobilePhoneNumberUnique(tenant, accountId, mobile);
         }
 
         public void Dispose()
