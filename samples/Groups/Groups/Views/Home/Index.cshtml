@@ -4,57 +4,64 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Roles</h2>
+<h2><a href="/Home">Roles</a></h2>
 
 @Html.ValidationSummary()
 
-@if(Model.Groups.Any())
+@if (Model.Groups.Any())
 {
-<ul>
-    @foreach (var grp in Model.Groups)
-    {
-        <li class="group">
-            @using(Html.BeginForm("Delete", "Home"))
-            {
-                <input name="id" type="hidden"value="@grp.ID"  />
-                <button>delete</button>
-            }
-            <label>Name:</label> @grp.Name
-            @using(Html.BeginForm("ChangeName", "Home"))
-            {
-                <input name="id" type="hidden"value="@grp.ID"  />
-                <label>New Name:</label>
-                <input name="name" />
-                <button>change</button>
-            }
-            @using(Html.BeginForm("AddChild", "Home"))
-            {
-                <input name="id" type="hidden"value="@grp.ID"  />
-                @Html.DropDownList("child", Model.GroupsAsList)
-                <button>add child</button>
-            }
+    <ul>
+        @foreach (var grp in Model.Groups)
+        {
+            <li class="group">
+                @using (Html.BeginForm("Delete", "Home"))
+                {
+                    <input name="id" type="hidden" value="@grp.ID" />
+                    <button>delete</button>
+                }
+                <label>Name:</label> @grp.Name
+                @using (Html.BeginForm("ChangeName", "Home"))
+                {
+                    <input name="id" type="hidden" value="@grp.ID" />
+                    <label>New Name:</label>
+                    <input name="name" />
+                    <button>change</button>
+                }
+                @using (Html.BeginForm("AddChild", "Home"))
+                {
+                    <input name="id" type="hidden" value="@grp.ID" />
+                    @Html.DropDownList("child", Model.GroupsAsList)
+                    <button>add child</button>
+                }
 
-            @if (grp.Children.Any())
-            {
-                <ul>
-                    @foreach (var child in grp.Children)
-                    {
-                        <li>
-                            <label>Child Group:</label> @child.Name
-                             @using(Html.BeginForm("RemoveChild", "Home"))
+                @if (grp.Children.Any())
+                {
+                    <ul>
+                        @foreach (var child in grp.Children)
+                        {
+                            <li>
+                                <label>Child Group:</label> @child.Name
+                                @using (Html.BeginForm("RemoveChild", "Home"))
                                 {
-                                    <input name="id" type="hidden"value="@grp.ID"  />
-                                    <input name="child" type="hidden"value="@child.ID"  />
+                                    <input name="id" type="hidden" value="@grp.ID" />
+                                    <input name="child" type="hidden" value="@child.ID" />
                                     <button>remove child</button>
                                 }
 
-                        </li>
-                    }
-                </ul>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+
+            if (grp.Descendants.Any())
+            {
+                <p>
+                    @grp.Descendants.Aggregate((a, b) => a + ", " + b)
+                </p>
             }
-        </li>
-    }
-</ul>
+        }
+    </ul>
 }
 else
 {

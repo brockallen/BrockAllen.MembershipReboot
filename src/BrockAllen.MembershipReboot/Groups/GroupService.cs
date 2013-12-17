@@ -151,18 +151,18 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.ParentGroupSameAsChild);
             }
 
-            //// can't add child to group if group is already inside of child
-            //var descendants = GetDescendants(childGroupID).Select(x=>x.ID);
-            //if (descendants.Contains(groupID))
-            //{
-            //    throw new ValidationException(Resources.ValidationMessages.ParentGroupAlreadyChild);
-            //} 
+            // can't add child to group if group is already inside of child
+            var descendants = GetDescendants(childGroupID).Select(x => x.ID);
+            if (descendants.Contains(groupID))
+            {
+                throw new ValidationException(Resources.ValidationMessages.ParentGroupAlreadyChild);
+            } 
 
             var child = group.Children.SingleOrDefault(x => x.ChildGroupID == childGroupID);
             if (child == null)
             {
                 group.Children.Add(new GroupChild { GroupID = group.ID, ChildGroupID = childGroupID });
-            } 
+            }
             
             Update(group);
         }

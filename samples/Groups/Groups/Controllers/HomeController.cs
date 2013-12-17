@@ -24,6 +24,7 @@ namespace RolesAdmin.Controllers
         public Guid ID { get; set; }
         public string Name { get; set; }
         public IEnumerable<GroupViewModel> Children { get; set; }
+        public IEnumerable<string> Descendants { get; set; }
     }
 
     public class HomeController : Controller
@@ -45,10 +46,12 @@ namespace RolesAdmin.Controllers
                     var childGrp = groupSvc.Get(child.ChildGroupID);
                     kids.Add(new GroupViewModel { ID = child.ChildGroupID, Name = childGrp.Name });
                 }
+                var descendants = groupSvc.GetDescendants(item).Select(x=>x.Name).ToArray();
                 var gvm = new GroupViewModel
                 {
                     ID = item.ID, Name = item.Name,
-                    Children = kids
+                    Children = kids, 
+                    Descendants = descendants
                 };
                 list.Add(gvm);
             }
