@@ -79,5 +79,12 @@ namespace BrockAllen.MembershipReboot.Owin
                 this.authenticationType,
                 MembershipRebootOwinConstants.AuthenticationTwoFactorType);
         }
+
+        protected override ClaimsPrincipal GetCurentPrincipal()
+        {
+            var cp = context.Request.User as ClaimsPrincipal;
+            if (cp == null) cp = new ClaimsPrincipal(context.Request.User);
+            return cp;
+        }
     }
 }

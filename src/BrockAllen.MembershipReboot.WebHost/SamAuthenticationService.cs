@@ -65,6 +65,11 @@ namespace BrockAllen.MembershipReboot.WebHost
 
             sam.SignOut();
         }
+
+        protected override ClaimsPrincipal GetCurentPrincipal()
+        {
+            return ClaimsPrincipal.Current;
+        }
     }
 
     public class SamAuthenticationService<T> : AuthenticationService<T>
@@ -122,6 +127,11 @@ namespace BrockAllen.MembershipReboot.WebHost
             }
 
             sam.SignOut();
+        }
+
+        protected override ClaimsPrincipal GetCurentPrincipal()
+        {
+            return ClaimsPrincipal.Current;
         }
     }
 }

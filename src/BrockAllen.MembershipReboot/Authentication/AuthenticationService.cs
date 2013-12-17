@@ -29,6 +29,7 @@ namespace BrockAllen.MembershipReboot
             this.ClaimsAuthenticationManager = claimsAuthenticationManager;
         }
 
+        protected abstract ClaimsPrincipal GetCurentPrincipal();
         protected abstract void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null);
         protected abstract void RevokeToken();
 
@@ -183,7 +184,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
             if (claims == null) throw new ArgumentNullException("claims");
 
-            var user = ClaimsPrincipal.Current;
+            var user = GetCurentPrincipal();
             if (user.Identity.IsAuthenticated)
             {
                 // already logged in, so use the current user's account
