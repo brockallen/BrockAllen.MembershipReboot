@@ -911,12 +911,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccountService.AuthenticateWithCode] success ");
 
-            if (this.TwoFactorAuthenticationPolicy != null)
-            {
-                CreateTwoFactorAuthToken(account);
-                Tracing.Verbose("[UserAccountService.AuthenticateWithCode] TwoFactorAuthenticationPolicy issuing a new two factor auth token");
-            };
-
+            CreateTwoFactorAuthToken(account);
+            
             Update(account);
 
             return true;
@@ -2395,6 +2391,13 @@ namespace BrockAllen.MembershipReboot
 
         protected virtual void CreateTwoFactorAuthToken(TAccount account)
         {
+            // no policy, no need to issue token
+            if (this.TwoFactorAuthenticationPolicy == null)
+            {
+                Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] TwoFactorAuthenticationPolicy is null, not issuing two factor auth cookie");
+                return;
+            }
+
             if (account == null) throw new ArgumentNullException("account");
 
             Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] called for accountID: {0}", account.ID);
@@ -2412,7 +2415,10 @@ namespace BrockAllen.MembershipReboot
             item.Issued = UtcNow;
             account.TwoFactorAuthTokens.Add(item);
 
+            this.TwoFactorAuthenticationPolicy.IssueTwoFactorAuthToken(account, value);
             this.AddEvent(new TwoFactorAuthenticationTokenCreatedEvent<TAccount> { Account = account, Token = value });
+            
+            Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] TwoFactorAuthToken issued");
         }
 
         protected virtual bool VerifyTwoFactorAuthToken(TAccount account, string token)
@@ -2477,6 +2483,12 @@ namespace BrockAllen.MembershipReboot
             }
             
             Tracing.Verbose("[UserAccountService.RemoveTwoFactorAuthTokens] tokens removed: {0}", tokens.Length);
+
+            if (this.TwoFactorAuthenticationPolicy != null)
+            {
+                Tracing.Verbose("[UserAccountService.RemoveTwoFactorAuthTokens] TwoFactorAuthenticationPolicy removing cookies");
+                this.TwoFactorAuthenticationPolicy.ClearTwoFactorAuthToken(account);
+            }
         }
 
         protected virtual DateTime UtcNow
