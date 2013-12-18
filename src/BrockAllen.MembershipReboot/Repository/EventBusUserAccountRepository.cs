@@ -13,7 +13,7 @@ namespace BrockAllen.MembershipReboot
         where TAccount : UserAccount
     {
         IEventSource source;
-        IUserAccountRepository<TAccount> inner;
+        internal IUserAccountRepository<TAccount> inner;
         IEventBus validationBus;
         IEventBus eventBus;
 

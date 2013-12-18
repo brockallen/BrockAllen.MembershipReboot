@@ -15,12 +15,8 @@ namespace BrockAllen.MembershipReboot
 
     public interface IUserAccountRepository : IUserAccountRepository<UserAccount> { }
     
-    public interface IUserAccountFactory
+    public interface IUserAccountFactory<T>
     {
-        LinkedAccount CreateLinkedAccount();
-        LinkedAccountClaim CreateLinkedAccountClaim();
-        PasswordResetSecret CreatePasswordResetSecret();
-        TwoFactorAuthToken CreateTwoFactorAuthToken();
-        UserCertificate CreateUserCertificate();
+        T Create();
     }
 }

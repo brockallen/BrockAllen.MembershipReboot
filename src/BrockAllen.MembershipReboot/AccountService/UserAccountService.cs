@@ -17,7 +17,7 @@ namespace BrockAllen.MembershipReboot
     {
         public MembershipRebootConfiguration<TAccount> Configuration { get; set; }
 
-        IUserAccountRepository<TAccount> userRepository;
+        EventBusUserAccountRepository<TAccount> userRepository;
 
         Lazy<AggregateValidator<TAccount>> usernameValidator;
         Lazy<AggregateValidator<TAccount>> emailValidator;
@@ -1214,6 +1214,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.AddPasswordResetSecret] success");
 
             var secret = NewPasswordResetSecret();
+            secret.UserAccountID = account.ID;
             secret.PasswordResetSecretID = Guid.NewGuid();
             secret.Question = question;
             secret.Answer = this.Configuration.Crypto.Hash(answer);
@@ -2105,7 +2106,8 @@ namespace BrockAllen.MembershipReboot
 
             if (!account.HasClaim(type, value))
             {
-                var claim = new UserClaim();
+                var claim = NewUserClaim();
+                claim.UserAccountID = account.ID;
                 claim.Type = type;
                 claim.Value = value;
                 account.Claims.Add(claim);
@@ -2139,7 +2141,7 @@ namespace BrockAllen.MembershipReboot
                 account.Claims.Remove(claim);
                 this.AddEvent(new ClaimRemovedEvent<TAccount> { Account = account, Claim = claim });
                 Tracing.Verbose("[UserAccountService.RemoveClaim] claim removed");
-            } 
+            }
             
             Update(account);
         }
@@ -2207,6 +2209,7 @@ namespace BrockAllen.MembershipReboot
             {
                 linked = NewLinkedAccount();
                 if (linked.Claims == null) linked.Claims = new HashSet<LinkedAccountClaim>();
+                linked.UserAccountID = account.ID;
                 linked.ProviderName = provider;
                 linked.ProviderAccountID = id;
                 account.LinkedAccounts.Add(linked);
@@ -2224,6 +2227,9 @@ namespace BrockAllen.MembershipReboot
             foreach (var c in claims)
             {
                 var claim = NewLinkedAccountClaim();
+                claim.UserAccountID = account.ID;
+                claim.ProviderName = linked.ProviderName;
+                claim.ProviderAccountID = linked.ProviderAccountID;
                 claim.Type = c.Type;
                 claim.Value = c.Value;
                 linked.Claims.Add(claim);
@@ -2314,6 +2320,7 @@ namespace BrockAllen.MembershipReboot
             }
 
             var cert = NewUserCertificate();
+            cert.UserAccountID = account.ID;
             cert.Thumbprint = thumbprint;
             cert.Subject = subject;
             account.Certificates.Add(cert);
@@ -2411,6 +2418,7 @@ namespace BrockAllen.MembershipReboot
             var value = this.Configuration.Crypto.GenerateSalt();
 
             var item = NewTwoFactorAuthToken();
+            item.UserAccountID = account.ID;
             item.Token = this.Configuration.Crypto.Hash(value);
             item.Issued = UtcNow;
             account.TwoFactorAuthTokens.Add(item);
@@ -2516,48 +2524,57 @@ namespace BrockAllen.MembershipReboot
         }
         protected virtual LinkedAccount NewLinkedAccount()
         {
-            var factory = this.userRepository as IUserAccountFactory;
+            var factory = this.userRepository.inner as IUserAccountFactory<LinkedAccount>;
             if (factory != null)
             {
-                return factory.CreateLinkedAccount();
+                return factory.Create();
             }
             return new LinkedAccount();
         }
         protected virtual LinkedAccountClaim NewLinkedAccountClaim()
         {
-            var factory = this.userRepository as IUserAccountFactory;
+            var factory = this.userRepository.inner as IUserAccountFactory<LinkedAccountClaim>;
             if (factory != null)
             {
-                return factory.CreateLinkedAccountClaim();
+                return factory.Create();
             }
             return new LinkedAccountClaim();
         }
         protected virtual PasswordResetSecret NewPasswordResetSecret()
         {
-            var factory = this.userRepository as IUserAccountFactory;
+            var factory = this.userRepository.inner as IUserAccountFactory<PasswordResetSecret>;
             if (factory != null)
             {
-                return factory.CreatePasswordResetSecret();
+                return factory.Create();
             }
             return new PasswordResetSecret();
         }
         protected virtual TwoFactorAuthToken NewTwoFactorAuthToken()
         {
-            var factory = this.userRepository as IUserAccountFactory;
+            var factory = this.userRepository.inner as IUserAccountFactory<TwoFactorAuthToken>;
             if (factory != null)
             {
-                return factory.CreateTwoFactorAuthToken();
+                return factory.Create();
             }
             return new TwoFactorAuthToken();
         }
         protected virtual UserCertificate NewUserCertificate()
         {
-            var factory = this.userRepository as IUserAccountFactory;
+            var factory = this.userRepository.inner as IUserAccountFactory<UserCertificate>;
             if (factory != null)
             {
-                return factory.CreateUserCertificate();
+                return factory.Create();
             }
             return new UserCertificate();
+        }
+        protected virtual UserClaim NewUserClaim()
+        {
+            var factory = this.userRepository.inner as IUserAccountFactory<UserClaim>;
+            if (factory != null)
+            {
+                return factory.Create();
+            }
+            return new UserClaim();
         }
     }
     
