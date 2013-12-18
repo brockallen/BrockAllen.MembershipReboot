@@ -14,6 +14,7 @@ namespace BrockAllen.MembershipReboot
 {
     public class LinkedAccount
     {
+        public virtual Guid UserAccountID { get; internal set; }
         [StringLength(30)]
         public virtual string ProviderName { get; protected internal set; }
         [StringLength(100)]

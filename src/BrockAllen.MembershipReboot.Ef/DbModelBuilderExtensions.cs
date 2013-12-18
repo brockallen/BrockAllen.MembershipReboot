@@ -14,24 +14,25 @@ namespace System.Data.Entity
         {
             modelBuilder.Entity<TAccount>().HasKey(x => x.ID);
 
-            modelBuilder.Entity<TAccount>().HasMany(x => x.LinkedAccounts).WithRequired();
-            modelBuilder.Entity<LinkedAccount>().HasKey(x => new { x.ProviderName, x.ProviderAccountID });
-            modelBuilder.Entity<LinkedAccount>().HasMany(x => x.Claims).WithRequired();
-            modelBuilder.Entity<LinkedAccountClaim>().HasKey(x => new { x.Type, x.Value });
-
             modelBuilder.Entity<TAccount>().HasMany(x => x.PasswordResetSecrets).WithRequired();
             modelBuilder.Entity<PasswordResetSecret>().HasKey(x => x.PasswordResetSecretID);
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.TwoFactorAuthTokens).WithRequired();
-            modelBuilder.Entity<TwoFactorAuthToken>().HasKey(x => x.Token);
+            modelBuilder.Entity<TwoFactorAuthToken>().HasKey(x => new { x.UserAccountID, x.Token });
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.Certificates).WithRequired();
-            modelBuilder.Entity<UserCertificate>().HasKey(x => x.Thumbprint);
+            modelBuilder.Entity<UserCertificate>().HasKey(x => new { x.UserAccountID, x.Thumbprint });
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.Claims).WithRequired();
-            modelBuilder.Entity<UserClaim>().HasKey(x => new { x.Type, x.Value });
+            modelBuilder.Entity<UserClaim>().HasKey(x => new { x.UserAccountID, x.Type, x.Value });
+
+            modelBuilder.Entity<TAccount>().HasMany(x => x.LinkedAccounts).WithRequired();
+            modelBuilder.Entity<LinkedAccount>().HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID });
+            
+            modelBuilder.Entity<LinkedAccount>().HasMany(x => x.Claims).WithRequired();
+            modelBuilder.Entity<LinkedAccountClaim>().HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID, x.Type, x.Value });
         }
-        
+
         public static void ConfigureMembershipRebootGroups<TGroup>(this DbModelBuilder modelBuilder)
             where TGroup : Group
         {

@@ -11,6 +11,8 @@ namespace BrockAllen.MembershipReboot
 {
     public class UserCertificate
     {
+        public virtual Guid UserAccountID { get; internal set; }
+
         [StringLength(150)]
         public virtual string Thumbprint { get; protected internal set; }
 

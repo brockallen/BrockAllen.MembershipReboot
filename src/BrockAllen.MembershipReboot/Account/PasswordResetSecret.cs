@@ -11,6 +11,7 @@ namespace BrockAllen.MembershipReboot
 {
     public class PasswordResetSecret
     {
+        public virtual Guid UserAccountID { get; internal set; }
         public virtual Guid PasswordResetSecretID { get; protected internal set; }
 
         [StringLength(150)]
