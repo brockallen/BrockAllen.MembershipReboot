@@ -22,13 +22,14 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             OAuth2Client.Instance.RegisterProvider(
                 ProviderType.Google,
-                "464251281574.apps.googleusercontent.com",
-                "najvdnYI5TjCkikCi6nApRu1");
+                "29876308463-e780nd36t7nnlrqs3m9ghi92qk039sg3.apps.googleusercontent.com",
+                "FQrYWiC4lSQgJzskzr6qdGw8");
 
             OAuth2Client.Instance.RegisterProvider(
                 ProviderType.Facebook,
-                "260581164087472",
-                "7389d78e6e629954a710351830d080f3");
+                "416325938475275",
+                "94f50354f2b20961d6453c653ad2f5c0");
+            
 
             //OAuth2Client.Instance.RegisterProvider(
             //    ProviderType.Live,
@@ -95,9 +96,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     BrockAllen.MembershipReboot.UserAccount account;
                     this.authenticationService.SignInWithLinkedAccount(provider, id, claims, out account);
 
-                    if (!account.IsAccountVerified && userAccountService.Configuration.RequireAccountVerification)
+                    if (!account.IsAccountVerified )
                     {
-                        return View("NotLoggedIn", account);
+                        if (userAccountService.Configuration.RequireAccountVerification) return View("NotLoggedIn", account);
+                        if (!userAccountService.Configuration.RequireAccountVerification && account != null && account.HashedPassword == null) return  RedirectToAction("External", "Register");
+                       
                     }
 
                     if (result.ReturnUrl != null)

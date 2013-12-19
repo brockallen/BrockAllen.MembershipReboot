@@ -140,6 +140,53 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Update(account);
         }
 
+        public virtual void UpdateExternal(TAccount account,string username,string password,string email)
+        {
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.Update] called -- failed null account");
+                throw new ArgumentNullException("account");
+            }
+
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                Tracing.Error("[UserAccountService.UpdateExternal] failed -- null Username");
+                throw new ValidationException(Resources.ValidationMessages.InvalidUsername);
+            }
+
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.UpdateExternal] failed -- null Password");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
+            }
+            if (String.IsNullOrWhiteSpace(email))
+            {
+                Tracing.Error("[UserAccountService.UpdateExternal] failed -- null email");
+                throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
+            }
+
+
+            Tracing.Information("[UserAccountService.Update] called for account: {0}", account.ID);
+
+            if (account.Username != username)
+            {
+                ValidateUsername(account, username);
+                account.Username = username;
+            }
+            ValidatePassword(account, password);
+            SetPassword(account, password);
+
+            if (account.Email != email)
+            {
+                ValidateEmail(account, email);
+                account.Email = email;
+            }
+
+            account.LastUpdated = UtcNow;
+
+            this.userRepository.Update(account);
+        }
+
         public virtual IQueryable<TAccount> GetAll(string tenant)
         {
             if (!Configuration.MultiTenant)
