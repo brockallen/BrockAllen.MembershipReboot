@@ -63,16 +63,23 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                 return svc;
             });
             kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();
-
-            RegisterEntityFramework(kernel);
+            RegisterEntityFrameworkSqlAzure(kernel);
+            //RegisterEntityFramework(kernel);
             //RegisterMongoDb(kernel);
             //RegisterRavenDb(kernel);
+            
         }
 
         private static void RegisterEntityFramework(IKernel kernel)
         {
             System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
             kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository()).InRequestScope();
+        }
+
+        private static void RegisterEntityFrameworkSqlAzure(IKernel kernel)
+        {
+            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<SqlAzureMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.ConfigurationAzure>());
+            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new SqlAzureDefaultUserAccountRepository()).InRequestScope();
         }
 
         // To use MongoDB:

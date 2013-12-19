@@ -65,7 +65,13 @@
       <DependentUpon>201312180402116_v5.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\SqlAzure\201312190826387_InitialCreate.cs" />
+    <Compile Include="Migrations\SqlAzure\201312190826387_InitialCreate.Designer.cs">
+      <DependentUpon>201312190826387_InitialCreate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlAzureDefaultUserAccountRepository.cs" />
+    <Compile Include="SqlAzureMembershipRebootDatabase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">
@@ -82,6 +88,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201312180402116_v5.resx">
       <DependentUpon>201312180402116_v5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\SqlAzure\201312190826387_InitialCreate.resx">
+      <DependentUpon>201312190826387_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
