@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using MongoDB.Driver.Builders;
+using BrockAllen.MembershipReboot.Hierarchical;
 
 namespace BrockAllen.MembershipReboot.MongoDb
 {
@@ -15,7 +16,7 @@ namespace BrockAllen.MembershipReboot.MongoDb
 
         public UserAccount Create()
         {
-            return new UserAccount();
+            return new HierarchicalUserAccount();
         }
         
         public IQueryable<UserAccount> GetAll()

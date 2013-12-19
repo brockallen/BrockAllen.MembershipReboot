@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,7 @@ namespace BrockAllen.MembershipReboot.Test
 
         public UserAccount Create()
         {
-            return new UserAccount();
+            return new HierarchicalUserAccount();
         }
 
         public void Add(UserAccount item)

@@ -32,7 +32,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     var account = this.userAccountService.GetByEmail(model.Email);
                     if (account != null)
                     {
-                        if (account.PasswordResetSecrets.Count == 0)
+                        if (!account.PasswordResetSecrets.Any())
                         {
                             this.userAccountService.ResetPassword(model.Email);
                             return View("ResetSuccess");

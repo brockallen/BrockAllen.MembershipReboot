@@ -1,4 +1,5 @@
 ﻿using BrockAllen.MembershipReboot;
+using BrockAllen.MembershipReboot.Relational;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,27 +11,40 @@ namespace System.Data.Entity
     public static class DbModelBuilderExtensions
     {
         public static void ConfigureMembershipRebootUserAccounts<TAccount>(this DbModelBuilder modelBuilder)
-            where TAccount : UserAccount
+            where TAccount : RelationalUserAccount
         {
-            modelBuilder.Entity<TAccount>().HasKey(x => x.ID);
+            modelBuilder.Entity<TAccount>()
+                .HasKey(x => x.ID).ToTable("UserAccounts");
 
-            modelBuilder.Entity<TAccount>().HasMany(x => x.PasswordResetSecrets).WithRequired();
-            modelBuilder.Entity<PasswordResetSecret>().HasKey(x => x.PasswordResetSecretID);
+            modelBuilder.Entity<TAccount>()
+                .HasMany(x => x.PasswordResetSecretCollection).WithRequired().HasForeignKey(x=>x.UserAccountID);
+            modelBuilder.Entity<RelationalPasswordResetSecret>()
+                .HasKey(x => new { x.UserAccountID, x.PasswordResetSecretID }).ToTable("PasswordResetSecrets");
 
-            modelBuilder.Entity<TAccount>().HasMany(x => x.TwoFactorAuthTokens).WithRequired();
-            modelBuilder.Entity<TwoFactorAuthToken>().HasKey(x => new { x.UserAccountID, x.Token });
+            modelBuilder.Entity<TAccount>()
+                .HasMany(x => x.TwoFactorAuthTokenCollection).WithRequired().HasForeignKey(x=>x.UserAccountID);
+            modelBuilder.Entity<RelationalTwoFactorAuthToken>()
+                .HasKey(x => new { x.UserAccountID, x.Token }).ToTable("TwoFactorAuthTokens");
 
-            modelBuilder.Entity<TAccount>().HasMany(x => x.Certificates).WithRequired();
-            modelBuilder.Entity<UserCertificate>().HasKey(x => new { x.UserAccountID, x.Thumbprint });
+            modelBuilder.Entity<TAccount>()
+                .HasMany(x => x.UserCertificateCollection).WithRequired().HasForeignKey(x=>x.UserAccountID);
+            modelBuilder.Entity<RelationalUserCertificate>()
+                .HasKey(x => new { x.UserAccountID, x.Thumbprint }).ToTable("UserCertificates");
 
-            modelBuilder.Entity<TAccount>().HasMany(x => x.Claims).WithRequired();
-            modelBuilder.Entity<UserClaim>().HasKey(x => new { x.UserAccountID, x.Type, x.Value });
+            modelBuilder.Entity<TAccount>()
+                .HasMany(x => x.ClaimCollection).WithRequired().HasForeignKey(x=>x.UserAccountID);
+            modelBuilder.Entity<RelationalUserClaim>()
+                .HasKey(x => new { x.UserAccountID, x.Type, x.Value }).ToTable("UserClaims");
 
-            modelBuilder.Entity<TAccount>().HasMany(x => x.LinkedAccounts).WithRequired();
-            modelBuilder.Entity<LinkedAccount>().HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID });
-            
-            modelBuilder.Entity<LinkedAccount>().HasMany(x => x.Claims).WithRequired();
-            modelBuilder.Entity<LinkedAccountClaim>().HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID, x.Type, x.Value });
+            modelBuilder.Entity<TAccount>()
+                .HasMany(x => x.LinkedAccountCollection).WithRequired().HasForeignKey(x=>x.UserAccountID);
+            modelBuilder.Entity<RelationalLinkedAccount>()
+                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID }).ToTable("LinkedAccounts");
+
+            modelBuilder.Entity<TAccount>()
+                .HasMany(x => x.LinkedAccountClaimCollection).WithRequired().HasForeignKey(x => x.UserAccountID);
+            modelBuilder.Entity<RelationalLinkedAccountClaim>()
+                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.Type, x.Value }).ToTable("LinkedAccountClaims");
         }
 
         public static void ConfigureMembershipRebootGroups<TGroup>(this DbModelBuilder modelBuilder)

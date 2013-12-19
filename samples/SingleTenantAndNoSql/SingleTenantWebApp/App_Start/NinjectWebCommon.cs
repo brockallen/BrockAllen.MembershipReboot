@@ -71,7 +71,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 
         private static void RegisterEntityFramework(IKernel kernel)
         {
-            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
+            //System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
+            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.CreateDatabaseIfNotExists<DefaultMembershipRebootDatabase>());
             kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository()).InRequestScope();
         }
 
@@ -90,9 +91,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         // - Add a reference to the BrockAllen.MembershipReboot.RavenDb project.
         // - Uncomment this method.
         // - Call this method instead of RegisterEntityFramework in the RegisterServices method above.
-        private static void RegisterRavenDb(IKernel kernel)
-        {
-            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new BrockAllen.MembershipReboot.RavenDb.RavenUserAccountRepository("RavenDb"));
-        }
+        //private static void RegisterRavenDb(IKernel kernel)
+        //{
+        //    kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new BrockAllen.MembershipReboot.RavenDb.RavenUserAccountRepository("RavenDb"));
+        //}
     }
 }

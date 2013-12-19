@@ -14,9 +14,4 @@ namespace BrockAllen.MembershipReboot
     }
 
     public interface IUserAccountRepository : IUserAccountRepository<UserAccount> { }
-    
-    public interface IUserAccountFactory<T>
-    {
-        T Create();
-    }
 }

@@ -56,15 +56,6 @@
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Migrations\201311222357350_InitialCreate.cs" />
-    <Compile Include="Migrations\201311222357350_InitialCreate.Designer.cs">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201312180402116_v5.cs" />
-    <Compile Include="Migrations\201312180402116_v5.Designer.cs">
-      <DependentUpon>201312180402116_v5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,14 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201311222357350_InitialCreate.resx">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201312180402116_v5.resx">
-      <DependentUpon>201312180402116_v5.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

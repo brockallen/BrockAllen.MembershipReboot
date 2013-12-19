@@ -45,6 +45,14 @@
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Account\LinkedAccountClaim.cs" />
+    <Compile Include="Account\Relational\RelationalLinkedAccountClaim.cs" />
+    <Compile Include="Account\Relational\RelationalLinkedAccount.cs" />
+    <Compile Include="Account\Relational\RelationalUserCertificate.cs" />
+    <Compile Include="Account\Relational\RelationalTwoFactorAuthToken.cs" />
+    <Compile Include="Account\Relational\RelationalPasswordResetSecret.cs" />
+    <Compile Include="Account\Relational\RelationalUserClaim.cs" />
+    <Compile Include="Account\Relational\RelationalUserAccount.cs" />
+    <Compile Include="Account\Hierarchical\HierarchicalUserAccount.cs" />
     <Compile Include="Account\TwoFactorAuthToken.cs" />
     <Compile Include="Account\PasswordResetSecret.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
