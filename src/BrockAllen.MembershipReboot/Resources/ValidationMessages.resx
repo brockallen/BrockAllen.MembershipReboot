@@ -135,6 +135,9 @@
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
     <value>Add a client certificate to enable certificate two factor authentication.</value>
   </data>
+  <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
+    <value>You must set a password on the local account before you remove the last external login provider.</value>
+  </data>
   <data name="CertificateAlreadyInUse" xml:space="preserve">
     <value>That certificate is already in use by a different account.</value>
   </data>

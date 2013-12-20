@@ -2232,25 +2232,25 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        public virtual void RemoveLinkedAccount(Guid accountID, string provider)
-        {
-            Tracing.Information("[UserAccountService.RemoveLinkedAccount] called for account ID: {0}", accountID);
+        //public virtual void RemoveLinkedAccount(Guid accountID, string provider)
+        //{
+        //    Tracing.Information("[UserAccountService.RemoveLinkedAccount] called for account ID: {0}", accountID);
 
-            var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID");
+        //    var account = this.GetByID(accountID);
+        //    if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            RemoveLinkedAccountClaims(account, provider);
+        //    RemoveLinkedAccountClaims(account, provider);
 
-            var linked = account.LinkedAccounts.Where(x => x.ProviderName == provider).ToArray();
-            foreach (var item in linked)
-            {
-                account.RemoveLinkedAccount(item);
-                this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
-                Tracing.Verbose("[UserAccountService.RemoveLinkedAccount] linked account removed");
-            }
+        //    var linked = account.LinkedAccounts.Where(x => x.ProviderName == provider).ToArray();
+        //    foreach (var item in linked)
+        //    {
+        //        account.RemoveLinkedAccount(item);
+        //        this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
+        //        Tracing.Verbose("[UserAccountService.RemoveLinkedAccount] linked account removed");
+        //    }
 
-            Update(account);
-        }
+        //    Update(account);
+        //}
 
         public virtual void RemoveLinkedAccount(Guid accountID, string provider, string id)
         {
@@ -2259,11 +2259,18 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            RemoveLinkedAccountClaims(account, provider, id);
-
             var linked = GetLinkedAccount(account, provider, id);
+
+            if (linked != null && account.LinkedAccounts.Count() == 1 && !account.HasPassword())
+            {
+                // can't remove last linked account if no password
+                Tracing.Error("[UserAccountService.RemoveLinkedAccount] no password on account -- can't remove last provider");
+                throw new ValidationException(Resources.ValidationMessages.CantRemoveLastLinkedAccountIfNoPassword);
+            }
+            
             if (linked != null)
             {
+                RemoveLinkedAccountClaims(account, provider, id);
                 account.RemoveLinkedAccount(linked);
                 this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = linked });
                 Tracing.Verbose("[UserAccountService.RemoveLinkedAccount] linked account removed");
@@ -2272,17 +2279,17 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        public virtual void RemoveLinkedAccountClaims(Guid accountID, string provider)
-        {
-            Tracing.Information("[UserAccountService.RemoveLinkedAccountClaims] called for account ID: {0}", accountID);
+        //public virtual void RemoveLinkedAccountClaims(Guid accountID, string provider)
+        //{
+        //    Tracing.Information("[UserAccountService.RemoveLinkedAccountClaims] called for account ID: {0}", accountID);
 
-            var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID");
+        //    var account = this.GetByID(accountID);
+        //    if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            RemoveLinkedAccountClaims(account, provider);
+        //    RemoveLinkedAccountClaims(account, provider);
 
-            Update(account);
-        }
+        //    Update(account);
+        //}
 
         public virtual void RemoveLinkedAccountClaims(Guid accountID, string provider, string id)
         {
@@ -2309,18 +2316,18 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual void RemoveLinkedAccountClaims(TAccount account, string provider)
-        {
-            if (account == null) throw new ArgumentNullException("account");
+        //protected virtual void RemoveLinkedAccountClaims(TAccount account, string provider)
+        //{
+        //    if (account == null) throw new ArgumentNullException("account");
 
-            var claims = account.LinkedAccountClaims.Where(x => x.ProviderName == provider).ToArray();
-            foreach (var item in claims)
-            {
-                account.RemoveLinkedAccountClaim(item);
-                //this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
-                Tracing.Verbose("[UserAccountService.RemoveLinkedAccountClaims] linked account claim removed");
-            }
-        }
+        //    var claims = account.LinkedAccountClaims.Where(x => x.ProviderName == provider).ToArray();
+        //    foreach (var item in claims)
+        //    {
+        //        account.RemoveLinkedAccountClaim(item);
+        //        //this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
+        //        Tracing.Verbose("[UserAccountService.RemoveLinkedAccountClaims] linked account claim removed");
+        //    }
+        //}
 
         public virtual void AddCertificate(Guid accountID, X509Certificate2 certificate)
         {
