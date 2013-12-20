@@ -558,6 +558,33 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
+        protected virtual void CloseAccount(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            Tracing.Information("[UserAccountService.CloseAccount] called for accountID: {0}", account.ID);
+
+            ClearVerificationKey(account);
+            ClearMobileAuthCode(account);
+            ConfigureTwoFactorAuthentication(account, TwoFactorAuthMode.None);
+
+            account.IsLoginAllowed = false;
+
+            if (!account.IsAccountClosed)
+            {
+                Tracing.Verbose("[UserAccountService.CloseAccount] success");
+
+                account.IsAccountClosed = true;
+                account.AccountClosed = UtcNow;
+
+                this.AddEvent(new AccountClosedEvent<TAccount> { Account = account });
+            }
+            else
+            {
+                Tracing.Warning("[UserAccountService.CloseAccount] account already closed");
+            }
+        }
+
         public virtual bool Authenticate(string username, string password)
         {
             return Authenticate(null, username, password);
@@ -2055,33 +2082,6 @@ namespace BrockAllen.MembershipReboot
 
             RequestTwoFactorAuthCode(account, true);
             Update(account);
-        }
-
-        protected virtual void CloseAccount(TAccount account)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.CloseAccount] called for accountID: {0}", account.ID);
-
-            ClearVerificationKey(account);
-            ClearMobileAuthCode(account);
-            ConfigureTwoFactorAuthentication(account, TwoFactorAuthMode.None);
-
-            account.IsLoginAllowed = false;
-
-            if (!account.IsAccountClosed)
-            {
-                Tracing.Verbose("[UserAccountService.CloseAccount] success");
-
-                account.IsAccountClosed = true;
-                account.AccountClosed = UtcNow;
-
-                this.AddEvent(new AccountClosedEvent<TAccount> { Account = account });
-            }
-            else
-            {
-                Tracing.Warning("[UserAccountService.CloseAccount] account already closed");
-            }
         }
 
         public virtual void AddClaim(Guid accountID, string type, string value)
