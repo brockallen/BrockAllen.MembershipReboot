@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrockAllen.MembershipReboot.Ef;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -6,24 +7,25 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
 {
     public class HomeController : Controller
     {
-        IUserAccountRepository<CustomUserAccount> userAccountRepository;
-        public HomeController(IUserAccountRepository<CustomUserAccount> userAccountRepository)
+        CustomDatabase db;
+        public HomeController()
         {
-            this.userAccountRepository = userAccountRepository;
+            this.db = new CustomDatabase();
         }
 
         public ActionResult Index()
         {
             var names =
-                from a in userAccountRepository.GetAll()
+                from a in db.UserAccountsTableWithSomeOtherName
                 select a;
             return View(names.ToArray());
         }
 
         public ActionResult Detail(Guid id)
         {
-            var account = userAccountRepository.Get(id);
+            var account = db.UserAccountsTableWithSomeOtherName.Find(id);
             return View("Detail", account);
         }
+
     }
 }

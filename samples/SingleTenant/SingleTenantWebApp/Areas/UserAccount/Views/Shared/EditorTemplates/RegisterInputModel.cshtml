@@ -1,0 +1,16 @@
+﻿@model BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.RegisterInputModel
+
+@if (!BrockAllen.MembershipReboot.SecuritySettings.Instance.EmailIsUsername)
+{
+    <div>
+        @Html.LabelFor(x=>x.Username)
+        @Html.EditorFor(x=>x.Username)    
+        @Html.ValidationMessageFor(x=>x.Username)
+    </div>
+}
+@{
+    var thisPath = Path.GetDirectoryName(this.VirtualPath);
+    var partial = "Object.cshtml";
+    var path = Path.Combine(thisPath, partial);
+}
+@Html.Partial(path, Model)

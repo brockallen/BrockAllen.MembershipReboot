@@ -15,8 +15,6 @@ namespace BrockAllen.MembershipReboot
 {
     public class TwoFactorAuthToken
     {
-        public virtual Guid UserAccountID { get; internal set; }
-
         [StringLength(100)]
         public virtual string Token { get; protected internal set; }
 

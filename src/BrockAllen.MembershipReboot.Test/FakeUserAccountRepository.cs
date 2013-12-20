@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,47 +7,54 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot.Test
 {
-    public class FakeUserAccountRepository : IUserAccountRepository
+    public class FakeUserAccountRepository : QueryableUserAccountRepository<UserAccount>, IUserAccountRepository
     {
         public List<UserAccount> UserAccounts = new List<UserAccount>();
 
-        public System.Linq.IQueryable<UserAccount> GetAll()
+        protected override IQueryable<UserAccount> Queryable
         {
-            return UserAccounts.AsQueryable();
+            get { return UserAccounts.AsQueryable(); }
         }
 
-        public UserAccount Get(Guid key)
+        public override UserAccount Create()
         {
-            return UserAccounts.SingleOrDefault(x => x.ID == key);
+            return new HierarchicalUserAccount();
         }
 
-        public UserAccount Create()
+        public override void Add(UserAccount item)
         {
-            return new UserAccount();
+            UserAccounts.Add(item);
         }
 
-        public void Add(UserAccount item)
+        public override void Remove(UserAccount item)
         {
-            this.UserAccounts.Add(item);
+            UserAccounts.Remove(item);
         }
 
-        public void Remove(UserAccount item)
+        public override void Update(UserAccount item)
         {
-            this.UserAccounts.Remove(item);
         }
 
-        public void Update(UserAccount item)
+        public override UserAccount GetByLinkedAccount(string tenant, string provider, string id)
         {
-            var other = Get(item.ID);
-            if (other != item)
-            {
-                Remove(other);
-                Add(item);
-            }
+            var query = 
+                from a in UserAccounts
+                where a.Tenant == tenant
+                from la in a.LinkedAccounts
+                where la.ProviderName == provider && la.ProviderAccountID == id
+                select a;
+            return query.SingleOrDefault();
         }
 
-        public void Dispose()
+        public override UserAccount GetByCertificate(string tenant, string thumbprint)
         {
+            var query =
+                from a in UserAccounts
+                where a.Tenant == tenant
+                from c in a.Certificates
+                where c.Thumbprint == thumbprint
+                select a;
+            return query.SingleOrDefault();
         }
     }
 }

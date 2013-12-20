@@ -40,11 +40,12 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
                 .PrimaryKey(t => new { t.UserAccountID, t.Token })
                 .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
                 .Index(t => t.UserAccountID);
-            
+
             AddColumn("dbo.UserAccounts", "LastFailedPasswordReset", c => c.DateTime());
             AddColumn("dbo.UserAccounts", "FailedPasswordResetCount", c => c.Int(nullable: false));
             AddColumn("dbo.UserAccounts", "MobilePhoneNumberChanged", c => c.DateTime());
             AddColumn("dbo.UserAccounts", "VerificationStorage", c => c.String(maxLength: 100));
+            
             AlterColumn("dbo.UserAccounts", "Email", c => c.String(maxLength: 100));
             AlterColumn("dbo.UserAccounts", "PasswordChanged", c => c.DateTime());
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String(maxLength: 100));
@@ -53,29 +54,28 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 30));
             AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 30));
 
+            DropColumn("dbo.LinkedAccountClaims", "ProviderAccountID");
 
-            AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
+            AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
 
-            CreateIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
-            // for some reason this index gets auto-added and so this line isn't needed (and fails)
+            CreateIndex("dbo.LinkedAccountClaims", "UserAccountID");
             //CreateIndex("dbo.LinkedAccounts", "UserAccountID");
 
             AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
-            AddForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts", cascadeDelete: true);
+            AddForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts");
+            DropForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
 
-            DropIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
+            DropIndex("dbo.LinkedAccountClaims", "UserAccountID");
             DropIndex("dbo.LinkedAccounts", "UserAccountID");
 
             DropPrimaryKey("dbo.LinkedAccountClaims");
             DropPrimaryKey("dbo.LinkedAccounts");
-
             
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.PasswordResetSecrets", "UserAccountID", "dbo.UserAccounts");
@@ -95,6 +95,8 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropTable("dbo.TwoFactorAuthTokens");
             DropTable("dbo.PasswordResetSecrets");
 
+            AddColumn("dbo.LinkedAccountClaims", "ProviderAccountID", c=>c.Guid(nullable:false, defaultValue:Guid.Empty));
+            // TODO -- migrate data here
 
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });

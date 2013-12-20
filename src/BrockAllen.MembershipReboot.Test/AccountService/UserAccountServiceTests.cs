@@ -199,7 +199,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CreateAccount_CreatesAccountInRepository()
         {
             var result = subject.CreateAccount("test", "test", "test@test.com");
-            Assert.AreSame(repository.Get(result.ID), result);
+            Assert.AreSame(repository.GetByID(result.ID), result);
         }
 
         [TestMethod]
@@ -338,7 +338,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.MultiTenant = false;
             configuration.DefaultTenant = "foo";
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
-            var acct = repository.Get(id);
+            var acct = repository.GetByID(id);
             Assert.AreEqual("foo", acct.Tenant);
         }
 
@@ -389,7 +389,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             configuration.EmailIsUsername = true;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
-            var acct = repository.Get(id);
+            var acct = repository.GetByID(id);
             Assert.AreEqual("test@test.com", acct.Username);
         }
 
@@ -473,9 +473,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CancelVerification_DeletesAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsNotNull(repository.Get(acct.ID));
+            Assert.IsNotNull(repository.GetByID(acct.ID));
             subject.CancelNewAccount(LastVerificationKey);
-            Assert.IsNull(repository.Get(acct.ID));
+            Assert.IsNull(repository.GetByID(acct.ID));
         }
         
         [TestMethod]
@@ -521,9 +521,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void DeleteAccount_DeletesAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsNotNull(repository.Get(acct.ID));
+            Assert.IsNotNull(repository.GetByID(acct.ID));
             subject.DeleteAccount(acct.ID);
-            Assert.IsNull(repository.Get(acct.ID));
+            Assert.IsNull(repository.GetByID(acct.ID));
         }
         
         [TestMethod]
@@ -851,7 +851,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             subject.ConfigureTwoFactorAuthentication(id, TwoFactorAuthMode.Mobile);
 
-            var acct = repository.Get(id);
+            var acct = repository.GetByID(id);
             Assert.AreEqual(TwoFactorAuthMode.Mobile, acct.AccountTwoFactorAuthMode);
         }
 
@@ -882,7 +882,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             subject.ConfigureTwoFactorAuthentication(id, TwoFactorAuthMode.Certificate);
 
-            acct = repository.Get(id);
+            acct = repository.GetByID(id);
             Assert.AreEqual(TwoFactorAuthMode.Certificate, acct.AccountTwoFactorAuthMode);
         }
 
@@ -1135,7 +1135,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
             subject.ChangeUsername(id, "test2");
 
-            Assert.AreEqual("test2", repository.Get(id).Username);
+            Assert.AreEqual("test2", repository.GetByID(id).Username);
         }
 
         [TestMethod]
@@ -1207,7 +1207,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             subject.ChangeEmailRequest(id, "test2@test.com");
             subject.VerifyEmailFromKey(LastVerificationKey, "pass");
-            var acct = repository.Get(id);
+            var acct = repository.GetByID(id);
             Assert.AreEqual("test2@test.com", acct.Email);
         }
         
@@ -1283,7 +1283,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ChangeEmailRequest(id, "test2@test.com");
             subject.VerifyEmailFromKey(LastVerificationKey, "pass");
 
-            Assert.AreEqual("test2@test.com", repository.Get(id).Username);
+            Assert.AreEqual("test2@test.com", repository.GetByID(id).Username);
         }
 
         [TestMethod]
@@ -1354,7 +1354,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             subject.RemoveMobilePhone(id);
 
-            Assert.IsNull(repository.Get(id).MobilePhoneNumber);
+            Assert.IsNull(repository.GetByID(id).MobilePhoneNumber);
         }
 
         [TestMethod]
@@ -1385,7 +1385,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var acct = subject.GetByID(id);
             subject.ChangeMobilePhoneFromCode(id, LastMobileCode);
 
-            Assert.AreEqual("123", repository.Get(id).MobilePhoneNumber);
+            Assert.AreEqual("123", repository.GetByID(id).MobilePhoneNumber);
         }
 
         [TestMethod]

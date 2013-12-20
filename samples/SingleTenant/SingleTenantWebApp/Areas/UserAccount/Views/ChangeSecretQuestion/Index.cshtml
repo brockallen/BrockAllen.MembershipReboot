@@ -1,0 +1,30 @@
+﻿@model BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.PasswordResetSecretsViewModel
+@{
+    ViewBag.Title = "Change Secret Questions and Answers";
+}
+
+<h2>@ViewBag.Title</h2>
+<h3>Current Questions/Answers</h3>
+@if(Model.Secrets == null || Model.Secrets.Length == 0)
+{
+    <p>No Current Secrets</p>
+}
+else
+{
+    <ul>
+        @foreach (var secret in Model.Secrets)
+        {
+            <li>
+                @using(Html.BeginForm("Remove", "ChangeSecretQuestion"))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("id", secret.PasswordResetSecretID)
+                    <button>Remove</button>
+                    @secret.Question
+                }
+            </li>
+        }
+    </ul>
+}
+
+@Html.Partial("Add", new BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.AddSecretQuestionInputModel())

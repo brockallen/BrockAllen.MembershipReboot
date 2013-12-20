@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Verify";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    
+    <fieldset>
+        <legend>Click To Have Your Email Address Confirmed</legend>
+        <p>
+            <button>Submit</button>
+        </p>
+    </fieldset>
+}

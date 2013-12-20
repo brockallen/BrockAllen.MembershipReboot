@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations.Schema;
+using BrockAllen.MembershipReboot.Relational;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {
@@ -36,9 +37,8 @@ namespace BrockAllen.MembershipReboot.Mvc
         public string PasswordHash { get; set; }
     }
 
-    public class CustomUserAccount : UserAccount
+    public class CustomUserAccount : RelationalUserAccountInt
     {
-        public int NonGuidPrimaryKey { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         
@@ -76,12 +76,12 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureMembershipReboot<CustomUserAccount>();
-            modelBuilder.Entity<CustomUserAccount>().HasKey(x => x.NonGuidPrimaryKey);
+            modelBuilder.ConfigureMembershipRebootUserAccountsInt<CustomUserAccount>();
+            //modelBuilder.Entity<CustomUserAccount>().HasKey(x => x.NonGuidPrimaryKey);
         }
     }
 
-    public class CustomRepository : DbContextUserAccountRepository<CustomDatabase, CustomUserAccount>, IUserAccountRepository<CustomUserAccount>
+    public class CustomRepository : DbContextUserAccountRepositoryInt<CustomDatabase, CustomUserAccount>, IUserAccountRepository<CustomUserAccount>
     {
         // you can do either style ctor (or none) -- depends how much control 
         // you want over instantiating the CustomDatabase instance

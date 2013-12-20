@@ -1,0 +1,42 @@
+﻿@model IEnumerable<BrockAllen.MembershipReboot.LinkedAccount>
+@{
+    ViewBag.Title = "Manage";
+}
+<style>
+    form {
+        display:inline;
+    }
+</style>
+
+<h2>Manage Linked Accounts</h2>
+<h3>Current Linked Accounts</h3>
+@if (Model.Any())
+{
+    @Html.ValidationSummary()
+    <ul>
+        @foreach (var account in Model)
+        {
+            <li>
+                @using (Html.BeginForm("Remove", "LinkedAccount"))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="provider" value="@account.ProviderName" />
+                    <input type="hidden" name="id" value="@account.ProviderAccountID" />
+                    <button>remove</button>
+                }
+                @account.ProviderName (@account.ProviderAccountID)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No linked accounts</p>
+}
+
+<h3>Add Linked Account</h3>
+<ul>
+    <li>@Html.ActionLink("Google", "Login", new { type = BrockAllen.OAuth2.ProviderType.Google })</li>
+    @*<li>@Html.ActionLink("Live", "Login", new { type = BrockAllen.OAuth2.ProviderType.Live})</li>*@
+    <li>@Html.ActionLink("Facebook", "Login", new { type = BrockAllen.OAuth2.ProviderType.Facebook})</li>
+</ul>

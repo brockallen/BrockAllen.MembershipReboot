@@ -190,13 +190,13 @@
     <Content Include="Areas\UserAccount\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\UserAccount\Views\_ViewStart.cshtml" />
     <Content Include="Areas\UserAccount\Views\SendUsernameReminder\Success.cshtml" />
-    <Content Include="Areas\Admin\Views\Web.config" />
-    <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\Home\Detail.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\Object.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeUsername\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeUsername\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\ConfirmResult.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\Detail.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\Object.cshtml" />
+    <Content Include="Areas\Admin\Views\Web.config" />
     <None Include="Content\Site.less" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>

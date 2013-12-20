@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Web;
 using Owin;
 using BrockAllen.MembershipReboot;
+using BrockAllen.MembershipReboot.Ef;
 
 namespace OwinHostSample.Modules
 {
@@ -20,9 +21,9 @@ namespace OwinHostSample.Modules
         {
             this.Get[""] = ctx =>
                 {
-                    var userAccountService = this.Context.GetUserAccountService();
+                    var db = new DefaultMembershipRebootDatabase();
                     var names =
-                        from a in userAccountService.GetAll()
+                        from a in db.Users
                         select a;
                     return View["Index", names.ToArray()];
                 };

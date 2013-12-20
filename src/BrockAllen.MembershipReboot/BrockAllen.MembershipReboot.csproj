@@ -45,6 +45,14 @@
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Account\LinkedAccountClaim.cs" />
+    <Compile Include="Account\Relational\RelationalLinkedAccountClaim.cs" />
+    <Compile Include="Account\Relational\RelationalLinkedAccount.cs" />
+    <Compile Include="Account\Relational\RelationalUserCertificate.cs" />
+    <Compile Include="Account\Relational\RelationalTwoFactorAuthToken.cs" />
+    <Compile Include="Account\Relational\RelationalPasswordResetSecret.cs" />
+    <Compile Include="Account\Relational\RelationalUserClaim.cs" />
+    <Compile Include="Account\Relational\RelationalUserAccount.cs" />
+    <Compile Include="Account\Hierarchical\HierarchicalUserAccount.cs" />
     <Compile Include="Account\TwoFactorAuthToken.cs" />
     <Compile Include="Account\PasswordResetSecret.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
@@ -67,6 +75,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Repository\QueryableUserAccountRepository.cs" />
     <Compile Include="Resources\ValidationMessages.ru-ru.Designer.cs">
       <DependentUpon>ValidationMessages.ru-ru.resx</DependentUpon>
       <AutoGen>True</AutoGen>
