@@ -99,4 +99,92 @@ namespace BrockAllen.MembershipReboot.Relational
             PasswordResetSecretCollection.Remove((RelationalPasswordResetSecret)item);
         }
     }
+    public class RelationalUserAccountInt : UserAccount
+    {
+        public int Key { get; set; }
+
+        public virtual ICollection<RelationalUserClaimInt> ClaimCollection { get; set; }
+        public override IEnumerable<UserClaim> Claims
+        {
+            get { return ClaimCollection; }
+        }
+        public override void AddClaim(UserClaim item)
+        {
+            ClaimCollection.Add(new RelationalUserClaimInt { UserAccountID = this.Key, Type = item.Type, Value = item.Value });
+        }
+        public override void RemoveClaim(UserClaim item)
+        {
+            ClaimCollection.Remove((RelationalUserClaimInt)item);
+        }
+
+        public virtual ICollection<RelationalLinkedAccountInt> LinkedAccountCollection { get; set; }
+        public override IEnumerable<LinkedAccount> LinkedAccounts
+        {
+            get { return LinkedAccountCollection; }
+        }
+        public override void AddLinkedAccount(LinkedAccount item)
+        {
+            LinkedAccountCollection.Add(new RelationalLinkedAccountInt { UserAccountID = this.Key, ProviderName = item.ProviderName, ProviderAccountID = item.ProviderAccountID, LastLogin = item.LastLogin });
+        }
+        public override void RemoveLinkedAccount(LinkedAccount item)
+        {
+            LinkedAccountCollection.Remove((RelationalLinkedAccountInt)item);
+        }
+
+        public virtual ICollection<RelationalLinkedAccountClaimInt> LinkedAccountClaimCollection { get; set; }
+        public override IEnumerable<LinkedAccountClaim> LinkedAccountClaims
+        {
+            get { return LinkedAccountClaimCollection; }
+        }
+        public override void AddLinkedAccountClaim(LinkedAccountClaim item)
+        {
+            LinkedAccountClaimCollection.Add(new RelationalLinkedAccountClaimInt { UserAccountID = this.Key, ProviderName = item.ProviderName, Type = item.Type, Value = item.Value });
+        }
+        public override void RemoveLinkedAccountClaim(LinkedAccountClaim item)
+        {
+            LinkedAccountClaimCollection.Remove((RelationalLinkedAccountClaimInt)item);
+        }
+
+        public virtual ICollection<RelationalUserCertificateInt> UserCertificateCollection { get; set; }
+        public override IEnumerable<UserCertificate> Certificates
+        {
+            get { return UserCertificateCollection; }
+        }
+        public override void AddCertificate(UserCertificate item)
+        {
+            UserCertificateCollection.Add(new RelationalUserCertificateInt { UserAccountID = this.Key, Thumbprint = item.Thumbprint, Subject = item.Subject });
+        }
+        public override void RemoveCertificate(UserCertificate item)
+        {
+            UserCertificateCollection.Remove((RelationalUserCertificateInt)item);
+        }
+
+        public virtual ICollection<RelationalTwoFactorAuthTokenInt> TwoFactorAuthTokenCollection { get; set; }
+        public override IEnumerable<TwoFactorAuthToken> TwoFactorAuthTokens
+        {
+            get { return TwoFactorAuthTokenCollection; }
+        }
+        public override void AddTwoFactorAuthToken(TwoFactorAuthToken item)
+        {
+            TwoFactorAuthTokenCollection.Add(new RelationalTwoFactorAuthTokenInt { UserAccountID = this.Key, Token = item.Token, Issued = item.Issued });
+        }
+        public override void RemoveTwoFactorAuthToken(TwoFactorAuthToken item)
+        {
+            TwoFactorAuthTokenCollection.Remove((RelationalTwoFactorAuthTokenInt)item);
+        }
+
+        public virtual ICollection<RelationalPasswordResetSecretInt> PasswordResetSecretCollection { get; set; }
+        public override IEnumerable<PasswordResetSecret> PasswordResetSecrets
+        {
+            get { return PasswordResetSecretCollection; }
+        }
+        public override void AddPasswordResetSecret(PasswordResetSecret item)
+        {
+            PasswordResetSecretCollection.Add(new RelationalPasswordResetSecretInt { UserAccountID = this.Key, PasswordResetSecretID = item.PasswordResetSecretID, Question = item.Question, Answer = item.Answer });
+        }
+        public override void RemovePasswordResetSecret(PasswordResetSecret item)
+        {
+            PasswordResetSecretCollection.Remove((RelationalPasswordResetSecretInt)item);
+        }
+    }
 }
