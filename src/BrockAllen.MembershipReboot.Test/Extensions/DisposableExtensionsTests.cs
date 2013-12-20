@@ -3,9 +3,9 @@
  * see license.txt
  */
 
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 
 namespace BrockAllen.MembershipReboot.Test.Extensions
 {

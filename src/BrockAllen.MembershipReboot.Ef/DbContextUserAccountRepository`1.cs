@@ -5,8 +5,8 @@
 
 using BrockAllen.MembershipReboot.Relational;
 using System;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 namespace BrockAllen.MembershipReboot.Ef
 {
     public class DbContextUserAccountRepository<Ctx, TAccount> :

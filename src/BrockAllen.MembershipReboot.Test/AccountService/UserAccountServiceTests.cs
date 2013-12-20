@@ -3,14 +3,12 @@
  * see license.txt
  */
 
-using System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot.Test.AccountService
 {

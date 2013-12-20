@@ -3,8 +3,8 @@
  * see license.txt
  */
 
-using System.Security.Claims;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot.Test.Extensions
 {

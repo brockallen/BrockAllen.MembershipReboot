@@ -1,10 +1,10 @@
-﻿using BrockAllen.MembershipReboot;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Relational;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace System.Data.Entity
 {

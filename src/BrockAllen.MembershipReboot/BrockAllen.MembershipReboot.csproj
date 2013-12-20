@@ -60,7 +60,6 @@
     <Compile Include="Crypto\DefaultCrypto.cs" />
     <Compile Include="Crypto\ICrypto.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
-    <Compile Include="Extensions\LinkedAccountExtensions.cs" />
     <Compile Include="Extensions\UserAccountExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Account\TwoFactorAuthMode.cs" />
