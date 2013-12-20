@@ -66,6 +66,10 @@
     <Compile Include="Migrations\201312180402116_v5.Designer.cs">
       <DependentUpon>201312180402116_v5.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201312191756370_foo.cs" />
+    <Compile Include="Migrations\201312191756370_foo.Designer.cs">
+      <DependentUpon>201312191756370_foo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\SqlAzure\201312190826387_InitialCreate.cs" />
     <Compile Include="Migrations\SqlAzure\201312190826387_InitialCreate.Designer.cs">
@@ -89,6 +93,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201312180402116_v5.resx">
       <DependentUpon>201312180402116_v5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201312191756370_foo.resx">
+      <DependentUpon>201312191756370_foo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SqlAzure\201312190826387_InitialCreate.resx">
       <DependentUpon>201312190826387_InitialCreate.cs</DependentUpon>

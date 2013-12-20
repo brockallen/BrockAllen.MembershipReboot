@@ -135,7 +135,6 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Update(account);
         }
 
-<<<<<<< HEAD
         public virtual void UpdateExternal(TAccount account,string username,string password,string email)
         {
             if (account == null)
@@ -183,23 +182,7 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Update(account);
         }
 
-        public virtual IQueryable<TAccount> GetAll(string tenant)
-        {
-            if (!Configuration.MultiTenant)
-            {
-                Tracing.Verbose("[UserAccountService.GetAll] applying default tenant");
-                tenant = Configuration.DefaultTenant;
-            }
-
-            Tracing.Information("[UserAccountService.GetAll] called for tenant: {0}", tenant);
-            
-            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<TAccount>().AsQueryable();
-
-            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
-        }
-
-=======
->>>>>>> upstream/master
+       
         public virtual TAccount GetByUsername(string username)
         {
             return GetByUsername(null, username);
@@ -2281,6 +2264,7 @@ namespace BrockAllen.MembershipReboot
                 linked.LastLogin = UtcNow;
             }
 
+            
             claims = claims ?? Enumerable.Empty<Claim>();
 
             var claimsToRemove = account.LinkedAccountClaims.Where(x => x.ProviderName == linked.ProviderName).ToArray();
