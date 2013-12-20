@@ -14,7 +14,6 @@ namespace RolesAdmin
     {
         protected void Application_Start()
         {
-            Database.SetInitializer<DefaultMembershipRebootDatabase>(new CreateDatabaseIfNotExists<DefaultMembershipRebootDatabase>());
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
             
             AreaRegistration.RegisterAllAreas();

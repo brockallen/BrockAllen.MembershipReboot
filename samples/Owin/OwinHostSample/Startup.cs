@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Owin;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
@@ -24,6 +25,7 @@ namespace OwinHostSample
 
         private static void ConfigureMembershipReboot(IAppBuilder app)
         {
+            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
             var cookieOptions = new CookieAuthenticationOptions
             {
                 AuthenticationType = MembershipRebootOwinConstants.AuthenticationType
