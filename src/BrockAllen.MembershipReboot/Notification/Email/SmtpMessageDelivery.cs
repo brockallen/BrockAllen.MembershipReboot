@@ -22,7 +22,19 @@ namespace BrockAllen.MembershipReboot
 
             using (SmtpClient smtp = new SmtpClient())
             {
-                smtp.Send(msg.From, msg.To, msg.Subject, msg.Body);
+                smtp.Timeout = 5000;
+                try
+                {
+                    smtp.Send(msg.From, msg.To, msg.Subject, msg.Body);
+                }
+                catch (SmtpException e)
+                {
+                    Tracing.Error("[SmtpMessageDelivery.Send] SmtpException: " + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Tracing.Error("[SmtpMessageDelivery.Send] Exception: " + e.Message);
+                }
             }
         }
     }
