@@ -1,13 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class TwoFactorAuthController : Controller
     {
-        UserAccountService userAccountService;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
 
-        public TwoFactorAuthController(UserAccountService userAccountService)
+        public TwoFactorAuthController(UserAccountService<HierarchicalUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

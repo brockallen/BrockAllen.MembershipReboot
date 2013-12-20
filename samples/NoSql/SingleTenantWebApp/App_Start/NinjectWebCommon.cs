@@ -4,6 +4,7 @@
 namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     using BrockAllen.MembershipReboot;
+    using BrockAllen.MembershipReboot.Hierarchical;
     using BrockAllen.MembershipReboot.WebHost;
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
     using Ninject;
@@ -55,15 +56,14 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         {
             var config = MembershipRebootConfig.Create();
             var policy = new AspNetCookieBasedTwoFactorAuthPolicy(debugging: true);
-            kernel.Bind<UserAccountService>().ToMethod(ctx =>
+            kernel.Bind<UserAccountService<HierarchicalUserAccount>>().ToMethod(ctx =>
             {
-                var svc = new UserAccountService(config, ctx.Kernel.Get<IUserAccountRepository>());
+                var svc = new UserAccountService<HierarchicalUserAccount>(config, ctx.Kernel.Get<IUserAccountRepository<HierarchicalUserAccount>>());
                 svc.TwoFactorAuthenticationPolicy = policy;
                 return svc;
             });
-            kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();
+            kernel.Bind<AuthenticationService<HierarchicalUserAccount>>().To<SamAuthenticationService<HierarchicalUserAccount>>();
 
-            //RegisterEntityFramework(kernel);
             RegisterMongoDb(kernel);
             //RegisterRavenDb(kernel);
         }
@@ -75,7 +75,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         private static void RegisterMongoDb(IKernel kernel)
         {
             kernel.Bind<MongoDb.MongoDatabase>().ToSelf().WithConstructorArgument("connectionStringName", "MongoDb");
-            kernel.Bind<IUserAccountRepository>().To<MongoDb.MongoUserAccountRepository>();
+            kernel.Bind<IUserAccountRepository<HierarchicalUserAccount>>().To<MongoDb.MongoUserAccountRepository>();
         }
     
         // To use RavenDB::

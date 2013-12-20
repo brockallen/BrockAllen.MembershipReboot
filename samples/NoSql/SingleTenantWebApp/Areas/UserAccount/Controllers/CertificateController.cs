@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
@@ -9,9 +10,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [Authorize]
     public class CertificateController : Controller
     {
-        UserAccountService userAccountService;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
 
-        public CertificateController(UserAccountService userAccountService)
+        public CertificateController(UserAccountService<HierarchicalUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

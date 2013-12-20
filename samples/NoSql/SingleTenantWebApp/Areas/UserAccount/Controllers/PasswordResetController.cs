@@ -2,15 +2,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using System.Linq;
+using BrockAllen.MembershipReboot.Hierarchical;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     [AllowAnonymous]
     public class PasswordResetController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authenticationService;
-        public PasswordResetController(AuthenticationService authenticationService)
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        AuthenticationService<HierarchicalUserAccount> authenticationService;
+        public PasswordResetController(AuthenticationService<HierarchicalUserAccount> authenticationService)
         {
             this.authenticationService = authenticationService;
             this.userAccountService = authenticationService.UserAccountService;
@@ -120,7 +121,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    BrockAllen.MembershipReboot.UserAccount account;
+                    HierarchicalUserAccount account;
                     if (this.userAccountService.ChangePasswordFromResetKey(model.Key, model.Password, out account))
                     {
                         this.authenticationService.SignIn(account);

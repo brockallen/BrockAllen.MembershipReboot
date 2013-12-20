@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -7,10 +8,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [Authorize]
     public class ChangeEmailController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        AuthenticationService<HierarchicalUserAccount> authSvc;
 
-        public ChangeEmailController(AuthenticationService authSvc)
+        public ChangeEmailController(AuthenticationService<HierarchicalUserAccount> authSvc)
         {
             this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;
@@ -85,7 +86,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    BrockAllen.MembershipReboot.UserAccount account;
+                    HierarchicalUserAccount account;
                     this.userAccountService.VerifyEmailFromKey(model.Key, model.Password, out account);
                     
                     // since we've changed the email, we need to re-issue the cookie that

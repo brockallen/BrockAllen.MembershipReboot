@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
@@ -9,10 +10,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [AllowAnonymous]
     public class LoginController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        AuthenticationService<HierarchicalUserAccount> authSvc;
 
-        public LoginController(AuthenticationService authSvc)
+        public LoginController(AuthenticationService<HierarchicalUserAccount> authSvc)
         {
             this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;
@@ -29,7 +30,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         {
             if (ModelState.IsValid)
             {
-                BrockAllen.MembershipReboot.UserAccount account;
+                HierarchicalUserAccount account;
                 if (userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password, out account))
                 {
                     authSvc.SignIn(account, model.RememberMe);
@@ -89,7 +90,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    BrockAllen.MembershipReboot.UserAccount account;
+                    HierarchicalUserAccount account;
                     if (userAccountService.AuthenticateWithCode(this.User.GetUserID(), model.Code, out account))
                     {
                         authSvc.SignIn(account);
@@ -131,7 +132,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 try
                 {
                     var cert = new X509Certificate2(Request.ClientCertificate.Certificate);
-                    BrockAllen.MembershipReboot.UserAccount account;
+                    HierarchicalUserAccount account;
 
                     var result = false;
                     // we're allowing the use of certs for login and for two factor auth. normally you'd 

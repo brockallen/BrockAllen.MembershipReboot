@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -7,10 +8,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [Authorize]
     public class ChangeUsernameController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        AuthenticationService<HierarchicalUserAccount> authSvc;
 
-        public ChangeUsernameController(AuthenticationService authSvc)
+        public ChangeUsernameController(AuthenticationService<HierarchicalUserAccount> authSvc)
         {
             this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;

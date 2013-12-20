@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -6,9 +7,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class SendUsernameReminderController : Controller
     {
-        UserAccountService userAccountService;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
 
-        public SendUsernameReminderController(UserAccountService userAccountService)
+        public SendUsernameReminderController(UserAccountService<HierarchicalUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

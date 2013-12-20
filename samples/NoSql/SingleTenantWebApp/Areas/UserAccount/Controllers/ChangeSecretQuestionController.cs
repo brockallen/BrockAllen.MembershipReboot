@@ -3,14 +3,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using System.Linq;
 using System;
+using BrockAllen.MembershipReboot.Hierarchical;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     [Authorize]
     public class ChangeSecretQuestionController : Controller
     {
-        UserAccountService userAccountService;
-        public ChangeSecretQuestionController(UserAccountService userAccountService)
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        public ChangeSecretQuestionController(UserAccountService<HierarchicalUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

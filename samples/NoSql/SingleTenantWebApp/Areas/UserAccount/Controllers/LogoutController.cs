@@ -1,11 +1,12 @@
-﻿using System.Web.Mvc;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class LogoutController : Controller
     {
-        AuthenticationService authSvc;
-        public LogoutController(AuthenticationService authSvc)
+        AuthenticationService<HierarchicalUserAccount> authSvc;
+        public LogoutController(AuthenticationService<HierarchicalUserAccount> authSvc)
         {
             this.authSvc = authSvc;
         }

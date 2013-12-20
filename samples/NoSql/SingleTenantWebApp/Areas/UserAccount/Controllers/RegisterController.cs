@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -7,10 +8,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [AllowAnonymous]
     public class RegisterController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        AuthenticationService<HierarchicalUserAccount> authSvc;
 
-        public RegisterController(AuthenticationService authSvc)
+        public RegisterController(AuthenticationService<HierarchicalUserAccount> authSvc)
         {
             this.authSvc = authSvc;
             this.userAccountService = authSvc.UserAccountService;

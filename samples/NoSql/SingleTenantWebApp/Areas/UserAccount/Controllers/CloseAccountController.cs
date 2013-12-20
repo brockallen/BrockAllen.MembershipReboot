@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
@@ -6,8 +7,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
     [Authorize]
     public class CloseAccountController : Controller
     {
-        UserAccountService userAccountService;
-        public CloseAccountController(UserAccountService userAccountService)
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        public CloseAccountController(UserAccountService<HierarchicalUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
         }

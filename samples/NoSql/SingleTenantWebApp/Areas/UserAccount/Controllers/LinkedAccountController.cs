@@ -1,4 +1,5 @@
-﻿using BrockAllen.OAuth2;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using BrockAllen.OAuth2;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -36,11 +37,11 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             //    "4L08bE3WM8Ra4rRNMv3N--un5YOBr4gx");
         }
 
-        AuthenticationService authenticationService;
-        UserAccountService userAccountService;
+        AuthenticationService<HierarchicalUserAccount> authenticationService;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
 
         public LinkedAccountController(
-            AuthenticationService AuthenticationService)
+            AuthenticationService<HierarchicalUserAccount> AuthenticationService)
         {
             this.authenticationService = AuthenticationService;
             this.userAccountService = AuthenticationService.UserAccountService;
@@ -92,7 +93,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     var claims = result.Claims;
                     var id = claims.GetValue(ClaimTypes.NameIdentifier);
 
-                    BrockAllen.MembershipReboot.UserAccount account;
+                    HierarchicalUserAccount account;
                     this.authenticationService.SignInWithLinkedAccount(provider, id, claims, out account);
 
                     if (!account.IsAccountVerified && userAccountService.Configuration.RequireAccountVerification)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using System;
 using System.Security.Claims;
 using System.Web.Mvc;
 
@@ -6,13 +7,12 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
     public class HomeController : Controller
     {
-        UserAccountService userAccountService;
-        AuthenticationService authSvc;
+        UserAccountService<HierarchicalUserAccount> userAccountService;
+        AuthenticationService<HierarchicalUserAccount> authSvc;
 
-        public HomeController(
-            UserAccountService userAccountService, AuthenticationService authSvc)
+        public HomeController(AuthenticationService<HierarchicalUserAccount> authSvc)
         {
-            this.userAccountService = userAccountService;
+            this.userAccountService = authSvc.UserAccountService;
             this.authSvc = authSvc;
         }
 

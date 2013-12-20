@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot.Relational;
+﻿using BrockAllen.MembershipReboot.Hierarchical;
+using BrockAllen.MembershipReboot.Relational;
 using BrockAllen.MembershipReboot.WebHost;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
     public class MembershipRebootConfig
     {
-        public static MembershipRebootConfiguration Create()
+        public static MembershipRebootConfiguration<HierarchicalUserAccount> Create()
         {
-            var config = new MembershipRebootConfiguration();
+            var config = new MembershipRebootConfiguration<HierarchicalUserAccount>();
             //config.RequireAccountVerification = false;
 
             config.AddEventHandler(new DebuggerEventHandler());
