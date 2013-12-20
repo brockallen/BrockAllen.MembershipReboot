@@ -228,6 +228,9 @@
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
     <value>Register a mobile phone number to enable mobile two factor authentication.</value>
   </data>
+  <data name="ReopenErrorNoEmail" xml:space="preserve">
+    <value>Reopening the account is not possible since there is no email address for this account.</value>
+  </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
     <value>Secret answer required.</value>
   </data>

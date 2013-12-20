@@ -121,6 +121,8 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="license.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountReopenedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountReopenedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountRemovedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountRemovedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountAddedEvent_Subject.txt" />

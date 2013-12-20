@@ -3,9 +3,11 @@
 }
 
 <h2>Accounts</h2>
+@Html.ValidationSummary()
 <table>
     <thead>
         <tr>
+            <th></th>
             <th>Username</th>
             <th>Tenant</th>
             <th>Email</th>
@@ -21,6 +23,14 @@
             Guid id = item.ID;
             string name = item.Username;
             <tr>
+                <td>
+                    @using (Html.BeginForm("Reopen", "Home"))
+                    {
+                        <input type="hidden" name="id" value="@id">
+                        <button>Reopen</button>
+                    }
+                </td>
+
                 <td>@Html.ActionLink(name, "Detail", new { id = id })</td>
                 <td>@item.Tenant</td>
                 <td>@item.Email</td>

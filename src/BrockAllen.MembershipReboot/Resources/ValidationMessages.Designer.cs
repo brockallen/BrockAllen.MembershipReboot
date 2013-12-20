@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BrockAllen.MembershipReboot.Resources
-{
-
-
+namespace BrockAllen.MembershipReboot.Resources {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -390,6 +390,15 @@ namespace BrockAllen.MembershipReboot.Resources
         public static string RegisterMobileForTwoFactor {
             get {
                 return ResourceManager.GetString("RegisterMobileForTwoFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reopening the account is not possible since there is no email address for this account..
+        /// </summary>
+        public static string ReopenErrorNoEmail {
+            get {
+                return ResourceManager.GetString("ReopenErrorNoEmail", resourceCulture);
             }
         }
         

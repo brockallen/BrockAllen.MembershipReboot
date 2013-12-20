@@ -53,6 +53,10 @@ namespace BrockAllen.MembershipReboot
 
     public class UsernameReminderRequestedEvent<T> : UserAccountEvent<T> { }
     public class AccountClosedEvent<T> : UserAccountEvent<T> { }
+    public class AccountReopenedEvent<T> : UserAccountEvent<T>
+    {
+        public string VerificationKey { get; set; }
+    }
     public class UsernameChangedEvent<T> : UserAccountEvent<T> { }
     
     public class EmailChangeRequestedEvent<T> : UserAccountEvent<T>

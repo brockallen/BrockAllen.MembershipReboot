@@ -568,8 +568,6 @@ namespace BrockAllen.MembershipReboot
             ClearMobileAuthCode(account);
             ConfigureTwoFactorAuthentication(account, TwoFactorAuthMode.None);
 
-            account.IsLoginAllowed = false;
-
             if (!account.IsAccountClosed)
             {
                 Tracing.Verbose("[UserAccountService.CloseAccount] success");
@@ -583,6 +581,77 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Warning("[UserAccountService.CloseAccount] account already closed");
             }
+        }
+
+        public virtual void ReopenAccount(string username, string password)
+        {
+            ReopenAccount(null, username, password);
+        }
+
+        public virtual void ReopenAccount(string tenant, string username, string password)
+        {
+            if (!Configuration.MultiTenant)
+            {
+                Tracing.Verbose("[UserAccountService.ReopenAccount] applying default tenant");
+                tenant = Configuration.DefaultTenant;
+            }
+
+            Tracing.Information("[UserAccountService.ReopenAccount] called: {0}, {1}", tenant, username);
+
+            var account = GetByUsername(tenant, username);
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.ReopenAccount] invalid account");
+                throw new ValidationException(Resources.ValidationMessages.InvalidUsername);
+            }
+
+            if (!this.Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
+            {
+                Tracing.Error("[UserAccountService.ReopenAccount] invalid password");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
+            }
+
+            ReopenAccount(account);
+        }
+        
+        public virtual void ReopenAccount(Guid accountID)
+        {
+            Tracing.Information("[UserAccountService.ReopenAccount] called: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+            
+            ReopenAccount(account);
+        }
+
+        public virtual void ReopenAccount(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            if (!account.IsAccountClosed)
+            {
+                Tracing.Warning("[UserAccountService.ReopenAccount] account is not closed");
+                return;
+            }
+
+            if (String.IsNullOrWhiteSpace(account.Email))
+            {
+                Tracing.Error("[UserAccountService.ReopenAccount] no email to confirm reopen request");
+                throw new ValidationException(Resources.ValidationMessages.ReopenErrorNoEmail);
+            }
+
+            // this will require the user to confirm via email before logging in
+            account.IsAccountVerified = false;
+            ClearVerificationKey(account);
+            var key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+            this.AddEvent(new AccountReopenedEvent<TAccount> { Account = account, VerificationKey = key });
+
+            account.IsAccountClosed = false;
+            account.AccountClosed = null;
+
+            Update(account);
+            
+            Tracing.Verbose("[UserAccountService.ReopenAccount] success");
         }
 
         public virtual bool Authenticate(string username, string password)
@@ -706,64 +775,72 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Verbose("[UserAccountService.Authenticate] for account: {0}", account.ID);
 
-            var result = Authenticate(account, password);
+            bool result = false;
 
-            if (purpose == AuthenticationPurpose.SignIn &&
-                Configuration.RequireAccountVerification &&
-                !account.IsAccountVerified)
+            try
             {
-                Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
-                this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
-                result = false;
-            }
+                result = Authenticate(account, password);
 
-            if (result &&
-                purpose == AuthenticationPurpose.SignIn &&
-                account.AccountTwoFactorAuthMode != TwoFactorAuthMode.None)
-            {
-                Tracing.Verbose("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username);
-
-                bool shouldRequestTwoFactorAuthCode = true;
-                if (this.TwoFactorAuthenticationPolicy != null)
+                if (purpose == AuthenticationPurpose.SignIn &&
+                    Configuration.RequireAccountVerification &&
+                    !account.IsAccountVerified)
                 {
-                    Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy configured");
+                    Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
+                    this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
+                    result = false;
+                }
 
-                    var token = this.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
-                    if (!String.IsNullOrWhiteSpace(token))
+                if (result &&
+                    purpose == AuthenticationPurpose.SignIn &&
+                    account.AccountTwoFactorAuthMode != TwoFactorAuthMode.None)
+                {
+                    Tracing.Verbose("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username);
+
+                    bool shouldRequestTwoFactorAuthCode = true;
+                    if (this.TwoFactorAuthenticationPolicy != null)
                     {
-                        shouldRequestTwoFactorAuthCode = !VerifyTwoFactorAuthToken(account, token);
-                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token found, was verified: {0}", shouldRequestTwoFactorAuthCode);
+                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy configured");
+
+                        var token = this.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
+                        if (!String.IsNullOrWhiteSpace(token))
+                        {
+                            shouldRequestTwoFactorAuthCode = !VerifyTwoFactorAuthToken(account, token);
+                            Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token found, was verified: {0}", shouldRequestTwoFactorAuthCode);
+                        }
+                        else
+                        {
+                            Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy no token present");
+                        }
+                    }
+
+                    if (shouldRequestTwoFactorAuthCode)
+                    {
+                        if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
+                        {
+                            Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa certificate: {0}, {1}", account.Tenant, account.Username);
+                            result = RequestTwoFactorAuthCertificate(account);
+                        }
+
+                        if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
+                        {
+                            Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa mobile code: {0}, {1}", account.Tenant, account.Username);
+                            result = RequestTwoFactorAuthCode(account);
+                        }
                     }
                     else
                     {
-                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy no token present");
+                        Tracing.Verbose("[UserAccountService.Authenticate] setting two factor auth status to None");
+                        account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
                     }
                 }
 
-                if (shouldRequestTwoFactorAuthCode)
-                {
-                    if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
-                    {
-                        Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa certificate: {0}, {1}", account.Tenant, account.Username);
-                        result = RequestTwoFactorAuthCertificate(account);
-                    }
-
-                    if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
-                    {
-                        Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa mobile code: {0}, {1}", account.Tenant, account.Username);
-                        result = RequestTwoFactorAuthCode(account);
-                    }
-                }
-                else
-                {
-                    Tracing.Verbose("[UserAccountService.Authenticate] setting two factor auth status to None");
-                    account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
-                }
+                Tracing.Verbose("[UserAccountService.Authenticate] authentication outcome: {0}", result ? "Successful Login" : "Failed Login");
             }
-
-            Update(account);
-
-            Tracing.Verbose("[UserAccountService.Authenticate] authentication outcome: {0}", result ? "Successful Login" : "Failed Login");
+            finally
+            {
+                // always try to update DB in case of password guessing
+                Update(account);
+            }
 
             return result;
         }
@@ -824,6 +901,7 @@ namespace BrockAllen.MembershipReboot
 
         protected internal bool VerifyHashedPassword(TAccount account, string password)
         {
+            if (!account.HasPassword()) return false;
             return Configuration.Crypto.VerifyHashedPassword(account.HashedPassword, password);
         }
 
@@ -1522,6 +1600,7 @@ namespace BrockAllen.MembershipReboot
 
             account.Email = account.VerificationStorage;
             account.IsAccountVerified = true;
+            account.LastLogin = UtcNow;
 
             ClearVerificationKey(account);
 
@@ -1687,7 +1766,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (String.IsNullOrWhiteSpace(account.HashedPassword))
+            if (!account.HasPassword())
             {
                 Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] HashedPassword is null, returning false");
                 return false;
@@ -2221,6 +2300,8 @@ namespace BrockAllen.MembershipReboot
                 linked.LastLogin = UtcNow;
             }
 
+            account.LastLogin = UtcNow;
+
             claims = claims ?? Enumerable.Empty<Claim>();
             foreach (var c in claims)
             {
@@ -2555,7 +2636,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual DateTime UtcNow
+        internal protected virtual DateTime UtcNow
         {
             get
             {
