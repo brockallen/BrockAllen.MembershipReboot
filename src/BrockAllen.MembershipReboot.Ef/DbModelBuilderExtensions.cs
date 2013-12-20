@@ -81,7 +81,7 @@ namespace System.Data.Entity
             modelBuilder.Entity<TAccount>()
                 .HasMany(x => x.LinkedAccountClaimCollection).WithRequired().HasForeignKey(x => x.UserAccountID);
             modelBuilder.Entity<RelationalLinkedAccountClaimInt>()
-                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.Type, x.Value }).ToTable("LinkedAccountClaims");
+                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID, x.Type, x.Value }).ToTable("LinkedAccountClaims");
         }
 
         public static void ConfigureMembershipRebootGroups<TGroup>(this DbModelBuilder modelBuilder)
