@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbContextGroupRepository`1.cs" />
-    <Compile Include="DbContextRepository`1.cs" />
     <Compile Include="DbContextUserAccountRepository`1.cs" />
     <Compile Include="DbModelBuilderExtensions.cs" />
     <Compile Include="DefaultUserAccountRepository.cs" />

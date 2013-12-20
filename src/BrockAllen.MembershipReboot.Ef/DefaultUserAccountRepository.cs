@@ -8,7 +8,8 @@ using BrockAllen.MembershipReboot.Relational;
 namespace BrockAllen.MembershipReboot.Ef
 {
     public class DefaultUserAccountRepository
-           : DbContextUserAccountRepository<DefaultMembershipRebootDatabase, RelationalUserAccount>, IUserAccountRepository
+           : DbContextUserAccountRepository<DefaultMembershipRebootDatabase, RelationalUserAccount>, 
+             IUserAccountRepository
     {
         public DefaultUserAccountRepository()
         {
@@ -21,39 +22,64 @@ namespace BrockAllen.MembershipReboot.Ef
 
         IUserAccountRepository<RelationalUserAccount> This { get { return (IUserAccountRepository<RelationalUserAccount>)this; } }
 
-        System.Linq.IQueryable<UserAccount> IRepository<UserAccount>.GetAll()
-        {
-            return This.GetAll();
-        }
-
-        UserAccount IRepository<UserAccount>.Get(System.Guid key)
-        {
-            return This.Get(key);
-        }
-
-        UserAccount IRepository<UserAccount>.Create()
+        public new UserAccount Create()
         {
             return This.Create();
         }
 
-        void IRepository<UserAccount>.Add(UserAccount item)
+        public void Add(UserAccount item)
         {
             This.Add((RelationalUserAccount)item);
         }
 
-        void IRepository<UserAccount>.Remove(UserAccount item)
+        public void Remove(UserAccount item)
         {
             This.Remove((RelationalUserAccount)item);
         }
 
-        void IRepository<UserAccount>.Update(UserAccount item)
+        public void Update(UserAccount item)
         {
             This.Update((RelationalUserAccount)item);
         }
 
-        void System.IDisposable.Dispose()
+        public new UserAccount GetByID(System.Guid id)
         {
-            base.Dispose();
+            return This.GetByID(id);
+        }
+
+        public new UserAccount GetByUsername(string username)
+        {
+            return This.GetByUsername(username);
+        }
+
+        UserAccount IUserAccountRepository<UserAccount>.GetByUsername(string tenant, string username)
+        {
+            return This.GetByUsername(tenant, username);
+        }
+
+        public new UserAccount GetByEmail(string tenant, string email)
+        {
+            return This.GetByEmail(tenant, email);
+        }
+
+        public new UserAccount GetByMobilePhone(string tenant, string phone)
+        {
+            return This.GetByMobilePhone(tenant, phone);
+        }
+
+        public new UserAccount GetByVerificationKey(string key)
+        {
+            return This.GetByVerificationKey(key);
+        }
+
+        public new UserAccount GetByLinkedAccount(string tenant, string provider, string id)
+        {
+            return This.GetByLinkedAccount(tenant, provider, id);
+        }
+
+        public new UserAccount GetByCertificate(string tenant, string thumbprint)
+        {
+            return This.GetByCertificate(tenant, thumbprint);
         }
     }
 }

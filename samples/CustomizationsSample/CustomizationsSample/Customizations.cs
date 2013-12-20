@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations.Schema;
+using BrockAllen.MembershipReboot.Relational;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {
@@ -36,7 +37,7 @@ namespace BrockAllen.MembershipReboot.Mvc
         public string PasswordHash { get; set; }
     }
 
-    public class CustomUserAccount : UserAccount
+    public class CustomUserAccount : RelationalUserAccount
     {
         public int NonGuidPrimaryKey { get; set; }
         public string FirstName { get; set; }
@@ -76,8 +77,8 @@ namespace BrockAllen.MembershipReboot.Mvc
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureMembershipReboot<CustomUserAccount>();
-            modelBuilder.Entity<CustomUserAccount>().HasKey(x => x.NonGuidPrimaryKey);
+            modelBuilder.ConfigureMembershipRebootUserAccounts<CustomUserAccount>();
+            //modelBuilder.Entity<CustomUserAccount>().HasKey(x => x.NonGuidPrimaryKey);
         }
     }
 

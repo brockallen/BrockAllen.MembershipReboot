@@ -48,16 +48,6 @@ namespace BrockAllen.MembershipReboot
             source.Clear();
         }
 
-        public IQueryable<TAccount> GetAll()
-        {
-            return inner.GetAll();
-        }
-
-        public TAccount Get(Guid key)
-        {
-            return inner.Get(key);
-        }
-
         public TAccount Create()
         {
             return inner.Create();
@@ -84,9 +74,44 @@ namespace BrockAllen.MembershipReboot
             RaiseEvents();
         }
 
-        public void Dispose()
+        public TAccount GetByID(Guid id)
         {
-            if (inner.TryDispose()) inner = null;
+            return inner.GetByID(id);
+        }
+
+        public TAccount GetByUsername(string username)
+        {
+            return inner.GetByUsername(username);
+        }
+
+        public TAccount GetByUsername(string tenant, string username)
+        {
+            return inner.GetByUsername(tenant, username);
+        }
+
+        public TAccount GetByEmail(string tenant, string email)
+        {
+            return inner.GetByEmail(tenant, email);
+        }
+
+        public TAccount GetByMobilePhone(string tenant, string phone)
+        {
+            return inner.GetByMobilePhone(tenant, phone);
+        }
+
+        public TAccount GetByVerificationKey(string key)
+        {
+            return inner.GetByVerificationKey(key);
+        }
+
+        public TAccount GetByLinkedAccount(string tenant, string provider, string id)
+        {
+            return inner.GetByLinkedAccount(tenant, provider, id);
+        }
+
+        public TAccount GetByCertificate(string tenant, string thumbprint)
+        {
+            return inner.GetByCertificate(tenant, thumbprint);
         }
     }
 }

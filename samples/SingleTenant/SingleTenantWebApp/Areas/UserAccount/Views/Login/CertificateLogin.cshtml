@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "LoginWithCertificate";
+}
+
+<h2>Certificate Login</h2>
+@Html.ValidationSummary()
+
+@if(!ViewData.ModelState.Values.Any(x=>x.Errors.Count > 0))
+{
+    <p>If you are seeing this page then you did not configure IIS express to accept client certificates.</p>
+    <p>
+        You'll need to have configured SSL in IIS Express for this project.
+        This can be done via F4 (developer server properties) on the project in the solution 
+        explorer and enabling SSL. 
+    </p>
+    <p>
+        Next, you'll need to configure your IIS Express server config to allow the &lt;access&gt;
+        element to be configured within an application's config file. This involved opening
+        C:\Users\((your username))\Documents\IISExpress\config\applicationhost.config and finding
+        the element (around line 81 in my config):
+    </p>
+    <blockquote>
+        &lt;section name="access" overrideModeDefault="Deny" />
+    </blockquote>
+    <p>
+        and changing overrideModeDefault to "Allow".
+    </p>
+    <p>
+        Also, if you're using self-signed certs for testing you will also need to configure your 
+        web server as described in this article:
+        <a href="http://www.aspnetwiki.com/configuring-iis-7-with-self-signed-server-and-client-certifi">http://www.aspnetwiki.com/configuring-iis-7-with-self-signed-server-and-client-certifi</a>
+    </p>
+}

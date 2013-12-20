@@ -1,0 +1,51 @@
+﻿@model BrockAllen.MembershipReboot.UserAccount
+
+@{
+    ViewBag.Title = "Two Factor Auth";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (Model.MobilePhoneNumber == null)
+{
+    <p>
+        You do not have a mobile phone registered. Please do 
+        so if you would like to enable mobile two factor authentication.
+    </p>
+}
+@if (!Model.Certificates.Any())
+{
+    <p>
+        You do not have any client certificates registered. Please do 
+        so if you would like to enable certificate based two factor authentication.
+    </p>
+}
+
+@if (ViewData["Message"] != null)
+{
+    <h2>@ViewData["Message"]</h2>
+}
+
+@using (Html.BeginForm())
+{
+    <fieldset>
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+        <p>
+            <label for="disable">Disable</label>
+            <input id="disable" type="radio" name="mode" value="0"
+             checked="@(Model.AccountTwoFactorAuthMode == BrockAllen.MembershipReboot.TwoFactorAuthMode.None)" />
+        </p>
+        <p>
+            <label for="mobile">Mobile</label>
+            <input id="mobile" type="radio" name="mode" value="1"
+                checked="@(Model.AccountTwoFactorAuthMode == BrockAllen.MembershipReboot.TwoFactorAuthMode.Mobile)" />
+        </p>
+        <p>
+            <label for="cert">Certificate</label>
+            <input id="cert" type="radio" name="mode" value="2" 
+                checked="@(Model.AccountTwoFactorAuthMode == BrockAllen.MembershipReboot.TwoFactorAuthMode.Certificate)"/>
+        </p>
+        <p>
+            <button>Submit</button></p>
+    </fieldset>
+}

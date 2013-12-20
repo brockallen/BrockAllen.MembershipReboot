@@ -17,7 +17,7 @@ namespace BrockAllen.MembershipReboot
     {
         public MembershipRebootConfiguration<TAccount> Configuration { get; set; }
 
-        EventBusUserAccountRepository<TAccount> userRepository;
+        IUserAccountRepository<TAccount> userRepository;
 
         Lazy<AggregateValidator<TAccount>> usernameValidator;
         Lazy<AggregateValidator<TAccount>> emailValidator;
@@ -121,11 +121,6 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        public virtual IQueryable<TAccount> GetAll()
-        {
-            return GetAll(null);
-        }
-
         public virtual void Update(TAccount account)
         {
             if (account == null)
@@ -138,21 +133,6 @@ namespace BrockAllen.MembershipReboot
 
             account.LastUpdated = UtcNow;
             this.userRepository.Update(account);
-        }
-
-        public virtual IQueryable<TAccount> GetAll(string tenant)
-        {
-            if (!Configuration.MultiTenant)
-            {
-                Tracing.Verbose("[UserAccountService.GetAll] applying default tenant");
-                tenant = Configuration.DefaultTenant;
-            }
-
-            Tracing.Information("[UserAccountService.GetAll] called for tenant: {0}", tenant);
-
-            if (String.IsNullOrWhiteSpace(tenant)) return Enumerable.Empty<TAccount>().AsQueryable();
-
-            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.IsAccountClosed == false);
         }
 
         public virtual TAccount GetByUsername(string username)
@@ -173,13 +153,16 @@ namespace BrockAllen.MembershipReboot
             if (!Configuration.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(username)) return null;
 
-            var query = userRepository.GetAll().Where(x => x.Username == username);
-            if (!Configuration.UsernamesUniqueAcrossTenants)
+            TAccount account = null;
+            if (Configuration.UsernamesUniqueAcrossTenants)
             {
-                query = query.Where(x => x.Tenant == tenant);
+                account = userRepository.GetByUsername(username);
+            }
+            else
+            {
+                account = userRepository.GetByUsername(tenant, username);
             }
 
-            var account = query.SingleOrDefault();
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByUsername] failed to locate account: {0}, {1}", tenant, username);
@@ -205,7 +188,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(email)) return null;
 
-            var account = userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).SingleOrDefault();
+            var account = userRepository.GetByEmail(tenant, email);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByEmail] failed to locate account: {0}, {1}", tenant, email);
@@ -217,7 +200,7 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.GetByID] called for id: {0}", id);
 
-            var account = this.userRepository.Get(id);
+            var account = this.userRepository.GetByID(id);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByID] failed to locate account: {0}", id);
@@ -233,7 +216,7 @@ namespace BrockAllen.MembershipReboot
 
             key = this.Configuration.Crypto.Hash(key);
 
-            var account = userRepository.GetAll().Where(x => x.VerificationKey == key).SingleOrDefault();
+            var account = userRepository.GetByVerificationKey(key);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByVerificationKey] failed to locate account: {0}", key);
@@ -260,14 +243,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(provider)) return null;
             if (String.IsNullOrWhiteSpace(id)) return null;
 
-            var query =
-                from u in userRepository.GetAll()
-                where u.Tenant == tenant
-                from l in u.LinkedAccounts
-                where l.ProviderName == provider && l.ProviderAccountID == id
-                select u;
-
-            var account = query.SingleOrDefault();
+            var account = userRepository.GetByLinkedAccount(tenant, provider, id);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByLinkedAccount] failed to locate by tenant: {0}, provider: {1}, id: {2}", tenant, provider, id);
@@ -293,14 +269,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return null;
             if (String.IsNullOrWhiteSpace(thumbprint)) return null;
 
-            var query =
-                from u in userRepository.GetAll()
-                where u.Tenant == tenant
-                from c in u.Certificates
-                where c.Thumbprint == thumbprint
-                select u;
-
-            var account = query.SingleOrDefault();
+            var account = userRepository.GetByCertificate(tenant, thumbprint);
             if (account == null)
             {
                 Tracing.Warning("[UserAccountService.GetByCertificate] failed to locate by certificate thumbprint: {0}, {1}", tenant, thumbprint);
@@ -321,7 +290,7 @@ namespace BrockAllen.MembershipReboot
 
             if (Configuration.UsernamesUniqueAcrossTenants)
             {
-                return this.userRepository.GetAll().Where(x => x.Username == username).Any();
+                return this.userRepository.GetByUsername(username) != null;
             }
             else
             {
@@ -333,7 +302,7 @@ namespace BrockAllen.MembershipReboot
 
                 if (String.IsNullOrWhiteSpace(tenant)) return false;
 
-                return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Username == username).Any();
+                return this.userRepository.GetByUsername(tenant, username) != null;
             }
         }
 
@@ -355,7 +324,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant)) return false;
             if (String.IsNullOrWhiteSpace(email)) return false;
 
-            return this.userRepository.GetAll().Where(x => x.Tenant == tenant && x.Email == email).Any();
+            return this.userRepository.GetByEmail(tenant, email) != null;
         }
 
         protected internal bool EmailExistsOtherThan(TAccount account, string email)
@@ -366,9 +335,30 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(email)) return false;
 
-            return this.userRepository.GetAll().Where(x => x.Tenant == account.Tenant && x.Email == email && x.ID != account.ID).Any();
+            var acct2 = this.userRepository.GetByEmail(account.Tenant, email);
+            if (acct2 != null)
+            {
+                return account.ID != acct2.ID;
+            }
+            return false;
         }
 
+        protected internal bool MobilePhoneExistsOtherThan(TAccount account, string phone)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            Tracing.Information("[UserAccountService.EmailExistsOtherThan] called for account id: {0}, phone; {1}", account.ID, phone);
+
+            if (String.IsNullOrWhiteSpace(phone)) return false;
+
+            var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
+            if (acct2 != null)
+            {
+                return account.ID != acct2.ID;
+            }
+            return false;
+        }
+        
         public virtual TAccount CreateAccount(string username, string password, string email)
         {
             return CreateAccount(null, username, password, email);
@@ -1564,6 +1554,12 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(Resources.ValidationMessages.MobilePhoneMustBeDifferent);
             }
 
+            if (MobilePhoneExistsOtherThan(account, newMobilePhoneNumber))
+            {
+                Tracing.Verbose("[UserAccountValidation.ChangeMobilePhoneFromCode] failed -- number already in use");
+                throw new ValidationException(Resources.ValidationMessages.MobilePhoneAlreadyInUse);
+            }
+
             if (!IsVerificationPurposeValid(account, VerificationKeyPurpose.ChangeMobile) ||
                 CanResendMobileCode(account) ||
                 newMobilePhoneNumber != account.VerificationStorage ||
@@ -1613,9 +1609,16 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
+            var newMobile = account.VerificationStorage;
+            if (MobilePhoneExistsOtherThan(account, newMobile))
+            {
+                Tracing.Verbose("[UserAccountValidation.ChangeMobilePhoneFromCode] failed -- number already in use");
+                throw new ValidationException(Resources.ValidationMessages.MobilePhoneAlreadyInUse);
+            }
+
             Tracing.Verbose("[UserAccountService.ConfirmMobilePhoneNumberFromCode] success");
 
-            account.MobilePhoneNumber = account.VerificationStorage;
+            account.MobilePhoneNumber = newMobile;
             account.MobilePhoneNumberChanged = UtcNow;
 
             ClearVerificationKey(account);

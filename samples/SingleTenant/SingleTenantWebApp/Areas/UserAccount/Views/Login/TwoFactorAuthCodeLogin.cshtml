@@ -1,0 +1,20 @@
+﻿@model BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.TwoFactorAuthInputModel
+@{
+    ViewBag.Title = "Two Factor Code Auth";
+}
+
+<h2>To signin enter the SMS code sent to your mobile</h2>
+@using (Html.BeginForm("TwoFactorAuthCodeLogin", "Login"))
+{
+    @Html.ValidationSummary()
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x=>x.ReturnUrl)
+    <p>
+        @Html.LabelFor(x=>x.Code)
+        @Html.EditorFor(x=>x.Code)
+    </p>
+    <p>
+        <button name="button" value="signin">Sign In</button>
+        <button name="button" value="resend">Resend Code</button>
+    </p>
+}

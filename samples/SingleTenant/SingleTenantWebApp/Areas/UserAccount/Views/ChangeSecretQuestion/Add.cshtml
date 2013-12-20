@@ -1,0 +1,17 @@
+﻿@model BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.AddSecretQuestionInputModel
+
+@using (Html.BeginForm("Add", "ChangeSecretQuestion"))
+{
+    @Html.ValidationSummary("Error")
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>Add Password Reset Secret</legend>
+
+        @Html.EditorForModel()
+
+        <div class="buttons">
+            <button>Add Question/Answer</button>
+        </div>
+    </fieldset>
+}
