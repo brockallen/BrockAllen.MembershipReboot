@@ -19,7 +19,16 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 return new HttpUnauthorizedResult();
             }
-            return View(new ChangePasswordInputModel());
+
+            var acct = this.userAccountService.GetByID(User.GetUserID());
+            if (acct.HasPassword())
+            {
+                return View(new ChangePasswordInputModel());
+            }
+            else
+            {
+                return View("SendPasswordReset");
+            }
         }
         
         [HttpPost]
@@ -44,6 +53,28 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SendPasswordReset()
+        {
+            if (!User.HasUserID())
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            try
+            {
+                var acct = this.userAccountService.GetByID(User.GetUserID());
+                this.userAccountService.ResetPassword(acct.Tenant, acct.Email);
+                return View("Sent");
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View("SendPasswordReset");
         }
     }
 }
