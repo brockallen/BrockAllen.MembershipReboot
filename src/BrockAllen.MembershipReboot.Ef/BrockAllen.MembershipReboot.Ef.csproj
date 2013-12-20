@@ -32,11 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\samples\SingleTenant\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\samples\SingleTenant\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -49,12 +51,34 @@
     <Content Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreateAndMigrateDatabaseInitializer.cs" />
     <Compile Include="DbContextGroupRepository`1.cs" />
     <Compile Include="DbContextUserAccountRepository`1.cs" />
     <Compile Include="DbModelBuilderExtensions.cs" />
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
+    <Compile Include="Migrations\201311222357350_InitialCreate.cs" />
+    <Compile Include="Migrations\201311222357350_InitialCreate.Designer.cs">
+      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201312180402116_v5.cs" />
+    <Compile Include="Migrations\201312180402116_v5.Designer.cs">
+      <DependentUpon>201312180402116_v5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201312191756370_foo.cs" />
+    <Compile Include="Migrations\201312191756370_foo.Designer.cs">
+      <DependentUpon>201312191756370_foo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\SqlAzure\201312190826387_InitialCreate.cs" />
+    <Compile Include="Migrations\SqlAzure\201312190826387_InitialCreate.Designer.cs">
+      <DependentUpon>201312190826387_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\SqlAzure\201312201125384_foo.cs" />
+    <Compile Include="Migrations\SqlAzure\201312201125384_foo.Designer.cs">
+      <DependentUpon>201312201125384_foo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +86,23 @@
       <Project>{a33fe01f-ae9b-4bde-b521-ab13916b1cfa}</Project>
       <Name>BrockAllen.MembershipReboot</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201311222357350_InitialCreate.resx">
+      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201312180402116_v5.resx">
+      <DependentUpon>201312180402116_v5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201312191756370_foo.resx">
+      <DependentUpon>201312191756370_foo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\SqlAzure\201312190826387_InitialCreate.resx">
+      <DependentUpon>201312190826387_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\SqlAzure\201312201125384_foo.resx">
+      <DependentUpon>201312201125384_foo.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

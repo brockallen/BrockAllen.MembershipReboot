@@ -62,12 +62,35 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
                 svc.TwoFactorAuthenticationPolicy = policy;
                 return svc;
             });
+<<<<<<< HEAD:samples/SingleTenantAndNoSql/SingleTenantWebApp/App_Start/NinjectWebCommon.cs
+            kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();
+            RegisterEntityFrameworkSqlAzure(kernel);
+            //RegisterEntityFramework(kernel);
+            //RegisterMongoDb(kernel);
+=======
             kernel.Bind<AuthenticationService<HierarchicalUserAccount>>().To<SamAuthenticationService<HierarchicalUserAccount>>();
 
             RegisterMongoDb(kernel);
+>>>>>>> upstream/master:samples/NoSql/SingleTenantWebApp/App_Start/NinjectWebCommon.cs
             //RegisterRavenDb(kernel);
+            
         }
 
+<<<<<<< HEAD:samples/SingleTenantAndNoSql/SingleTenantWebApp/App_Start/NinjectWebCommon.cs
+        private static void RegisterEntityFramework(IKernel kernel)
+        {
+            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
+            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository()).InRequestScope();
+        }
+
+        private static void RegisterEntityFrameworkSqlAzure(IKernel kernel)
+        {
+            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<SqlAzureMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.ConfigurationAzure>());
+            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new SqlAzureDefaultUserAccountRepository()).InRequestScope();
+        }
+
+=======
+>>>>>>> upstream/master:samples/NoSql/SingleTenantWebApp/App_Start/NinjectWebCommon.cs
         // To use MongoDB:
         // - Add a reference to the BrockAllen.MembershipReboot.MongoDb project.
         // - Uncomment this method.
