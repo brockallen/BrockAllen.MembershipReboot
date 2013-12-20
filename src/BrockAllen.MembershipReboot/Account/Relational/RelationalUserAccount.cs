@@ -99,6 +99,12 @@ namespace BrockAllen.MembershipReboot.Relational
             PasswordResetSecretCollection.Remove((RelationalPasswordResetSecret)item);
         }
     }
+
+    // it's unfortunate to have to code an "Int" specific class. a generic type
+    // is preferred, but EF currently can't cope with an entity that uses a
+    // generic type as a primary key. so this approach is how we'll have to deal 
+    // with it for the time being: copy & paste for your key type if you don't 
+    // want Guid or Int. Sorry.
     public class RelationalUserAccountInt : UserAccount
     {
         public int Key { get; set; }
