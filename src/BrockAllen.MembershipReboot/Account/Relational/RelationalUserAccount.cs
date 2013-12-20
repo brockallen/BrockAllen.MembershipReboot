@@ -50,7 +50,7 @@ namespace BrockAllen.MembershipReboot.Relational
         }
         public override void AddLinkedAccountClaim(LinkedAccountClaim item)
         {
-            LinkedAccountClaimCollection.Add(new RelationalLinkedAccountClaim { UserAccountID = this.ID, ProviderName = item.ProviderName, Type = item.Type, Value = item.Value });
+            LinkedAccountClaimCollection.Add(new RelationalLinkedAccountClaim { UserAccountID = this.ID, ProviderName = item.ProviderName, ProviderAccountID = item.ProviderAccountID, Type = item.Type, Value = item.Value });
         }
         public override void RemoveLinkedAccountClaim(LinkedAccountClaim item)
         {
