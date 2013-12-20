@@ -1654,12 +1654,6 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[UserAccountService.IsPasswordExpired] called: {0}", account.ID);
 
-            if (account.RequiresPasswordReset)
-            {
-                Tracing.Verbose("[UserAccountService.IsPasswordExpired] RequiresPasswordReset set, returning true");
-                return true;
-            }
-
             if (Configuration.PasswordResetFrequency <= 0)
             {
                 Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] PasswordResetFrequency not set, returning false");
