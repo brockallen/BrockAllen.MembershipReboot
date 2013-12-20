@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BrockAllen.MembershipReboot.WebHost</id>
-    <version>1.0.0</version>
+    <version>5.0.0</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://raw.github.com/brockallen/BrockAllen.MembershipReboot/master/license.txt</licenseUrl>
@@ -20,7 +20,7 @@
     </frameworkAssemblies>
     
     <dependencies>
-      <dependency id="BrockAllen.MembershipReboot" version="4.0" />
+      <dependency id="BrockAllen.MembershipReboot" version="5.0" />
     </dependencies>
   </metadata>
 </package>
