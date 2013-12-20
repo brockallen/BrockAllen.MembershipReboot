@@ -1076,6 +1076,15 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
+        public virtual void ResetPassword(Guid id)
+        {
+            var account = this.GetByID(id);
+            if (account == null) throw new ArgumentException("Invalid ID");
+
+            ResetPassword(account);
+            Update(account);
+        }
+
         public virtual void ResetPassword(string email)
         {
             ResetPassword(null, email);
