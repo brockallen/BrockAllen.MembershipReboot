@@ -20,11 +20,11 @@ namespace BrockAllen.MembershipReboot.Hierarchical
         {
             get { return ClaimCollection; }
         }
-        public override void AddClaim(UserClaim item)
+        protected internal override void AddClaim(UserClaim item)
         {
             ClaimCollection.Add(item);
         }
-        public override void RemoveClaim(UserClaim item)
+        protected internal override void RemoveClaim(UserClaim item)
         {
             ClaimCollection.Remove(item);
         }
@@ -34,11 +34,11 @@ namespace BrockAllen.MembershipReboot.Hierarchical
         {
             get { return LinkedAccountCollection; }
         }
-        public override void AddLinkedAccount(LinkedAccount item)
+        protected internal override void AddLinkedAccount(LinkedAccount item)
         {
             LinkedAccountCollection.Add(item);
         }
-        public override void RemoveLinkedAccount(LinkedAccount item)
+        protected internal override void RemoveLinkedAccount(LinkedAccount item)
         {
             LinkedAccountCollection.Remove(item);
         }
@@ -48,11 +48,11 @@ namespace BrockAllen.MembershipReboot.Hierarchical
         {
             get { return LinkedAccountClaimCollection; }
         }
-        public override void AddLinkedAccountClaim(LinkedAccountClaim item)
+        protected internal override void AddLinkedAccountClaim(LinkedAccountClaim item)
         {
             LinkedAccountClaimCollection.Add(item);
         }
-        public override void RemoveLinkedAccountClaim(LinkedAccountClaim item)
+        protected internal override void RemoveLinkedAccountClaim(LinkedAccountClaim item)
         {
             LinkedAccountClaimCollection.Remove(item);
         }
@@ -62,11 +62,11 @@ namespace BrockAllen.MembershipReboot.Hierarchical
         {
             get { return UserCertificateCollection; }
         }
-        public override void AddCertificate(UserCertificate item)
+        protected internal override void AddCertificate(UserCertificate item)
         {
             UserCertificateCollection.Add(item);
         }
-        public override void RemoveCertificate(UserCertificate item)
+        protected internal override void RemoveCertificate(UserCertificate item)
         {
             UserCertificateCollection.Remove(item);
         }
@@ -76,11 +76,11 @@ namespace BrockAllen.MembershipReboot.Hierarchical
         {
             get { return TwoFactorAuthTokenCollection; }
         }
-        public override void AddTwoFactorAuthToken(TwoFactorAuthToken item)
+        protected internal override void AddTwoFactorAuthToken(TwoFactorAuthToken item)
         {
             TwoFactorAuthTokenCollection.Add(item);
         }
-        public override void RemoveTwoFactorAuthToken(TwoFactorAuthToken item)
+        protected internal override void RemoveTwoFactorAuthToken(TwoFactorAuthToken item)
         {
             TwoFactorAuthTokenCollection.Remove(item);
         }
@@ -90,11 +90,11 @@ namespace BrockAllen.MembershipReboot.Hierarchical
         {
             get { return PasswordResetSecretCollection; }
         }
-        public override void AddPasswordResetSecret(PasswordResetSecret item)
+        protected internal override void AddPasswordResetSecret(PasswordResetSecret item)
         {
             PasswordResetSecretCollection.Add(item);
         }
-        public override void RemovePasswordResetSecret(PasswordResetSecret item)
+        protected internal override void RemovePasswordResetSecret(PasswordResetSecret item)
         {
             PasswordResetSecretCollection.Remove(item);
         }

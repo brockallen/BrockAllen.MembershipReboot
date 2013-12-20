@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace BrockAllen.MembershipReboot.Test
 {
+    public class MyUserAccount : HierarchicalUserAccount 
+    {
+        protected override void AddClaim(UserClaim item)
+        {
+            base.AddClaim(item);
+        }
+    }
+
     public class FakeUserAccountRepository : QueryableUserAccountRepository<UserAccount>, IUserAccountRepository
     {
         public List<UserAccount> UserAccounts = new List<UserAccount>();
@@ -18,7 +26,7 @@ namespace BrockAllen.MembershipReboot.Test
 
         public override UserAccount Create()
         {
-            return new HierarchicalUserAccount();
+            return new MyUserAccount();
         }
 
         public override void Add(UserAccount item)
