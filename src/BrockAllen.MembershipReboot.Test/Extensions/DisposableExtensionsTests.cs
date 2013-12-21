@@ -3,15 +3,23 @@
  * see license.txt
  */
 
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using System;
 
 namespace BrockAllen.MembershipReboot.Test.Extensions
 {
     [TestClass]
     public class DisposableExtensionsTests
     {
+        class FakeDisposable : IDisposable
+        {
+            public bool WasCalled { get; set; }
+            public void Dispose()
+            {
+                WasCalled = true;
+            }
+        }
+
         [TestMethod]
         public void TryDispose_NullParam_ReturnsFalse()
         {
@@ -21,9 +29,9 @@ namespace BrockAllen.MembershipReboot.Test.Extensions
         [TestMethod]
         public void TryDispose_ValidParam_ReturnsTrueAndCallsDispose()
         {
-            var mockDisposable = new Mock<IDisposable>();
-            Assert.IsTrue(DisposableExtensions.TryDispose(mockDisposable.Object));
-            mockDisposable.Verify(x => x.Dispose());
+            var fake = new FakeDisposable();
+            Assert.IsTrue(DisposableExtensions.TryDispose(fake));
+            Assert.IsTrue(fake.WasCalled);
         }
     }
 }

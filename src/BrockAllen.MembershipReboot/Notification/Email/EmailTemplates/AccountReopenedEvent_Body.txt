@@ -1,0 +1,15 @@
+﻿You have reopened your account with {applicationName}.
+
+Username: {username}
+
+Please click here to confirm this request:
+
+{confirmChangeEmailUrl}
+
+If this was in error or not requested then click to cancel the request:
+
+{cancelVerificationUrl}
+
+Thanks!
+
+{emailSignature}

@@ -3,7 +3,6 @@
  * see license.txt
  */
 
-using System;
 using System.Web;
 namespace BrockAllen.MembershipReboot.WebHost
 {

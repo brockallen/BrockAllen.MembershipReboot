@@ -115,6 +115,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You must set a password on the local account before you remove the last external login provider..
+        /// </summary>
+        public static string CantRemoveLastLinkedAccountIfNoPassword {
+            get {
+                return ResourceManager.GetString("CantRemoveLastLinkedAccountIfNoPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to That certificate is already in use by a different account..
         /// </summary>
         public static string CertificateAlreadyInUse {
@@ -381,6 +390,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         public static string RegisterMobileForTwoFactor {
             get {
                 return ResourceManager.GetString("RegisterMobileForTwoFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reopening the account is not possible since there is no email address for this account..
+        /// </summary>
+        public static string ReopenErrorNoEmail {
+            get {
+                return ResourceManager.GetString("ReopenErrorNoEmail", resourceCulture);
             }
         }
         

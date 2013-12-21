@@ -51,7 +51,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
 
-            if (!account.IsLoginAllowed)
+            if (!account.IsLoginAllowed || account.IsAccountClosed)
             {
                 throw new ValidationException(Resources.ValidationMessages.LoginNotAllowed);
             }
@@ -234,7 +234,6 @@ namespace BrockAllen.MembershipReboot
 
             // add/update the provider with this account
             this.UserAccountService.AddOrUpdateLinkedAccount(account, providerName, providerAccountID, claims);
-            //this.UserAccountService.Update(account);
 
             // log them in if the account if they're verified
             if (account.IsAccountVerified || !UserAccountService.Configuration.RequireAccountVerification)

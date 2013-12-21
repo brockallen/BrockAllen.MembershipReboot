@@ -42,6 +42,21 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     {
                         return RedirectToAction("CertificateLogin");
                     }
+
+                    if (account.RequiresPasswordReset)
+                    {
+                        // this might mean many things -- 
+                        // it might just mean that the user should change the password, 
+                        // like the expired password below, so we'd just redirect to change password page
+                        // or, it might mean the DB was compromised, so we want to force the user
+                        // to reset their password but via a email token, so we'd want to 
+                        // let the user know this and invoke ResetPassword and not log them in
+                        // until the password has been changed
+                        //userAccountService.ResetPassword(account.ID);
+
+                        // so what you do here depends on your app and how you want to define the semantics
+                        // of the RequiresPasswordReset property
+                    }
                     
                     if (userAccountService.IsPasswordExpired(account))
                     {

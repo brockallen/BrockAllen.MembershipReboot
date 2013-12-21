@@ -3,10 +3,8 @@
  * see license.txt
  */
 
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Diagnostics;
 
 namespace BrockAllen.MembershipReboot.Test.Crypto
 {

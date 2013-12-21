@@ -606,6 +606,102 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
+        protected virtual void CloseAccount(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            Tracing.Information("[UserAccountService.CloseAccount] called for accountID: {0}", account.ID);
+
+            ClearVerificationKey(account);
+            ClearMobileAuthCode(account);
+            ConfigureTwoFactorAuthentication(account, TwoFactorAuthMode.None);
+
+            if (!account.IsAccountClosed)
+            {
+                Tracing.Verbose("[UserAccountService.CloseAccount] success");
+
+                account.IsAccountClosed = true;
+                account.AccountClosed = UtcNow;
+
+                this.AddEvent(new AccountClosedEvent<TAccount> { Account = account });
+            }
+            else
+            {
+                Tracing.Warning("[UserAccountService.CloseAccount] account already closed");
+            }
+        }
+
+        public virtual void ReopenAccount(string username, string password)
+        {
+            ReopenAccount(null, username, password);
+        }
+
+        public virtual void ReopenAccount(string tenant, string username, string password)
+        {
+            if (!Configuration.MultiTenant)
+            {
+                Tracing.Verbose("[UserAccountService.ReopenAccount] applying default tenant");
+                tenant = Configuration.DefaultTenant;
+            }
+
+            Tracing.Information("[UserAccountService.ReopenAccount] called: {0}, {1}", tenant, username);
+
+            var account = GetByUsername(tenant, username);
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.ReopenAccount] invalid account");
+                throw new ValidationException(Resources.ValidationMessages.InvalidUsername);
+            }
+
+            if (!this.Authenticate(account, password, AuthenticationPurpose.VerifyPassword))
+            {
+                Tracing.Error("[UserAccountService.ReopenAccount] invalid password");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
+            }
+
+            ReopenAccount(account);
+        }
+        
+        public virtual void ReopenAccount(Guid accountID)
+        {
+            Tracing.Information("[UserAccountService.ReopenAccount] called: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+            
+            ReopenAccount(account);
+        }
+
+        public virtual void ReopenAccount(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            if (!account.IsAccountClosed)
+            {
+                Tracing.Warning("[UserAccountService.ReopenAccount] account is not closed");
+                return;
+            }
+
+            if (String.IsNullOrWhiteSpace(account.Email))
+            {
+                Tracing.Error("[UserAccountService.ReopenAccount] no email to confirm reopen request");
+                throw new ValidationException(Resources.ValidationMessages.ReopenErrorNoEmail);
+            }
+
+            // this will require the user to confirm via email before logging in
+            account.IsAccountVerified = false;
+            ClearVerificationKey(account);
+            var key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+            this.AddEvent(new AccountReopenedEvent<TAccount> { Account = account, VerificationKey = key });
+
+            account.IsAccountClosed = false;
+            account.AccountClosed = null;
+
+            Update(account);
+            
+            Tracing.Verbose("[UserAccountService.ReopenAccount] success");
+        }
+
         public virtual bool Authenticate(string username, string password)
         {
             return Authenticate(null, username, password);
@@ -727,64 +823,72 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Verbose("[UserAccountService.Authenticate] for account: {0}", account.ID);
 
-            var result = Authenticate(account, password);
+            bool result = false;
 
-            if (purpose == AuthenticationPurpose.SignIn &&
-                Configuration.RequireAccountVerification &&
-                !account.IsAccountVerified)
+            try
             {
-                Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
-                this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
-                result = false;
-            }
+                result = Authenticate(account, password);
 
-            if (result &&
-                purpose == AuthenticationPurpose.SignIn &&
-                account.AccountTwoFactorAuthMode != TwoFactorAuthMode.None)
-            {
-                Tracing.Verbose("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username);
-
-                bool shouldRequestTwoFactorAuthCode = true;
-                if (this.TwoFactorAuthenticationPolicy != null)
+                if (purpose == AuthenticationPurpose.SignIn &&
+                    Configuration.RequireAccountVerification &&
+                    !account.IsAccountVerified)
                 {
-                    Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy configured");
+                    Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
+                    this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
+                    result = false;
+                }
 
-                    var token = this.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
-                    if (!String.IsNullOrWhiteSpace(token))
+                if (result &&
+                    purpose == AuthenticationPurpose.SignIn &&
+                    account.AccountTwoFactorAuthMode != TwoFactorAuthMode.None)
+                {
+                    Tracing.Verbose("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username);
+
+                    bool shouldRequestTwoFactorAuthCode = true;
+                    if (this.TwoFactorAuthenticationPolicy != null)
                     {
-                        shouldRequestTwoFactorAuthCode = !VerifyTwoFactorAuthToken(account, token);
-                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token found, was verified: {0}", shouldRequestTwoFactorAuthCode);
+                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy configured");
+
+                        var token = this.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
+                        if (!String.IsNullOrWhiteSpace(token))
+                        {
+                            shouldRequestTwoFactorAuthCode = !VerifyTwoFactorAuthToken(account, token);
+                            Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token found, was verified: {0}", shouldRequestTwoFactorAuthCode);
+                        }
+                        else
+                        {
+                            Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy no token present");
+                        }
+                    }
+
+                    if (shouldRequestTwoFactorAuthCode)
+                    {
+                        if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
+                        {
+                            Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa certificate: {0}, {1}", account.Tenant, account.Username);
+                            result = RequestTwoFactorAuthCertificate(account);
+                        }
+
+                        if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
+                        {
+                            Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa mobile code: {0}, {1}", account.Tenant, account.Username);
+                            result = RequestTwoFactorAuthCode(account);
+                        }
                     }
                     else
                     {
-                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy no token present");
+                        Tracing.Verbose("[UserAccountService.Authenticate] setting two factor auth status to None");
+                        account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
                     }
                 }
 
-                if (shouldRequestTwoFactorAuthCode)
-                {
-                    if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
-                    {
-                        Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa certificate: {0}, {1}", account.Tenant, account.Username);
-                        result = RequestTwoFactorAuthCertificate(account);
-                    }
-
-                    if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile)
-                    {
-                        Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa mobile code: {0}, {1}", account.Tenant, account.Username);
-                        result = RequestTwoFactorAuthCode(account);
-                    }
-                }
-                else
-                {
-                    Tracing.Verbose("[UserAccountService.Authenticate] setting two factor auth status to None");
-                    account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
-                }
+                Tracing.Verbose("[UserAccountService.Authenticate] authentication outcome: {0}", result ? "Successful Login" : "Failed Login");
             }
-
-            Update(account);
-
-            Tracing.Verbose("[UserAccountService.Authenticate] authentication outcome: {0}", result ? "Successful Login" : "Failed Login");
+            finally
+            {
+                // always try to update DB in case of password guessing
+                Update(account);
+            }
 
             return result;
         }
@@ -845,6 +949,7 @@ namespace BrockAllen.MembershipReboot
 
         protected internal bool VerifyHashedPassword(TAccount account, string password)
         {
+            if (!account.HasPassword()) return false;
             return Configuration.Crypto.VerifyHashedPassword(account.HashedPassword, password);
         }
 
@@ -1121,6 +1226,15 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.ChangePassword] success");
 
             SetPassword(account, newPassword);
+            Update(account);
+        }
+
+        public virtual void ResetPassword(Guid id)
+        {
+            var account = this.GetByID(id);
+            if (account == null) throw new ArgumentException("Invalid ID");
+
+            ResetPassword(account);
             Update(account);
         }
 
@@ -1534,6 +1648,7 @@ namespace BrockAllen.MembershipReboot
 
             account.Email = account.VerificationStorage;
             account.IsAccountVerified = true;
+            account.LastLogin = UtcNow;
 
             ClearVerificationKey(account);
 
@@ -1693,19 +1808,13 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[UserAccountService.IsPasswordExpired] called: {0}", account.ID);
 
-            if (account.RequiresPasswordReset)
-            {
-                Tracing.Verbose("[UserAccountService.IsPasswordExpired] RequiresPasswordReset set, returning true");
-                return true;
-            }
-
             if (Configuration.PasswordResetFrequency <= 0)
             {
                 Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] PasswordResetFrequency not set, returning false");
                 return false;
             }
 
-            if (String.IsNullOrWhiteSpace(account.HashedPassword))
+            if (!account.HasPassword())
             {
                 Tracing.Verbose("[UserAccountService.PasswordResetFrequency ] HashedPassword is null, returning false");
                 return false;
@@ -2102,33 +2211,6 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        protected virtual void CloseAccount(TAccount account)
-        {
-            if (account == null) throw new ArgumentNullException("account");
-
-            Tracing.Information("[UserAccountService.CloseAccount] called for accountID: {0}", account.ID);
-
-            ClearVerificationKey(account);
-            ClearMobileAuthCode(account);
-            ConfigureTwoFactorAuthentication(account, TwoFactorAuthMode.None);
-
-            account.IsLoginAllowed = false;
-
-            if (!account.IsAccountClosed)
-            {
-                Tracing.Verbose("[UserAccountService.CloseAccount] success");
-
-                account.IsAccountClosed = true;
-                account.AccountClosed = UtcNow;
-
-                this.AddEvent(new AccountClosedEvent<TAccount> { Account = account });
-            }
-            else
-            {
-                Tracing.Warning("[UserAccountService.CloseAccount] account already closed");
-            }
-        }
-
         public virtual void AddClaim(Guid accountID, string type, string value)
         {
             Tracing.Information("[UserAccountService.AddClaim] called for accountID: {0}", accountID);
@@ -2247,6 +2329,8 @@ namespace BrockAllen.MembershipReboot
                 throw new ArgumentNullException("id");
             }
 
+            RemoveLinkedAccountClaims(account, provider, id);
+
             var linked = GetLinkedAccount(account, provider, id);
             if (linked == null)
             {
@@ -2264,6 +2348,7 @@ namespace BrockAllen.MembershipReboot
                 linked.LastLogin = UtcNow;
             }
 
+<<<<<<< HEAD
             
             claims = claims ?? Enumerable.Empty<Claim>();
 
@@ -2272,11 +2357,16 @@ namespace BrockAllen.MembershipReboot
             {
                 account.RemoveLinkedAccountClaim(item);
             }
+=======
+            account.LastLogin = UtcNow;
+>>>>>>> upstream/master
 
+            claims = claims ?? Enumerable.Empty<Claim>();
             foreach (var c in claims)
             {
                 var claim = new LinkedAccountClaim();
                 claim.ProviderName = linked.ProviderName;
+                claim.ProviderAccountID = linked.ProviderAccountID;
                 claim.Type = c.Type;
                 claim.Value = c.Value;
                 account.AddLinkedAccountClaim(claim);
@@ -2285,23 +2375,25 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        public virtual void RemoveLinkedAccount(Guid accountID, string provider)
-        {
-            Tracing.Information("[UserAccountService.RemoveLinkedAccount] called for account ID: {0}", accountID);
+        //public virtual void RemoveLinkedAccount(Guid accountID, string provider)
+        //{
+        //    Tracing.Information("[UserAccountService.RemoveLinkedAccount] called for account ID: {0}", accountID);
 
-            var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID");
+        //    var account = this.GetByID(accountID);
+        //    if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            var linked = account.LinkedAccounts.Where(x => x.ProviderName == provider);
-            foreach (var item in linked)
-            {
-                account.RemoveLinkedAccount(item);
-                this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
-                Tracing.Verbose("[UserAccountService.RemoveLinkedAccount] linked account removed");
-            }
+        //    RemoveLinkedAccountClaims(account, provider);
 
-            Update(account);
-        }
+        //    var linked = account.LinkedAccounts.Where(x => x.ProviderName == provider).ToArray();
+        //    foreach (var item in linked)
+        //    {
+        //        account.RemoveLinkedAccount(item);
+        //        this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
+        //        Tracing.Verbose("[UserAccountService.RemoveLinkedAccount] linked account removed");
+        //    }
+
+        //    Update(account);
+        //}
 
         public virtual void RemoveLinkedAccount(Guid accountID, string provider, string id)
         {
@@ -2311,8 +2403,17 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             var linked = GetLinkedAccount(account, provider, id);
+
+            if (linked != null && account.LinkedAccounts.Count() == 1 && !account.HasPassword())
+            {
+                // can't remove last linked account if no password
+                Tracing.Error("[UserAccountService.RemoveLinkedAccount] no password on account -- can't remove last provider");
+                throw new ValidationException(Resources.ValidationMessages.CantRemoveLastLinkedAccountIfNoPassword);
+            }
+            
             if (linked != null)
             {
+                RemoveLinkedAccountClaims(account, provider, id);
                 account.RemoveLinkedAccount(linked);
                 this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = linked });
                 Tracing.Verbose("[UserAccountService.RemoveLinkedAccount] linked account removed");
@@ -2321,23 +2422,55 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        public virtual void RemoveLinkedAccountClaims(Guid accountID, string provider)
+        //public virtual void RemoveLinkedAccountClaims(Guid accountID, string provider)
+        //{
+        //    Tracing.Information("[UserAccountService.RemoveLinkedAccountClaims] called for account ID: {0}", accountID);
+
+        //    var account = this.GetByID(accountID);
+        //    if (account == null) throw new ArgumentException("Invalid AccountID");
+
+        //    RemoveLinkedAccountClaims(account, provider);
+
+        //    Update(account);
+        //}
+
+        public virtual void RemoveLinkedAccountClaims(Guid accountID, string provider, string id)
         {
             Tracing.Information("[UserAccountService.RemoveLinkedAccountClaims] called for account ID: {0}", accountID);
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            var claims = account.LinkedAccountClaims.Where(x => x.ProviderName == provider);
+            RemoveLinkedAccountClaims(account, provider, id);
+
+            Update(account);
+        }
+
+        protected virtual void RemoveLinkedAccountClaims(TAccount account, string provider, string id)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            var claims = account.LinkedAccountClaims.Where(x => x.ProviderName == provider && x.ProviderAccountID == id).ToArray();
             foreach (var item in claims)
             {
                 account.RemoveLinkedAccountClaim(item);
                 //this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
                 Tracing.Verbose("[UserAccountService.RemoveLinkedAccountClaims] linked account claim removed");
             }
-
-            Update(account);
         }
+
+        //protected virtual void RemoveLinkedAccountClaims(TAccount account, string provider)
+        //{
+        //    if (account == null) throw new ArgumentNullException("account");
+
+        //    var claims = account.LinkedAccountClaims.Where(x => x.ProviderName == provider).ToArray();
+        //    foreach (var item in claims)
+        //    {
+        //        account.RemoveLinkedAccountClaim(item);
+        //        //this.AddEvent(new LinkedAccountRemovedEvent<TAccount> { Account = account, LinkedAccount = item });
+        //        Tracing.Verbose("[UserAccountService.RemoveLinkedAccountClaims] linked account claim removed");
+        //    }
+        //}
 
         public virtual void AddCertificate(Guid accountID, X509Certificate2 certificate)
         {
@@ -2562,7 +2695,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        protected virtual DateTime UtcNow
+        internal protected virtual DateTime UtcNow
         {
             get
             {

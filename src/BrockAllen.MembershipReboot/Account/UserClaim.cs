@@ -3,9 +3,7 @@
  * see license.txt
  */
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BrockAllen.MembershipReboot
 {

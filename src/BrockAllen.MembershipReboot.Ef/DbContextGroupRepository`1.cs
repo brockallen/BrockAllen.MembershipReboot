@@ -8,7 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 namespace BrockAllen.MembershipReboot.Ef
 {
-    public class DbContextGroupRepository<Ctx> : IGroupRepository
+    public class DbContextGroupRepository<Ctx> : IGroupRepository, IDisposable
         where Ctx : DbContext, new()
     {
         protected DbContext db;

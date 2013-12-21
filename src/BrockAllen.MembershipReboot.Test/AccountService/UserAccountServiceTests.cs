@@ -3,14 +3,12 @@
  * see license.txt
  */
 
-using System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BrockAllen.MembershipReboot.Test.AccountService
 {
@@ -1492,6 +1490,36 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             {
                 Assert.AreEqual(Resources.ValidationMessages.CodeRequired, ex.Message);
             }
+        }
+
+        [TestMethod]
+        public void RemoveLinkedAccount_NoPassword_CantRemoveLastLinkedAccount()
+        {
+            var acct = subject.CreateAccount("test", null, "test@test.com");
+            subject.AddOrUpdateLinkedAccount(acct, "google", "123", null);
+
+            try
+            {
+                subject.RemoveLinkedAccount(acct.ID, "google", "123");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.CantRemoveLastLinkedAccountIfNoPassword, ex.Message);
+            }
+        }
+        [TestMethod]
+        public void RemoveLinkedAccount_NoPassword_CanRemoveSecondToLastLinkedAccount()
+        {
+            var acct = subject.CreateAccount("test", null, "test@test.com");
+            subject.AddOrUpdateLinkedAccount(acct, "google", "123", null);
+            subject.AddOrUpdateLinkedAccount(acct, "facebook", "123", null);
+            
+            Assert.IsNotNull(subject.GetByLinkedAccount("google", "123"));
+
+            subject.RemoveLinkedAccount(acct.ID, "google", "123");
+
+            Assert.IsNull(subject.GetByLinkedAccount("google", "123"));
         }
 
 

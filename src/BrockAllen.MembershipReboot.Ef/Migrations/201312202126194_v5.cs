@@ -7,36 +7,27 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
     {
         public override void Up()
         {
-            DropForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts");
-            DropForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
-
-            DropIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
-            DropIndex("dbo.LinkedAccounts", "UserAccountID");
-
-            DropPrimaryKey("dbo.LinkedAccountClaims");
-            DropPrimaryKey("dbo.LinkedAccounts"); 
-            
             CreateTable(
-                "dbo.PasswordResetSecrets",
-                c => new
-                    {
-                        PasswordResetSecretID = c.Guid(nullable: false),
-                        UserAccountID = c.Guid(nullable: false),
-                        Question = c.String(nullable: false, maxLength: 150),
-                        Answer = c.String(nullable: false, maxLength: 150),
-                    })
-                .PrimaryKey(t => t.PasswordResetSecretID)
-                .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
-                .Index(t => t.UserAccountID);
-            
+                  "dbo.PasswordResetSecrets",
+                  c => new
+                  {
+                      PasswordResetSecretID = c.Guid(nullable: false),
+                      UserAccountID = c.Guid(nullable: false),
+                      Question = c.String(nullable: false, maxLength: 150),
+                      Answer = c.String(nullable: false, maxLength: 150),
+                  })
+                  .PrimaryKey(t => t.PasswordResetSecretID)
+                  .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
+                  .Index(t => t.UserAccountID);
+
             CreateTable(
                 "dbo.TwoFactorAuthTokens",
                 c => new
-                    {
-                        UserAccountID = c.Guid(nullable: false),
-                        Token = c.String(nullable: false, maxLength: 100),
-                        Issued = c.DateTime(nullable: false),
-                    })
+                {
+                    UserAccountID = c.Guid(nullable: false),
+                    Token = c.String(nullable: false, maxLength: 100),
+                    Issued = c.DateTime(nullable: false),
+                })
                 .PrimaryKey(t => new { t.UserAccountID, t.Token })
                 .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
                 .Index(t => t.UserAccountID);
@@ -45,23 +36,27 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             AddColumn("dbo.UserAccounts", "FailedPasswordResetCount", c => c.Int(nullable: false));
             AddColumn("dbo.UserAccounts", "MobilePhoneNumberChanged", c => c.DateTime());
             AddColumn("dbo.UserAccounts", "VerificationStorage", c => c.String(maxLength: 100));
-            
+
             AlterColumn("dbo.UserAccounts", "Email", c => c.String(maxLength: 100));
             AlterColumn("dbo.UserAccounts", "PasswordChanged", c => c.DateTime());
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String(maxLength: 100));
             AlterColumn("dbo.UserAccounts", "MobilePhoneNumber", c => c.String(maxLength: 20));
             AlterColumn("dbo.UserAccounts", "HashedPassword", c => c.String(maxLength: 200));
+
+            DropForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts");
+            DropForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
+            DropIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
+            DropIndex("dbo.LinkedAccounts", "UserAccountID");
+            DropPrimaryKey("dbo.LinkedAccountClaims");
+            DropPrimaryKey("dbo.LinkedAccounts");
+
             AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 30));
             AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 30));
 
-            DropColumn("dbo.LinkedAccountClaims", "ProviderAccountID");
-
-            AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "Type", "Value" });
+            AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
-
             CreateIndex("dbo.LinkedAccountClaims", "UserAccountID");
             //CreateIndex("dbo.LinkedAccounts", "UserAccountID");
-
             AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
             AddForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
         }
@@ -76,7 +71,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
 
             DropPrimaryKey("dbo.LinkedAccountClaims");
             DropPrimaryKey("dbo.LinkedAccounts");
-            
+
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.PasswordResetSecrets", "UserAccountID", "dbo.UserAccounts");
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccountID" });
@@ -94,9 +89,6 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropColumn("dbo.UserAccounts", "LastFailedPasswordReset");
             DropTable("dbo.TwoFactorAuthTokens");
             DropTable("dbo.PasswordResetSecrets");
-
-            AddColumn("dbo.LinkedAccountClaims", "ProviderAccountID", c=>c.Guid(nullable:false, defaultValue:Guid.Empty));
-            // TODO -- migrate data here
 
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });

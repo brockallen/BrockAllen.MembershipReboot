@@ -56,7 +56,7 @@ namespace BrockAllen.MembershipReboot.Mvc
     {
         static CustomDatabase()
         {
-            Database.SetInitializer<CustomDatabase>(new CreateDatabaseIfNotExists<CustomDatabase>());
+            Database.SetInitializer<CustomDatabase>(new DropCreateDatabaseIfModelChanges<CustomDatabase>());
         }
 
         public CustomDatabase()

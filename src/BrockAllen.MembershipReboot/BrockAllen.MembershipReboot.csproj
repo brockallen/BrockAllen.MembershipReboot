@@ -26,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -60,7 +60,6 @@
     <Compile Include="Crypto\DefaultCrypto.cs" />
     <Compile Include="Crypto\ICrypto.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
-    <Compile Include="Extensions\LinkedAccountExtensions.cs" />
     <Compile Include="Extensions\UserAccountExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Account\TwoFactorAuthMode.cs" />
@@ -127,6 +126,8 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="license.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountReopenedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountReopenedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountRemovedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountRemovedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountAddedEvent_Subject.txt" />

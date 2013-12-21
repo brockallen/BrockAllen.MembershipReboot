@@ -1,10 +1,10 @@
-﻿using BrockAllen.MembershipReboot;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Relational;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace System.Data.Entity
 {
@@ -44,7 +44,7 @@ namespace System.Data.Entity
             modelBuilder.Entity<TAccount>()
                 .HasMany(x => x.LinkedAccountClaimCollection).WithRequired().HasForeignKey(x => x.UserAccountID);
             modelBuilder.Entity<RelationalLinkedAccountClaim>()
-                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.Type, x.Value }).ToTable("LinkedAccountClaims");
+                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID, x.Type, x.Value }).ToTable("LinkedAccountClaims");
         }
 
         public static void ConfigureMembershipRebootUserAccountsInt<TAccount>(this DbModelBuilder modelBuilder)
@@ -81,7 +81,7 @@ namespace System.Data.Entity
             modelBuilder.Entity<TAccount>()
                 .HasMany(x => x.LinkedAccountClaimCollection).WithRequired().HasForeignKey(x => x.UserAccountID);
             modelBuilder.Entity<RelationalLinkedAccountClaimInt>()
-                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.Type, x.Value }).ToTable("LinkedAccountClaims");
+                .HasKey(x => new { x.UserAccountID, x.ProviderName, x.ProviderAccountID, x.Type, x.Value }).ToTable("LinkedAccountClaims");
         }
 
         public static void ConfigureMembershipRebootGroups<TGroup>(this DbModelBuilder modelBuilder)

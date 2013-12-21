@@ -135,6 +135,9 @@
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
     <value>Add a client certificate to enable certificate two factor authentication.</value>
   </data>
+  <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
+    <value>You must set a password on the local account before you remove the last external login provider.</value>
+  </data>
   <data name="CertificateAlreadyInUse" xml:space="preserve">
     <value>That certificate is already in use by a different account.</value>
   </data>
@@ -224,6 +227,9 @@
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
     <value>Register a mobile phone number to enable mobile two factor authentication.</value>
+  </data>
+  <data name="ReopenErrorNoEmail" xml:space="preserve">
+    <value>Reopening the account is not possible since there is no email address for this account.</value>
   </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
     <value>Secret answer required.</value>
