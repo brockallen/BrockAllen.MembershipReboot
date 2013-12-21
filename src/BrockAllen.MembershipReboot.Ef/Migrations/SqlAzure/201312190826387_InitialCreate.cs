@@ -66,18 +66,6 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
                 .PrimaryKey(t => t.ID);
             
             CreateTable(
-                "dbo.UserCertificates",
-                c => new
-                    {
-                        UserAccountID = c.Guid(nullable: false),
-                        Thumbprint = c.String(nullable: false, maxLength: 150),
-                        Subject = c.String(maxLength: 250),
-                    })
-                .PrimaryKey(t => new { t.UserAccountID, t.Thumbprint })
-                .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
-                .Index(t => t.UserAccountID);
-            
-            CreateTable(
                 "dbo.UserClaims",
                 c => new
                     {
@@ -86,6 +74,20 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
                         Value = c.String(nullable: false, maxLength: 150),
                     })
                 .PrimaryKey(t => new { t.UserAccountID, t.Type, t.Value })
+                .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
+                .Index(t => t.UserAccountID);
+            
+            CreateTable(
+                "dbo.LinkedAccountClaims",
+                c => new
+                    {
+                        UserAccountID = c.Guid(nullable: false),
+                        ProviderName = c.String(nullable: false, maxLength: 30),
+                        ProviderAccountID = c.String(nullable: false, maxLength: 100),
+                        Type = c.String(nullable: false, maxLength: 150),
+                        Value = c.String(nullable: false, maxLength: 100),
+                    })
+                .PrimaryKey(t => new { t.UserAccountID, t.ProviderName, t.ProviderAccountID, t.Type, t.Value })
                 .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
                 .Index(t => t.UserAccountID);
             
@@ -103,29 +105,15 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
                 .Index(t => t.UserAccountID);
             
             CreateTable(
-                "dbo.LinkedAccountClaims",
-                c => new
-                    {
-                        UserAccountID = c.Guid(nullable: false),
-                        ProviderName = c.String(nullable: false, maxLength: 30),
-                        ProviderAccountID = c.String(nullable: false, maxLength: 100),
-                        Type = c.String(nullable: false, maxLength: 150),
-                        Value = c.String(nullable: false, maxLength: 150),
-                    })
-                .PrimaryKey(t => new { t.UserAccountID, t.ProviderName, t.ProviderAccountID, t.Type, t.Value })
-                .ForeignKey("dbo.LinkedAccounts", t => new { t.UserAccountID, t.ProviderName, t.ProviderAccountID }, cascadeDelete: true)
-                .Index(t => new { t.UserAccountID, t.ProviderName, t.ProviderAccountID });
-            
-            CreateTable(
                 "dbo.PasswordResetSecrets",
                 c => new
                     {
-                        PasswordResetSecretID = c.Guid(nullable: false),
                         UserAccountID = c.Guid(nullable: false),
+                        PasswordResetSecretID = c.Guid(nullable: false),
                         Question = c.String(nullable: false, maxLength: 150),
                         Answer = c.String(nullable: false, maxLength: 150),
                     })
-                .PrimaryKey(t => t.PasswordResetSecretID)
+                .PrimaryKey(t => new { t.UserAccountID, t.PasswordResetSecretID })
                 .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
                 .Index(t => t.UserAccountID);
             
@@ -141,30 +129,42 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
                 .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
                 .Index(t => t.UserAccountID);
             
+            CreateTable(
+                "dbo.UserCertificates",
+                c => new
+                    {
+                        UserAccountID = c.Guid(nullable: false),
+                        Thumbprint = c.String(nullable: false, maxLength: 150),
+                        Subject = c.String(maxLength: 250),
+                    })
+                .PrimaryKey(t => new { t.UserAccountID, t.Thumbprint })
+                .ForeignKey("dbo.UserAccounts", t => t.UserAccountID, cascadeDelete: true)
+                .Index(t => t.UserAccountID);
+            
         }
         
         public override void Down()
         {
+            DropForeignKey("dbo.UserCertificates", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.PasswordResetSecrets", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
-            DropForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts");
+            DropForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.UserClaims", "UserAccountID", "dbo.UserAccounts");
-            DropForeignKey("dbo.UserCertificates", "UserAccountID", "dbo.UserAccounts");
             DropForeignKey("dbo.GroupChilds", "GroupID", "dbo.Groups");
+            DropIndex("dbo.UserCertificates", new[] { "UserAccountID" });
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccountID" });
             DropIndex("dbo.PasswordResetSecrets", new[] { "UserAccountID" });
             DropIndex("dbo.LinkedAccounts", new[] { "UserAccountID" });
-            DropIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
+            DropIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID" });
             DropIndex("dbo.UserClaims", new[] { "UserAccountID" });
-            DropIndex("dbo.UserCertificates", new[] { "UserAccountID" });
             DropIndex("dbo.GroupChilds", new[] { "GroupID" });
+            DropTable("dbo.UserCertificates");
             DropTable("dbo.TwoFactorAuthTokens");
             DropTable("dbo.PasswordResetSecrets");
-            DropTable("dbo.LinkedAccountClaims");
             DropTable("dbo.LinkedAccounts");
+            DropTable("dbo.LinkedAccountClaims");
             DropTable("dbo.UserClaims");
-            DropTable("dbo.UserCertificates");
             DropTable("dbo.UserAccounts");
             DropTable("dbo.GroupChilds");
             DropTable("dbo.Groups");

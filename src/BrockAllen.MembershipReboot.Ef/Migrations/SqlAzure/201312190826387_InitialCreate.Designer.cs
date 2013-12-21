@@ -13,7 +13,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
         
         string IMigrationMetadata.Id
         {
-            get { return "201312190826387_InitialCreate"; }
+            get { return "201312210718281_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source
