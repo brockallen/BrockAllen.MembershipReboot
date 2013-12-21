@@ -169,17 +169,18 @@ namespace BrockAllen.MembershipReboot
                 account.Username = username;
             }
             ValidatePassword(account, password);
-            SetPassword(account, password);
+            SetPassword(account, password,false);
 
-            if (account.Email != email)
-            {
-                ValidateEmail(account, email);
-                account.Email = email;
-            }
+            if (account.Email != email)ChangeEmail(ref account, email,false);
+            
 
             account.LastUpdated = UtcNow;
 
+            this.AddEvent(new PasswordChangedEvent<TAccount> { Account = account, NewPassword = password });
+
             this.userRepository.Update(account);
+
+            
         }
 
        
@@ -1556,6 +1557,13 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
+            ChangeEmail(ref account, newEmail);
+
+            Update(account);
+        }
+
+        protected virtual void ChangeEmail(ref TAccount account, string newEmail,bool enableevent=true) 
+        {
             ValidateEmail(account, newEmail);
 
             var oldEmail = account.Email;
@@ -1568,18 +1576,19 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccountService.ChangeEmailRequest] RequireAccountVerification false, changing email");
                 account.IsAccountVerified = false;
                 account.Email = newEmail;
-                this.AddEvent(new EmailChangedEvent<TAccount> { Account = account, OldEmail = oldEmail, VerificationKey = key });
+                if (enableevent) this.AddEvent(new EmailChangedEvent<TAccount> { Account = account, OldEmail = oldEmail, VerificationKey = key });
             }
             else
             {
                 Tracing.Verbose("[UserAccountService.ChangeEmailRequest] RequireAccountVerification true, sending changing email");
-                this.AddEvent(new EmailChangeRequestedEvent<TAccount> { Account = account, OldEmail = oldEmail, NewEmail = newEmail, VerificationKey = key });
+               if (enableevent) this.AddEvent(new EmailChangeRequestedEvent<TAccount> { Account = account, OldEmail = oldEmail, NewEmail = newEmail, VerificationKey = key });
             }
 
             Tracing.Verbose("[UserAccountService.ChangeEmailRequest] success");
-
-            Update(account);
+        
         }
+
+
 
         public virtual void VerifyEmailFromKey(string key)
         {
@@ -1907,7 +1916,7 @@ namespace BrockAllen.MembershipReboot
             account.VerificationStorage = null;
         }
 
-        protected virtual void SetPassword(TAccount account, string password)
+        protected virtual void SetPassword(TAccount account, string password, bool enableevent=true)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -1925,7 +1934,7 @@ namespace BrockAllen.MembershipReboot
             account.PasswordChanged = UtcNow;
             account.RequiresPasswordReset = false;
 
-            this.AddEvent(new PasswordChangedEvent<TAccount> { Account = account, NewPassword = password });
+            if (enableevent)this.AddEvent(new PasswordChangedEvent<TAccount> { Account = account, NewPassword = password });
         }
 
         protected virtual void ResetPassword(TAccount account)
