@@ -24,32 +24,18 @@ namespace BrockAllen.MembershipReboot
 
             using (SmtpClient smtp = new SmtpClient())
             {
-<<<<<<< HEAD
-                smtp.Timeout = 10000;
-                try
-                {
-                    
-=======
                 smtp.Timeout = 5000;
                 try
                 {
->>>>>>> upstream/master
                     smtp.Send(msg.From, msg.To, msg.Subject, msg.Body);
                 }
                 catch (SmtpException e)
                 {
-<<<<<<< HEAD
-                    Tracing.Verbose("Error in Send Mail: " + e.Message);
-                }
-                catch (Exception e) {
-                    Tracing.Verbose("Error in Send Mail: " + e.Message);
-=======
                     Tracing.Error("[SmtpMessageDelivery.Send] SmtpException: " + e.Message);
                 }
                 catch (Exception e)
                 {
                     Tracing.Error("[SmtpMessageDelivery.Send] Exception: " + e.Message);
->>>>>>> upstream/master
                 }
             }
         }

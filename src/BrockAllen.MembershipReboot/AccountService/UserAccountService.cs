@@ -2348,18 +2348,7 @@ namespace BrockAllen.MembershipReboot
                 linked.LastLogin = UtcNow;
             }
 
-<<<<<<< HEAD
-            
-            claims = claims ?? Enumerable.Empty<Claim>();
-
-            var claimsToRemove = account.LinkedAccountClaims.Where(x => x.ProviderName == linked.ProviderName).ToArray();
-            foreach (var item in claimsToRemove)
-            {
-                account.RemoveLinkedAccountClaim(item);
-            }
-=======
             account.LastLogin = UtcNow;
->>>>>>> upstream/master
 
             claims = claims ?? Enumerable.Empty<Claim>();
             foreach (var c in claims)
