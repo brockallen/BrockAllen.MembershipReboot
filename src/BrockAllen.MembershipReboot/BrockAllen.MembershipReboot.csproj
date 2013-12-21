@@ -69,7 +69,6 @@
     <Compile Include="Groups\GroupChild.cs" />
     <Compile Include="Groups\GroupService.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
-    <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Resources\ValidationMessages.it-it.Designer.cs">
       <DependentUpon>ValidationMessages.it-it.resx</DependentUpon>
       <AutoGen>True</AutoGen>

@@ -24,7 +24,7 @@ namespace BrockAllen.MembershipReboot
 
             using (SmtpClient smtp = new SmtpClient())
             {
-                smtp.Timeout = 5000;
+                smtp.Timeout = 10000;
                 try
                 {
                     
