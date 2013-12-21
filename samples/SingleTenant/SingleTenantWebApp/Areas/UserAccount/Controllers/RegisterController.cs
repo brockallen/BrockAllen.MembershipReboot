@@ -88,6 +88,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [Authorize]
         public ActionResult External()
         {
+            if (!User.HasUserID())return new HttpUnauthorizedResult();
+            
             var UserInfo=this.userAccountService.GetByID(User.GetUserID());
             return View("Index", new RegisterInputModel() { Username = UserInfo.Username, Email = UserInfo.Email, Password = "", ConfirmPassword = "" });
         }
