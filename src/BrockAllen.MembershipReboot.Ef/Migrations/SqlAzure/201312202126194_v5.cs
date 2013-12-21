@@ -21,9 +21,10 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
             AlterColumn("dbo.UserAccounts", "HashedPassword", c => c.String(maxLength: 200));
 
             DropForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts");
-            DropForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
+            DropForeignKey("dbo.LinkedAccounts", new[]{"UserAccountID"}, "dbo.UserAccounts");
             DropIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
-            DropIndex("dbo.LinkedAccounts", "UserAccountID");
+            
+            DropIndex("dbo.LinkedAccounts", new[]{"UserAccountID"});
             DropPrimaryKey("dbo.LinkedAccountClaims");
             DropPrimaryKey("dbo.LinkedAccounts");
 
@@ -40,10 +41,11 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
             //recreate primary key
             DropPrimaryKey("dbo.LinkedAccountClaims");
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
-            CreateIndex("dbo.LinkedAccountClaims", "UserAccountID");
+           
+            CreateIndex("dbo.LinkedAccountClaims", new[]{"UserAccountID"});
             
-            AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
-            AddForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
+            AddForeignKey("dbo.LinkedAccounts", new[] {"UserAccountID"}, "dbo.UserAccounts", cascadeDelete: true);
+            AddForeignKey("dbo.LinkedAccountClaims", new[] {"UserAccountID"}, "dbo.UserAccounts", cascadeDelete: true);
 
             CreateTable(
                   "dbo.PasswordResetSecrets",
@@ -74,21 +76,25 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
 
         public override void Down()
         {
-            DropForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts");
-            DropForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
+            DropForeignKey("dbo.LinkedAccountClaims",new[] { "UserAccountID"}, "dbo.UserAccounts");
+            DropForeignKey("dbo.LinkedAccounts", new[] {"UserAccountID"}, "dbo.UserAccounts");
 
-            DropIndex("dbo.LinkedAccountClaims", "UserAccountID");
-            DropIndex("dbo.LinkedAccounts", "UserAccountID");
-
+            DropIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID" });
+            DropIndex("dbo.LinkedAccounts", new[] {"UserAccountID"});
+            
+            
             DropPrimaryKey("dbo.LinkedAccountClaims");
             DropPrimaryKey("dbo.LinkedAccounts");
 
-            DropForeignKey("dbo.TwoFactorAuthTokens", "UserAccountID", "dbo.UserAccounts");
-            DropForeignKey("dbo.PasswordResetSecrets", "UserAccountID", "dbo.UserAccounts");
+            DropForeignKey("dbo.TwoFactorAuthTokens", new[] {"UserAccountID"}, "dbo.UserAccounts");
+            DropForeignKey("dbo.PasswordResetSecrets",new[] { "UserAccountID"}, "dbo.UserAccounts");
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "UserAccountID" });
             DropIndex("dbo.PasswordResetSecrets", new[] { "UserAccountID" });
-            AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 50));
-            AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 50));
+
+            DropTable("dbo.TwoFactorAuthTokens");
+            DropTable("dbo.PasswordResetSecrets");
+
+            
             AlterColumn("dbo.UserAccounts", "HashedPassword", c => c.String(nullable: false, maxLength: 200));
             AlterColumn("dbo.UserAccounts", "MobilePhoneNumber", c => c.String());
             AlterColumn("dbo.UserAccounts", "MobileCode", c => c.String());
@@ -99,17 +105,27 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
             DropColumn("dbo.UserAccounts", "FailedPasswordResetCount");
             DropColumn("dbo.UserAccounts", "LastFailedPasswordReset");
             
-            DropTable("dbo.TwoFactorAuthTokens");
-            DropTable("dbo.PasswordResetSecrets");
-
+            
+            //add fake primary key
+            AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderAccountID", "Type", "Value" });
+            AlterColumn("dbo.LinkedAccountClaims", "ProviderName", c => c.String(nullable: false, maxLength: 50));
+            //recreate primary key
+            DropPrimaryKey("dbo.LinkedAccountClaims");
             AddPrimaryKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID", "Type", "Value" });
+
+            //add fake primary key
+            AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderAccountID" });
+            AlterColumn("dbo.LinkedAccounts", "ProviderName", c => c.String(nullable: false, maxLength: 50));
+            //recreate primary key
+            DropPrimaryKey("dbo.LinkedAccounts");
             AddPrimaryKey("dbo.LinkedAccounts", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
 
+            
             CreateIndex("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" });
             // same as Up 
             // CreateIndex("dbo.LinkedAccounts", "UserAccountID");
 
-            AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
+            AddForeignKey("dbo.LinkedAccounts",new[] { "UserAccountID"}, "dbo.UserAccounts", cascadeDelete: true);
             AddForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts", cascadeDelete: true);
         }
 

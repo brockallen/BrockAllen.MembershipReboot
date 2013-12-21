@@ -106,7 +106,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations.SqlAzure
                     ProviderName = c.String(nullable: false, maxLength: 50),
                     ProviderAccountID = c.String(nullable: false, maxLength: 100),
                     Type = c.String(nullable: false, maxLength: 150),
-                    Value = c.String(nullable: false, maxLength: 130),
+                    Value = c.String(nullable: false, maxLength: 150),
                 })
                 .PrimaryKey(t => new { t.UserAccountID, t.ProviderName, t.ProviderAccountID, t.Type, t.Value })
                 .ForeignKey("dbo.LinkedAccounts", t => new { t.UserAccountID, t.ProviderName, t.ProviderAccountID }, cascadeDelete: true)
