@@ -30,7 +30,7 @@ namespace BrockAllen.MembershipReboot
             if (otherAccount != null && otherAccount.ID != account.ID)
             {
                 Tracing.Verbose("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
-                throw new ValidationException(Resources.ValidationMessages.CertificateAlreadyInUse);
+                throw new ValidationException(userAccountService.GetValidationMessage("CertificateAlreadyInUse"));
             }
         }
     }

@@ -53,12 +53,12 @@ namespace BrockAllen.MembershipReboot
 
             if (!account.IsLoginAllowed || account.IsAccountClosed)
             {
-                throw new ValidationException(Resources.ValidationMessages.LoginNotAllowed);
+                throw new ValidationException(UserAccountService.GetValidationMessage("LoginNotAllowed"));
             }
 
             if (!account.IsAccountVerified && UserAccountService.Configuration.RequireAccountVerification)
             {
-                throw new ValidationException(Resources.ValidationMessages.AccountNotVerified);
+                throw new ValidationException(UserAccountService.GetValidationMessage("AccountNotVerified"));
             }
 
             if (account.RequiresTwoFactorAuthToSignIn() || 
@@ -201,7 +201,7 @@ namespace BrockAllen.MembershipReboot
                     var email = claims.GetValue(ClaimTypes.Email);
                     if (String.IsNullOrWhiteSpace(email))
                     {
-                        throw new ValidationException(Resources.ValidationMessages.AccountCreateFailNoEmailFromIdp);
+                        throw new ValidationException(UserAccountService.GetValidationMessage("AccountCreateFailNoEmailFromIdp"));
                     }
 
                     // guess at a name to use
@@ -219,7 +219,7 @@ namespace BrockAllen.MembershipReboot
                     // check to see if email already exists
                     if (this.UserAccountService.EmailExists(tenant, email))
                     {
-                        throw new ValidationException(Resources.ValidationMessages.LoginFailEmailAlreadyAssociated);
+                        throw new ValidationException(UserAccountService.GetValidationMessage("LoginFailEmailAlreadyAssociated"));
                     }
 
                     // auto-gen a password, they can always reset it later if they want to use the password feature

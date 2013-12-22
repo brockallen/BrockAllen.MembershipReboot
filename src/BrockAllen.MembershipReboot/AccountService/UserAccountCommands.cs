@@ -23,4 +23,10 @@ namespace BrockAllen.MembershipReboot
     {
         public UserAccount Account { get; set; }
     }
+    
+    public class GetValidationMessage : ICommand
+    {
+        public string ID { get; set; }
+        public string Message { get; set; }
+    }
 }
