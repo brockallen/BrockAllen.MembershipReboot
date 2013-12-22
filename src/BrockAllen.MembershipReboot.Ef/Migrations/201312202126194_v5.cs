@@ -83,8 +83,8 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             RenameTable("LinkedAccountClaims2", "LinkedAccountClaims");
             this.Sql("exec sp_rename '[dbo].[PK_dbo.LinkedAccountClaims2]', 'PK_dbo.LinkedAccountClaims', 'OBJECT'");
 
-            AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
-            AddForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts");
+            AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", cascadeDelete:true);
+            AddForeignKey("dbo.LinkedAccountClaims", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
         }
         
         public override void Down()
@@ -146,8 +146,8 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             RenameTable("LinkedAccountClaims2", "LinkedAccountClaims");
             this.Sql("exec sp_rename '[dbo].[PK_dbo.LinkedAccountClaims2]', 'PK_dbo.LinkedAccountClaims', 'OBJECT'");
 
-            AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts");
-            AddForeignKey("dbo.LinkedAccountClaims", new []{ "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts");
+            AddForeignKey("dbo.LinkedAccounts", "UserAccountID", "dbo.UserAccounts", cascadeDelete: true);
+            AddForeignKey("dbo.LinkedAccountClaims", new[] { "UserAccountID", "ProviderName", "ProviderAccountID" }, "dbo.LinkedAccounts", cascadeDelete: true);
         }
     }
 }
