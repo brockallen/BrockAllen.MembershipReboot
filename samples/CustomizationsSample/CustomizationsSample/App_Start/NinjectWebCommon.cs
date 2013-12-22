@@ -59,7 +59,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             kernel.Bind<UserAccountService<CustomUserAccount>>().ToMethod(ctx =>
                 {
                     var svc = new UserAccountService<CustomUserAccount>(config, ctx.Kernel.Get<IUserAccountRepository<CustomUserAccount>>());
-                    svc.TwoFactorAuthenticationPolicy = new AspNetCookieBasedTwoFactorAuthPolicy<CustomUserAccount>();
+                    svc.TwoFactorAuthenticationPolicy = new AspNetCookieBasedTwoFactorAuthPolicy();
                     return svc;
                 });
         }

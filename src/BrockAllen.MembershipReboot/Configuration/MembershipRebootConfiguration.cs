@@ -83,7 +83,6 @@ namespace BrockAllen.MembershipReboot
             validationBus.AddRange(handlers);
         }
         
-        public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
         public ICrypto Crypto { get; set; }
         public Func<TAccount, IEnumerable<Claim>> CustomUserPropertiesToClaimsMap { get; set; }
     }
