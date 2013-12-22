@@ -23,8 +23,6 @@ namespace BrockAllen.MembershipReboot
         Lazy<AggregateValidator<TAccount>> emailValidator;
         Lazy<AggregateValidator<TAccount>> passwordValidator;
 
-        //public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
-
         public UserAccountService(IUserAccountRepository<TAccount> userRepository)
             : this(new MembershipRebootConfiguration<TAccount>(), userRepository)
         {
