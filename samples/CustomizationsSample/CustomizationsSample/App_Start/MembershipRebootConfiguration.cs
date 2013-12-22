@@ -10,9 +10,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
     {
         public ValidationResult Validate(UserAccountService<CustomUserAccount> service, CustomUserAccount account, string value)
         {
-            if (value.Length < 4)
+            if (value.Contains("R"))
             {
-                return new ValidationResult("Password must be at least 4 characters long");
+                return new ValidationResult("You can't use an 'R' in your password (for some reason)");
             }
             
             return null;
@@ -28,6 +28,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             
             var config = new MembershipRebootConfiguration<CustomUserAccount>(settings);
             config.RegisterPasswordValidator(new PasswordValidator());
+            config.ConfigurePasswordComplexity(5, 3);
+
             config.CustomUserPropertiesToClaimsMap = user =>
                 {
                     return new System.Security.Claims.Claim[]
