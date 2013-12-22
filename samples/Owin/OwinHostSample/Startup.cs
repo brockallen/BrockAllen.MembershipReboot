@@ -47,7 +47,11 @@ namespace OwinHostSample
                 config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
 
                 var svc = new UserAccountService(config, new DefaultUserAccountRepository());
-                svc.TwoFactorAuthenticationPolicy = new OwinCookieBasedTwoFactorAuthPolicy(env);
+                var debugging = false;
+#if DEBUG
+                debugging = true;
+#endif
+                svc.ConfigureTwoFactorAuthenticationCookies(env, debugging);
                 return svc;
             };
             Func<IDictionary<string, object>, AuthenticationService> authFunc = env =>

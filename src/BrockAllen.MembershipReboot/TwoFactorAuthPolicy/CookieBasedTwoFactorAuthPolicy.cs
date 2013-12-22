@@ -28,11 +28,13 @@ namespace BrockAllen.MembershipReboot
 
         public void IssueTwoFactorAuthToken(UserAccount account, string token)
         {
+            if (account == null) throw new ArgumentNullException("account");
             IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant, token);
         }
 
         public void ClearTwoFactorAuthToken(UserAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
             RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
         }
     }

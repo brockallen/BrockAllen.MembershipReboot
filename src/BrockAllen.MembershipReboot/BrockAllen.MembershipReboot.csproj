@@ -43,6 +43,7 @@
     <Compile Include="AccountService\AuthenticationPurpose.cs" />
     <Compile Include="AccountService\DebuggerEventHandler.cs" />
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
+    <Compile Include="AccountService\UserAccountCommands.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
     <Compile Include="Account\LinkedAccountClaim.cs" />
     <Compile Include="Account\Relational\RelationalLinkedAccountClaim.cs" />
@@ -56,11 +57,15 @@
     <Compile Include="Account\TwoFactorAuthToken.cs" />
     <Compile Include="Account\PasswordResetSecret.cs" />
     <Compile Include="Authentication\AuthenticationService.cs" />
+    <Compile Include="Bus\CommandBus.cs" />
+    <Compile Include="Bus\Commands.cs" />
+    <Compile Include="Bus\GenericMethodActionBuilder.cs" />
     <Compile Include="Configuration\RelativePathApplicationInformation.cs" />
     <Compile Include="Crypto\DefaultCrypto.cs" />
     <Compile Include="Crypto\ICrypto.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\UserAccountExtensions.cs" />
+    <Compile Include="Extensions\UserAccountServiceExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Account\TwoFactorAuthMode.cs" />
     <Compile Include="Groups\Group.cs" />
@@ -80,7 +85,6 @@
       <DependentUpon>ValidationMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="TwoFactorAuthPolicy\CookieBasedTwoFactorAuthPolicy.cs" />
-    <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />
     <Compile Include="Configuration\MembershipRebootConfiguration.cs" />
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
@@ -110,6 +114,8 @@
     <Compile Include="AccountService\UserAccountService.cs" />
     <Compile Include="Notification\Email\EmailNotificationEventHandlers.cs" />
     <Compile Include="Tracing\Tracing.cs" />
+    <Compile Include="TwoFactorAuthPolicy\ITwoFactorAuthenticationPolicy.cs" />
+    <Compile Include="TwoFactorAuthPolicy\TwoFactorAuthPolicyCommandHandler.cs" />
     <Compile Include="Validation\AggregateValidator.cs" />
     <Compile Include="Validation\DelegateValidator.cs" />
     <Compile Include="Validation\IValidator.cs" />

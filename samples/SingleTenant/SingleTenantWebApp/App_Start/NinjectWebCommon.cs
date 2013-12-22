@@ -54,12 +54,16 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            var debugging = false;
+#if DEBUG
+            debugging = true;
+#endif
             var config = MembershipRebootConfig.Create();
-            var policy = new AspNetCookieBasedTwoFactorAuthPolicy(debugging: true);
             kernel.Bind<UserAccountService>().ToMethod(ctx =>
             {
                 var svc = new UserAccountService(config, ctx.Kernel.Get<IUserAccountRepository>());
-                svc.TwoFactorAuthenticationPolicy = policy;
+                
+                svc.ConfigureTwoFactorAuthenticationCookies(debugging);
                 return svc;
             });
             kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();

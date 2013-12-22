@@ -10,49 +10,6 @@ using System.Linq.Expressions;
 
 namespace BrockAllen.MembershipReboot
 {
-    class GenericMethodActionBuilder<TargetBase, ParamBase>
-    {
-        Dictionary<Type, Action<TargetBase, ParamBase>> actionCache = new Dictionary<Type, Action<TargetBase, ParamBase>>();
-
-        Type targetType;
-        string method;
-        public GenericMethodActionBuilder(Type targetType, string method)
-        {
-            this.targetType = targetType;
-            this.method = method;
-        }
-
-        public Action<TargetBase, ParamBase> GetAction(ParamBase paramInstance)
-        {
-            var paramType = paramInstance.GetType();
-
-            if (!actionCache.ContainsKey(paramType))
-            {
-                actionCache.Add(paramType, BuildActionForMethod(paramType));
-            }
-
-            return actionCache[paramType];
-        }
-
-        private Action<TargetBase, ParamBase> BuildActionForMethod(Type paramType)
-        {
-            var handlerType = targetType.MakeGenericType(paramType);
-
-            var ehParam = Expression.Parameter(typeof(TargetBase));
-            var evtParam = Expression.Parameter(typeof(ParamBase));
-            var invocationExpression =
-                Expression.Lambda(
-                    Expression.Block(
-                        Expression.Call(
-                            Expression.Convert(ehParam, handlerType),
-                            handlerType.GetMethod(method),
-                            Expression.Convert(evtParam, paramType))),
-                    ehParam, evtParam);
-
-            return (Action<TargetBase, ParamBase>)invocationExpression.Compile();
-        }
-    }
-
     class EventBus : List<IEventHandler>, IEventBus
     {
         Dictionary<Type, IEnumerable<IEventHandler>> handlerCache = new Dictionary<Type, IEnumerable<IEventHandler>>();

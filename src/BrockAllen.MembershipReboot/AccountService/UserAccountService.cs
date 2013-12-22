@@ -23,7 +23,7 @@ namespace BrockAllen.MembershipReboot
         Lazy<AggregateValidator<TAccount>> emailValidator;
         Lazy<AggregateValidator<TAccount>> passwordValidator;
 
-        public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
+        //public ITwoFactorAuthenticationPolicy TwoFactorAuthenticationPolicy { get; set; }
 
         public UserAccountService(IUserAccountRepository<TAccount> userRepository)
             : this(new MembershipRebootConfiguration<TAccount>(), userRepository)
@@ -119,6 +119,16 @@ namespace BrockAllen.MembershipReboot
             {
                 events.Add(evt);
             }
+        }
+
+        public void AddCommandHandler(ICommandHandler handler)
+        {
+            commandBus.Add(handler);
+        }
+        CommandBus commandBus = new CommandBus();
+        protected void ExecuteCommand(ICommand cmd)
+        {
+            commandBus.Execute(cmd);
         }
 
         public virtual void Update(TAccount account)
@@ -797,20 +807,17 @@ namespace BrockAllen.MembershipReboot
                     Tracing.Verbose("[UserAccountService.Authenticate] password authN successful, doing two factor auth checks: {0}, {1}", account.Tenant, account.Username);
 
                     bool shouldRequestTwoFactorAuthCode = true;
-                    if (this.TwoFactorAuthenticationPolicy != null)
+                    
+                    GetTwoFactorAuthToken getToken = new GetTwoFactorAuthToken() { Account = account };
+                    ExecuteCommand(getToken);
+                    
+                    if (getToken.Token != null)
                     {
-                        Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy configured");
+                        Tracing.Verbose("[UserAccountService.Authenticate] GetTwoFactorAuthToken returned token");
 
-                        var token = this.TwoFactorAuthenticationPolicy.GetTwoFactorAuthToken(account);
-                        if (!String.IsNullOrWhiteSpace(token))
-                        {
-                            shouldRequestTwoFactorAuthCode = !VerifyTwoFactorAuthToken(account, token);
-                            Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy token found, was verified: {0}", shouldRequestTwoFactorAuthCode);
-                        }
-                        else
-                        {
-                            Tracing.Verbose("[UserAccountService.Authenticate] TwoFactorAuthenticationPolicy no token present");
-                        }
+                        var verified = VerifyTwoFactorAuthToken(account, getToken.Token);
+                        Tracing.Verbose("[UserAccountService.Authenticate] verifying token, result: {0}", verified);
+                        shouldRequestTwoFactorAuthCode = !verified;
                     }
 
                     if (shouldRequestTwoFactorAuthCode)
@@ -2536,13 +2543,6 @@ namespace BrockAllen.MembershipReboot
 
         protected virtual void CreateTwoFactorAuthToken(TAccount account)
         {
-            // no policy, no need to issue token
-            if (this.TwoFactorAuthenticationPolicy == null)
-            {
-                Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] TwoFactorAuthenticationPolicy is null, not issuing two factor auth cookie");
-                return;
-            }
-
             if (account == null) throw new ArgumentNullException("account");
 
             Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] called for accountID: {0}", account.ID);
@@ -2554,16 +2554,24 @@ namespace BrockAllen.MembershipReboot
             }
 
             var value = this.Configuration.Crypto.GenerateSalt();
+            
+            var cmd = new IssueTwoFactorAuthToken { Account = account, Token = value };
+            ExecuteCommand(cmd);
+            if (cmd.Success)
+            {
+                var item = new TwoFactorAuthToken();
+                item.Token = this.Configuration.Crypto.Hash(value);
+                item.Issued = UtcNow;
+                account.AddTwoFactorAuthToken(item);
 
-            var item = new TwoFactorAuthToken();
-            item.Token = this.Configuration.Crypto.Hash(value);
-            item.Issued = UtcNow;
-            account.AddTwoFactorAuthToken(item);
+                this.AddEvent(new TwoFactorAuthenticationTokenCreatedEvent<TAccount> { Account = account, Token = value });
 
-            this.TwoFactorAuthenticationPolicy.IssueTwoFactorAuthToken(account, value);
-            this.AddEvent(new TwoFactorAuthenticationTokenCreatedEvent<TAccount> { Account = account, Token = value });
-
-            Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] TwoFactorAuthToken issued");
+                Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] TwoFactorAuthToken issued");
+            }
+            else
+            {
+                Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] TwoFactorAuthToken not issued");
+            }
         }
 
         protected virtual bool VerifyTwoFactorAuthToken(TAccount account, string token)
@@ -2627,13 +2635,10 @@ namespace BrockAllen.MembershipReboot
                 account.RemoveTwoFactorAuthToken(item);
             }
 
+            var cmd = new ClearTwoFactorAuthToken { Account = account };
+            ExecuteCommand(cmd);
+            
             Tracing.Verbose("[UserAccountService.RemoveTwoFactorAuthTokens] tokens removed: {0}", tokens.Length);
-
-            if (this.TwoFactorAuthenticationPolicy != null)
-            {
-                Tracing.Verbose("[UserAccountService.RemoveTwoFactorAuthTokens] TwoFactorAuthenticationPolicy removing cookies");
-                this.TwoFactorAuthenticationPolicy.ClearTwoFactorAuthToken(account);
-            }
         }
 
         internal protected virtual DateTime UtcNow
