@@ -67,14 +67,6 @@
     <Compile Include="Migrations\201312202126194_v5.Designer.cs">
       <DependentUpon>201312202126194_v5.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\SqlAzure\201311222357350_InitialCreate.cs" />
-    <Compile Include="Migrations\SqlAzure\201311222357350_InitialCreate.Designer.cs">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\SqlAzure\201312202126194_v5.cs" />
-    <Compile Include="Migrations\SqlAzure\201312202126194_v5.Designer.cs">
-      <DependentUpon>201312202126194_v5.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -86,12 +78,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201311222357350_InitialCreate.resx">
       <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\SqlAzure\201311222357350_InitialCreate.resx">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\SqlAzure\201312202126194_v5.resx">
-      <DependentUpon>201312202126194_v5.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
