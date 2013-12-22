@@ -17,9 +17,12 @@ namespace BrockAllen.MembershipReboot
 
         public PasswordComplexityValidator(int minimumLength, int minimumNumberOfComplexityRules)
         {
+            if (minimumLength <= 0) minimumLength = 1;
             this.MinimumLength = minimumLength;
+            
+            if (minimumNumberOfComplexityRules < 0) minimumNumberOfComplexityRules = 0;
+            if (minimumNumberOfComplexityRules > 4) MinimumNumberOfComplexityRules = 4;
             this.MinimumNumberOfComplexityRules = minimumNumberOfComplexityRules;
-            if (MinimumNumberOfComplexityRules > 4) MinimumNumberOfComplexityRules = 4;
         }
 
         public ValidationResult Validate(UserAccountService<T> service, T account, string value)
