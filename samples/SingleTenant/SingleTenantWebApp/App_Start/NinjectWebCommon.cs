@@ -54,18 +54,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            var debugging = false;
-#if DEBUG
-            debugging = true;
-#endif
             var config = MembershipRebootConfig.Create();
-            kernel.Bind<UserAccountService>().ToMethod(ctx =>
-            {
-                var svc = new UserAccountService(config, ctx.Kernel.Get<IUserAccountRepository>());
-                
-                svc.ConfigureTwoFactorAuthenticationCookies(debugging);
-                return svc;
-            });
+            kernel.Bind<MembershipRebootConfiguration>().ToConstant(config);
+            kernel.Bind<UserAccountService>().ToSelf();
             kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();
 
             RegisterEntityFramework(kernel);

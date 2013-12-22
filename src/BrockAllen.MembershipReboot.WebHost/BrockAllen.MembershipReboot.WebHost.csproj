@@ -43,7 +43,7 @@
     <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SamAuthenticationService.cs" />
-    <Compile Include="UserAccountServiceExtensions.cs" />
+    <Compile Include="MembershipRebootConfigurationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">

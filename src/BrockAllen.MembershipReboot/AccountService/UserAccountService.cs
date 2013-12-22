@@ -127,6 +127,7 @@ namespace BrockAllen.MembershipReboot
         protected void ExecuteCommand(ICommand cmd)
         {
             commandBus.Execute(cmd);
+            Configuration.CommandBus.Execute(cmd);
         }
 
         public virtual string GetValidationMessage(string id)
