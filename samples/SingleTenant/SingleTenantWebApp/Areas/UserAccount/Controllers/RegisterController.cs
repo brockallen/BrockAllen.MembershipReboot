@@ -83,5 +83,39 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             }
             return View("Error");
         }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult External()
+        {
+            if (!User.HasUserID())return new HttpUnauthorizedResult();
+            
+            var UserInfo=this.userAccountService.GetByID(User.GetUserID());
+            return View("Index", new RegisterInputModel() { Username = UserInfo.Username, Email = UserInfo.Email, Password = "", ConfirmPassword = "" });
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult External(RegisterInputModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    var account = this.userAccountService.GetByID(User.GetUserID());
+                    this.userAccountService.UpdateExternal(account, model.Username, model.Password, model.Email);
+                    ViewData["RequireAccountVerification"] = this.userAccountService.Configuration.RequireAccountVerification;
+                    return View("Success", model);
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+                
+            }
+            return View("Index");
+        }
     }
 }

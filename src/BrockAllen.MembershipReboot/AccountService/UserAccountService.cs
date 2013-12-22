@@ -135,6 +135,55 @@ namespace BrockAllen.MembershipReboot
             this.userRepository.Update(account);
         }
 
+        public virtual void UpdateExternal(TAccount account,string username,string password,string email)
+        {
+            if (account == null)
+            {
+                Tracing.Error("[UserAccountService.Update] called -- failed null account");
+                throw new ArgumentNullException("account");
+            }
+
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                Tracing.Error("[UserAccountService.UpdateExternal] failed -- null Username");
+                throw new ValidationException(Resources.ValidationMessages.InvalidUsername);
+            }
+
+            if (String.IsNullOrWhiteSpace(password))
+            {
+                Tracing.Error("[UserAccountService.UpdateExternal] failed -- null Password");
+                throw new ValidationException(Resources.ValidationMessages.InvalidPassword);
+            }
+            if (String.IsNullOrWhiteSpace(email))
+            {
+                Tracing.Error("[UserAccountService.UpdateExternal] failed -- null email");
+                throw new ValidationException(Resources.ValidationMessages.InvalidEmail);
+            }
+
+
+            Tracing.Information("[UserAccountService.Update] called for account: {0}", account.ID);
+
+            if (account.Username != username)
+            {
+                ValidateUsername(account, username);
+                account.Username = username;
+            }
+            ValidatePassword(account, password);
+            SetPassword(account, password,false);
+
+            if (account.Email != email)ChangeEmail(ref account, email,false);
+            
+
+            account.LastUpdated = UtcNow;
+
+            this.AddEvent(new PasswordChangedEvent<TAccount> { Account = account, NewPassword = password });
+
+            this.userRepository.Update(account);
+
+            
+        }
+
+       
         public virtual TAccount GetByUsername(string username)
         {
             return GetByUsername(null, username);
@@ -1508,6 +1557,13 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
+            ChangeEmail(ref account, newEmail);
+
+            Update(account);
+        }
+
+        protected virtual void ChangeEmail(ref TAccount account, string newEmail,bool enableevent=true) 
+        {
             ValidateEmail(account, newEmail);
 
             var oldEmail = account.Email;
@@ -1520,18 +1576,19 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Verbose("[UserAccountService.ChangeEmailRequest] RequireAccountVerification false, changing email");
                 account.IsAccountVerified = false;
                 account.Email = newEmail;
-                this.AddEvent(new EmailChangedEvent<TAccount> { Account = account, OldEmail = oldEmail, VerificationKey = key });
+                if (enableevent) this.AddEvent(new EmailChangedEvent<TAccount> { Account = account, OldEmail = oldEmail, VerificationKey = key });
             }
             else
             {
                 Tracing.Verbose("[UserAccountService.ChangeEmailRequest] RequireAccountVerification true, sending changing email");
-                this.AddEvent(new EmailChangeRequestedEvent<TAccount> { Account = account, OldEmail = oldEmail, NewEmail = newEmail, VerificationKey = key });
+               if (enableevent) this.AddEvent(new EmailChangeRequestedEvent<TAccount> { Account = account, OldEmail = oldEmail, NewEmail = newEmail, VerificationKey = key });
             }
 
             Tracing.Verbose("[UserAccountService.ChangeEmailRequest] success");
-
-            Update(account);
+        
         }
+
+
 
         public virtual void VerifyEmailFromKey(string key)
         {
@@ -1859,7 +1916,7 @@ namespace BrockAllen.MembershipReboot
             account.VerificationStorage = null;
         }
 
-        protected virtual void SetPassword(TAccount account, string password)
+        protected virtual void SetPassword(TAccount account, string password, bool enableevent=true)
         {
             if (account == null) throw new ArgumentNullException("account");
 
@@ -1877,7 +1934,7 @@ namespace BrockAllen.MembershipReboot
             account.PasswordChanged = UtcNow;
             account.RequiresPasswordReset = false;
 
-            this.AddEvent(new PasswordChangedEvent<TAccount> { Account = account, NewPassword = password });
+            if (enableevent)this.AddEvent(new PasswordChangedEvent<TAccount> { Account = account, NewPassword = password });
         }
 
         protected virtual void ResetPassword(TAccount account)
