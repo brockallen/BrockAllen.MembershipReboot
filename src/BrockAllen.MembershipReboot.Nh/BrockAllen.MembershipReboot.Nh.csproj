@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountService\NhUserAccountService.cs" />
     <Compile Include="Account\NhLinkedAccount.cs" />
     <Compile Include="Account\NhLinkedAccountClaim.cs" />
     <Compile Include="Account\NhPasswordResetSecret.cs" />
