@@ -54,6 +54,9 @@
     <Compile Include="Account\NhUserClaim.cs" />
     <Compile Include="Mappings\Mappings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\NhRepository.cs" />
+    <Compile Include="Repository\NhUserAccountRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj">
