@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,5 +29,12 @@ namespace BrockAllen.MembershipReboot
     {
         public string ID { get; set; }
         public string Message { get; set; }
+    }
+
+    public class MapClaimsFromAccount<TAccount> : ICommand
+        where TAccount : UserAccount
+    {
+        public TAccount Account { get; set; }
+        public IEnumerable<Claim> MappedClaims { get; set; }
     }
 }

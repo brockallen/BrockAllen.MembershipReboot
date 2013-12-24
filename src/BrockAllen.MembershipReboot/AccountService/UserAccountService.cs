@@ -124,7 +124,7 @@ namespace BrockAllen.MembershipReboot
             commandBus.Add(handler);
         }
         CommandBus commandBus = new CommandBus();
-        protected void ExecuteCommand(ICommand cmd)
+        protected internal void ExecuteCommand(ICommand cmd)
         {
             commandBus.Execute(cmd);
             Configuration.CommandBus.Execute(cmd);

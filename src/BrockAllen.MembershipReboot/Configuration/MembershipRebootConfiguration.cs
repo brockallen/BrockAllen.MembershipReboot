@@ -91,7 +91,6 @@ namespace BrockAllen.MembershipReboot
         }
         
         public ICrypto Crypto { get; set; }
-        public Func<TAccount, IEnumerable<Claim>> CustomUserPropertiesToClaimsMap { get; set; }
     }
     
     public class MembershipRebootConfiguration : MembershipRebootConfiguration<UserAccount>

@@ -91,9 +91,11 @@ namespace BrockAllen.MembershipReboot
             claims.AddRange(otherClaims);
 
             // get custom claims from properties
-            if (this.UserAccountService.Configuration.CustomUserPropertiesToClaimsMap != null)
+            var cmd = new MapClaimsFromAccount<TAccount> { Account = account };
+            this.UserAccountService.ExecuteCommand(cmd);
+            if (cmd.MappedClaims != null)
             {
-                claims.AddRange(this.UserAccountService.Configuration.CustomUserPropertiesToClaimsMap(account));
+                claims.AddRange(cmd.MappedClaims);
             }
 
             // create principal/identity
