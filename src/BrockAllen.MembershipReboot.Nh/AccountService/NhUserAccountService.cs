@@ -2,7 +2,7 @@
 {
     using BrockAllen.MembershipReboot;
 
-    public class NhUserAccountService<TAccount> : UserAccountService<TAccount> where TAccount : UserAccount
+    public class NhUserAccountService<TAccount> : UserAccountService<TAccount> where TAccount : NhUserAccount
     {
         public NhUserAccountService(IUserAccountRepository<TAccount> userRepository)
             : base(userRepository)

@@ -15,23 +15,7 @@
 
         private int? cachedHashcode;
 
-        private NhUserAccount account;
-
-        public virtual Guid UserAccountId { get; protected set; }
-
-        public virtual NhUserAccount Account
-        {
-            get
-            {
-                return this.account;
-            }
-
-            set
-            {
-                this.account = value;
-                this.UserAccountId = this.Account != null ? this.Account.ID : default(Guid);
-            }
-        }
+        public virtual NhUserAccount Account { get; set; }
 
         public virtual long Version { get; protected set; }
 
@@ -60,7 +44,9 @@
 
             if (!this.IsTransient() && !other.IsTransient())
             {
-                if (this.UserAccountId == other.UserAccountId && this.PasswordResetSecretID == other.PasswordResetSecretID)
+                var userAccountId = this.Account != null ? this.Account.ID : default(Guid);
+                var otherAccountId = other.Account != null ? other.Account.ID : default(Guid);
+                if (userAccountId == otherAccountId && this.PasswordResetSecretID == other.PasswordResetSecretID)
                 {
                     var otherType = other.GetUnproxiedType();
                     var thisType = this.GetUnproxiedType();
@@ -94,9 +80,7 @@
                     // identically valued properties, even if they're of two different types, 
                     // so we include the object's type in the hash calculation
                     var hashCode = this.GetType().GetHashCode();
-                    this.cachedHashcode = (hashCode * HashMultiplier)
-                                          ^ this.UserAccountId.GetHashCode() + (hashCode * HashMultiplier)
-                                          ^ this.PasswordResetSecretID.GetHashCode();
+                    this.cachedHashcode = (hashCode * HashMultiplier) ^ this.PasswordResetSecretID.GetHashCode();
                 }
             }
 

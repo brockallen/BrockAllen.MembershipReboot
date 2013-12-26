@@ -1,4 +1,4 @@
-﻿namespace MembershipReboot.NHibernate.Mappings
+﻿namespace BrockAllen.MembershipReboot.Nh.Mappings
 {
     using BrockAllen.MembershipReboot.Nh;
 
