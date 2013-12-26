@@ -24,6 +24,13 @@
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
+                
+                @if (this.User.Identity.IsAuthenticated)
+                {
+                    <div class="pull-right">
+                        @Html.ActionLink("Sign Out", "SignOut", "Account")
+                    </div>
+                }
             </div>
         </div>
     </div>

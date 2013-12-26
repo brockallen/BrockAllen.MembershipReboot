@@ -1,0 +1,31 @@
+﻿@model NhibernateSample.ViewModels.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        You are already logged in as @User.Identity.Name but you
+        tried to access a resource that you do not have permission
+        for. Please login with an account that does have access
+        or contact your administrator to grant you access.
+    </p>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+    @Html.AntiForgeryToken()
+
+    @Html.EditorForModel()
+    <button type="submit">Login</button>
+    @Html.ActionLink("Register", "Register", "Account")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}
