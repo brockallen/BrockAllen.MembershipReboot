@@ -535,8 +535,7 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(GetValidationMessage("InvalidKey"));
             }
 
-            var hashedKey = Configuration.Crypto.Hash(key);
-            var result = Configuration.Crypto.SlowEquals(account.VerificationKey, hashedKey);
+            var result = Configuration.Crypto.VerifyHash(key, account.VerificationKey);
             if (!result)
             {
                 Tracing.Error("[UserAccountService.CancelVerification] failed -- key verification failed");
@@ -1418,7 +1417,7 @@ namespace BrockAllen.MembershipReboot
             {
                 var secret = secrets.SingleOrDefault(x => x.PasswordResetSecretID == answer.QuestionID);
                 if (secret == null ||
-                    !this.Configuration.Crypto.SlowEquals(secret.Answer, this.Configuration.Crypto.Hash(answer.Answer)))
+                    !this.Configuration.Crypto.VerifyHash(answer.Answer, secret.Answer))
                 {
                     Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed on question id: {0}", answer.QuestionID);
                     failed = true;
@@ -1832,8 +1831,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            var hashedKey = Configuration.Crypto.Hash(key);
-            var result = Configuration.Crypto.SlowEquals(account.VerificationKey, hashedKey);
+            var result = Configuration.Crypto.VerifyHash(key, account.VerificationKey);
             if (!result)
             {
                 Tracing.Error("[UserAccountService.IsVerificationKeyValid] failed -- verification key doesn't match");
@@ -2611,7 +2609,7 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            token = this.Configuration.Crypto.Hash(token);
+            //token = this.Configuration.Crypto.Hash(token);
 
             var expiration = UtcNow.AddDays(-MembershipRebootConstants.UserAccount.TwoFactorAuthTokenDurationDays);
             var removequery =
@@ -2632,7 +2630,7 @@ namespace BrockAllen.MembershipReboot
 
             var matchquery =
                 from t in account.TwoFactorAuthTokens.ToArray()
-                where Configuration.Crypto.SlowEquals(t.Token, token)
+                where Configuration.Crypto.VerifyHash(token, t.Token)
                 select t;
 
             var result = matchquery.Any();

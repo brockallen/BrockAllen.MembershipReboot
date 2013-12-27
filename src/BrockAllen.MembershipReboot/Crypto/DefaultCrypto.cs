@@ -13,6 +13,12 @@ namespace BrockAllen.MembershipReboot
         {
             return Crypto.Hash(value);
         }
+        
+        public bool VerifyHash(string value, string hash)
+        {
+            var hashedValue = Hash(value);
+            return SlowEquals(hashedValue, hash);
+        }
 
         public string Hash(string value, string key)
         {
@@ -27,6 +33,12 @@ namespace BrockAllen.MembershipReboot
 
             var result = Crypto.BinaryToHex(hash);
             return result;
+        }
+        
+        public bool VerifyHash(string value, string key, string hash)
+        {
+            var hashedValue = Hash(value, key);
+            return SlowEquals(hashedValue, hash);
         }
 
         public string GenerateNumericCode(int digits)
@@ -138,7 +150,7 @@ namespace BrockAllen.MembershipReboot
             }
             return same;
         }
-        
+
         public virtual int GetCurrentYear()
         {
             return DateTime.Now.Year;
