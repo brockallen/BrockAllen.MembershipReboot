@@ -516,6 +516,22 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CancelVerification_PasswordResets_ClearsVerification()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            subject.ResetPassword("test@test.com");
+            acct = subject.GetByID(acct.ID);
+            Assert.IsNotNull(acct.VerificationPurpose);
+            var key = LastVerificationKey;
+
+            subject.CancelVerification(key);
+            
+            acct = subject.GetByID(acct.ID);
+            Assert.IsNull(acct.VerificationPurpose);
+        }
+
+        [TestMethod]
         public void DeleteAccount_DeletesAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");

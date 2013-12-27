@@ -543,28 +543,22 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(GetValidationMessage("InvalidKey"));
             }
 
-            if (account.VerificationPurpose == VerificationKeyPurpose.ChangeEmail)
+            if (account.VerificationPurpose == VerificationKeyPurpose.ChangeEmail &&
+                account.IsNew())
             {
-                Tracing.Verbose("[UserAccountService.CancelVerification] succeeded (deleting account)");
-                if (account.IsNew())
-                {
-                    Tracing.Verbose("[UserAccountService.CancelVerification] account is new (deleting account)");
-                    // if last login is null then they've never logged in so we can delete the account
-                    DeleteAccount(account);
-                    accountClosed = true;
-                }
-                else
-                {
-                    Tracing.Verbose("[UserAccountService.CancelVerification] account is not new (canceling email change request)");
-                    ClearVerificationKey(account);
-                    Update(account);
-                }
+                Tracing.Verbose("[UserAccountService.CancelVerification] account is new (deleting account)");
+                // if last login is null then they've never logged in so we can delete the account
+                DeleteAccount(account);
+                accountClosed = true;
             }
             else
             {
-                Tracing.Error("[UserAccountService.CancelVerification] account not new");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                Tracing.Verbose("[UserAccountService.CancelVerification] account is not new (canceling clearing verification key)");
+                ClearVerificationKey(account);
+                Update(account);
             }
+            
+            Tracing.Verbose("[UserAccountService.CancelVerification] succeeded");
         }
 
         public virtual void DeleteAccount(Guid accountID)
@@ -1927,9 +1921,9 @@ namespace BrockAllen.MembershipReboot
             if (!account.IsAccountVerified)
             {
                 // if they've not yet verified then don't allow password reset
-                // instead request an initial account verification
                 if (account.IsNew())
                 {
+                    // instead request an initial account verification
                     Tracing.Verbose("[UserAccountService.ResetPassword] account not verified -- raising account created email event to resend initial email");
                     var key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
                     this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, VerificationKey = key });
