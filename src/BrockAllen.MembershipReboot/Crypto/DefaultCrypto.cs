@@ -1,4 +1,9 @@
-﻿using BrockAllen.MembershipReboot.Helpers;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using BrockAllen.MembershipReboot.Helpers;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;

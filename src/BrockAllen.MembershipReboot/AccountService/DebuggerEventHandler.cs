@@ -1,4 +1,9 @@
-﻿using System.Diagnostics;
+﻿/*
+ * Copyright (c) Brock Allen.  All rights reserved.
+ * see license.txt
+ */
+
+using System.Diagnostics;
 
 namespace BrockAllen.MembershipReboot
 {
