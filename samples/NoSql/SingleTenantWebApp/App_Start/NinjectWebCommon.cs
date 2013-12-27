@@ -55,13 +55,8 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         private static void RegisterServices(IKernel kernel)
         {
             var config = MembershipRebootConfig.Create();
-            var policy = new AspNetCookieBasedTwoFactorAuthPolicy(debugging: true);
-            kernel.Bind<UserAccountService<HierarchicalUserAccount>>().ToMethod(ctx =>
-            {
-                var svc = new UserAccountService<HierarchicalUserAccount>(config, ctx.Kernel.Get<IUserAccountRepository<HierarchicalUserAccount>>());
-                svc.TwoFactorAuthenticationPolicy = policy;
-                return svc;
-            });
+            kernel.Bind<MembershipRebootConfiguration<HierarchicalUserAccount>>().ToConstant(config);
+            kernel.Bind<UserAccountService<HierarchicalUserAccount>>().ToSelf();
             kernel.Bind<AuthenticationService<HierarchicalUserAccount>>().To<SamAuthenticationService<HierarchicalUserAccount>>();
 
             RegisterMongoDb(kernel);

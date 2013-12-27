@@ -24,10 +24,20 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var emailFormatter = new EmailMessageFormatter(appinfo);
             // uncomment if you want email notifications -- also update smtp settings in web.config
             config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+
+            // uncomment to enable SMS notifications -- also update TwilloSmsEventHandler class below
             //config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
+            
             // uncomment to ensure proper password complexity
             //config.ConfigurePasswordComplexity();
-            
+
+            var debugging = false;
+#if DEBUG
+            debugging = true;
+#endif
+            // this config enables cookies to be issued once user logs in with mobile code
+            config.ConfigureTwoFactorAuthenticationCookies(debugging);
+
             return config;
         }
     }

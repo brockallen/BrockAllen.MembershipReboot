@@ -68,7 +68,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             try
             {
                 bool closed;
-                this.userAccountService.CancelNewAccount(id, out closed);
+                this.userAccountService.CancelVerification(id, out closed);
                 if (closed)
                 {
                     return View("Closed");
