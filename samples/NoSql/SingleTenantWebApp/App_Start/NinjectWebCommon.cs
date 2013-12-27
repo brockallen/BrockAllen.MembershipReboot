@@ -77,9 +77,9 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         // - Add a reference to the BrockAllen.MembershipReboot.RavenDb project.
         // - Uncomment this method.
         // - Call this method instead of RegisterEntityFramework in the RegisterServices method above.
-        //private static void RegisterRavenDb(IKernel kernel)
-        //{
-        //    kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new BrockAllen.MembershipReboot.RavenDb.RavenUserAccountRepository("RavenDb"));
-        //}
+        private static void RegisterRavenDb(IKernel kernel)
+        {
+            kernel.Bind<IUserAccountRepository<HierarchicalUserAccount>>().ToMethod(ctx => new BrockAllen.MembershipReboot.RavenDb.RavenUserAccountRepository("RavenDb"));
+        }
     }
 }

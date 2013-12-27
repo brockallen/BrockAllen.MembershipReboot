@@ -13,7 +13,7 @@ using System;
 namespace BrockAllen.MembershipReboot.RavenDb
 {
     public class RavenUserAccountRepository
-        : QueryableUserAccountRepository<HierarchicalUserAccount>, IUserAccountRepository, IDisposable
+        : QueryableUserAccountRepository<HierarchicalUserAccount>, IDisposable
     {
         public RavenUserAccountRepository(string connectionStringName)
             : this((DocumentStore) new RavenMembershipRebootDatabase(connectionStringName).DocumentStore)
@@ -24,12 +24,12 @@ namespace BrockAllen.MembershipReboot.RavenDb
         {
             this.documentStore = documentStore;
             documentSession = documentStore.OpenSession();
-            items = documentSession.Query<UserAccount>();
+            items = documentSession.Query<HierarchicalUserAccount>();
         }
         
         private readonly IDocumentStore documentStore;
         private readonly IDocumentSession documentSession;
-        private readonly IRavenQueryable<UserAccount> items;
+        private readonly IRavenQueryable<HierarchicalUserAccount> items;
 
         protected void CheckDisposed()
         {
@@ -44,17 +44,46 @@ namespace BrockAllen.MembershipReboot.RavenDb
             documentSession.TryDispose();
         }
 
+        protected override System.Linq.IQueryable<HierarchicalUserAccount> Queryable
+        {
+            get { return items; }
+        }
+
         public override HierarchicalUserAccount Create()
         {
             return new HierarchicalUserAccount();
         }
+
         public override void Add(HierarchicalUserAccount item)
         {
-            this.items.AddQueryInput
+            CheckDisposed();
+            documentSession.Store(item);
+            documentSession.SaveChanges();
         }
 
-        
+        public override void Remove(HierarchicalUserAccount item)
+        {
+            CheckDisposed();
+            documentSession.Delete(item);
+            documentSession.SaveChanges();
+        }
 
+        public override void Update(HierarchicalUserAccount item)
+        {
+            CheckDisposed();
+            documentSession.Store(item);
+            documentSession.SaveChanges();
+        }
+
+        public override HierarchicalUserAccount GetByLinkedAccount(string tenant, string provider, string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override HierarchicalUserAccount GetByCertificate(string tenant, string thumbprint)
+        {
+            throw new NotImplementedException();
+        }
 
         //IUserAccountRepository<HierarchicalUserAccount> This { get { return (IUserAccountRepository<HierarchicalUserAccount>)this; } }
 
@@ -117,5 +146,7 @@ namespace BrockAllen.MembershipReboot.RavenDb
         //{
         //    return This.GetByCertificate(tenant, thumbprint);
         //}
+
+      
     }
 }
