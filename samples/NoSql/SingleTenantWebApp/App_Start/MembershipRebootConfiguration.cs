@@ -14,16 +14,16 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var config = new MembershipRebootConfiguration<HierarchicalUserAccount>();
             //config.RequireAccountVerification = false;
 
-            config.AddEventHandler(new DebuggerEventHandler());
+            config.AddEventHandler(new DebuggerEventHandler<HierarchicalUserAccount>());
 
             var appinfo = new AspNetApplicationInformation("Test", "Test Email Signature",
                 "UserAccount/Login", 
                 "UserAccount/ChangeEmail/Confirm/",
                 "UserAccount/Register/Cancel/",
                 "UserAccount/PasswordReset/Confirm/");
-            var emailFormatter = new EmailMessageFormatter(appinfo);
+            var emailFormatter = new EmailMessageFormatter<HierarchicalUserAccount>(appinfo);
             // uncomment if you want email notifications -- also update smtp settings in web.config
-            config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+            config.AddEventHandler(new EmailAccountEventsHandler<HierarchicalUserAccount>(emailFormatter));
 
             // uncomment to enable SMS notifications -- also update TwilloSmsEventHandler class below
             //config.AddEventHandler(new TwilloSmsEventHandler(appinfo));
@@ -42,14 +42,14 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         }
     }
 
-    public class TwilloSmsEventHandler : SmsEventHandler
+    public class TwilloSmsEventHandler : SmsEventHandler<HierarchicalUserAccount>
     {
         const string sid = "";
         const string token = "";
         const string fromPhone = "";
         
         public TwilloSmsEventHandler(ApplicationInformation appInfo)
-            : base(new SmsMessageFormatter(appInfo))
+            : base(new SmsMessageFormatter<HierarchicalUserAccount>(appInfo))
         {
         }
 
