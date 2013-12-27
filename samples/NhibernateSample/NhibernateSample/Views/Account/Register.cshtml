@@ -1,0 +1,21 @@
+﻿@model NhibernateSample.ViewModels.RegistrationViewModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2>Register</h2>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary("Please correct the following errors")
+    @Html.AntiForgeryToken()
+
+    @Html.EditorForModel()
+    <button type="submit">Register</button>
+    @Html.ActionLink("Login", "Login", "Account")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}
