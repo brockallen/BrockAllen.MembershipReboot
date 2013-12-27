@@ -189,7 +189,7 @@
     <Content Include="Views\Account\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BrockAllen.MembershipReboot.Nh\BrockAllen.MembershipReboot.Nh.csproj">
+    <ProjectReference Include="..\BrockAllen.MembershipReboot.Nh\BrockAllen.MembershipReboot.Nh.csproj">
       <Project>{e53d1e50-194f-445f-9477-fcbc3e6da824}</Project>
       <Name>BrockAllen.MembershipReboot.Nh</Name>
     </ProjectReference>

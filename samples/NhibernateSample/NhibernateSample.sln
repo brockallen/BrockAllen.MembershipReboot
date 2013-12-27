@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NhibernateSample", "Nhibern
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot", "..\..\src\BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.csproj", "{A33FE01F-AE9B-4BDE-B521-AB13916B1CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Nh", "..\..\src\BrockAllen.MembershipReboot.Nh\BrockAllen.MembershipReboot.Nh.csproj", "{E53D1E50-194F-445F-9477-FCBC3E6DA824}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.Nh", "BrockAllen.MembershipReboot.Nh\BrockAllen.MembershipReboot.Nh.csproj", "{E53D1E50-194F-445F-9477-FCBC3E6DA824}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.MembershipReboot.WebHost", "..\..\src\BrockAllen.MembershipReboot.WebHost\BrockAllen.MembershipReboot.WebHost.csproj", "{754AE1B9-11D0-4270-98C7-8DA69B150860}"
 EndProject
