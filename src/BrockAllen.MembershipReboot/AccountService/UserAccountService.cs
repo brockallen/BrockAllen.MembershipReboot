@@ -504,28 +504,34 @@ namespace BrockAllen.MembershipReboot
             Update(account);
         }
 
-        public virtual void CancelNewAccount(string key)
+        public virtual void CancelVerification(string key)
         {
             bool closed;
-            CancelNewAccount(key, out closed);
+            CancelVerification(key, out closed);
         }
 
-        public virtual void CancelNewAccount(string key, out bool accountClosed)
+        public virtual void CancelVerification(string key, out bool accountClosed)
         {
-            Tracing.Information("[UserAccountService.CancelNewAccount] called: {0}", key);
+            Tracing.Information("[UserAccountService.CancelVerification] called: {0}", key);
 
             accountClosed = false;
+
+            if (String.IsNullOrWhiteSpace(key))
+            {
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- key null");
+                throw new ValidationException(GetValidationMessage("InvalidKey"));
+            }
 
             var account = this.GetByVerificationKey(key);
             if (account == null)
             {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- account not found from key");
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- account not found from key");
                 throw new ValidationException(GetValidationMessage("InvalidKey"));
             }
 
             if (account.VerificationPurpose == null)
             {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- no purpose");
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- no purpose");
                 throw new ValidationException(GetValidationMessage("InvalidKey"));
             }
 
@@ -533,21 +539,30 @@ namespace BrockAllen.MembershipReboot
             var result = Configuration.Crypto.SlowEquals(account.VerificationKey, hashedKey);
             if (!result)
             {
-                Tracing.Error("[UserAccountService.CancelNewAccount] failed -- key verification failed");
+                Tracing.Error("[UserAccountService.CancelVerification] failed -- key verification failed");
                 throw new ValidationException(GetValidationMessage("InvalidKey"));
             }
 
-            if (account.VerificationPurpose == VerificationKeyPurpose.ChangeEmail &&
-                account.IsNew())
+            if (account.VerificationPurpose == VerificationKeyPurpose.ChangeEmail)
             {
-                // if last login is null then they've never logged in so we can delete the account
-                Tracing.Verbose("[UserAccountService.CancelNewAccount] succeeded (deleting account)");
-                DeleteAccount(account);
-                accountClosed = true;
+                Tracing.Verbose("[UserAccountService.CancelVerification] succeeded (deleting account)");
+                if (account.IsNew())
+                {
+                    Tracing.Verbose("[UserAccountService.CancelVerification] account is new (deleting account)");
+                    // if last login is null then they've never logged in so we can delete the account
+                    DeleteAccount(account);
+                    accountClosed = true;
+                }
+                else
+                {
+                    Tracing.Verbose("[UserAccountService.CancelVerification] account is not new (canceling email change request)");
+                    ClearVerificationKey(account);
+                    Update(account);
+                }
             }
             else
             {
-                Tracing.Error("[UserAccountService.CancelNewAccount] account not new");
+                Tracing.Error("[UserAccountService.CancelVerification] account not new");
                 throw new ValidationException(GetValidationMessage("InvalidKey"));
             }
         }
