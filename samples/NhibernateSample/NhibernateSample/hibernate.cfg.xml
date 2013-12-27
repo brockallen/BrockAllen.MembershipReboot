@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+  <session-factory>
+    <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+    <property name="dialect">NHibernate.Dialect.SQLiteDialect</property>
+    <property name="connection.driver_class">NHibernate.Driver.SQLite20Driver</property>
+    <property name="connection.connection_string">Data Source=|DataDirectory|\data.sqlite;Version=3;New=True;</property>
+    <property name="connection.release_mode">on_close</property>
+    <property name="hbm2ddl.auto">update</property>
+    <property name="hbm2ddl.keywords">auto-quote</property>
+    <property name="show_sql">true</property>
+  </session-factory>
+</hibernate-configuration>
