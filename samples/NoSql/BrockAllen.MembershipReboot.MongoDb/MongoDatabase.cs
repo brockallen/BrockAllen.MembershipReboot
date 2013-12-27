@@ -15,11 +15,13 @@ namespace BrockAllen.MembershipReboot.MongoDb
                 cm.MapIdProperty(c => c.ID);
             });
 
-            BsonClassMap.RegisterClassMap<HierarchicalUserAccount>(cm =>
+            BsonClassMap.RegisterClassMap<UserAccount>(cm =>
             {
                 cm.AutoMap();
                 cm.MapIdProperty(c => c.ID);
             });
+
+            BsonClassMap.RegisterClassMap<HierarchicalUserAccount>(cm => cm.AutoMap());
         }
 
         private readonly string _connectionStringName;
