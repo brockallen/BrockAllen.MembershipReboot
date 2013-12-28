@@ -8,7 +8,9 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class QueryableUserAccountRepository<TAccount> : IUserAccountRepository<TAccount>
+    public abstract class QueryableUserAccountRepository<TAccount> : 
+        IUserAccountRepository<TAccount>,
+        IUserAccountQuery
         where TAccount : UserAccount
     {
         protected abstract IQueryable<TAccount> Queryable { get; }
@@ -49,5 +51,133 @@ namespace BrockAllen.MembershipReboot
 
         public abstract TAccount GetByLinkedAccount(string tenant, string provider, string id);
         public abstract TAccount GetByCertificate(string tenant, string thumbprint);
+
+        // IUserAccountQuery
+        public System.Collections.Generic.IEnumerable<string> GetAllTenants()
+        {
+            return Queryable.Select(x => x.Tenant).Distinct();
+        }
+
+        public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string filter)
+        {
+            var query =
+                from a in Queryable
+                select a;
+            
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Tenant.Contains(filter) || 
+                        a.Username.Contains(filter) ||
+                        a.Email.Contains(filter)
+                    select a;
+            }
+            
+            var result =
+                from a in query
+                select new UserAccountQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Username = a.Username,
+                    Email = a.Email
+                };
+            
+            return result;
+        }
+
+        public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string tenant, string filter)
+        {
+            var query =
+                from a in Queryable
+                select a;
+            
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Tenant == tenant &&
+                        (a.Username.Contains(filter) ||
+                         a.Email.Contains(filter))
+                    select a;
+            }
+
+            var result =
+                from a in query
+                select new UserAccountQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Username = a.Username,
+                    Email = a.Email
+                };
+
+            return result;
+        }
+
+        public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string filter, int skip, int count, out int totalCount)
+        {
+            var query =
+                from a in Queryable
+                select a;
+            
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Tenant.Contains(filter) ||
+                        a.Username.Contains(filter) ||
+                        a.Email.Contains(filter)
+                    select a;
+            }
+
+            var result =
+                from a in query
+                select new UserAccountQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Username = a.Username,
+                    Email = a.Email
+                };
+
+            totalCount = result.Count();
+            return result.Skip(skip).Take(count);
+        }
+
+        public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
+        {
+            var query =
+                from a in Queryable
+                select a;
+
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Tenant == tenant && 
+                        (a.Username.Contains(filter) ||
+                         a.Email.Contains(filter))
+                    select a;
+            }
+
+            var result =
+                from a in query
+                select new UserAccountQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Username = a.Username,
+                    Email = a.Email
+                };
+
+            totalCount = result.Count();
+            return result.Skip(skip).Take(count);
+        }
     }
 }

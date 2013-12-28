@@ -8,21 +8,27 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
 {
     public class HomeController : Controller
     {
-        DefaultMembershipRebootDatabase db;
+        IUserAccountQuery query;
         UserAccountService userAccountService;
 
-        public HomeController(UserAccountService userAccountService)
+        public HomeController(IUserAccountQuery query, UserAccountService userAccountService)
         {
             this.userAccountService = userAccountService;
-            this.db = new DefaultMembershipRebootDatabase();
+            this.query = query;
         }
 
         public ActionResult Index()
         {
             var names =
-                from a in db.Users
+                from a in query.Query(null)
                 select a;
             return View("Index", names.ToArray());
+        }
+
+        public ActionResult Detail(Guid id)
+        {
+            var account = userAccountService.GetByID(id);
+            return View("Detail", account);
         }
 
         [HttpPost]
@@ -31,20 +37,13 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
             try
             {
                 userAccountService.ReopenAccount(id);
-                return RedirectToAction("Index");
+                return RedirectToAction("Detail", new { id });
             }
-            catch(ValidationException ex)
+            catch (ValidationException ex)
             {
                 ModelState.AddModelError("", ex.Message);
             }
-            return Index();
+            return Detail(id);
         }
-
-        public ActionResult Detail(Guid id)
-        {
-            var account = db.Users.Find(id);
-            return View("Detail", account);
-        }
-
     }
 }

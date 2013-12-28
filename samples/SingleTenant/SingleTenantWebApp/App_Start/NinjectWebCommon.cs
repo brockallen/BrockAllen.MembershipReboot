@@ -10,6 +10,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
     using Ninject;
     using Ninject.Web.Common;
     using System;
+    using System.Data.Entity;
     using System.Web;
 
     public static class NinjectWebCommon 
@@ -54,19 +55,14 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
+
             var config = MembershipRebootConfig.Create();
             kernel.Bind<MembershipRebootConfiguration>().ToConstant(config);
             kernel.Bind<UserAccountService>().ToSelf();
             kernel.Bind<AuthenticationService>().To<SamAuthenticationService>();
-
-            RegisterEntityFramework(kernel);
-        }
-
-        private static void RegisterEntityFramework(IKernel kernel)
-        {
-            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
-            //System.Data.Entity.Database.SetInitializer(new System.Data.Entity.CreateDatabaseIfNotExists<DefaultMembershipRebootDatabase>());
-            kernel.Bind<IUserAccountRepository>().ToMethod(ctx => new DefaultUserAccountRepository()).InRequestScope();
+            kernel.Bind<IUserAccountQuery>().To<DefaultUserAccountRepository>().InRequestScope();
+            kernel.Bind<IUserAccountRepository>().To<DefaultUserAccountRepository>().InRequestScope();
         }
     }
 }

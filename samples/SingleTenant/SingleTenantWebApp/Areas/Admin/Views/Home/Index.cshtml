@@ -7,14 +7,9 @@
 <table>
     <thead>
         <tr>
-            <th></th>
             <th>Username</th>
             <th>Tenant</th>
             <th>Email</th>
-            <th>Created</th>
-            <th>Verified</th>
-            <th>Login Allowed</th>
-            <th>Account Closed</th>
         </tr>
     </thead>
     <tbody>
@@ -23,21 +18,9 @@
             Guid id = item.ID;
             string name = item.Username;
             <tr>
-                <td>
-                    @using (Html.BeginForm("Reopen", "Home"))
-                    {
-                        <input type="hidden" name="id" value="@id">
-                        <button>Reopen</button>
-                    }
-                </td>
-
                 <td>@Html.ActionLink(name, "Detail", new { id = id })</td>
                 <td>@item.Tenant</td>
                 <td>@item.Email</td>
-                <td>@item.Created</td>
-                <td>@item.IsAccountVerified</td>
-                <td>@item.IsLoginAllowed</td>
-                <td>@item.IsAccountClosed</td>
             </tr>
         }
     </tbody>
