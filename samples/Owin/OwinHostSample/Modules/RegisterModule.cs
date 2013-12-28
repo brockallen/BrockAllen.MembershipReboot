@@ -56,7 +56,7 @@ namespace OwinHostSample.Modules
             this.Post["Cancel"] = ctx =>
             {
                 var userAccountService = this.Context.GetUserAccountService();
-                userAccountService.CancelNewAccount((string)this.Request.Form["id"]);
+                userAccountService.CancelVerification((string)this.Request.Form["id"]);
                 return View["Cancel"];
             };
             this.Get["Confirm/{id}"] = ctx =>
@@ -73,7 +73,7 @@ namespace OwinHostSample.Modules
             this.Get["Cancel/{id}"] = ctx =>
             {
                 var userAccountService = this.Context.GetUserAccountService();
-                userAccountService.CancelNewAccount((string)ctx.id);
+                userAccountService.CancelVerification((string)ctx.id);
                 return View["Cancel"];
             };
         }
