@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using MongoDB.Driver.Builders;
+using System.Collections.Generic;
 
 namespace BrockAllen.MembershipReboot.MongoDb
 {
-    public class MongoGroupRepository : IGroupRepository
+    public class MongoGroupRepository : 
+        QueryableGroupRepository<HierarchicalGroup>
     {
         private readonly MongoDatabase _db;
 
@@ -13,38 +15,39 @@ namespace BrockAllen.MembershipReboot.MongoDb
             _db = db;
         }
 
-        public Group Create()
+        protected override IQueryable<HierarchicalGroup> Queryable
         {
-            return new Group();
+            get { return _db.Groups().FindAll().AsQueryable(); }
         }
 
-        public IQueryable<Group> GetAll()
+        public override HierarchicalGroup Create()
         {
-            return _db.Groups().FindAll().AsQueryable();
+            return new HierarchicalGroup();
         }
 
-        public Group Get(Guid key)
-        {
-            return _db.Groups().FindOne(Query<Group>.EQ(e => e.ID, key));
-        }
-
-        public void Add(Group item)
+        public override void Add(HierarchicalGroup item)
         {
             _db.Groups().Insert(item);
         }
 
-        public void Update(Group item)
+        public override void Remove(HierarchicalGroup item)
+        {
+            _db.Groups().Remove(Query<HierarchicalGroup>.EQ(e => e.ID, item.ID));
+        }
+
+        public override void Update(HierarchicalGroup item)
         {
             _db.Groups().Save(item);
         }
 
-        public void Remove(Group item)
+        public override IEnumerable<HierarchicalGroup> GetByChildID(Guid childGroupID)
         {
-            _db.Groups().Remove(Query<Group>.EQ(e => e.ID, item.ID));
-        }
-
-        public void Dispose()
-        {
+            var q =
+                from g in Queryable
+                from c in g.Children
+                where c.ChildGroupID == childGroupID
+                select g;
+            return q;
         }
     }
 }

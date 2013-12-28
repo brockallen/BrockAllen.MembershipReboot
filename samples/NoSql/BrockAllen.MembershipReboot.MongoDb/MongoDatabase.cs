@@ -22,6 +22,7 @@ namespace BrockAllen.MembershipReboot.MongoDb
             });
 
             BsonClassMap.RegisterClassMap<HierarchicalUserAccount>(cm => cm.AutoMap());
+            BsonClassMap.RegisterClassMap<HierarchicalGroup>(cm => cm.AutoMap());
         }
 
         private readonly string _connectionStringName;
@@ -31,9 +32,9 @@ namespace BrockAllen.MembershipReboot.MongoDb
             _connectionStringName = connectionStringName;
         }
 
-        public MongoCollection<Group> Groups()
+        public MongoCollection<HierarchicalGroup> Groups()
         {
-            return GetCollection<Group>("groups");
+            return GetCollection<HierarchicalGroup>("groups");
         }
 
         public MongoCollection<HierarchicalUserAccount> Users()

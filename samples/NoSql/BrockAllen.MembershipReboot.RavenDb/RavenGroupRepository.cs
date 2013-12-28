@@ -12,7 +12,8 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot.RavenDb
 {
-    public class RavenGroupRepository : IGroupRepository, IDisposable
+    public class RavenGroupRepository :
+        QueryableGroupRepository<HierarchicalGroup>, IDisposable
     {
         public RavenGroupRepository(string connectionStringName)
             : this((DocumentStore) new RavenMembershipRebootDatabase(connectionStringName).DocumentStore)
@@ -23,12 +24,12 @@ namespace BrockAllen.MembershipReboot.RavenDb
         {
             this.documentStore = documentStore;
             documentSession = documentStore.OpenSession();
-            items = documentSession.Query<Group>();
+            items = documentSession.Query<HierarchicalGroup>();
         }
 
         private readonly IDocumentStore documentStore;
         private readonly IDocumentSession documentSession;
-        private readonly IRavenQueryable<Group> items;
+        private readonly IRavenQueryable<HierarchicalGroup> items;
 
         protected void CheckDisposed()
         {
@@ -38,48 +39,55 @@ namespace BrockAllen.MembershipReboot.RavenDb
             }
         }
 
-        IQueryable<Group> IGroupRepository.GetAll()
+        public void Dispose()
         {
-            CheckDisposed();
-            return items;
+            documentSession.TryDispose();
         }
 
-        public Group Get(Guid key)
+        protected override IQueryable<HierarchicalGroup> Queryable
         {
-            CheckDisposed();
-            return items.Where(x => x.ID == key).SingleOrDefault();
+            get
+            {
+                CheckDisposed();
+                return items;
+            }
         }
 
-        Group IGroupRepository.Create()
+        public override HierarchicalGroup Create()
         {
             CheckDisposed();
-            return new Group();
+            return new HierarchicalGroup();
         }
 
-        void IGroupRepository.Add(Group item)
+        public override void Add(HierarchicalGroup item)
         {
             CheckDisposed();
             documentSession.Store(item);
             documentSession.SaveChanges();
         }
 
-        void IGroupRepository.Remove(Group item)
+        public override void Remove(HierarchicalGroup item)
         {
             CheckDisposed();
             documentSession.Delete(item);
             documentSession.SaveChanges();
         }
-        
-        void IGroupRepository.Update(Group item)
+
+        public override void Update(HierarchicalGroup item)
         {
             CheckDisposed();
             documentSession.Store(item);
             documentSession.SaveChanges();
         }
 
-        public void Dispose()
+        public override System.Collections.Generic.IEnumerable<HierarchicalGroup> GetByChildID(Guid childGroupID)
         {
-            documentSession.TryDispose();
+            var q =
+                from g in Queryable
+                from c in g.Children
+                where c.ChildGroupID == childGroupID
+                select g;
+            return q;
         }
     }
 }
