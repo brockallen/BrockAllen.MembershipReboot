@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BrockAllen.MembershipReboot.Resources {
-    using System;
-    
-    
+namespace BrockAllen.MembershipReboot.Resources
+{
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
