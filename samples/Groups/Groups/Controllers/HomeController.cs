@@ -38,7 +38,7 @@ namespace RolesAdmin.Controllers
         public ActionResult Index()
         {
             var list = new List<GroupViewModel>();
-            foreach(var item in groupSvc.GetAll())
+            foreach (var item in groupSvc.GetAll())
             {
                 var kids = new List<GroupViewModel>();
                 foreach (var child in item.Children)
@@ -46,11 +46,12 @@ namespace RolesAdmin.Controllers
                     var childGrp = groupSvc.Get(child.ChildGroupID);
                     kids.Add(new GroupViewModel { ID = child.ChildGroupID, Name = childGrp.Name });
                 }
-                var descendants = groupSvc.GetDescendants(item).Select(x=>x.Name).ToArray();
+                var descendants = groupSvc.GetDescendants(item).Select(x => x.Name).ToArray();
                 var gvm = new GroupViewModel
                 {
-                    ID = item.ID, Name = item.Name,
-                    Children = kids, 
+                    ID = item.ID,
+                    Name = item.Name,
+                    Children = kids,
                     Descendants = descendants
                 };
                 list.Add(gvm);

@@ -72,7 +72,10 @@
     <Compile Include="Account\UserCertificate.cs" />
     <Compile Include="Groups\GroupChild.cs" />
     <Compile Include="Groups\GroupService.cs" />
+    <Compile Include="Groups\Hierarchical\HierarchicalGroup.cs" />
+    <Compile Include="Groups\Relational\RelationalGroup.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
+    <Compile Include="Repository\QueryableGroupRepository.cs" />
     <Compile Include="Repository\QueryableUserAccountRepository.cs" />
     <Compile Include="Resources\ValidationMessages.ru-ru.Designer.cs">
       <DependentUpon>ValidationMessages.ru-ru.resx</DependentUpon>

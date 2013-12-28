@@ -4,16 +4,25 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 namespace BrockAllen.MembershipReboot
 {
-    public interface IGroupRepository
+    public interface IGroupRepository<TGroup>
+        where TGroup : Group
     {
-        IQueryable<Group> GetAll();
-        Group Get(Guid key);
-        Group Create();
-        void Add(Group item);
-        void Remove(Group item);
-        void Update(Group item);
+        TGroup Create();
+        void Add(TGroup item);
+        void Remove(TGroup item);
+        void Update(TGroup item);
+
+        TGroup GetByID(Guid id);
+        TGroup GetByName(string tenant, string name);
+
+        IEnumerable<TGroup> GetAll();
+        IEnumerable<TGroup> GetByIDs(Guid[] ids);
+        IEnumerable<TGroup> GetByChildID(Guid childGroupID);
     }
+    
+    public interface IGroupRepository : IGroupRepository<Group> { }
 }

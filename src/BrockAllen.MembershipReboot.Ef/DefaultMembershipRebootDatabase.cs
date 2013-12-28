@@ -21,12 +21,12 @@ namespace BrockAllen.MembershipReboot.Ef
         }
 
         public DbSet<RelationalUserAccount> Users { get; set; }
-        public DbSet<Group> Groups { get; set; }
+        public DbSet<RelationalGroup> Groups { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.ConfigureMembershipRebootUserAccounts<RelationalUserAccount>();
-            modelBuilder.ConfigureMembershipRebootGroups<Group>();
+            modelBuilder.ConfigureMembershipRebootGroups<RelationalGroup>();
         }
     }
 }

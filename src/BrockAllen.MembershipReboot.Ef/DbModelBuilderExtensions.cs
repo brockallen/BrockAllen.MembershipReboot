@@ -85,12 +85,15 @@ namespace System.Data.Entity
         }
 
         public static void ConfigureMembershipRebootGroups<TGroup>(this DbModelBuilder modelBuilder)
-            where TGroup : Group
+            where TGroup : RelationalGroup
         {
-            modelBuilder.Entity<TGroup>().HasKey(x => x.ID);
+            modelBuilder.Entity<TGroup>()
+                .HasKey(x => x.ID).ToTable("Groups");
 
-            modelBuilder.Entity<TGroup>().HasMany(x => x.Children).WithRequired();
-            modelBuilder.Entity<GroupChild>().HasKey(x => new { x.GroupID, x.ChildGroupID });
+            modelBuilder.Entity<TGroup>()
+                .HasMany(x => x.ChildrenCollection).WithRequired().HasForeignKey(x=>x.GroupID);
+            modelBuilder.Entity<RelationalGroupChild>()
+                .HasKey(x => new { x.GroupID, x.ChildGroupID }).ToTable("GroupChilds");
         }
     }
 }

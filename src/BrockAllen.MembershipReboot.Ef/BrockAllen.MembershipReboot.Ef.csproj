@@ -49,8 +49,8 @@
     <Content Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbContextGroupRepository`1.cs" />
-    <Compile Include="DbContextUserAccountRepository`1.cs" />
+    <Compile Include="DbContextGroupRepository.cs" />
+    <Compile Include="DbContextUserAccountRepository.cs" />
     <Compile Include="DbModelBuilderExtensions.cs" />
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
@@ -62,6 +62,10 @@
     <Compile Include="Migrations\201312202126194_v5.cs" />
     <Compile Include="Migrations\201312202126194_v5.Designer.cs">
       <DependentUpon>201312202126194_v5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201312281555533_v6.cs" />
+    <Compile Include="Migrations\201312281555533_v6.Designer.cs">
+      <DependentUpon>201312281555533_v6.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -81,6 +85,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201312202126194_v5.resx">
       <DependentUpon>201312202126194_v5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201312281555533_v6.resx">
+      <DependentUpon>201312281555533_v6.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

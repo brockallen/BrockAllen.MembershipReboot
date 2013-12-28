@@ -11,11 +11,6 @@ namespace BrockAllen.MembershipReboot
 {
     public class GroupChild
     {
-        [Key]
-        [Column(Order=1)]
-        public Guid GroupID { get; internal set; }
-        [Key]
-        [Column(Order = 2)]
-        public Guid ChildGroupID { get; internal set; }
+        public virtual Guid ChildGroupID { get; internal set; }
     }
 }

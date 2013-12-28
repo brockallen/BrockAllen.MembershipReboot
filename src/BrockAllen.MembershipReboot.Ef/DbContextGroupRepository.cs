@@ -8,11 +8,13 @@ using System.Data.Entity;
 using System.Linq;
 namespace BrockAllen.MembershipReboot.Ef
 {
-    public class DbContextGroupRepository<Ctx> : IGroupRepository, IDisposable
+    public class DbContextGroupRepository<Ctx, TGroup> :
+        QueryableGroupRepository<TGroup>, IDisposable
         where Ctx : DbContext, new()
+        where TGroup : RelationalGroup
     {
         protected DbContext db;
-        DbSet<Group> items;
+        DbSet<TGroup> items;
         
         public DbContextGroupRepository()
             : this(new Ctx())
@@ -21,7 +23,7 @@ namespace BrockAllen.MembershipReboot.Ef
         public DbContextGroupRepository(Ctx ctx)
         {
             this.db = ctx;
-            this.items = db.Set<Group>();
+            this.items = db.Set<TGroup>();
         }
 
         void CheckDisposed()
@@ -32,39 +34,41 @@ namespace BrockAllen.MembershipReboot.Ef
             }
         }
 
-        IQueryable<Group> IGroupRepository.GetAll()
+        public void Dispose()
         {
-            CheckDisposed();
-            return items;
+            if (db.TryDispose())
+            {
+                db = null;
+                items = null;
+            }
         }
 
-        Group IGroupRepository.Get(Guid key)
+        protected override IQueryable<TGroup> Queryable
         {
-            CheckDisposed();
-            return items.Find(key);
+            get { return items; }
         }
 
-        Group IGroupRepository.Create()
+        public override TGroup Create()
         {
             CheckDisposed();
             return items.Create();
         }
 
-        void IGroupRepository.Add(Group item)
+        public override void Add(TGroup item)
         {
             CheckDisposed();
             items.Add(item);
             db.SaveChanges();
         }
 
-        void IGroupRepository.Remove(Group item)
+        public override void Remove(TGroup item)
         {
             CheckDisposed();
             items.Remove(item);
             db.SaveChanges();
         }
 
-        void IGroupRepository.Update(Group item)
+        public override void Update(TGroup item)
         {
             CheckDisposed();
 
@@ -77,13 +81,14 @@ namespace BrockAllen.MembershipReboot.Ef
             db.SaveChanges();
         }
 
-        public void Dispose()
+        public override System.Collections.Generic.IEnumerable<TGroup> GetByChildID(Guid childGroupID)
         {
-            if (db.TryDispose())
-            {
-                db = null;
-                items = null;
-            }
+            var query =
+                from g in items
+                from c in g.ChildrenCollection
+                where c.ChildGroupID == childGroupID
+                select g;
+            return query;
         }
     }
 }

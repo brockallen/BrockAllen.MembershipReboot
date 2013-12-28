@@ -10,80 +10,57 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public class GroupService
+    public class GroupService<TGroup>
+        where TGroup : Group
     {
-        MembershipRebootConfiguration<UserAccount> configuration;
-        IGroupRepository groupRepository;
+        string defaultTenant;
+        IGroupRepository<TGroup> groupRepository;
 
-        public GroupService(IGroupRepository groupRepository)
-            : this(new MembershipRebootConfiguration<UserAccount>(), groupRepository)
+        public GroupService(IGroupRepository<TGroup> groupRepository)
+            : this(null, groupRepository)
         {
         }
 
-        public GroupService(MembershipRebootConfiguration<UserAccount> configuration, IGroupRepository groupRepository)
+        public GroupService(string defaultTenant, IGroupRepository<TGroup> groupRepository)
         {
-            if (configuration == null) throw new ArgumentNullException("configuration");
             if (groupRepository == null) throw new ArgumentNullException("groupRepository");
 
-            this.configuration = configuration;
+            this.defaultTenant = defaultTenant;
             this.groupRepository = groupRepository;
         }
 
-        public IQueryable<Group> GetAll()
+        public IEnumerable<TGroup> GetAll()
         {
-            return GetAll(null);
+            return this.groupRepository.GetAll();
+        }
+
+        public TGroup Get(Guid groupID)
+        {
+            return this.groupRepository.GetByID(groupID);
+        }
+
+        bool NameAlreadyExists(string tenant, string name)
+        {
+            var grp = this.groupRepository.GetByName(tenant, name);
+            return grp != null;
         }
         
-        public IQueryable<Group> GetAll(string tenant)
+        public TGroup Create(string name)
         {
-            if (!configuration.MultiTenant)
-            {
-                tenant = configuration.DefaultTenant;
-            }
-
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ArgumentNullException("tenant");
-
-            return this.groupRepository.GetAll().Where(x=>x.Tenant == tenant);
+            return Create(defaultTenant, name);
         }
 
-        public Group Get(Guid groupID)
+        public TGroup Create(string tenant, string name)
         {
-            return this.groupRepository.Get(groupID);
-        }
-
-        public Group Create(string name)
-        {
-            return Create(null, name);
-        }
-
-        bool NameAlreadyExists(string tenant, string name, Guid? exclude = null)
-        {
-            var query = GetAll(tenant).Where(x => x.Name == name);
-            if (exclude.HasValue)
-            {
-                query = query.Where(x => x.ID != exclude.Value);
-            }
-            return query.Any();
-        }
-
-        public Group Create(string tenant, string name)
-        {
-            if (!configuration.MultiTenant)
-            {
-                tenant = configuration.DefaultTenant;
-            }
+            if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException(Resources.ValidationMessages.TenantRequired);
+            if (String.IsNullOrWhiteSpace(name)) throw new ValidationException(Resources.ValidationMessages.NameRequired);
 
             if (NameAlreadyExists(tenant, name))
             {
                 throw new ValidationException(Resources.ValidationMessages.NameAlreadyInUse);
             }
 
-            if (String.IsNullOrWhiteSpace(tenant)) throw new ValidationException(Resources.ValidationMessages.TenantRequired);
-            if (String.IsNullOrWhiteSpace(name)) throw new ValidationException(Resources.ValidationMessages.NameRequired);
-            
             var grp = this.groupRepository.Create();
-            
-            if (grp.Children == null) grp.Children = new HashSet<GroupChild>();
             
             grp.ID = Guid.NewGuid();
             grp.Tenant = tenant;
@@ -106,19 +83,15 @@ namespace BrockAllen.MembershipReboot
 
         private void RemoveChildGroupFromOtherGroups(Guid childGroupID)
         {
-            var query =
-                from g in this.groupRepository.GetAll()
-                from c in g.Children
-                where c.ChildGroupID == childGroupID
-                select g;
-            foreach (var group in query.ToArray())
+            var groups = this.groupRepository.GetByChildID(childGroupID);
+            foreach (var group in groups)
             {
                 RemoveChildGroup(group, childGroupID);
                 Update(group);
             }
         }
 
-        private void Update(Group group)
+        private void Update(TGroup group)
         {
             group.LastUpdated = UtcNow;
             this.groupRepository.Update(group);
@@ -130,8 +103,8 @@ namespace BrockAllen.MembershipReboot
 
             var group = Get(groupID);
             if (group == null) throw new ArgumentException("Invalid GroupID");
-            
-            if (NameAlreadyExists(group.Tenant, name, groupID))
+
+            if (NameAlreadyExists(group.Tenant, name))
             {
                 throw new ValidationException(Resources.ValidationMessages.NameAlreadyInUse);
             }
@@ -164,7 +137,7 @@ namespace BrockAllen.MembershipReboot
             var child = group.Children.SingleOrDefault(x => x.ChildGroupID == childGroupID);
             if (child == null)
             {
-                group.Children.Add(new GroupChild { GroupID = group.ID, ChildGroupID = childGroupID });
+                group.AddChild(new GroupChild { ChildGroupID = childGroupID });
             }
             
             Update(group);
@@ -189,11 +162,11 @@ namespace BrockAllen.MembershipReboot
             var child = group.Children.SingleOrDefault(x => x.ChildGroupID == childGroupID);
             if (child != null)
             {
-                group.Children.Remove(child);
+                group.RemoveChild(child);
             }
         }
 
-        public virtual IEnumerable<Group> GetDescendants(Guid groupID)
+        public virtual IEnumerable<TGroup> GetDescendants(Guid groupID)
         {
             var group = Get(groupID);
             if (group == null) throw new ArgumentException("Invalid GroupID");
@@ -201,7 +174,7 @@ namespace BrockAllen.MembershipReboot
             return GetDescendants(group);
         }
         
-        public virtual IEnumerable<Group> GetDescendants(Group grp)
+        public virtual IEnumerable<TGroup> GetDescendants(Group grp)
         {
             if (grp == null) throw new ArgumentNullException("group");
 
@@ -214,12 +187,12 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
         
-        public virtual IEnumerable<Group> GetChildren(Group grp)
+        public virtual IEnumerable<TGroup> GetChildren(Group grp)
         {
             if (grp == null) throw new ArgumentNullException("group");
             var ids = grp.Children.Select(x=>x.ChildGroupID).ToArray();
-            if (ids.Length == 0) return Enumerable.Empty<Group>();
-            return this.groupRepository.GetAll().Where(x => ids.Contains(x.ID));
+            if (ids.Length == 0) return Enumerable.Empty<TGroup>();
+            return this.groupRepository.GetByIDs(ids);
         }
 
         protected virtual DateTime UtcNow
@@ -228,6 +201,19 @@ namespace BrockAllen.MembershipReboot
             {
                 return DateTime.UtcNow;
             }
+        }
+    }
+
+    public class GroupService : GroupService<Group> 
+    {
+        public GroupService(IGroupRepository<Group> groupRepository)
+            : base(null, groupRepository)
+        {
+        }
+
+        public GroupService(string defaultTenant, IGroupRepository<Group> groupRepository)
+            : base(defaultTenant, groupRepository)
+        {
         }
     }
 }

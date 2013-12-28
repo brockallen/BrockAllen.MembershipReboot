@@ -56,6 +56,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
             //System.Data.Entity.Database.SetInitializer(new System.Data.Entity.DropCreateDatabaseIfModelChanges<DefaultMembershipRebootDatabase>());
             kernel.Bind<IGroupRepository>().ToMethod(ctx => new DefaultGroupRepository()).InRequestScope();
+            kernel.Bind<GroupService>().ToMethod(ctx => new GroupService("default", ctx.Kernel.Get<IGroupRepository>()));
         }
     }
 }
