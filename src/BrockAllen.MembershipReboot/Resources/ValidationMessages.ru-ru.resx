@@ -135,6 +135,9 @@
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
     <value>Добавьте пользовательский сертификат, чтобы настроить двухфакторную аутентификацию.</value>
   </data>
+  <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
+    <value>Вы должны задать пароль локального аккаунта, перед тем как удалить последний внешний авторизационный аккаунт.</value>
+  </data>
   <data name="CertificateAlreadyInUse" xml:space="preserve">
     <value>Этот сертификат уже используется другим аккаунтом.</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="EmailRequired" xml:space="preserve">
     <value>Необходимо указать email.</value>
+  </data>
+  <data name="InvalidCertificate" xml:space="preserve">
+    <value>Невалидный сертификат.</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
     <value>Невалидный email.</value>
@@ -201,6 +207,12 @@
   <data name="NewPasswordMustBeDifferent" xml:space="preserve">
     <value>Новый пароль должен отличаться от текущего.</value>
   </data>
+  <data name="ParentGroupAlreadyChild" xml:space="preserve">
+    <value>Родительская группа уже является дочерней у дочерней группы.</value>
+  </data>
+  <data name="ParentGroupSameAsChild" xml:space="preserve">
+    <value>Родительская и дочерняя группы идентичны.</value>
+  </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
     <value>Пароль должен содержать как минимум {0} следующих символов: один в верхнем регистре, один - в нижнем, одну цифру и одну другую.</value>
   </data>
@@ -215,6 +227,9 @@
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
     <value>Укажите номер мобильного телефона, чтобы использовать мобильную двухфакторную аутентификацию.</value>
+  </data>
+  <data name="ReopenErrorNoEmail" xml:space="preserve">
+    <value>Повторное открытие аккаунта невозможно, т.к. для данного аккаунта не указан email адрес.</value>
   </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
     <value>Необходимо указать секретный ответ.</value>
