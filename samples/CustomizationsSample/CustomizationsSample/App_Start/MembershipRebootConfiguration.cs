@@ -6,19 +6,6 @@ using System.Web;
 
 namespace BrockAllen.MembershipReboot.Mvc.App_Start
 {
-    public class PasswordValidator : IValidator<CustomUserAccount>
-    {
-        public ValidationResult Validate(UserAccountService<CustomUserAccount> service, CustomUserAccount account, string value)
-        {
-            if (value.Contains("R"))
-            {
-                return new ValidationResult("You can't use an 'R' in your password (for some reason)");
-            }
-            
-            return null;
-        }
-    }
-
     public class MembershipRebootConfig
     {
         public static MembershipRebootConfiguration<CustomUserAccount> Create()
@@ -30,14 +17,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             config.RegisterPasswordValidator(new PasswordValidator());
             config.ConfigurePasswordComplexity(5, 3);
 
-            config.CustomUserPropertiesToClaimsMap = user =>
-                {
-                    return new System.Security.Claims.Claim[]
-                    {
-                        new System.Security.Claims.Claim(ClaimTypes.GivenName, user.FirstName),
-                        new System.Security.Claims.Claim(ClaimTypes.Surname, user.LastName),
-                    };
-                };
+            config.AddCommandHandler(new CustomClaimsMapper());
 
             var delivery = new SmtpMessageDelivery();
 

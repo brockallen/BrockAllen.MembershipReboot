@@ -11,6 +11,20 @@ using BrockAllen.MembershipReboot.Relational;
 
 namespace BrockAllen.MembershipReboot.Mvc
 {
+    // shows custom validation
+    public class PasswordValidator : IValidator<CustomUserAccount>
+    {
+        public ValidationResult Validate(UserAccountService<CustomUserAccount> service, CustomUserAccount account, string value)
+        {
+            if (value.Contains("R"))
+            {
+                return new ValidationResult("You can't use an 'R' in your password (for some reason)");
+            }
+
+            return null;
+        }
+    }
+
     // this shows the extensibility point of being able to use a custom database/dbcontext
     public class SomeOtherEntity
     {
@@ -230,4 +244,17 @@ namespace BrockAllen.MembershipReboot.Mvc
             return base.GetBody(evt, values);
         }
     }
+
+    public class CustomClaimsMapper : ICommandHandler<MapClaimsFromAccount<CustomUserAccount>>
+    {
+        public void Handle(MapClaimsFromAccount<CustomUserAccount> cmd)
+        {
+            cmd.MappedClaims = new System.Security.Claims.Claim[]
+            {
+                new System.Security.Claims.Claim(ClaimTypes.GivenName, cmd.Account.FirstName),
+                new System.Security.Claims.Claim(ClaimTypes.Surname, cmd.Account.LastName),
+            };
+        }
+    }
+
 }
