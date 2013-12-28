@@ -17,12 +17,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
             this.query = query;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string filter)
         {
-            var names =
-                from a in query.Query(null)
-                select a;
-            return View("Index", names.ToArray());
+            var accounts = query.Query(userAccountService.Configuration.DefaultTenant, filter);
+            return View("Index", accounts.ToArray());
         }
 
         public ActionResult Detail(Guid id)
