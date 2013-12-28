@@ -92,6 +92,7 @@ namespace BrockAllen.MembershipReboot
         {
             var query =
                 from a in Queryable
+                where a.Tenant == tenant
                 select a;
             
             if (!String.IsNullOrWhiteSpace(filter))
@@ -99,9 +100,8 @@ namespace BrockAllen.MembershipReboot
                 query =
                     from a in query
                     where
-                        a.Tenant == tenant &&
-                        (a.Username.Contains(filter) ||
-                         a.Email.Contains(filter))
+                        a.Username.Contains(filter) ||
+                        a.Email.Contains(filter)
                     select a;
             }
 
@@ -153,6 +153,7 @@ namespace BrockAllen.MembershipReboot
         {
             var query =
                 from a in Queryable
+                where a.Tenant == tenant
                 select a;
 
             if (!String.IsNullOrWhiteSpace(filter))
@@ -160,9 +161,8 @@ namespace BrockAllen.MembershipReboot
                 query =
                     from a in query
                     where
-                        a.Tenant == tenant && 
-                        (a.Username.Contains(filter) ||
-                         a.Email.Contains(filter))
+                        a.Username.Contains(filter) ||
+                        a.Email.Contains(filter)
                     select a;
             }
 
