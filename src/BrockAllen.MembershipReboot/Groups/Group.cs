@@ -11,18 +11,18 @@ namespace BrockAllen.MembershipReboot
 {
     public abstract class Group
     {
-        public virtual Guid ID { get; internal set; }
+        public virtual Guid ID { get; protected internal set; }
 
         [StringLength(50)]
         [Required]
-        public virtual string Tenant { get; internal set; }
+        public virtual string Tenant { get; protected internal set; }
         
         [StringLength(100)]
         [Required]
-        public virtual string Name { get; internal set; }
+        public virtual string Name { get; protected internal set; }
 
-        public virtual DateTime Created { get; internal set; }
-        public virtual DateTime LastUpdated { get; internal set; }
+        public virtual DateTime Created { get; protected internal set; }
+        public virtual DateTime LastUpdated { get; protected internal set; }
 
         public abstract IEnumerable<GroupChild> Children { get; }
         protected internal abstract void AddChild(GroupChild child);

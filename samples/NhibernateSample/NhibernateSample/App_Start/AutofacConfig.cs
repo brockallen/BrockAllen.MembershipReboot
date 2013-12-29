@@ -33,6 +33,9 @@
             builder.RegisterGeneric(typeof(MembershipRebootConfiguration<>)).AsSelf();
             builder.RegisterGeneric(typeof(NhRepository<>)).As(typeof(IRepository<>));
             builder.RegisterGeneric(typeof(NhUserAccountRepository<>)).As(typeof(IUserAccountRepository<>));
+            builder.RegisterGeneric(typeof(NhGroupRepository<>)).As(typeof(IGroupRepository<>));
+            builder.Register(
+                context => new GroupService<NhGroup>("default", context.Resolve<IGroupRepository<NhGroup>>())).AsSelf();
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }

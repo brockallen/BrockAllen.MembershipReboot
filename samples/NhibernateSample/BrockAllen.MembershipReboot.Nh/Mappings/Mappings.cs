@@ -6,6 +6,87 @@
     using global::NHibernate.Mapping.ByCode.Conformist;
     using global::NHibernate.Type;
 
+    public class GroupMapping : ClassMapping<NhGroup>
+    {
+        public GroupMapping()
+        {
+            this.Table("Groups");
+            this.Id(x => x.ID, idm => idm.Generator(Generators.Assigned));
+            this.Property(
+                x => x.Tenant,
+                pm =>
+                    {
+                        pm.Length(50);
+                        pm.NotNullable(true);
+                    });
+            this.Property(
+                x => x.Name,
+                pm =>
+                    {
+                        pm.Length(100);
+                        pm.NotNullable(true);
+                    });
+            this.Property(x => x.Created);
+            this.Property(x => x.LastUpdated);
+            this.Version(
+                x => x.Version,
+                vm =>
+                {
+                    vm.Generated(VersionGeneration.Never);
+                    vm.Type(new Int64Type());
+                });
+
+            this.Set(
+                x => x.ChildrenCollection,
+                spm =>
+                {
+                    spm.Inverse(true);
+                    spm.Cascade(Cascade.All);
+                    spm.Key(
+                        km =>
+                        {
+                            km.Column("GroupID");
+                            km.ForeignKey("FK_Group_GroupChildren");
+                        });
+                },
+                r => r.OneToMany());
+
+            this.DynamicInsert(true);
+            this.DynamicUpdate(true);
+        }
+    }
+
+    public class GroupChildMapping : ClassMapping<NhGroupChild>
+    {
+        public GroupChildMapping()
+        {
+            this.Table("GroupChildren");
+            this.ComposedId(
+                pm =>
+                {
+                    pm.ManyToOne(
+                            x => x.Group,
+                            mm =>
+                            {
+                                mm.Column("GroupID");
+                                mm.ForeignKey("FK_Group_GroupChildren");
+                                mm.NotNullable(true);
+                            });
+                    pm.Property(x => x.ChildGroupID);
+                });
+            this.Version(
+                x => x.Version,
+                vm =>
+                {
+                    vm.Generated(VersionGeneration.Never);
+                    vm.Type(new Int64Type());
+                });
+
+            this.DynamicInsert(true);
+            this.DynamicUpdate(true);
+        }
+    }
+
     public class LinkedAccountMapping : ClassMapping<NhLinkedAccount>
     {
         public LinkedAccountMapping()
@@ -18,7 +99,7 @@
                             x => x.Account,
                             mm =>
                             {
-                                mm.Column("UserAccountId");
+                                mm.Column("UserAccountID");
                                 mm.ForeignKey("FK_UserAccount_UserClaims");
                                 mm.NotNullable(true);
                             });
@@ -51,7 +132,7 @@
                             x => x.Account,
                             mm =>
                             {
-                                mm.Column("UserAccountId");
+                                mm.Column("UserAccountID");
                                 mm.ForeignKey("FK_UserAccount_UserClaims");
                                 mm.NotNullable(true);
                             });
@@ -85,7 +166,7 @@
                             x => x.Account,
                             mm =>
                             {
-                                mm.Column("UserAccountId");
+                                mm.Column("UserAccountID");
                                 mm.ForeignKey("FK_UserAccount_UserClaims");
                                 mm.NotNullable(true);
                             });
@@ -130,7 +211,7 @@
                             x => x.Account,
                             mm =>
                             {
-                                mm.Column("UserAccountId");
+                                mm.Column("UserAccountID");
                                 mm.ForeignKey("FK_UserAccount_UserClaims");
                                 mm.NotNullable(true);
                             });
@@ -212,7 +293,7 @@
                         spm.Key(
                             km =>
                                 {
-                                    km.Column("UserAccountId");
+                                    km.Column("UserAccountID");
                                     km.ForeignKey("FK_UserAccount_UserClaims");
                                 });
                     },
@@ -226,7 +307,7 @@
                     spm.Key(
                         km =>
                         {
-                            km.Column("UserAccountId");
+                            km.Column("UserAccountID");
                             km.ForeignKey("FK_UserAccount_LinkedAccounts");
                         });
                 },
@@ -240,7 +321,7 @@
                     spm.Key(
                         km =>
                         {
-                            km.Column("UserAccountId");
+                            km.Column("UserAccountID");
                             km.ForeignKey("FK_UserAccount_LinkedAccountClaims");
                         });
                 },
@@ -254,7 +335,7 @@
                     spm.Key(
                         km =>
                         {
-                            km.Column("UserAccountId");
+                            km.Column("UserAccountID");
                             km.ForeignKey("FK_UserAccount_UserCertificates");
                         });
                 },
@@ -268,7 +349,7 @@
                     spm.Key(
                         km =>
                         {
-                            km.Column("UserAccountId");
+                            km.Column("UserAccountID");
                             km.ForeignKey("FK_UserAccount_TwoFactorAuthTokens");
                         });
                 },
@@ -282,7 +363,7 @@
                     spm.Key(
                         km =>
                         {
-                            km.Column("UserAccountId");
+                            km.Column("UserAccountID");
                             km.ForeignKey("FK_UserAccount_PasswordResetSecrets");
                         });
                 },
@@ -304,7 +385,7 @@
                             x => x.Account,
                             mm =>
                                 {
-                                    mm.Column("UserAccountId");
+                                    mm.Column("UserAccountID");
                                     mm.ForeignKey("FK_UserAccount_UserCertificates");
                                     mm.NotNullable(true);
                                 });
@@ -336,7 +417,7 @@
                             x => x.Account,
                             mm =>
                                 {
-                                    mm.Column("UserAccountId");
+                                    mm.Column("UserAccountID");
                                     mm.ForeignKey("FK_UserAccount_UserClaims");
                                     mm.NotNullable(true);
                                 });

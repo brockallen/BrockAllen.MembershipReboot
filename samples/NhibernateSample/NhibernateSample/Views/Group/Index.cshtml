@@ -1,0 +1,83 @@
+﻿@model NhibernateSample.Controllers.GroupIndexViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2><a href="/Home">Roles</a></h2>
+
+@Html.ValidationSummary()
+
+@if (Model.Groups.Any())
+{
+    <ul>
+        @foreach (var grp in Model.Groups)
+        {
+            <li class="group">
+                @using (Html.BeginForm("Delete", "Group"))
+                {
+                    <input name="id" type="hidden" value="@grp.ID" />
+                    <button>delete</button>
+                }
+                <label>Name:</label> @grp.Name
+                @using (Html.BeginForm("ChangeName", "Group"))
+                {
+                    <input name="id" type="hidden" value="@grp.ID" />
+                    <label>New Name:</label>
+                    <input name="name" />
+                    <button>change</button>
+                }
+                @using (Html.BeginForm("AddChild", "Group"))
+                {
+                    <input name="id" type="hidden" value="@grp.ID" />
+                    @Html.DropDownList("child", Model.GroupsAsList)
+                    <button>add child</button>
+                }
+
+                @if (grp.Children.Any())
+                {
+                    <ul>
+                        @foreach (var child in grp.Children)
+                        {
+                            <li>
+                                <label>Child Group:</label> @child.Name
+                                @using (Html.BeginForm("RemoveChild", "Group"))
+                                {
+                                    <input name="id" type="hidden" value="@grp.ID" />
+                                    <input name="child" type="hidden" value="@child.ID" />
+                                    <button>remove child</button>
+                                }
+
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+
+            if (grp.Descendants.Any())
+            {
+                <p>
+                    @grp.Descendants.Aggregate((a, b) => a + ", " + b)
+                </p>
+            }
+        }
+    </ul>
+}
+else
+{
+    <p>No Groups Defined</p>
+}
+
+@using (Html.BeginForm("Add", "Group"))
+{
+    <fieldset>
+        <legend>New Group</legend>
+        <p>
+            <label>Name</label>
+            <input name="name" />
+        </p>
+        <p>
+            <button>Create</button>
+        </p>
+    </fieldset>
+}
