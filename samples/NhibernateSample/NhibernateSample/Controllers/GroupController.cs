@@ -38,22 +38,25 @@
     public class GroupController : Controller
     {
         private readonly GroupService<NhGroup> groupSvc;
-
+        private readonly IGroupQuery query;
         private readonly ISession session;
 
-        public GroupController(GroupService<NhGroup> groupSvc, ISession session)
+        public GroupController(GroupService<NhGroup> groupSvc, IGroupQuery query, ISession session)
         {
             this.groupSvc = groupSvc;
+            this.query = query;
             this.session = session;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string filter = null)
         {
             var list = new List<GroupViewModel>();
             using (var tx = this.session.BeginTransaction())
             {
-                foreach (var item in this.groupSvc.GetAll())
+                foreach (var result in this.query.Query(groupSvc.DefaultTenant, filter))
                 {
+                    var item = this.groupSvc.Get(result.ID);
+
                     var kids = new List<GroupViewModel>();
                     foreach (var child in item.Children)
                     {

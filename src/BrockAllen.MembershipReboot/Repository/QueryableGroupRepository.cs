@@ -8,7 +8,9 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class QueryableGroupRepository<TGroup> : IGroupRepository<TGroup>
+    public abstract class QueryableGroupRepository<TGroup> : 
+        IGroupRepository<TGroup>,
+        IGroupQuery
         where TGroup : Group
     {
         protected abstract IQueryable<TGroup> Queryable { get; }
@@ -28,16 +30,131 @@ namespace BrockAllen.MembershipReboot
             return Queryable.SingleOrDefault(x => x.Tenant == tenant && x.Name == name);
         }
 
-        public System.Collections.Generic.IEnumerable<TGroup> GetAll()
-        {
-            return Queryable;
-        }
-
         public System.Collections.Generic.IEnumerable<TGroup> GetByIDs(Guid[] ids)
         {
             return Queryable.Where(x => ids.Contains(x.ID));
         }
 
         public abstract System.Collections.Generic.IEnumerable<TGroup> GetByChildID(Guid childGroupID);
+
+        // IGroupQuery
+        public System.Collections.Generic.IEnumerable<string> GetAllTenants()
+        {
+            return Queryable.Select(x => x.Tenant).Distinct();
+        }
+
+        public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string filter)
+        {
+            var query =
+                from a in Queryable
+                select a;
+
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Tenant.Contains(filter) ||
+                        a.Name.Contains(filter)
+                    select a;
+            }
+
+            var result =
+                from a in query
+                select new GroupQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Name = a.Name
+                };
+
+            return result;
+        }
+
+        public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string tenant, string filter)
+        {
+            var query =
+                from a in Queryable
+                where a.Tenant == tenant
+                select a;
+
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Name.Contains(filter)
+                    select a;
+            }
+
+            var result =
+                from a in query
+                select new GroupQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Name = a.Name
+                };
+
+            return result;
+        }
+
+        public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string filter, int skip, int count, out int totalCount)
+        {
+            var query =
+                from a in Queryable
+                select a;
+
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Tenant.Contains(filter) ||
+                        a.Name.Contains(filter)
+                    select a;
+            }
+
+            var result =
+                from a in query
+                select new GroupQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Name = a.Name
+                };
+            
+            totalCount = query.Count();
+            return result.Skip(skip).Take(count);
+        }
+
+        public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
+        {
+            var query =
+                from a in Queryable
+                where a.Tenant == tenant
+                select a;
+
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                query =
+                    from a in query
+                    where
+                        a.Name.Contains(filter)
+                    select a;
+            }
+
+            var result =
+                from a in query
+                select new GroupQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Name = a.Name
+                };
+
+            totalCount = query.Count();
+            return result.Skip(skip).Take(count);
+        }
     }
 }

@@ -18,7 +18,6 @@ namespace BrockAllen.MembershipReboot
         TGroup GetByID(Guid id);
         TGroup GetByName(string tenant, string name);
 
-        IEnumerable<TGroup> GetAll();
         IEnumerable<TGroup> GetByIDs(Guid[] ids);
         IEnumerable<TGroup> GetByChildID(Guid childGroupID);
     }

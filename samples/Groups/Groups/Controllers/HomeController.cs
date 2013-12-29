@@ -30,16 +30,19 @@ namespace RolesAdmin.Controllers
     public class HomeController : Controller
     {
         GroupService groupSvc;
-        public HomeController(GroupService groupSvc)
+        IGroupQuery query;
+        public HomeController(GroupService groupSvc, IGroupQuery query)
         {
             this.groupSvc = groupSvc;
+            this.query = query;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string filter = null)
         {
             var list = new List<GroupViewModel>();
-            foreach (var item in groupSvc.GetAll())
+            foreach (var result in query.Query(groupSvc.DefaultTenant, filter))
             {
+                var item = groupSvc.Get(result.ID);
                 var kids = new List<GroupViewModel>();
                 foreach (var child in item.Children)
                 {

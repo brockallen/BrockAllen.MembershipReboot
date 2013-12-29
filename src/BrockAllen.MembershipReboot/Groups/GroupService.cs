@@ -13,7 +13,8 @@ namespace BrockAllen.MembershipReboot
     public class GroupService<TGroup>
         where TGroup : Group
     {
-        string defaultTenant;
+        public string DefaultTenant { get; private set; }
+        
         IGroupRepository<TGroup> groupRepository;
 
         public GroupService(IGroupRepository<TGroup> groupRepository)
@@ -25,13 +26,8 @@ namespace BrockAllen.MembershipReboot
         {
             if (groupRepository == null) throw new ArgumentNullException("groupRepository");
 
-            this.defaultTenant = defaultTenant;
+            this.DefaultTenant = defaultTenant;
             this.groupRepository = groupRepository;
-        }
-
-        public IEnumerable<TGroup> GetAll()
-        {
-            return this.groupRepository.GetAll();
         }
 
         public TGroup Get(Guid groupID)
@@ -47,7 +43,7 @@ namespace BrockAllen.MembershipReboot
         
         public TGroup Create(string name)
         {
-            return Create(defaultTenant, name);
+            return Create(DefaultTenant, name);
         }
 
         public TGroup Create(string tenant, string name)

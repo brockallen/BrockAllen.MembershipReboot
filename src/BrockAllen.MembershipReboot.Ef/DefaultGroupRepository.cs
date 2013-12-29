@@ -51,11 +51,6 @@ namespace BrockAllen.MembershipReboot.Ef
             return This.GetByName(tenant, name);
         }
 
-        public new System.Collections.Generic.IEnumerable<Group> GetAll()
-        {
-            return This.GetAll();
-        }
-        
         public new System.Collections.Generic.IEnumerable<Group> GetByIDs(System.Guid[] ids)
         {
             return This.GetByIDs(ids);
