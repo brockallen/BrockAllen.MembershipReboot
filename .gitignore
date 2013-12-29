@@ -164,3 +164,6 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+# SQL Lite DB files
+*.sqlite
