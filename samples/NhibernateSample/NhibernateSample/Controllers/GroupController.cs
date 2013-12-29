@@ -37,14 +37,19 @@
 
     public class GroupController : Controller
     {
+        private readonly QueryableGroupRepository<NhGroup> groupRepository;
+
         private readonly GroupService<NhGroup> groupSvc;
-        private readonly IGroupQuery query;
+
         private readonly ISession session;
 
-        public GroupController(GroupService<NhGroup> groupSvc, IGroupQuery query, ISession session)
+        public GroupController(
+            QueryableGroupRepository<NhGroup> groupRepository,
+            GroupService<NhGroup> groupSvc,
+            ISession session)
         {
+            this.groupRepository = groupRepository;
             this.groupSvc = groupSvc;
-            this.query = query;
             this.session = session;
         }
 
@@ -53,7 +58,7 @@
             var list = new List<GroupViewModel>();
             using (var tx = this.session.BeginTransaction())
             {
-                foreach (var result in this.query.Query(groupSvc.DefaultTenant, filter))
+                foreach (var result in this.groupRepository.Query(this.groupSvc.DefaultTenant, filter))
                 {
                     var item = this.groupSvc.Get(result.ID);
 
