@@ -52,9 +52,12 @@
     <Compile Include="Account\NhUserAccount.cs" />
     <Compile Include="Account\NhUserCertificate.cs" />
     <Compile Include="Account\NhUserClaim.cs" />
+    <Compile Include="Groups\NhGroup.cs" />
+    <Compile Include="Groups\NhGroupChild.cs" />
     <Compile Include="Mappings\Mappings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\NhGroupRepository.cs" />
     <Compile Include="Repository\NhRepository.cs" />
     <Compile Include="Repository\NhUserAccountRepository.cs" />
   </ItemGroup>

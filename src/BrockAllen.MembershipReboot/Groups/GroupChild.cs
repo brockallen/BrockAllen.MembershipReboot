@@ -9,6 +9,6 @@ namespace BrockAllen.MembershipReboot
 {
     public class GroupChild
     {
-        public virtual Guid ChildGroupID { get; internal set; }
+        public virtual Guid ChildGroupID { get; protected internal set; }
     }
 }
