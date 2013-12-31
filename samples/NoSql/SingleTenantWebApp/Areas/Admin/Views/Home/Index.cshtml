@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Accounts</h2>
+@Html.ValidationSummary()
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Tenant</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            Guid id = item.ID;
+            string name = item.Username;
+            <tr>
+                <td>@Html.ActionLink(name, "Detail", new { id = id })</td>
+                <td>@item.Tenant</td>
+                <td>@item.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>

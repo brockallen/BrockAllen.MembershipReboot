@@ -58,7 +58,6 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             kernel.Bind<MembershipRebootConfiguration<HierarchicalUserAccount>>().ToConstant(config);
             kernel.Bind<UserAccountService<HierarchicalUserAccount>>().ToSelf();
             kernel.Bind<AuthenticationService<HierarchicalUserAccount>>().To<SamAuthenticationService<HierarchicalUserAccount>>();
-
             RegisterMongoDb(kernel);
             //RegisterRavenDb(kernel);
         }
@@ -71,6 +70,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         {
             kernel.Bind<MongoDb.MongoDatabase>().ToSelf().WithConstructorArgument("connectionStringName", "MongoDb");
             kernel.Bind<IUserAccountRepository<HierarchicalUserAccount>>().To<MongoDb.MongoUserAccountRepository>();
+            kernel.Bind<IUserAccountQuery>().To<MongoDb.MongoUserAccountRepository>();
         }
     
         // To use RavenDB::
@@ -80,6 +80,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         private static void RegisterRavenDb(IKernel kernel)
         {
             kernel.Bind<IUserAccountRepository<HierarchicalUserAccount>>().ToMethod(ctx => new BrockAllen.MembershipReboot.RavenDb.RavenUserAccountRepository("RavenDb"));
+            kernel.Bind<IUserAccountQuery>().ToMethod(ctx => new BrockAllen.MembershipReboot.RavenDb.RavenUserAccountRepository("RavenDb"));
         }
     }
 }
