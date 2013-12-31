@@ -56,6 +56,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             var config = MembershipRebootConfig.Create();
             kernel.Bind<MembershipRebootConfiguration<CustomUserAccount>>().ToConstant(config);
             kernel.Bind<IUserAccountRepository<CustomUserAccount>>().To<CustomRepository>().InRequestScope();
+            kernel.Bind<IUserAccountQuery>().To<CustomRepository>().InRequestScope();
             kernel.Bind<AuthenticationService<CustomUserAccount>>().To<SamAuthenticationService<CustomUserAccount>>();
         }
     }
