@@ -156,5 +156,10 @@ namespace BrockAllen.MembershipReboot
             totalCount = query.Count();
             return result.Skip(skip).Take(count);
         }
+
+        public System.Collections.Generic.IEnumerable<string> GetRoleNames(string tenant)
+        {
+            return Queryable.Where(x => x.Tenant == tenant).Select(x => x.Name);
+        }
     }
 }

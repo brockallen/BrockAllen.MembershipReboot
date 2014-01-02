@@ -35,6 +35,16 @@ namespace BrockAllen.MembershipReboot
             return this.groupRepository.GetByID(groupID);
         }
 
+        public TGroup Get(string name)
+        {
+            return this.groupRepository.GetByName(DefaultTenant, name);
+        }
+        
+        public TGroup Get(string tenant, string name)
+        {
+            return this.groupRepository.GetByName(tenant, name);
+        }
+
         bool NameAlreadyExists(string tenant, string name)
         {
             var grp = this.groupRepository.GetByName(tenant, name);
