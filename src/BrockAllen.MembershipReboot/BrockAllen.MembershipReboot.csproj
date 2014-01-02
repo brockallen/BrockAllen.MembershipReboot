@@ -40,7 +40,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountService\AuthenticationPurpose.cs" />
     <Compile Include="AccountService\DebuggerEventHandler.cs" />
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountCommands.cs" />
