@@ -19,7 +19,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
 
         public ActionResult Index(string filter)
         {
-            var accounts = query.Query(userAccountService.Configuration.DefaultTenant, filter);
+            int count;
+            var accounts = query.Query(userAccountService.Configuration.DefaultTenant, filter, 0, 1000, out count);
+
             return View("Index", accounts.ToArray());
         }
 

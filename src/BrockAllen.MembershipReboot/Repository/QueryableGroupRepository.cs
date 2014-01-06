@@ -37,6 +37,14 @@ namespace BrockAllen.MembershipReboot
 
         public abstract System.Collections.Generic.IEnumerable<TGroup> GetByChildID(Guid childGroupID);
 
+        protected virtual IQueryable<TGroup> SortedQueryable
+        {
+            get
+            {
+                return Queryable.OrderBy(x => x.Tenant).ThenBy(x => x.Name);
+            }
+        }
+
         // IGroupQuery
         public System.Collections.Generic.IEnumerable<string> GetAllTenants()
         {
@@ -46,7 +54,7 @@ namespace BrockAllen.MembershipReboot
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string filter)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 select a;
 
             if (!String.IsNullOrWhiteSpace(filter))
@@ -74,7 +82,7 @@ namespace BrockAllen.MembershipReboot
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string tenant, string filter)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 where a.Tenant == tenant
                 select a;
 
@@ -102,7 +110,7 @@ namespace BrockAllen.MembershipReboot
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string filter, int skip, int count, out int totalCount)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 select a;
 
             if (!String.IsNullOrWhiteSpace(filter))
@@ -131,7 +139,7 @@ namespace BrockAllen.MembershipReboot
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 where a.Tenant == tenant
                 select a;
 

@@ -52,6 +52,14 @@ namespace BrockAllen.MembershipReboot
         public abstract TAccount GetByLinkedAccount(string tenant, string provider, string id);
         public abstract TAccount GetByCertificate(string tenant, string thumbprint);
 
+        protected virtual IQueryable<TAccount> SortedQueryable
+        {
+            get
+            {
+                return Queryable.OrderBy(x => x.Tenant).ThenBy(x => x.Username);
+            }
+        }
+
         // IUserAccountQuery
         public System.Collections.Generic.IEnumerable<string> GetAllTenants()
         {
@@ -61,7 +69,7 @@ namespace BrockAllen.MembershipReboot
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string filter)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 select a;
             
             if (!String.IsNullOrWhiteSpace(filter))
@@ -84,14 +92,14 @@ namespace BrockAllen.MembershipReboot
                     Username = a.Username,
                     Email = a.Email
                 };
-            
+
             return result;
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string tenant, string filter)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 where a.Tenant == tenant
                 select a;
             
@@ -121,7 +129,7 @@ namespace BrockAllen.MembershipReboot
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string filter, int skip, int count, out int totalCount)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 select a;
             
             if (!String.IsNullOrWhiteSpace(filter))
@@ -152,7 +160,7 @@ namespace BrockAllen.MembershipReboot
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
         {
             var query =
-                from a in Queryable
+                from a in SortedQueryable
                 where a.Tenant == tenant
                 select a;
 
