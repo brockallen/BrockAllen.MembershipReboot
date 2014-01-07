@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -84,6 +85,46 @@ namespace BrockAllen.MembershipReboot
         {
             if (account == null) throw new ArgumentException("account");
             return account.LastLogin == null;
+        }
+
+        public static IEnumerable<Claim> GetIdentificationClaims(this UserAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, account.ID.ToString("D")));
+            claims.Add(new Claim(ClaimTypes.Name, account.Username));
+            claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.Tenant, account.Tenant));
+            
+            return claims;
+        }
+
+        public static IEnumerable<Claim> GetAllClaims(this UserAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            var claims = new List<Claim>();
+            claims.AddRange(account.GetIdentificationClaims());
+
+            if (!String.IsNullOrWhiteSpace(account.Email))
+            {
+                claims.Add(new Claim(ClaimTypes.Email, account.Email));
+            }
+            if (!String.IsNullOrWhiteSpace(account.MobilePhoneNumber))
+            {
+                claims.Add(new Claim(ClaimTypes.MobilePhone, account.MobilePhoneNumber));
+            }
+
+            var x509 = from c in account.Certificates
+                       select new Claim(ClaimTypes.X500DistinguishedName, c.Subject);
+            claims.AddRange(x509);
+
+            var otherClaims =
+                (from uc in account.Claims
+                 select new Claim(uc.Type, uc.Value)).ToList();
+            claims.AddRange(otherClaims); 
+            
+            return claims;
         }
     }
 }

@@ -71,25 +71,8 @@ namespace BrockAllen.MembershipReboot
             }
 
             // gather claims
-            var claims = GetBasicClaims(account, method);
+            var claims = GetAllClaims(account, method);
             
-            // get the rest
-            if (!String.IsNullOrWhiteSpace(account.Email))
-            {
-                claims.Add(new Claim(ClaimTypes.Email, account.Email));
-            }
-            if (!String.IsNullOrWhiteSpace(account.MobilePhoneNumber))
-            {
-                claims.Add(new Claim(ClaimTypes.MobilePhone, account.MobilePhoneNumber));
-            }
-            var x509 = from c in account.Certificates
-                       select new Claim(ClaimTypes.X500DistinguishedName, c.Subject);
-            claims.AddRange(x509);
-            var otherClaims =
-                (from uc in account.Claims
-                 select new Claim(uc.Type, uc.Value)).ToList();
-            claims.AddRange(otherClaims);
-
             // get custom claims from properties
             var cmd = new MapClaimsFromAccount<TAccount> { Account = account };
             this.UserAccountService.ExecuteCommand(cmd);
@@ -119,9 +102,19 @@ namespace BrockAllen.MembershipReboot
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.AuthenticationMethod, method));
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, account.ID.ToString("D")));
-            claims.Add(new Claim(ClaimTypes.Name, account.Username));
-            claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.Tenant, account.Tenant));
+            claims.AddRange(account.GetIdentificationClaims());
+
+            return claims;
+        }
+        
+        private static List<Claim> GetAllClaims(TAccount account, string method)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.AuthenticationMethod, method));
+            claims.Add(new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("s")));
+            claims.AddRange(account.GetAllClaims());
 
             return claims;
         }
