@@ -180,7 +180,7 @@ namespace BrockAllen.MembershipReboot
             if (claims == null) throw new ArgumentNullException("claims");
 
             var user = GetCurentPrincipal();
-            if (user.Identity.IsAuthenticated)
+            if (user != null && user.Identity.IsAuthenticated)
             {
                 // already logged in, so use the current user's account
                 account = this.UserAccountService.GetByID(user.GetUserID());
