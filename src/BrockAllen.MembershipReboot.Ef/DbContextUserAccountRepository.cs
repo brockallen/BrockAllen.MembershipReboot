@@ -32,7 +32,7 @@ namespace BrockAllen.MembershipReboot.Ef
         {
             if (db == null)
             {
-                throw new ObjectDisposedException("DbContextRepository<T>");
+                throw new ObjectDisposedException("DbContextUserAccountRepository");
             }
         }
 
