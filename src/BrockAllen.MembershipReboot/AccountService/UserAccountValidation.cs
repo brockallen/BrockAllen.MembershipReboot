@@ -27,7 +27,7 @@ namespace BrockAllen.MembershipReboot
         public static readonly IValidator<TAccount> UsernameOnlyContainsLettersAndDigits =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
-                if (!value.All(x => Char.IsLetterOrDigit(x)) || value.All(x => Char.IsDigit(x)))
+                if (!value.All(x => Char.IsLetterOrDigit(x)))
                 {
                     Tracing.Verbose("[UserAccountValidation.UsernameOnlyContainsLettersAndDigits] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
