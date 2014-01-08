@@ -34,36 +34,5 @@ namespace BrockAllen.MembershipReboot
                 select claim.Value;
             return query.ToArray();
         }
-
-        public static Guid GetUserID(this IPrincipal p)
-        {
-            var cp = p as ClaimsPrincipal;
-            if (cp != null)
-            {
-                var id = cp.Claims.GetValue(ClaimTypes.NameIdentifier);
-                Guid g;
-                if (Guid.TryParse(id, out g))
-                {
-                    return g;
-                }
-            }
-            throw new Exception("Invalid NameIdentifier");
-        }
-
-        public static bool HasUserID(this IPrincipal p)
-        {
-            var cp = p as ClaimsPrincipal;
-            if (cp != null)
-            {
-                var id = cp.Claims.GetValue(ClaimTypes.NameIdentifier);
-                Guid g;
-                if (Guid.TryParse(id, out g))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
     }
 }

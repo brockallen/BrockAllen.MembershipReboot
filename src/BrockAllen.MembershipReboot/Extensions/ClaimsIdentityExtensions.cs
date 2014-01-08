@@ -9,9 +9,9 @@ using System.Security.Principal;
 
 namespace BrockAllen.MembershipReboot
 {
-    public static class ClaimsPrincipalExtensions
+    public static class ClaimsIdentityExtensions
     {
-        public static bool HasClaim(this ClaimsPrincipal user, string type)
+        public static bool HasClaim(this ClaimsIdentity user, string type)
         {
             if (user != null)
             {
@@ -20,33 +20,32 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        public static Guid GetUserID(this IPrincipal p)
+        public static Guid GetUserID(this ClaimsIdentity user)
         {
-            var cp = p as ClaimsPrincipal;
-            if (cp != null)
+            if (user == null) throw new ArgumentNullException("user");
+
+            var id = user.Claims.GetValue(ClaimTypes.NameIdentifier);
+            Guid g;
+            if (Guid.TryParse(id, out g))
             {
-                var id = cp.Claims.GetValue(ClaimTypes.NameIdentifier);
-                Guid g;
-                if (Guid.TryParse(id, out g))
-                {
-                    return g;
-                }
+                return g;
             }
+
             throw new Exception("Invalid NameIdentifier");
         }
 
-        public static bool HasUserID(this IPrincipal p)
+        public static bool HasUserID(this ClaimsIdentity user)
         {
-            var cp = p as ClaimsPrincipal;
-            if (cp != null)
+            if (user != null)
             {
-                var id = cp.Claims.GetValue(ClaimTypes.NameIdentifier);
+                var id = user.Claims.GetValue(ClaimTypes.NameIdentifier);
                 Guid g;
                 if (Guid.TryParse(id, out g))
                 {
                     return true;
                 }
             }
+            
             return false;
         }
     }
