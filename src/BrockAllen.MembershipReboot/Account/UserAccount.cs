@@ -16,7 +16,11 @@ namespace BrockAllen.MembershipReboot
         [StringLength(50)]
         [Required]
         public virtual string Tenant { get; protected internal set; }
-        [StringLength(100)]
+        
+        // If email address is being used as the username then this property
+        // should adhere to maximim length constraint for valid email addresses.
+        // See Dominic Sayers answer at SO: http://stackoverflow.com/a/574698/99240
+        [StringLength(254)]
         [Required]
         public virtual string Username { get; protected internal set; }
 
@@ -33,8 +37,10 @@ namespace BrockAllen.MembershipReboot
         public virtual DateTime? PasswordChanged { get; protected internal set; }
         public virtual bool RequiresPasswordReset { get; protected internal set; }
 
+        // Maximum length of a valid email address is 254 characters.
+        // See Dominic Sayers answer at SO: http://stackoverflow.com/a/574698/99240
         [EmailAddress]
-        [StringLength(100)]
+        [StringLength(254)]
         public virtual string Email { get; protected internal set; }
         public virtual bool IsAccountVerified { get; protected internal set; }
 
