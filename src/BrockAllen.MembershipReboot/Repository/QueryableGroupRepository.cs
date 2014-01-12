@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class QueryableGroupRepository<TGroup> : 
+    public abstract class QueryableGroupRepository<TGroup> :
         IGroupRepository<TGroup>,
         IGroupQuery
         where TGroup : Group
@@ -123,9 +123,9 @@ namespace BrockAllen.MembershipReboot
                     Tenant = a.Tenant,
                     Name = a.Name
                 };
-            
+
             totalCount = query.Count();
-            return result.Skip(skip).Take(count);
+            return result.OrderBy(a => a.Name).Skip(skip).Take(count);
         }
 
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
@@ -154,7 +154,7 @@ namespace BrockAllen.MembershipReboot
                 };
 
             totalCount = query.Count();
-            return result.Skip(skip).Take(count);
+            return result.OrderBy(a => a.Name).Skip(skip).Take(count);
         }
 
         public System.Collections.Generic.IEnumerable<string> GetRoleNames(string tenant)

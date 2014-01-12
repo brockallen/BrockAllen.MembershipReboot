@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace BrockAllen.MembershipReboot
 {
-    public abstract class QueryableUserAccountRepository<TAccount> : 
+    public abstract class QueryableUserAccountRepository<TAccount> :
         IUserAccountRepository<TAccount>,
         IUserAccountQuery
         where TAccount : UserAccount
@@ -63,18 +63,18 @@ namespace BrockAllen.MembershipReboot
             var query =
                 from a in Queryable
                 select a;
-            
+
             if (!String.IsNullOrWhiteSpace(filter))
             {
                 query =
                     from a in query
                     where
-                        a.Tenant.Contains(filter) || 
+                        a.Tenant.Contains(filter) ||
                         a.Username.Contains(filter) ||
                         a.Email.Contains(filter)
                     select a;
             }
-            
+
             var result =
                 from a in query
                 select new UserAccountQueryResult
@@ -84,7 +84,7 @@ namespace BrockAllen.MembershipReboot
                     Username = a.Username,
                     Email = a.Email
                 };
-            
+
             return result;
         }
 
@@ -94,7 +94,7 @@ namespace BrockAllen.MembershipReboot
                 from a in Queryable
                 where a.Tenant == tenant
                 select a;
-            
+
             if (!String.IsNullOrWhiteSpace(filter))
             {
                 query =
@@ -123,7 +123,7 @@ namespace BrockAllen.MembershipReboot
             var query =
                 from a in Queryable
                 select a;
-            
+
             if (!String.IsNullOrWhiteSpace(filter))
             {
                 query =
@@ -146,7 +146,7 @@ namespace BrockAllen.MembershipReboot
                 };
 
             totalCount = result.Count();
-            return result.Skip(skip).Take(count);
+            return result.OrderBy(a => a.Username).Skip(skip).Take(count);
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
@@ -177,7 +177,7 @@ namespace BrockAllen.MembershipReboot
                 };
 
             totalCount = result.Count();
-            return result.Skip(skip).Take(count);
+            return result.OrderBy(a => a.Username).Skip(skip).Take(count);
         }
     }
 }
