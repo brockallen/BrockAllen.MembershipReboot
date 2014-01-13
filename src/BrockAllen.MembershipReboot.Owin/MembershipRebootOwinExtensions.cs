@@ -21,7 +21,7 @@ namespace Owin
             where TAccount : UserAccount
         {
             app.Use<MembershipRebootMiddleware<TAccount>>(userAccountServiceFactory, authenticationServiceFactory);
-            app.UseMembershipRebootCookieAuthentication();
+            app.UseMembershipReboot();
         }
 
         public static void UseMembershipReboot<TAccount>(
@@ -33,10 +33,10 @@ namespace Owin
             where TAccount : UserAccount
         {
             app.Use<MembershipRebootMiddleware<TAccount>>(userAccountServiceFactory, authenticationServiceFactory);
-            app.UseMembershipRebootCookieAuthentication(cookieOptions);
+            app.UseMembershipReboot(cookieOptions);
         }
 
-        public static void UseMembershipRebootCookieAuthentication(this IAppBuilder app)
+        public static void UseMembershipReboot(this IAppBuilder app)
         {
             var opts = new CookieAuthenticationOptions
             {
@@ -47,22 +47,17 @@ namespace Owin
             app.UseCookieAuthentication(opts);
         }
         
-        public static void UseMembershipRebootCookieAuthentication(this IAppBuilder app, CookieAuthenticationOptions cookieOptions)
+        public static void UseMembershipReboot(this IAppBuilder app, CookieAuthenticationOptions cookieOptions)
         {
             app.UseCookieAuthentication(cookieOptions);
-            app.UseMembershipRebootTwoFactorAuthentication(cookieOptions.CookieSecure);
-        }
-        
-        public static void UseMembershipRebootTwoFactorAuthentication(this IAppBuilder app, CookieSecureOption secure = CookieSecureOption.SameAsRequest)
-        {
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Passive,
                 AuthenticationType = MembershipRebootOwinConstants.AuthenticationTwoFactorType,
-                CookieSecure = secure
+                CookieSecure = cookieOptions.CookieSecure
             });
         }
-
+        
         public static void SetUserAccountService<TAccount>(this IDictionary<string, object> env, Func<UserAccountService<TAccount>> func)
             where TAccount : UserAccount
         {
