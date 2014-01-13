@@ -4,16 +4,17 @@
  */
 
 using Microsoft.Owin;
+using Owin;
 using System.Collections.Generic;
 
 namespace BrockAllen.MembershipReboot.Owin
 {
     public class OwinApplicationInformation : RelativePathApplicationInformation
     {
-        IOwinContext owinContext;
+        IAppBuilder app;
 
         public OwinApplicationInformation(
-            IDictionary<string, object> env,
+            IAppBuilder app,
             string appName,
             string emailSig,
             string relativeLoginUrl,
@@ -21,7 +22,15 @@ namespace BrockAllen.MembershipReboot.Owin
             string relativeCancelNewAccountUrl,
             string relativeConfirmPasswordResetUrl)
         {
-            this.owinContext = new OwinContext(env);
+            this.app = app;
+            app.Use((ctx, next) =>
+            {
+                if (!this.HasBaseUrl)
+                {
+                    this.SetBaseUrl(GetApplicationBaseUrl(ctx));
+                }
+                return next();
+            });
             this.ApplicationName = appName;
             this.EmailSignature = emailSig;
             this.RelativeLoginUrl = relativeLoginUrl;
@@ -30,7 +39,7 @@ namespace BrockAllen.MembershipReboot.Owin
             this.RelativeConfirmChangeEmailUrl = relativeConfirmChangeEmailUrl;
         }
 
-        protected override string GetApplicationBaseUrl()
+        string GetApplicationBaseUrl(IOwinContext owinContext)
         {
             var tmp = owinContext.Request.Scheme + "://" + owinContext.Request.Host;
             if (owinContext.Request.PathBase.HasValue)
@@ -45,6 +54,7 @@ namespace BrockAllen.MembershipReboot.Owin
             {
                 tmp += "/";
             }
+            if (!tmp.EndsWith("/")) tmp += "/"; 
             return tmp;
         }
     }

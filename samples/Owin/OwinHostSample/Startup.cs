@@ -30,22 +30,23 @@ namespace OwinHostSample
             {
                 AuthenticationType = MembershipRebootOwinConstants.AuthenticationType
             };
+
+            var appInfo = new OwinApplicationInformation(
+                app,
+                "Test",
+                "Test Email Signature",
+                "/Login",
+                "/Register/Confirm/",
+                "/Register/Cancel/",
+                "/PasswordReset/Confirm/");
+
+            var config = new MembershipRebootConfiguration();
+            var emailFormatter = new EmailMessageFormatter(appInfo);
+            // uncomment if you want email notifications -- also update smtp settings in web.config
+            config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
+
             Func<IDictionary<string, object>, UserAccountService> uaFunc = env =>
             {
-                var appInfo = new OwinApplicationInformation(
-                    env,
-                    "Test",
-                    "Test Email Signature",
-                    "/Login",
-                    "/Register/Confirm/",
-                    "/Register/Cancel/",
-                    "/PasswordReset/Confirm/");
-
-                var config = new MembershipRebootConfiguration();
-                var emailFormatter = new EmailMessageFormatter(appInfo);
-                // uncomment if you want email notifications -- also update smtp settings in web.config
-                config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
-
                 var svc = new UserAccountService(config, new DefaultUserAccountRepository());
                 var debugging = false;
 #if DEBUG
