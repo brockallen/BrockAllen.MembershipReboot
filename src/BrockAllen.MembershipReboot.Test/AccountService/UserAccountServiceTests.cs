@@ -539,6 +539,21 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CancelVerification_EmptyKey_FailsValidation()
+        {
+            try
+            {
+                subject.CancelVerification(null);
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.InvalidKey, ex.Message);
+            }
+        }
+
+
+        [TestMethod]
         public void DeleteAccount_DeletesAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
