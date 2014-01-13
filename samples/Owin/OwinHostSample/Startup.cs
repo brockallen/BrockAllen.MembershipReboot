@@ -1,4 +1,5 @@
-﻿using BrockAllen.MembershipReboot;
+﻿using Autofac;
+using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Ef;
 using BrockAllen.MembershipReboot.Owin;
 using Microsoft.Owin;
@@ -45,22 +46,49 @@ namespace OwinHostSample
             // uncomment if you want email notifications -- also update smtp settings in web.config
             config.AddEventHandler(new EmailAccountEventsHandler(emailFormatter));
 
-            Func<IDictionary<string, object>, UserAccountService> uaFunc = env =>
+            var builder = new ContainerBuilder();
+            
+            builder.RegisterInstance(config).As<MembershipRebootConfiguration>();
+            
+            builder.RegisterType<DefaultUserAccountRepository>()
+                .As<IUserAccountRepository>()
+                .As<IUserAccountQuery>()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<UserAccountService>().OnActivating(e =>
             {
-                var svc = new UserAccountService(config, new DefaultUserAccountRepository());
+                var owin = e.Context.Resolve<IOwinContext>();
                 var debugging = false;
-#if DEBUG
-                debugging = true;
-#endif
-                svc.ConfigureTwoFactorAuthenticationCookies(env, debugging);
-                return svc;
-            };
-            Func<IDictionary<string, object>, AuthenticationService> authFunc = env =>
+                #if DEBUG
+                    debugging = true;
+                #endif
+                e.Instance.ConfigureTwoFactorAuthenticationCookies(owin.Environment, debugging);
+            })
+            .AsSelf()
+            .InstancePerLifetimeScope();
+            
+            builder.Register(ctx =>
             {
-                return new OwinAuthenticationService(cookieOptions.AuthenticationType, uaFunc(env), env);
-            };
-
-            app.UseMembershipReboot(cookieOptions, uaFunc, authFunc);
+                var owin = ctx.Resolve<IOwinContext>();
+                return new OwinAuthenticationService(cookieOptions.AuthenticationType, ctx.Resolve<UserAccountService>(), owin.Environment);
+            })
+            .As<AuthenticationService>()
+            .InstancePerLifetimeScope();
+            
+            var container = builder.Build();
+            app.Use(async (ctx, next) =>
+            {
+                using (var scope = container.BeginLifetimeScope(b =>
+                {
+                    b.RegisterInstance(ctx).As<IOwinContext>();
+                }))
+                {
+                    ctx.Environment.SetUserAccountService(()=>scope.Resolve<UserAccountService>());
+                    ctx.Environment.SetAuthenticationService(() =>scope.Resolve<AuthenticationService>());
+                    await next();
+                }
+            });
+            app.UseMembershipReboot(cookieOptions);
         }
     }
 }
