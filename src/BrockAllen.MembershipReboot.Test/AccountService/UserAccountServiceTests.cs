@@ -5,6 +5,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Reflection;
@@ -20,6 +21,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         MembershipRebootConfiguration configuration;
         public string LastVerificationKey { get; set; }
         public string LastMobileCode { get; set; }
+        public IEvent LastEvent { get; set; }
 
         int oldIterations;
         [TestInitialize]
@@ -49,26 +51,31 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             public void Handle(PasswordResetRequestedEvent<UserAccount> evt)
             {
+                instance.LastEvent = evt;
                 instance.LastVerificationKey = evt.VerificationKey;
             }
 
             public void Handle(EmailChangeRequestedEvent<UserAccount> evt)
             {
+                instance.LastEvent = evt;
                 instance.LastVerificationKey = evt.VerificationKey;
             }
 
             public void Handle(MobilePhoneChangeRequestedEvent<UserAccount> evt)
             {
+                instance.LastEvent = evt;
                 instance.LastMobileCode = evt.Code;
             }
 
             public void Handle(TwoFactorAuthenticationCodeNotificationEvent<UserAccount> evt)
             {
+                instance.LastEvent = evt;
                 instance.LastMobileCode = evt.Code;
             }
 
             public void Handle(AccountCreatedEvent<UserAccount> evt)
             {
+                instance.LastEvent = evt;
                 instance.LastVerificationKey = evt.VerificationKey;
             }
         }
@@ -1538,8 +1545,63 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.IsNull(subject.GetByLinkedAccount("google", "123"));
         }
 
+        [TestMethod]
+        public void RequestAccountVerification_InvalidID_Throws()
+        {
+            try
+            {
+                subject.RequestAccountVerification(Guid.Empty);
+                Assert.Fail();
+            }
+            catch(Exception ex)
+            {
+                Assert.AreSame("Invalid Account ID", ex.Message);
+            }
+        }
 
+        [TestMethod]
+        public void RequestAccountVerification_RaisesEmailChangeRequestedEvent()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.RequestAccountVerification(acct.ID);
+            Assert.IsTrue(LastEvent is EmailChangeRequestedEvent<UserAccount>);
+            var evt = LastEvent as EmailChangeRequestedEvent<UserAccount>;
+            Assert.AreEqual(evt.Account.ID, acct.ID);
+        }
 
+        [TestMethod]
+        public void RequestAccountVerification_EmptyEmail_FailsValidation()
+        {
+            subject.Configuration.RequireAccountVerification = false;
+            var acct = subject.CreateAccount("test", "pass", null);
+
+            try
+            {
+                subject.RequestAccountVerification(acct.ID);
+                Assert.Fail();
+            }
+            catch(ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailRequired, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void RequestAccountVerification_AccountVerified_Validation()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+
+            try
+            {
+                subject.RequestAccountVerification(acct.ID);
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.AccountAlreadyVerified, ex.Message);
+            }
+        }
 
     }
 }
