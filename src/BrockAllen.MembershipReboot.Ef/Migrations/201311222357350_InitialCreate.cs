@@ -41,8 +41,8 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
                     {
                         ID = c.Guid(nullable: false),
                         Tenant = c.String(nullable: false, maxLength: 50),
-                        Username = c.String(nullable: false, maxLength: 100),
-                        Email = c.String(nullable: false, maxLength: 100),
+                        Username = c.String(nullable: false, maxLength: 254),
+                        Email = c.String(nullable: false, maxLength: 254),
                         Created = c.DateTime(nullable: false),
                         LastUpdated = c.DateTime(nullable: false),
                         PasswordChanged = c.DateTime(nullable: false),
