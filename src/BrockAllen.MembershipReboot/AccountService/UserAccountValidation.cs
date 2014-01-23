@@ -19,7 +19,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.UsernameDoesNotContainAtSign] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult(service.GetValidationMessage("UsernameCannotContainAtSign"));
+                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameCannotContainAtSign));
                 }
                 return null;
             });
@@ -31,7 +31,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.UsernameOnlyContainsLettersAndDigits] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult(service.GetValidationMessage("UsernameOnlyContainLettersAndDigits"));
+                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameOnlyContainLettersAndDigits));
                 }
                 return null;
             });
@@ -43,7 +43,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult(service.GetValidationMessage("UsernameAlreadyInUse"));
+                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameAlreadyInUse));
                 }
                 return null;
             });
@@ -56,7 +56,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailRequired] validation failed: {0}, {1}", account.Tenant, account.Username);
 
-                    return new ValidationResult(service.GetValidationMessage("EmailRequired"));
+                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.EmailRequired));
                 }
                 return null;
             });
@@ -71,7 +71,7 @@ namespace BrockAllen.MembershipReboot
                     {
                         Tracing.Verbose("[UserAccountValidation.EmailIsValidFormat] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                        return new ValidationResult(service.GetValidationMessage("InvalidEmail"));
+                        return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidEmail));
                     }
                 }
                 return null;
@@ -82,7 +82,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (service.Configuration.RequireAccountVerification && String.IsNullOrWhiteSpace(value))
                 {
-                    return new ValidationResult(service.GetValidationMessage("EmailRequired"));
+                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.EmailRequired));
                 }
                 return null;
             });
@@ -94,7 +94,7 @@ namespace BrockAllen.MembershipReboot
                 {
                     Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult(service.GetValidationMessage("EmailAlreadyInUse"));
+                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.EmailAlreadyInUse));
                 }
                 return null;
             });
@@ -108,7 +108,7 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Verbose("[UserAccountValidation.PasswordMustBeDifferentThanCurrent] validation failed: {0}, {1}", account.Tenant, account.Username);
 
-                return new ValidationResult(service.GetValidationMessage("NewPasswordMustBeDifferent"));
+                return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.NewPasswordMustBeDifferent));
             }
             return null;
         });

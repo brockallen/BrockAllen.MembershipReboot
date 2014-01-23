@@ -34,12 +34,12 @@ namespace BrockAllen.MembershipReboot
         {
             if (String.IsNullOrWhiteSpace(value))
             {
-                return new ValidationResult(Resources.ValidationMessages.PasswordRequired);
+                return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordRequired));
             }
             
             if (value.Length < this.MinimumLength)
             {
-                return new ValidationResult(String.Format(Resources.ValidationMessages.PasswordLength, this.MinimumLength));
+                return new ValidationResult(String.Format(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordLength), this.MinimumLength));
             }
 
             var upper = value.Any(x => Char.IsUpper(x));
@@ -51,7 +51,7 @@ namespace BrockAllen.MembershipReboot
             var matches = vals.Where(x => x).Count();
             if (matches < this.MinimumNumberOfComplexityRules)
             {
-                return new ValidationResult(String.Format(Resources.ValidationMessages.PasswordComplexityRules, this.MinimumNumberOfComplexityRules));
+                return new ValidationResult(String.Format(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordComplexityRules), this.MinimumNumberOfComplexityRules));
             }
 
             return null;

@@ -433,13 +433,13 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(username))
             {
                 Tracing.Error("[UserAccountService.Init] failed -- no username");
-                throw new ValidationException(GetValidationMessage("UsernameRequired"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameRequired));
             }
 
             if (password != null && String.IsNullOrWhiteSpace(password.Trim()))
             {
                 Tracing.Error("[UserAccountService.Init] failed -- no password");
-                throw new ValidationException(GetValidationMessage("PasswordRequired"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordRequired));
             }
 
             if (account.ID != Guid.Empty)
@@ -488,13 +488,13 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(account.Email))
             {
                 Tracing.Error("[UserAccountService.RequestAccountVerification] email empty");
-                throw new ValidationException(GetValidationMessage("EmailRequired"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.EmailRequired));
             }
 
             if (account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccountService.RequestAccountVerification] account already verified");
-                throw new ValidationException(GetValidationMessage("AccountAlreadyVerified"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountAlreadyVerified));
             }
 
             Tracing.Verbose("[UserAccountService.RequestAccountVerification] creating a new verification key");
@@ -519,27 +519,27 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(key))
             {
                 Tracing.Error("[UserAccountService.CancelVerification] failed -- key null");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             var account = this.GetByVerificationKey(key);
             if (account == null)
             {
                 Tracing.Error("[UserAccountService.CancelVerification] failed -- account not found from key");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             if (account.VerificationPurpose == null)
             {
                 Tracing.Error("[UserAccountService.CancelVerification] failed -- no purpose");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             var result = Configuration.Crypto.VerifyHash(key, account.VerificationKey);
             if (!result)
             {
                 Tracing.Error("[UserAccountService.CancelVerification] failed -- key verification failed");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             if (account.VerificationPurpose == VerificationKeyPurpose.ChangeEmail &&
@@ -630,13 +630,13 @@ namespace BrockAllen.MembershipReboot
             if (account == null)
             {
                 Tracing.Error("[UserAccountService.ReopenAccount] invalid account");
-                throw new ValidationException(GetValidationMessage("InvalidUsername"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidUsername));
             }
 
             if (!VerifyPassword(account, password))
             {
                 Tracing.Error("[UserAccountService.ReopenAccount] invalid password");
-                throw new ValidationException(GetValidationMessage("InvalidPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
             }
 
             ReopenAccount(account);
@@ -665,7 +665,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(account.Email))
             {
                 Tracing.Error("[UserAccountService.ReopenAccount] no email to confirm reopen request");
-                throw new ValidationException(GetValidationMessage("ReopenErrorNoEmail"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.ReopenErrorNoEmail));
             }
 
             // this will require the user to confirm via email before logging in
@@ -1161,7 +1161,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newPassword))
             {
                 Tracing.Error("[UserAccountService.SetPassword] failed -- null newPassword");
-                throw new ValidationException(GetValidationMessage("InvalidNewPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidNewPassword));
             }
 
             var account = this.GetByID(accountID);
@@ -1182,12 +1182,12 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(oldPassword))
             {
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- null oldPassword");
-                throw new ValidationException(GetValidationMessage("InvalidOldPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidOldPassword));
             }
             if (String.IsNullOrWhiteSpace(newPassword))
             {
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- null newPassword");
-                throw new ValidationException(GetValidationMessage("InvalidNewPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidNewPassword));
             }
 
             var account = this.GetByID(accountID);
@@ -1198,7 +1198,7 @@ namespace BrockAllen.MembershipReboot
             if (!VerifyPassword(account, oldPassword))
             {
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- failed authN");
-                throw new ValidationException(GetValidationMessage("InvalidOldPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidOldPassword));
             }
 
             Tracing.Verbose("[UserAccountService.ChangePassword] success");
@@ -1234,21 +1234,21 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant))
             {
                 Tracing.Error("[UserAccountService.ResetPassword] failed -- null tenant");
-                throw new ValidationException(GetValidationMessage("InvalidTenant"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidTenant));
             }
             if (String.IsNullOrWhiteSpace(email))
             {
                 Tracing.Error("[UserAccountService.ResetPassword] failed -- null email");
-                throw new ValidationException(GetValidationMessage("InvalidEmail"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidEmail));
             }
 
             var account = this.GetByEmail(tenant, email);
-            if (account == null) throw new ValidationException(GetValidationMessage("InvalidEmail"));
+            if (account == null) throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidEmail));
 
             if (account.PasswordResetSecrets.Any())
             {
                 Tracing.Error("[UserAccountService.ResetPassword] failed -- account configured for secret question/answer");
-                throw new ValidationException(GetValidationMessage("AccountPasswordResetRequiresSecretQuestion"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountPasswordResetRequiresSecretQuestion));
             }
 
             Tracing.Verbose("[UserAccountService.ResetPassword] success");
@@ -1307,17 +1307,17 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null oldPassword");
-                throw new ValidationException(GetValidationMessage("InvalidPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
             }
             if (String.IsNullOrWhiteSpace(question))
             {
                 Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null question");
-                throw new ValidationException(GetValidationMessage("SecretQuestionRequired"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.SecretQuestionRequired));
             }
             if (String.IsNullOrWhiteSpace(answer))
             {
                 Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null answer");
-                throw new ValidationException(GetValidationMessage("SecretAnswerRequired"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.SecretAnswerRequired));
             }
 
             var account = this.GetByID(accountID);
@@ -1326,13 +1326,13 @@ namespace BrockAllen.MembershipReboot
             if (!VerifyPassword(account, password))
             {
                 Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- failed authN");
-                throw new ValidationException(GetValidationMessage("InvalidPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
             }
 
             if (account.PasswordResetSecrets.Any(x => x.Question == question))
             {
                 Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- question already exists");
-                throw new ValidationException(GetValidationMessage("SecretQuestionAlreadyInUse"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.SecretQuestionAlreadyInUse));
             }
 
             Tracing.Verbose("[UserAccountService.AddPasswordResetSecret] success");
@@ -1377,7 +1377,7 @@ namespace BrockAllen.MembershipReboot
             if (answers == null || answers.Length == 0 || answers.Any(x => String.IsNullOrWhiteSpace(x.Answer)))
             {
                 Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- no answers");
-                throw new ValidationException(GetValidationMessage("SecretAnswerRequired"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.SecretAnswerRequired));
             }
 
             var account = this.GetByID(accountID);
@@ -1390,13 +1390,13 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(account.Email))
             {
                 Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] no email to use for password reset");
-                throw new ValidationException(GetValidationMessage("PasswordResetErrorNoEmail"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordResetErrorNoEmail));
             }
 
             if (!account.PasswordResetSecrets.Any())
             {
                 Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- account not configured for secret question/answer");
-                throw new ValidationException(GetValidationMessage("AccountNotConfiguredWithSecretQuestion"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotConfiguredWithSecretQuestion));
             }
 
             if (account.FailedPasswordResetCount >= Configuration.AccountLockoutFailedLoginAttempts &&
@@ -1409,7 +1409,7 @@ namespace BrockAllen.MembershipReboot
                 Update(account);
 
                 Tracing.Error("[UserAccountService.ResetPasswordFromSecretQuestionAndAnswer] failed -- too many failed password reset attempts");
-                throw new ValidationException(GetValidationMessage("InvalidQuestionOrAnswer"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidQuestionOrAnswer));
             }
 
             var secrets = account.PasswordResetSecrets.ToArray();
@@ -1451,7 +1451,7 @@ namespace BrockAllen.MembershipReboot
 
             if (failed)
             {
-                throw new ValidationException(GetValidationMessage("InvalidQuestionOrAnswer"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidQuestionOrAnswer));
             }
         }
 
@@ -1478,16 +1478,16 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(email))
             {
                 Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- null email");
-                throw new ValidationException(GetValidationMessage("InvalidEmail"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidEmail));
             }
 
             var account = this.GetByEmail(tenant, email);
-            if (account == null) throw new ValidationException(GetValidationMessage("InvalidEmail"));
+            if (account == null) throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidEmail));
 
             if (!account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- account not verified");
-                throw new ValidationException(GetValidationMessage("AccountNotVerified"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotVerified));
             }
 
             Tracing.Verbose("[UserAccountService.SendUsernameReminder] success");
@@ -1510,7 +1510,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newUsername))
             {
                 Tracing.Error("[UserAccountService.ChangeUsername] failed -- null newUsername");
-                throw new ValidationException(GetValidationMessage("InvalidUsername"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidUsername));
             }
 
             var account = this.GetByID(accountID);
@@ -1584,14 +1584,14 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- null key");
                 account = null;
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             account = this.GetByVerificationKey(key);
             if (account == null)
             {
                 Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- invalid key");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             Tracing.Information("[UserAccountService.VerifyEmailFromKey] account located: id: {0}", account.ID);
@@ -1600,25 +1600,25 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- null password");
                 account = null;
-                throw new ValidationException(GetValidationMessage("InvalidPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
             }
 
             if (!IsVerificationKeyValid(account, VerificationKeyPurpose.ChangeEmail, key))
             {
                 Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- key verification failed");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             if (account.HasPassword() && !VerifyPassword(account, password))
             {
                 Tracing.Error("[UserAccountService.VerifyEmailFromKey] failed -- authN failed");
-                throw new ValidationException(GetValidationMessage("InvalidPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
             }
 
             if (String.IsNullOrWhiteSpace(account.VerificationStorage))
             {
                 Tracing.Verbose("[UserAccountService.VerifyEmailFromKey] failed -- verification storage empty");
-                throw new ValidationException(GetValidationMessage("InvalidKey"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
             }
 
             // one last check
@@ -1683,7 +1683,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(newMobilePhoneNumber))
             {
                 Tracing.Error("[UserAccountService.ChangeMobilePhoneRequest] failed -- null newMobilePhoneNumber");
-                throw new ValidationException(GetValidationMessage("InvalidPhone"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPhone));
             }
 
             var account = this.GetByID(accountID);
@@ -1692,13 +1692,13 @@ namespace BrockAllen.MembershipReboot
             if (account.MobilePhoneNumber == newMobilePhoneNumber)
             {
                 Tracing.Error("[UserAccountService.RequestChangeMobilePhoneNumber] mobile phone same as current");
-                throw new ValidationException(GetValidationMessage("MobilePhoneMustBeDifferent"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.MobilePhoneMustBeDifferent));
             }
 
             if (MobilePhoneExistsOtherThan(account, newMobilePhoneNumber))
             {
                 Tracing.Verbose("[UserAccountValidation.ChangeMobilePhoneFromCode] failed -- number already in use");
-                throw new ValidationException(GetValidationMessage("MobilePhoneAlreadyInUse"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.MobilePhoneAlreadyInUse));
             }
 
             if (!IsVerificationPurposeValid(account, VerificationKeyPurpose.ChangeMobile) ||
@@ -1730,7 +1730,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(code))
             {
                 Tracing.Error("[UserAccountService.ChangeMobileFromCode] failed -- null code");
-                throw new ValidationException(GetValidationMessage("CodeRequired"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.CodeRequired));
             }
 
             var account = this.GetByID(accountID);
@@ -1754,7 +1754,7 @@ namespace BrockAllen.MembershipReboot
             if (MobilePhoneExistsOtherThan(account, newMobile))
             {
                 Tracing.Verbose("[UserAccountValidation.ChangeMobilePhoneFromCode] failed -- number already in use");
-                throw new ValidationException(GetValidationMessage("MobilePhoneAlreadyInUse"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.MobilePhoneAlreadyInUse));
             }
 
             Tracing.Verbose("[UserAccountService.ConfirmMobilePhoneNumberFromCode] success");
@@ -1893,7 +1893,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(password))
             {
                 Tracing.Error("[UserAccountService.SetPassword] failed -- no password provided");
-                throw new ValidationException(GetValidationMessage("InvalidPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
             }
 
             Tracing.Verbose("[UserAccountService.SetPassword] setting new password hash");
@@ -1914,7 +1914,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(account.Email))
             {
                 Tracing.Error("[UserAccountService.ResetPassword] no email to use for password reset");
-                throw new ValidationException(GetValidationMessage("PasswordResetErrorNoEmail"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordResetErrorNoEmail));
             }
 
             if (!account.IsAccountVerified)
@@ -2067,14 +2067,14 @@ namespace BrockAllen.MembershipReboot
                 String.IsNullOrWhiteSpace(account.MobilePhoneNumber))
             {
                 Tracing.Error("[UserAccountService.ConfigureTwoFactorAuthentication] failed -- mobile requested but no mobile phone for account");
-                throw new ValidationException(GetValidationMessage("RegisterMobileForTwoFactor"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.RegisterMobileForTwoFactor));
             }
 
             if (mode == TwoFactorAuthMode.Certificate &&
                 !account.Certificates.Any())
             {
                 Tracing.Error("[UserAccountService.ConfigureTwoFactorAuthentication] failed -- certificate requested but no certificates for account");
-                throw new ValidationException(GetValidationMessage("AddClientCertForTwoFactor"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AddClientCertForTwoFactor));
             }
 
             ClearMobileAuthCode(account);
@@ -2381,7 +2381,7 @@ namespace BrockAllen.MembershipReboot
             {
                 // can't remove last linked account if no password
                 Tracing.Error("[UserAccountService.RemoveLinkedAccount] no password on account -- can't remove last provider");
-                throw new ValidationException(GetValidationMessage("CantRemoveLastLinkedAccountIfNoPassword"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.CantRemoveLastLinkedAccountIfNoPassword));
             }
 
             if (linked != null)
@@ -2455,7 +2455,7 @@ namespace BrockAllen.MembershipReboot
             if (!certificate.Validate())
             {
                 Tracing.Error("[UserAccountService.AddCertificate] failed -- cert failed to validate");
-                throw new ValidationException(GetValidationMessage("InvalidCertificate"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidCertificate));
             }
 
             RemoveCertificate(account, certificate);

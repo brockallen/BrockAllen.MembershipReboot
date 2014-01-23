@@ -49,5 +49,55 @@ namespace BrockAllen.MembershipReboot
             internal const int MinimumLength = 10;
             internal const int NumberOfComplexityRules = 3;
         }
+
+        public static class ValidationMessages
+        {
+            public const string AccountAlreadyVerified = "AccountAlreadyVerified";
+            public const string AccountCreateFailNoEmailFromIdp = "AccountCreateFailNoEmailFromIdp";
+            public const string AccountNotConfiguredWithSecretQuestion = "AccountNotConfiguredWithSecretQuestion";
+            public const string AccountNotVerified = "AccountNotVerified";
+            public const string AccountPasswordResetRequiresSecretQuestion = "AccountPasswordResetRequiresSecretQuestion";
+            public const string AddClientCertForTwoFactor = "AddClientCertForTwoFactor";
+            public const string CantRemoveLastLinkedAccountIfNoPassword = "CantRemoveLastLinkedAccountIfNoPassword";
+            public const string CertificateAlreadyInUse = "CertificateAlreadyInUse";
+            public const string CodeRequired = "CodeRequired";
+            public const string EmailAlreadyInUse = "EmailAlreadyInUse";
+            public const string EmailRequired = "EmailRequired";
+            public const string InvalidCertificate = "InvalidCertificate";
+            public const string InvalidEmail = "InvalidEmail";
+            public const string InvalidKey = "InvalidKey";
+            public const string InvalidName = "InvalidName";
+            public const string InvalidNewPassword = "InvalidNewPassword";
+            public const string InvalidOldPassword = "InvalidOldPassword";
+            public const string InvalidPassword = "InvalidPassword";
+            public const string InvalidPhone = "InvalidPhone";
+            public const string InvalidQuestionOrAnswer = "InvalidQuestionOrAnswer";
+            public const string InvalidTenant = "InvalidTenant";
+            public const string InvalidUsername = "InvalidUsername";
+            public const string LoginFailEmailAlreadyAssociated = "LoginFailEmailAlreadyAssociated";
+            public const string LoginNotAllowed = "LoginNotAllowed";
+            public const string MobilePhoneAlreadyInUse = "MobilePhoneAlreadyInUse";
+            public const string MobilePhoneMustBeDifferent = "MobilePhoneMustBeDifferent";
+            public const string MobilePhoneRequired = "MobilePhoneRequired";
+            public const string NameAlreadyInUse = "NameAlreadyInUse";
+            public const string NameRequired = "NameRequired";
+            public const string NewPasswordMustBeDifferent = "NewPasswordMustBeDifferent";
+            public const string ParentGroupAlreadyChild = "ParentGroupAlreadyChild";
+            public const string ParentGroupSameAsChild = "ParentGroupSameAsChild";
+            public const string PasswordComplexityRules = "PasswordComplexityRules";
+            public const string PasswordLength = "PasswordLength";
+            public const string PasswordRequired = "PasswordRequired";
+            public const string PasswordResetErrorNoEmail = "PasswordResetErrorNoEmail";
+            public const string RegisterMobileForTwoFactor = "RegisterMobileForTwoFactor";
+            public const string ReopenErrorNoEmail = "ReopenErrorNoEmail";
+            public const string SecretAnswerRequired = "SecretAnswerRequired";
+            public const string SecretQuestionAlreadyInUse = "SecretQuestionAlreadyInUse";
+            public const string SecretQuestionRequired = "SecretQuestionRequired";
+            public const string TenantRequired = "TenantRequired";
+            public const string UsernameAlreadyInUse = "UsernameAlreadyInUse";
+            public const string UsernameCannotContainAtSign = "UsernameCannotContainAtSign";
+            public const string UsernameOnlyContainLettersAndDigits = "UsernameOnlyContainLettersAndDigits";
+            public const string UsernameRequired = "UsernameRequired";
+        }
     }
 }

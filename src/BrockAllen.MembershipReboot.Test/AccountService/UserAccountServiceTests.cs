@@ -1670,6 +1670,28 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
         }
 
+        [TestMethod]
+        public void CustomValidationMessages_Used()
+        {
+            configuration.AddCommandHandler(delegate(GetValidationMessage cmd)
+            {
+                if (cmd.ID == MembershipRebootConstants.ValidationMessages.UsernameRequired)
+                {
+                    cmd.Message = "name required test";
+                }
+            });
+
+            try
+            {
+                subject.CreateAccount(null, "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreSame("name required test", ex.Message);
+            }
+
+        }
 
     }
 }

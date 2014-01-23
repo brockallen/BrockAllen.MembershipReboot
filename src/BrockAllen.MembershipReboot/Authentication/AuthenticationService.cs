@@ -53,12 +53,12 @@ namespace BrockAllen.MembershipReboot
 
             if (!account.IsLoginAllowed || account.IsAccountClosed)
             {
-                throw new ValidationException(UserAccountService.GetValidationMessage("LoginNotAllowed"));
+                throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.LoginNotAllowed));
             }
 
             if (!account.IsAccountVerified && UserAccountService.Configuration.RequireAccountVerification)
             {
-                throw new ValidationException(UserAccountService.GetValidationMessage("AccountNotVerified"));
+                throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotVerified));
             }
 
             if (account.RequiresTwoFactorAuthToSignIn() || 
@@ -196,7 +196,7 @@ namespace BrockAllen.MembershipReboot
                     var email = claims.GetValue(ClaimTypes.Email);
                     if (String.IsNullOrWhiteSpace(email))
                     {
-                        throw new ValidationException(UserAccountService.GetValidationMessage("AccountCreateFailNoEmailFromIdp"));
+                        throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountCreateFailNoEmailFromIdp));
                     }
 
                     // guess at a name to use
@@ -214,7 +214,7 @@ namespace BrockAllen.MembershipReboot
                     // check to see if email already exists
                     if (this.UserAccountService.EmailExists(tenant, email))
                     {
-                        throw new ValidationException(UserAccountService.GetValidationMessage("LoginFailEmailAlreadyAssociated"));
+                        throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.LoginFailEmailAlreadyAssociated));
                     }
 
                     // auto-gen a password, they can always reset it later if they want to use the password feature
