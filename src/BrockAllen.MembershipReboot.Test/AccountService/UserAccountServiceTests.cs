@@ -374,7 +374,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.PasswordRequired, ex.Message);
             }
         }
-        
+
         [TestMethod]
         public void CreateAccount_WhitespaceUsername_FailsValidation()
         {
@@ -388,6 +388,38 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.UsernameRequired, ex.Message);
             }
         }
+
+        [TestMethod]
+        public void CreateAccount_CanPassID_UsesID()
+        {
+            var id = Guid.NewGuid();
+            var acct = subject.CreateAccount("user", "pass", "test@test.com", id);
+            Assert.AreEqual(id, acct.ID);
+        }
+
+        [TestMethod]
+        public void CreateAccount_CanPassCreatedDate_UsesCreatedDate()
+        {
+            var created = DateTime.Now;
+            var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);
+            Assert.AreEqual(created, acct.Created);
+        }
+        [TestMethod]
+        public void CreateAccount_FutureCreatedDate_Throws()
+        {
+            var created = DateTime.Now.AddDays(1);
+            try
+            {
+                var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);
+                Assert.Fail();
+            }
+            catch(Exception ex)
+            {
+                StringAssert.Contains(ex.Message, "dateCreated");
+            }
+        }
+
+
         
         [TestMethod]
         public void CreateAccount_SettingsRequireEmailIsUsername_UsernameIsEmail()
