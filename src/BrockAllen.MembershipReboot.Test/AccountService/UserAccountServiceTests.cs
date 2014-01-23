@@ -1618,5 +1618,58 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
         }
 
+        [TestMethod]
+        public void CreateAccount_CustomPasswordValidation_Executes()
+        {
+            configuration.RegisterPasswordValidator((svc, acct, password) =>
+            {
+                return new ValidationResult("Bad Password");
+            });
+            try
+            {
+                subject.CreateAccount("test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual("Bad Password", ex.Message);
+            }
+        }
+        [TestMethod]
+        public void CreateAccount_CustomEmailValidation_Executes()
+        {
+            configuration.RegisterEmailValidator((svc, acct, password) =>
+            {
+                return new ValidationResult("Bad Email");
+            });
+            try
+            {
+                subject.CreateAccount("test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual("Bad Email", ex.Message);
+            }
+        }
+        [TestMethod]
+        public void CreateAccount_CustomUsernameValidation_Executes()
+        {
+            configuration.RegisterUsernameValidator((svc, acct, password) =>
+            {
+                return new ValidationResult("Bad Username");
+            });
+            try
+            {
+                subject.CreateAccount("test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual("Bad Username", ex.Message);
+            }
+        }
+
+
     }
 }

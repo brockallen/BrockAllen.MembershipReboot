@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -45,6 +46,25 @@ namespace BrockAllen.MembershipReboot
         {
             if (config == null) throw new ArgumentNullException("config");
             config.AddEventHandler(new DelegateEventHandler<TEvent>(action));
+        }
+
+        public static void RegisterUsernameValidator<TAccount>(this MembershipRebootConfiguration<TAccount> config, Func<UserAccountService<TAccount>, TAccount, string, ValidationResult> func)
+            where TAccount : UserAccount
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            config.RegisterUsernameValidator(new DelegateValidator<TAccount>(func));
+        }
+        public static void RegisterPasswordValidator<TAccount>(this MembershipRebootConfiguration<TAccount> config, Func<UserAccountService<TAccount>, TAccount, string, ValidationResult> func)
+            where TAccount : UserAccount
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            config.RegisterPasswordValidator(new DelegateValidator<TAccount>(func));
+        }
+        public static void RegisterEmailValidator<TAccount>(this MembershipRebootConfiguration<TAccount> config, Func<UserAccountService<TAccount>, TAccount, string, ValidationResult> func)
+            where TAccount : UserAccount
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            config.RegisterEmailValidator(new DelegateValidator<TAccount>(func));
         }
     }
 }
