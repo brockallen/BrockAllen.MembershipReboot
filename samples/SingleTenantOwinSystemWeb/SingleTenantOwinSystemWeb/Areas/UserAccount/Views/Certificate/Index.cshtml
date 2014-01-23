@@ -1,0 +1,31 @@
+﻿@model BrockAllen.MembershipReboot.UserAccount
+@{
+    ViewBag.Title = "Index";
+}
+
+@Html.ValidationSummary()
+
+@using (Html.BeginForm("Add", "Certificate", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <fieldset>
+        <legend>New Certificate</legend>
+        <p>New Cert: <input type="file" name="cert" /></p>
+        <p><button>Submit</button></p>
+    </fieldset>
+}
+
+<h2>Existing Certs:</h2>
+<ul>
+    @foreach (var cert in Model.Certificates)
+    {
+        using (Html.BeginForm("Delete", "Certificate"))
+        {
+            @Html.AntiForgeryToken()
+            <li>
+                @cert.Subject
+                <button name="thumbprint" value="@cert.Thumbprint">delete</button>
+            </li>
+        }
+    }
+</ul>

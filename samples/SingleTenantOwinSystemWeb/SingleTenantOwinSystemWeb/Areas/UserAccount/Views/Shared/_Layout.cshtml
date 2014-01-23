@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <ul>
+        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li>@Html.ActionLink("Logout", "Index", "Logout")</li>
+            <li>@Html.ActionLink("Verify Your Email Account", "Verify", "Register")</li>
+            <li>@Html.ActionLink("Change Password", "Index", "ChangePassword")</li>
+            <li>@Html.ActionLink("Change Password Reset Secret", "Index", "ChangeSecretQuestion")</li>
+            <li>@Html.ActionLink("Change Username", "Index", "ChangeUsername")</li>
+            <li>@Html.ActionLink("Change Email", "Index", "ChangeEmail")</li>
+            <li>@Html.ActionLink("Change Mobile Phone Number", "Index", "ChangeMobile")</li>
+            <li>@Html.ActionLink("Configure Client Certificates", "Index", "Certificate")</li>
+            <li>@Html.ActionLink("Configure Two Factor Authentication", "Index", "TwoFactorAuth")</li>
+            <li>@Html.ActionLink("Manage external provider", "Manage", "LinkedAccount")</li>
+            <li>@Html.ActionLink("Close Account", "Index", "CloseAccount")</li>
+        }
+        else
+        {
+            <li>@Html.ActionLink("Login", "Index", "Login")</li>
+            <li>@Html.ActionLink("Login with external provider", "Index", "LinkedAccount")</li>
+            <li>@Html.ActionLink("Email Username", "Index", "SendUsernameReminder")</li>
+            <li>@Html.ActionLink("Register", "Index", "Register")</li>
+            <li>@Html.ActionLink("Reset Password", "Index", "PasswordReset")</li>
+        }
+        <li>@Html.ActionLink("Admin Account Lookup", "Index", "Home", new { area="Admin" }, null)</li>
+    </ul>
+
+
+    @RenderBody()
+
+</body>
+</html>

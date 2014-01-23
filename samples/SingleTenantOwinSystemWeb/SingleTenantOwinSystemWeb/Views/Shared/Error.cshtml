@@ -1,0 +1,36 @@
+﻿@model Exception
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Error</title>
+</head>
+<body>
+    <h1>Error</h1>
+    @{
+        var dbEx = Model as System.Data.Entity.Validation.DbEntityValidationException;
+        if (dbEx != null)
+        {
+            <ul>
+                @foreach (var err in dbEx.EntityValidationErrors)
+                {
+                    foreach (var msg in err.ValidationErrors)
+                    {
+                    <li>@msg.PropertyName, @msg.ErrorMessage</li>
+                    }
+                }
+            </ul>
+        }
+        else
+        {
+            <p>
+                @Model.ToString()
+            </p>
+        }
+    }
+</body>
+</html>

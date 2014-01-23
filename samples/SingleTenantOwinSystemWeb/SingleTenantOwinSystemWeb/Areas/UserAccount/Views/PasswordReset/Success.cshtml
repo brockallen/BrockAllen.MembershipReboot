@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Password Changed";
+}
+
+<h2>Password Changed</h2>
+<p>
+    Your password has been changed.
+    @if (User.Identity.IsAuthenticated)
+    {
+        @: You are now logged in.
+    }
+    else
+    {
+        <div>
+            You can now login
+            @Html.ActionLink("here", "Index", "Login").
+        </div>
+    }
+</p>
