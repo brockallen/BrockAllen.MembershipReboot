@@ -379,12 +379,12 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        public virtual TAccount CreateAccount(string username, string password, string email)
+        public virtual TAccount CreateAccount(string username, string password, string email, Guid? id = null, DateTime? dateCreated = null)
         {
-            return CreateAccount(null, username, password, email);
+            return CreateAccount(null, username, password, email, id, dateCreated);
         }
 
-        public virtual TAccount CreateAccount(string tenant, string username, string password, string email)
+        public virtual TAccount CreateAccount(string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null)
         {
             if (Configuration.EmailIsUsername)
             {
@@ -401,7 +401,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email);
 
             var account = this.userRepository.Create();
-            Init(account, tenant, username, password, email);
+            Init(account, tenant, username, password, email, id, dateCreated);
 
             ValidateEmail(account, email);
             ValidateUsername(account, username);
@@ -414,7 +414,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        protected void Init(TAccount account, string tenant, string username, string password, string email)
+        protected void Init(TAccount account, string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null)
         {
             Tracing.Information("[UserAccountService.Init] called");
 
@@ -448,15 +448,22 @@ namespace BrockAllen.MembershipReboot
                 throw new Exception("Can't call Init if UserAccount is already assigned an ID");
             }
 
-            account.ID = Guid.NewGuid();
+            var now = UtcNow;
+            if (dateCreated > now)
+            {
+                Tracing.Error("[UserAccountService.Init] failed -- date created in the future");
+                throw new Exception("dateCreated can't be in the future");
+            }
+
+            account.ID = id ?? Guid.NewGuid();
             account.Tenant = tenant;
             account.Username = username;
             account.Email = email;
-            account.Created = UtcNow;
-            account.LastUpdated = account.Created;
+            account.Created = dateCreated ?? now;
+            account.LastUpdated = now;
             account.HashedPassword = password != null ?
                 Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount) : null;
-            account.PasswordChanged = password != null ? account.Created : (DateTime?)null;
+            account.PasswordChanged = password != null ? now : (DateTime?)null;
             account.IsAccountVerified = false;
             account.AccountTwoFactorAuthMode = TwoFactorAuthMode.None;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
