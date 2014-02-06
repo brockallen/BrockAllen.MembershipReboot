@@ -1725,5 +1725,105 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
         }
 
+        [TestMethod]
+        public void SetConfirmedEmail_AccountIsVerified()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.SetConfirmedEmail(acct.ID, "test@test.com");
+            Assert.IsTrue(subject.GetByID(acct.ID).IsAccountVerified);
+        }
+
+        [TestMethod]
+        public void SetConfirmedEmail_EmailAlreadyInUse_Fails()
+        {
+            subject.CreateAccount("test1", "pass", "test1@test.com");
+            var acct = subject.CreateAccount("test2", "pass", "test2@test.com");
+            try
+            {
+                subject.SetConfirmedEmail(acct.ID, "test1@test.com");
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void SetConfirmedEmail_EmptyEmail_Fails()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            try
+            {
+                subject.SetConfirmedEmail(acct.ID, "");
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailRequired, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void SetConfirmedEmail_ConfigurationEmailIsUsername_SetsUsername()
+        {
+            configuration.EmailIsUsername = true;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.SetConfirmedEmail(acct.ID, "test2@test.com");
+            Assert.AreEqual("test2@test.com", subject.GetByID(acct.ID).Username);
+        }
+
+        [TestMethod]
+        public void SetConfirmedMobilePhone_SetsMobile()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.SetConfirmedMobilePhone(acct.ID, "123");
+            Assert.AreEqual("123", subject.GetByID(acct.ID).MobilePhoneNumber);
+        }
+
+        [TestMethod]
+        public void SetConfirmedMobilePhone_SamePhone_Fails()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.SetConfirmedMobilePhone(acct.ID, "123");
+            try
+            {
+                subject.SetConfirmedMobilePhone(acct.ID, "123");
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.MobilePhoneMustBeDifferent, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void SetConfirmedMobilePhone_EmptyPhone_Fails()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            try
+            {
+                subject.SetConfirmedMobilePhone(acct.ID, "");
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.MobilePhoneRequired, ex.Message);
+            }
+        }
+        
+        [TestMethod]
+        public void SetConfirmedMobilePhone_PhoneAlreadyInUse_Fails()
+        {
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            subject.SetConfirmedMobilePhone(acct1.ID, "123");
+            var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
+            try
+            {
+                subject.SetConfirmedMobilePhone(acct2.ID, "123");
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.MobilePhoneAlreadyInUse, ex.Message);
+            }
+        }
+
+
     }
 }

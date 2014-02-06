@@ -1650,6 +1650,33 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.VerifyEmailFromKey] success");
         }
 
+        public virtual void SetConfirmedEmail(Guid accountID, string email)
+        {
+            Tracing.Information("[UserAccountService.SetConfirmedEmail] called: {0}, {1}", accountID, email);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            ValidateEmail(account, email);
+
+            account.IsAccountVerified = true;
+            account.Email = email;
+            
+            ClearVerificationKey(account);
+
+            this.AddEvent(new EmailVerifiedEvent<TAccount> { Account = account });
+
+            if (Configuration.EmailIsUsername)
+            {
+                Tracing.Verbose("[UserAccountService.SetConfirmedEmail] security setting EmailIsUsername is true and AllowEmailChangeWhenEmailIsUsername is true, so changing username: {0}, to: {1}", account.Username, account.Email);
+                account.Username = account.Email;
+            }
+
+            Update(account);
+
+            Tracing.Verbose("[UserAccountService.SetConfirmedEmail] success");
+        }
+
         public virtual void RemoveMobilePhone(Guid accountID)
         {
             Tracing.Information("[UserAccountService.RemoveMobilePhone] called: {0}", accountID);
@@ -1777,6 +1804,44 @@ namespace BrockAllen.MembershipReboot
             Update(account);
 
             return true;
+        }
+
+        public virtual void SetConfirmedMobilePhone(Guid accountID, string phone)
+        {
+            Tracing.Information("[UserAccountService.SetConfirmedMobilePhone] called: {0}, {1}", accountID, phone);
+
+            if (String.IsNullOrWhiteSpace(phone))
+            {
+                Tracing.Error("[UserAccountService.SetConfirmedMobilePhone] failed -- null phone");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.MobilePhoneRequired));
+            }
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            if (account.MobilePhoneNumber == phone)
+            {
+                Tracing.Error("[UserAccountService.SetConfirmedMobilePhone] mobile phone same as current");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.MobilePhoneMustBeDifferent));
+            }
+
+            if (MobilePhoneExistsOtherThan(account, phone))
+            {
+                Tracing.Verbose("[UserAccountValidation.SetConfirmedMobilePhone] failed -- number already in use");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.MobilePhoneAlreadyInUse));
+            }
+
+            account.MobilePhoneNumber = phone;
+            account.MobilePhoneNumberChanged = UtcNow;
+
+            ClearVerificationKey(account);
+            ClearMobileAuthCode(account);
+
+            this.AddEvent(new MobilePhoneChangedEvent<TAccount> { Account = account });
+
+            Update(account);
+            
+            Tracing.Verbose("[UserAccountService.ConfirmMobilePhoneNumberFromCode] success");
         }
 
         public virtual bool IsPasswordExpired(Guid accountID)
