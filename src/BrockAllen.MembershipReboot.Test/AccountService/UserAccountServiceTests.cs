@@ -419,8 +419,6 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
         }
 
-
-        
         [TestMethod]
         public void CreateAccount_SettingsRequireEmailIsUsername_UsernameIsEmail()
         {
@@ -445,6 +443,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             try
             {
                 subject.VerifyEmailFromKey(LastVerificationKey, "bad value");
+                Assert.Fail();
             }
             catch (ValidationException ex)
             {
@@ -1741,6 +1740,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             try
             {
                 subject.SetConfirmedEmail(acct.ID, "test1@test.com");
+                Assert.Fail();
             }
             catch (ValidationException ex)
             {
@@ -1755,6 +1755,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             try
             {
                 subject.SetConfirmedEmail(acct.ID, "");
+                Assert.Fail();
             }
             catch (ValidationException ex)
             {
@@ -1787,6 +1788,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             try
             {
                 subject.SetConfirmedMobilePhone(acct.ID, "123");
+                Assert.Fail();
             }
             catch (ValidationException ex)
             {
@@ -1801,6 +1803,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             try
             {
                 subject.SetConfirmedMobilePhone(acct.ID, "");
+                Assert.Fail();
             }
             catch (ValidationException ex)
             {
@@ -1817,6 +1820,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             try
             {
                 subject.SetConfirmedMobilePhone(acct2.ID, "123");
+                Assert.Fail();
             }
             catch (ValidationException ex)
             {
