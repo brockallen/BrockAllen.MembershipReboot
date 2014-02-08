@@ -1592,6 +1592,30 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void AddOrUpdateLinkedAccount_ExternalProviderAlreadyInUseOnAnotherAccount_Fails()
+        {
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            subject.AddOrUpdateLinkedAccount(acct1, "foo", "123");
+            var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
+            try
+            {
+                subject.AddOrUpdateLinkedAccount(acct2, "foo", "123");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.LinkedAccountAlreadyInUse, ex.Message);
+            }
+        }
+        [TestMethod]
+        public void AddOrUpdateLinkedAccount_ExternalProviderAlreadyAssociatedWithAccount_Succeeds()
+        {
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            subject.AddOrUpdateLinkedAccount(acct1, "foo", "123");
+            subject.AddOrUpdateLinkedAccount(acct1, "foo", "123");
+        }
+
+        [TestMethod]
         public void RequestAccountVerification_InvalidID_Throws()
         {
             try
