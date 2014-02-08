@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BrockAllen.MembershipReboot.Resources
-{
-
-
+namespace BrockAllen.MembershipReboot.Resources {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -255,6 +255,15 @@ namespace BrockAllen.MembershipReboot.Resources
         public static string InvalidUsername {
             get {
                 return ResourceManager.GetString("InvalidUsername", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The external account is already associated with another user..
+        /// </summary>
+        public static string LinkedAccountAlreadyInUse {
+            get {
+                return ResourceManager.GetString("LinkedAccountAlreadyInUse", resourceCulture);
             }
         }
         

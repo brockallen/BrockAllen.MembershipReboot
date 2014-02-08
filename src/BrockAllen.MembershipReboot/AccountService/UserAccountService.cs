@@ -2385,6 +2385,13 @@ namespace BrockAllen.MembershipReboot
                 throw new ArgumentNullException("id");
             }
 
+            var otherAcct = this.GetByLinkedAccount(account.Tenant, provider, id);
+            if (otherAcct != null && otherAcct.ID != account.ID)
+            {
+                Tracing.Error("[UserAccountService.AddOrUpdateLinkedAccount] failed -- adding linked account that is already associated with another account");
+                throw new ValidationException(GetValidationMessage("LinkedAccountAlreadyInUse"));
+            }
+
             RemoveLinkedAccountClaims(account, provider, id);
 
             var linked = GetLinkedAccount(account, provider, id);
