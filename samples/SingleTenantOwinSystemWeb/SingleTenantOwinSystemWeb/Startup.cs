@@ -97,7 +97,7 @@ namespace SingleTenantOwinSystemWeb
                 "Test",
                 "Test Email Signature",
                 "/UserAccount/Login",
-                "/UserAccount/Register/Confirm/",
+                "/UserAccount/ChangeEmail/Confirm/",
                 "/UserAccount/Register/Cancel/",
                 "/UserAccount/PasswordReset/Confirm/");
 
