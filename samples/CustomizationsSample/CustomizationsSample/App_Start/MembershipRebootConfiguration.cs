@@ -34,6 +34,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
 
             config.AddValidationHandler(new PasswordChanging());
             config.AddEventHandler(new PasswordChanged());
+            config.AddCommandHandler(new CustomValidationMessages());
 
             return config;
         }
