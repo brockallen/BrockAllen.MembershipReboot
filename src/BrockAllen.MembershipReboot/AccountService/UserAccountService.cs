@@ -464,7 +464,6 @@ namespace BrockAllen.MembershipReboot
             account.HashedPassword = password != null ?
                 Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount) : null;
             account.PasswordChanged = password != null ? now : (DateTime?)null;
-            account.IsAccountVerified = false;
             account.AccountTwoFactorAuthMode = TwoFactorAuthMode.None;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
 
@@ -472,10 +471,20 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.AllowLoginAfterAccountCreation is set to: {0}", account.IsLoginAllowed);
 
             string key = null;
-            if (!String.IsNullOrWhiteSpace(account.Email))
+
+            if (Configuration.RequireAccountVerification)
             {
-                Tracing.Verbose("[UserAccountService.CreateAccount] Email was provided, so creating email verification request");
-                key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+                account.IsAccountVerified = false;
+
+                if (!String.IsNullOrWhiteSpace(account.Email))
+                {
+                    Tracing.Verbose("[UserAccountService.CreateAccount] Email was provided, so creating email verification request");
+                    key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+                }
+            }
+            else
+            {
+                account.IsAccountVerified = true;
             }
 
             this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, InitialPassword = password, VerificationKey = key });
@@ -830,12 +839,14 @@ namespace BrockAllen.MembershipReboot
                         return false;
                     }
 
-                    if (Configuration.RequireAccountVerification &&
-                        !account.IsAccountVerified)
+                    if (Configuration.RequireAccountVerification)
                     {
-                        Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
-                        this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
-                        result = false;
+                        if (!account.IsAccountVerified)
+                        {
+                            Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
+                            this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
+                            result = false;
+                        }
                     }
 
                     Tracing.Verbose("[UserAccountService.Authenticate] authentication success");
