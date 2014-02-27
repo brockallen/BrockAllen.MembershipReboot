@@ -84,7 +84,7 @@ namespace ServerApp
                 var client = svc.GetByUsername("clients", "client");
                 if (client == null)
                 {
-                    var acct = svc.CreateAccount("clients", "client", "secret", null);
+                    var acct = svc.CreateAccount("clients", "client", "secret", (string)null);
                     svc.AddClaim(acct.ID, "scope", "foo");
                     svc.AddClaim(acct.ID, "scope", "bar");
                 }
