@@ -32,6 +32,8 @@ namespace BrockAllen.MembershipReboot
             this.PasswordResetFrequency = securitySettings.PasswordResetFrequency;
 
             this.Crypto = new DefaultCrypto();
+            // todo: consider plugin in a default random strong password algorithm then consider renaming property to RandomPasswordGenerator
+            this.PasswordGenerator = () => null;
         }
 
         public bool MultiTenant { get; set; }
@@ -89,6 +91,8 @@ namespace BrockAllen.MembershipReboot
         }
         
         public ICrypto Crypto { get; set; }
+
+        public Func<string> PasswordGenerator { get; set; }
     }
     
     public class MembershipRebootConfiguration : MembershipRebootConfiguration<UserAccount>

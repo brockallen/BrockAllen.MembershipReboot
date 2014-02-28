@@ -13,9 +13,15 @@ namespace BrockAllen.MembershipReboot.WebHost
     public class SamAuthenticationService : AuthenticationService
     {
         public SamAuthenticationService(UserAccountService userAccountService)
-            : base(userAccountService)
+            : base(userAccountService, FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager)
         {
         }
+
+        public SamAuthenticationService(UserAccountService<UserAccount> userService, MembershipRebootConfiguration<UserAccount> configuration)
+            : base(userService, FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager, configuration)
+        {
+        }
+
 
         protected override void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null)
         {
@@ -77,6 +83,11 @@ namespace BrockAllen.MembershipReboot.WebHost
     {
         public SamAuthenticationService(UserAccountService<T> userService)
             : base(userService, FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager)
+        {
+        }
+
+        public SamAuthenticationService(UserAccountService<T> userService, MembershipRebootConfiguration<T> configuration)
+            : base(userService, FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager, configuration)
         {
         }
 
