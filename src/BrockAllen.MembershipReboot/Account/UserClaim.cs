@@ -10,8 +10,11 @@ namespace BrockAllen.MembershipReboot
     public class UserClaim
     {
         [StringLength(150)]
+        [Required]
         public virtual string Type { get; protected internal set; }
+        
         [StringLength(150)]
+        [Required]
         public virtual string Value { get; protected internal set; }
     }
 }

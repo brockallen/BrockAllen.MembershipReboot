@@ -91,9 +91,8 @@ namespace BrockAllen.MembershipReboot.Ef
         {
             var q =
                 from a in items
-                where a.Tenant == tenant
                 from la in a.LinkedAccountCollection
-                where la.ProviderName == provider && la.ProviderAccountID == id
+                where la.ProviderName == provider && la.ProviderAccountID == id && a.Tenant == tenant
                 select a;
             return q.SingleOrDefault();
         }
@@ -102,9 +101,8 @@ namespace BrockAllen.MembershipReboot.Ef
         {
             var q =
                 from a in items
-                where a.Tenant == tenant
                 from c in a.UserCertificateCollection
-                where c.Thumbprint == thumbprint
+                where c.Thumbprint == thumbprint && a.Tenant == tenant
                 select a;
             return q.SingleOrDefault();
         }

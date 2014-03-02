@@ -10,6 +10,7 @@ namespace BrockAllen.MembershipReboot
     public class UserCertificate
     {
         [StringLength(150)]
+        [Required]
         public virtual string Thumbprint { get; protected internal set; }
 
         [StringLength(250)]
