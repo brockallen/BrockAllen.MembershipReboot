@@ -28,23 +28,23 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
 
         public override void Down()
         {
-            this.DropIndex("dbo.Groups", "ID");
+            this.DropIndex("dbo.Groups", new[] { "ID" });
             this.DropIndex("dbo.Groups", new[] { "Tenant", "Name" });
             this.Sql("ALTER TABLE dbo.GroupChilds DROP CONSTRAINT UK_ParentKey_ChildGroupID");
 
-            this.DropIndex("dbo.UserAccounts", "ID");
+            this.DropIndex("dbo.UserAccounts", new[] { "ID" });
             this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "Username" });
             this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "Email" });
             this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "MobilePhoneNumber" });
-            this.DropIndex("dbo.UserAccounts", "VerificationKey");
-            this.DropIndex("dbo.UserAccounts", "Username");
+            this.DropIndex("dbo.UserAccounts", new[] { "VerificationKey" });
+            this.DropIndex("dbo.UserAccounts", new[] { "Username" });
             this.DropIndex("dbo.LinkedAccounts", new[] { "ProviderName", "ProviderAccountID" });
-            this.DropIndex("dbo.UserCertificates", "Thumbprint");
+            this.DropIndex("dbo.UserCertificates", new[] { "Thumbprint" });
             this.Sql("ALTER TABLE dbo.LinkedAccounts DROP CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID");
-            this.Sql("ALTER TABLE dbo.LinkedAccountClaims ADD CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID_Type_Value");
-            this.Sql("ALTER TABLE dbo.PasswordResetSecrets ADD CONSTRAINT UK_ParentKey_Question");
-            this.Sql("ALTER TABLE dbo.UserCertificates ADD CONSTRAINT UK_ParentKey_Thumbprint");
-            this.Sql("ALTER TABLE dbo.UserClaims ADD CONSTRAINT UK_ParentKey_Type_Value");
+            this.Sql("ALTER TABLE dbo.LinkedAccountClaims DROP CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID_Type_Value");
+            this.Sql("ALTER TABLE dbo.PasswordResetSecrets DROP CONSTRAINT UK_ParentKey_Question");
+            this.Sql("ALTER TABLE dbo.UserCertificates DROP CONSTRAINT UK_ParentKey_Thumbprint");
+            this.Sql("ALTER TABLE dbo.UserClaims DROP CONSTRAINT UK_ParentKey_Type_Value");
         }
 
     }
