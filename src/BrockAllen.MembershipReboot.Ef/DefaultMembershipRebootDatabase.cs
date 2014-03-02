@@ -13,11 +13,13 @@ namespace BrockAllen.MembershipReboot.Ef
         public DefaultMembershipRebootDatabase()
             : base("name=MembershipReboot")
         {
+            this.RegisterChildTablesForDelete<RelationalUserAccount>();
         }
 
         public DefaultMembershipRebootDatabase(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
+            this.RegisterChildTablesForDelete<RelationalUserAccount>();
         }
 
         public DbSet<RelationalUserAccount> Users { get; set; }

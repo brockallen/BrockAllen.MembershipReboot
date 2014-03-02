@@ -57,19 +57,6 @@
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Migrations\201311222357350_InitialCreate.cs" />
-    <Compile Include="Migrations\201311222357350_InitialCreate.Designer.cs">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201312202126194_v5.cs" />
-    <Compile Include="Migrations\201312202126194_v5.Designer.cs">
-      <DependentUpon>201312202126194_v5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201312281555533_v6.cs" />
-    <Compile Include="Migrations\201312281555533_v6.Designer.cs">
-      <DependentUpon>201312281555533_v6.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -77,17 +64,6 @@
       <Project>{a33fe01f-ae9b-4bde-b521-ab13916b1cfa}</Project>
       <Name>BrockAllen.MembershipReboot</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201311222357350_InitialCreate.resx">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201312202126194_v5.resx">
-      <DependentUpon>201312202126194_v5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201312281555533_v6.resx">
-      <DependentUpon>201312281555533_v6.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
