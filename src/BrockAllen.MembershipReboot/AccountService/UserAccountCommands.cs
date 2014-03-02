@@ -38,4 +38,11 @@ namespace BrockAllen.MembershipReboot
         public TAccount Account { get; set; }
         public IEnumerable<Claim> MappedClaims { get; set; }
     }
+
+    public class MapClaimsToAccount<TAccount> : ICommand
+        where TAccount : UserAccount
+    {
+        public TAccount Account { get; set; }
+        public IEnumerable<Claim> Claims { get; set; }
+    }
 }
