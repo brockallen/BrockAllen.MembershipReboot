@@ -13,7 +13,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201403021835207_Indexes"; }
+            get { return "201403022152294_Indexes"; }
         }
         
         string IMigrationMetadata.Source

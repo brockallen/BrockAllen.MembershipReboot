@@ -11,24 +11,26 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
                 "dbo.Groups",
                 c => new
                     {
+                        Key = c.Int(nullable: false, identity: true),
                         ID = c.Guid(nullable: false),
                         Tenant = c.String(nullable: false, maxLength: 50),
                         Name = c.String(nullable: false, maxLength: 100),
                         Created = c.DateTime(nullable: false),
                         LastUpdated = c.DateTime(nullable: false),
                     })
-                .PrimaryKey(t => t.ID);
+                .PrimaryKey(t => t.Key);
             
             CreateTable(
                 "dbo.GroupChilds",
                 c => new
                     {
-                        GroupID = c.Guid(nullable: false),
+                        Key = c.Int(nullable: false, identity: true),
+                        ParentKey = c.Int(nullable: false),
                         ChildGroupID = c.Guid(nullable: false),
                     })
-                .PrimaryKey(t => new { t.GroupID, t.ChildGroupID })
-                .ForeignKey("dbo.Groups", t => t.GroupID, cascadeDelete: true)
-                .Index(t => t.GroupID);
+                .PrimaryKey(t => t.Key)
+                .ForeignKey("dbo.Groups", t => t.ParentKey, cascadeDelete: true)
+                .Index(t => t.ParentKey);
             
             CreateTable(
                 "dbo.UserAccounts",
@@ -158,14 +160,14 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             DropForeignKey("dbo.LinkedAccounts", "ParentKey", "dbo.UserAccounts");
             DropForeignKey("dbo.LinkedAccountClaims", "ParentKey", "dbo.UserAccounts");
             DropForeignKey("dbo.UserClaims", "ParentKey", "dbo.UserAccounts");
-            DropForeignKey("dbo.GroupChilds", "GroupID", "dbo.Groups");
+            DropForeignKey("dbo.GroupChilds", "ParentKey", "dbo.Groups");
             DropIndex("dbo.UserCertificates", new[] { "ParentKey" });
             DropIndex("dbo.TwoFactorAuthTokens", new[] { "ParentKey" });
             DropIndex("dbo.PasswordResetSecrets", new[] { "ParentKey" });
             DropIndex("dbo.LinkedAccounts", new[] { "ParentKey" });
             DropIndex("dbo.LinkedAccountClaims", new[] { "ParentKey" });
             DropIndex("dbo.UserClaims", new[] { "ParentKey" });
-            DropIndex("dbo.GroupChilds", new[] { "GroupID" });
+            DropIndex("dbo.GroupChilds", new[] { "ParentKey" });
             DropTable("dbo.UserCertificates");
             DropTable("dbo.TwoFactorAuthTokens");
             DropTable("dbo.PasswordResetSecrets");

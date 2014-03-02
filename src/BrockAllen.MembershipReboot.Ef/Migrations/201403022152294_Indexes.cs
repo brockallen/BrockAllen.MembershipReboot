@@ -7,6 +7,10 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
     {
         public override void Up()
         {
+            this.CreateIndex("dbo.Groups", "ID", unique: true);
+            this.CreateIndex("dbo.Groups", new[] { "Tenant", "Name" }, unique: true);
+            this.Sql("ALTER TABLE dbo.GroupChilds ADD CONSTRAINT UK_ParentKey_ChildGroupID UNIQUE NONCLUSTERED (ParentKey, ChildGroupID)");
+
             this.CreateIndex("dbo.UserAccounts", "ID", unique: true);
             this.CreateIndex("dbo.UserAccounts", new[] { "Tenant", "Username" }, unique: true);
             this.CreateIndex("dbo.UserAccounts", new[] { "Tenant", "Email" }, unique: true);
@@ -21,9 +25,13 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             this.Sql("ALTER TABLE dbo.UserCertificates ADD CONSTRAINT UK_ParentKey_Thumbprint UNIQUE NONCLUSTERED (ParentKey, Thumbprint)");
             this.Sql("ALTER TABLE dbo.UserClaims ADD CONSTRAINT UK_ParentKey_Type_Value UNIQUE NONCLUSTERED (ParentKey, Type, Value)");
         }
-        
+
         public override void Down()
         {
+            this.DropIndex("dbo.Groups", "ID");
+            this.DropIndex("dbo.Groups", new[] { "Tenant", "Name" });
+            this.Sql("ALTER TABLE dbo.GroupChilds DROP CONSTRAINT UK_ParentKey_ChildGroupID");
+
             this.DropIndex("dbo.UserAccounts", "ID");
             this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "Username" });
             this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "Email" });
@@ -38,5 +46,6 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             this.Sql("ALTER TABLE dbo.UserCertificates ADD CONSTRAINT UK_ParentKey_Thumbprint");
             this.Sql("ALTER TABLE dbo.UserClaims ADD CONSTRAINT UK_ParentKey_Type_Value");
         }
+
     }
 }

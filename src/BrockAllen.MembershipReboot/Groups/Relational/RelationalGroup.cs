@@ -5,6 +5,8 @@ namespace BrockAllen.MembershipReboot
 {
     public class RelationalGroup : Group
     {
+        public virtual int Key { get; set; }
+
         public virtual ICollection<RelationalGroupChild> ChildrenCollection { get; set; }
         public override IEnumerable<GroupChild> Children
         {
@@ -13,7 +15,7 @@ namespace BrockAllen.MembershipReboot
 
         protected internal override void AddChild(GroupChild child)
         {
-            ChildrenCollection.Add(new RelationalGroupChild{GroupID = this.ID, ChildGroupID = child.ChildGroupID});
+            ChildrenCollection.Add(new RelationalGroupChild{ParentKey = this.Key, ChildGroupID = child.ChildGroupID});
         }
 
         protected internal override void RemoveChild(GroupChild child)
@@ -24,6 +26,7 @@ namespace BrockAllen.MembershipReboot
 
     public class RelationalGroupChild : GroupChild
     {
-        public Guid GroupID { get; set; }
+        public virtual int Key { get; set; }
+        public virtual int ParentKey { get; set; }
     }
 }

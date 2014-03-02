@@ -14,7 +14,7 @@ namespace System.Data.Entity
 {
     public static class DbModelBuilderExtensions
     {
-        public static void RegisterChildTablesForDelete<TAccount>(this DbContext ctx)
+        public static void RegisterUserAccountChildTablesForDelete<TAccount>(this DbContext ctx)
             where TAccount : RelationalUserAccount
         {
             ctx.Set<TAccount>().Local.CollectionChanged +=
@@ -22,7 +22,7 @@ namespace System.Data.Entity
                 {
                     if (e.Action == NotifyCollectionChangedAction.Add)
                     {
-                        foreach(TAccount account in e.NewItems)
+                        foreach (TAccount account in e.NewItems)
                         {
                             account.ClaimCollection.RegisterDeleteOnRemove(ctx);
                             account.LinkedAccountClaimCollection.RegisterDeleteOnRemove(ctx);
@@ -30,6 +30,21 @@ namespace System.Data.Entity
                             account.PasswordResetSecretCollection.RegisterDeleteOnRemove(ctx);
                             account.TwoFactorAuthTokenCollection.RegisterDeleteOnRemove(ctx);
                             account.UserCertificateCollection.RegisterDeleteOnRemove(ctx);
+                        }
+                    }
+                };
+        }
+        public static void RegisterGroupChildTablesForDelete<TGroup>(this DbContext ctx)
+            where TGroup : RelationalGroup
+        {
+            ctx.Set<TGroup>().Local.CollectionChanged +=
+                delegate(object sender, NotifyCollectionChangedEventArgs e)
+                {
+                    if (e.Action == NotifyCollectionChangedAction.Add)
+                    {
+                        foreach (TGroup group in e.NewItems)
+                        {
+                            group.ChildrenCollection.RegisterDeleteOnRemove(ctx);
                         }
                     }
                 };
@@ -96,12 +111,12 @@ namespace System.Data.Entity
             where TGroup : RelationalGroup
         {
             modelBuilder.Entity<TGroup>()
-                .HasKey(x => x.ID).ToTable("Groups");
+                .HasKey(x => x.Key).ToTable("Groups");
 
             modelBuilder.Entity<TGroup>().HasMany(x => x.ChildrenCollection)
-                .WithRequired().HasForeignKey(x=>x.GroupID);
+                .WithRequired().HasForeignKey(x=>x.ParentKey).WillCascadeOnDelete();
             modelBuilder.Entity<RelationalGroupChild>()
-                .HasKey(x => new { x.GroupID, x.ChildGroupID }).ToTable("GroupChilds");
+                .HasKey(x => x.Key).ToTable("GroupChilds");
         }
     }
 }
