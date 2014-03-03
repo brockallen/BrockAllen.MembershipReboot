@@ -3,7 +3,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Indexes : DbMigration
+    public partial class v7_Indexes : DbMigration
     {
         public override void Up()
         {
@@ -46,6 +46,5 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             this.Sql("ALTER TABLE dbo.UserCertificates DROP CONSTRAINT UK_ParentKey_Thumbprint");
             this.Sql("ALTER TABLE dbo.UserClaims DROP CONSTRAINT UK_ParentKey_Type_Value");
         }
-
     }
 }

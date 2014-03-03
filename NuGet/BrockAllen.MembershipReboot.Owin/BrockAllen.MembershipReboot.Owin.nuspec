@@ -14,7 +14,7 @@
     <copyright>Copyright 2014</copyright>
     <tags>Membership Roles Claims Identity User Account Password Management Two Factor Authentication Certificate Authentication</tags>
     <dependencies>
-      <dependency id="BrockAllen.MembershipReboot" version="6.0.0" />
+      <dependency id="BrockAllen.MembershipReboot" version="7.0.0" />
       <dependency id="Microsoft.Owin.Security.Cookies" version="2.1" />
     </dependencies>
   </metadata>

@@ -57,13 +57,13 @@
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Migrations\201403022151496_InitialCreate.cs" />
-    <Compile Include="Migrations\201403022151496_InitialCreate.Designer.cs">
-      <DependentUpon>201403022151496_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201403032007363_v7_InitialCreate.cs" />
+    <Compile Include="Migrations\201403032007363_v7_InitialCreate.Designer.cs">
+      <DependentUpon>201403032007363_v7_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201403022152294_Indexes.cs" />
-    <Compile Include="Migrations\201403022152294_Indexes.Designer.cs">
-      <DependentUpon>201403022152294_Indexes.cs</DependentUpon>
+    <Compile Include="Migrations\201403032007511_v7_Indexes.cs" />
+    <Compile Include="Migrations\201403032007511_v7_Indexes.Designer.cs">
+      <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,11 +78,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403022151496_InitialCreate.resx">
-      <DependentUpon>201403022151496_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403032007363_v7_InitialCreate.resx">
+      <DependentUpon>201403032007363_v7_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403022152294_Indexes.resx">
-      <DependentUpon>201403022152294_Indexes.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403032007511_v7_Indexes.resx">
+      <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
