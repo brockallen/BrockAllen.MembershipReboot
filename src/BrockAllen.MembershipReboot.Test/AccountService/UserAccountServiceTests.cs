@@ -19,11 +19,14 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         UserAccountService subject;
         FakeUserAccountRepository repository;
         MembershipRebootConfiguration configuration;
-        public string LastVerificationKey { get; set; }
-        public string LastMobileCode { get; set; }
-        public IEvent LastEvent { get; set; }
+        KeyNotification key;
+
+        public string LastVerificationKey { get { return key.LastVerificationKey; } }
+        public string LastMobileCode { get { return key.LastMobileCode; } }
+        public IEvent LastEvent { get { return key.LastEvent; } }
 
         int oldIterations;
+
         [TestInitialize]
         public void Init()
         {
@@ -31,53 +34,10 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             SecuritySettings.Instance.PasswordHashingIterationCount = 1; // tests will run faster
 
             configuration = new MembershipRebootConfiguration();
-            configuration.AddEventHandler(new KeyNotification(this));
+            key = new KeyNotification();
+            configuration.AddEventHandler(key);
             repository = new FakeUserAccountRepository(); 
             subject = new UserAccountService(configuration, repository);
-        }
-
-        class KeyNotification :
-            IEventHandler<AccountCreatedEvent<UserAccount>>,
-            IEventHandler<PasswordResetRequestedEvent<UserAccount>>,
-            IEventHandler<EmailChangeRequestedEvent<UserAccount>>,
-            IEventHandler<MobilePhoneChangeRequestedEvent<UserAccount>>,
-            IEventHandler<TwoFactorAuthenticationCodeNotificationEvent<UserAccount>>
-        {
-            UserAccountServiceTests instance;
-            public KeyNotification (UserAccountServiceTests instance)
-            {
-                this.instance = instance;
-            }
-
-            public void Handle(PasswordResetRequestedEvent<UserAccount> evt)
-            {
-                instance.LastEvent = evt;
-                instance.LastVerificationKey = evt.VerificationKey;
-            }
-
-            public void Handle(EmailChangeRequestedEvent<UserAccount> evt)
-            {
-                instance.LastEvent = evt;
-                instance.LastVerificationKey = evt.VerificationKey;
-            }
-
-            public void Handle(MobilePhoneChangeRequestedEvent<UserAccount> evt)
-            {
-                instance.LastEvent = evt;
-                instance.LastMobileCode = evt.Code;
-            }
-
-            public void Handle(TwoFactorAuthenticationCodeNotificationEvent<UserAccount> evt)
-            {
-                instance.LastEvent = evt;
-                instance.LastMobileCode = evt.Code;
-            }
-
-            public void Handle(AccountCreatedEvent<UserAccount> evt)
-            {
-                instance.LastEvent = evt;
-                instance.LastVerificationKey = evt.VerificationKey;
-            }
         }
 
         [TestCleanup]
