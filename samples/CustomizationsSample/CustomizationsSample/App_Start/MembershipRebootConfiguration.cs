@@ -17,6 +17,10 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
             config.RegisterPasswordValidator(new PasswordValidator());
             config.ConfigurePasswordComplexity(5, 3);
 
+            // obviously for production you do NOT want to use a static password
+            // a resonable alternate for production would be to use MembershipProvider (uncomment code below)
+//            config.PasswordGenerator = () => Membership.GeneratePassword(15, 5);
+
             config.AddCommandHandler(new CustomClaimsMapper());
 
             var delivery = new SmtpMessageDelivery();

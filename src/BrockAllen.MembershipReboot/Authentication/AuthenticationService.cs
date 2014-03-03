@@ -15,6 +15,7 @@ namespace BrockAllen.MembershipReboot
     public abstract class AuthenticationService<TAccount>
         where TAccount : UserAccount
     {
+        public MembershipRebootConfiguration<TAccount> Configuration { get; set; }
         public UserAccountService<TAccount> UserAccountService { get; set; }
         public ClaimsAuthenticationManager ClaimsAuthenticationManager { get; set; }
 
@@ -24,7 +25,13 @@ namespace BrockAllen.MembershipReboot
         }
 
         public AuthenticationService(UserAccountService<TAccount> userService, ClaimsAuthenticationManager claimsAuthenticationManager)
+            : this(userService, claimsAuthenticationManager, new MembershipRebootConfiguration<TAccount>())
         {
+        }
+
+        public AuthenticationService(UserAccountService<TAccount> userService, ClaimsAuthenticationManager claimsAuthenticationManager, MembershipRebootConfiguration<TAccount> configuration)
+        {
+            this.Configuration = configuration;
             this.UserAccountService = userService;
             this.ClaimsAuthenticationManager = claimsAuthenticationManager;
         }
@@ -221,7 +228,7 @@ namespace BrockAllen.MembershipReboot
                     // this is slightly dangerous if we don't do email account verification, so if email account
                     // verification is disabled then we need to be very confident that the external provider has
                     // provided us with a verified email
-                    account = this.UserAccountService.CreateAccount(tenant, name, null, email);
+                    account = this.UserAccountService.CreateAccount(tenant, name, this.Configuration.PasswordGenerator(), email);
                 }
             }
 
@@ -264,6 +271,11 @@ namespace BrockAllen.MembershipReboot
 
         public AuthenticationService(UserAccountService userService, ClaimsAuthenticationManager claimsAuthenticationManager)
             : base(userService, claimsAuthenticationManager)
+        {
+        }
+
+        protected AuthenticationService(UserAccountService<UserAccount> userService, ClaimsAuthenticationManager claimsAuthenticationManager, MembershipRebootConfiguration<UserAccount> configuration) 
+            : base(userService, claimsAuthenticationManager, configuration)
         {
         }
     }
