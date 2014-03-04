@@ -222,6 +222,11 @@ namespace BrockAllen.MembershipReboot
                     // verification is disabled then we need to be very confident that the external provider has
                     // provided us with a verified email
                     account = this.UserAccountService.CreateAccount(tenant, name, null, email);
+
+                    // update account with external claims
+                    var cmd = new MapClaimsToAccount<TAccount> { Account = account, Claims = claims };
+                    this.UserAccountService.ExecuteCommand(cmd);
+                    this.UserAccountService.Update(account);
                 }
             }
 
