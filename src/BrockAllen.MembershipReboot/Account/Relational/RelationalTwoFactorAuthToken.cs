@@ -9,10 +9,7 @@ namespace BrockAllen.MembershipReboot.Relational
 {
     public class RelationalTwoFactorAuthToken : TwoFactorAuthToken
     {
-        public Guid UserAccountID { get; set; }
-    }
-    public class RelationalTwoFactorAuthTokenInt : TwoFactorAuthToken
-    {
-        public int UserAccountID { get; set; }
+        public virtual int Key { get; set; }
+        public virtual int ParentKey { get; set; }
     }
 }

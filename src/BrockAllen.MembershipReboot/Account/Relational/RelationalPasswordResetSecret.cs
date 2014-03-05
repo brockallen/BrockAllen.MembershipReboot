@@ -9,10 +9,7 @@ namespace BrockAllen.MembershipReboot.Relational
 {
     public class RelationalPasswordResetSecret : PasswordResetSecret
     {
-        public Guid UserAccountID { get; set; }
-    }
-    public class RelationalPasswordResetSecretInt : PasswordResetSecret
-    {
-        public int UserAccountID { get; set; }
+        public virtual int Key { get; set; }
+        public virtual int ParentKey { get; set; }
     }
 }

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) Brock Allen.  All rights reserved.
- * see license.txt
- */
-
 namespace BrockAllen.MembershipReboot.Ef.Migrations
 {
     using System;
@@ -15,7 +10,6 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
-            ContextKey = "BrockAllen.MembershipReboot.Ef.DefaultMembershipRebootDatabase";
         }
 
         protected override void Seed(BrockAllen.MembershipReboot.Ef.DefaultMembershipRebootDatabase context)

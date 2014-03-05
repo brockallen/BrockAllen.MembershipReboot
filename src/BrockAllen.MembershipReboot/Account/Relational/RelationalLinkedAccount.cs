@@ -9,10 +9,7 @@ namespace BrockAllen.MembershipReboot.Relational
 {
     public class RelationalLinkedAccount : LinkedAccount
     {
-        public Guid UserAccountID { get; set; }
-    }
-    public class RelationalLinkedAccountInt : LinkedAccount
-    {
-        public int UserAccountID { get; set; }
+        public virtual int Key { get; set; }
+        public virtual int ParentKey { get; set; }
     }
 }

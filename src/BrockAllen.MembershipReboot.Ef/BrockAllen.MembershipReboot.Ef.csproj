@@ -49,6 +49,9 @@
   <ItemGroup>
     <Content Include="license.txt" />
     <Content Include="app.config" />
+    <Content Include="Sql\v6_schema_and_sampledata.sql" />
+    <Content Include="Sql\v6_to_v7_migration.sql" />
+    <Content Include="Sql\v7_schema_and_sampledata.sql" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbContextGroupRepository.cs" />
@@ -57,17 +60,13 @@
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Migrations\201311222357350_InitialCreate.cs" />
-    <Compile Include="Migrations\201311222357350_InitialCreate.Designer.cs">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201403032007363_v7_InitialCreate.cs" />
+    <Compile Include="Migrations\201403032007363_v7_InitialCreate.Designer.cs">
+      <DependentUpon>201403032007363_v7_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201312202126194_v5.cs" />
-    <Compile Include="Migrations\201312202126194_v5.Designer.cs">
-      <DependentUpon>201312202126194_v5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201312281555533_v6.cs" />
-    <Compile Include="Migrations\201312281555533_v6.Designer.cs">
-      <DependentUpon>201312281555533_v6.cs</DependentUpon>
+    <Compile Include="Migrations\201403032007511_v7_Indexes.cs" />
+    <Compile Include="Migrations\201403032007511_v7_Indexes.Designer.cs">
+      <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,18 +78,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201311222357350_InitialCreate.resx">
-      <DependentUpon>201311222357350_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201312202126194_v5.resx">
-      <DependentUpon>201312202126194_v5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201312281555533_v6.resx">
-      <DependentUpon>201312281555533_v6.cs</DependentUpon>
-    </EmbeddedResource>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <EmbeddedResource Include="Migrations\201403032007363_v7_InitialCreate.resx">
+      <DependentUpon>201403032007363_v7_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403032007511_v7_Indexes.resx">
+      <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

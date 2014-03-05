@@ -214,7 +214,7 @@
     <value>The parent group is already a child of the child group.</value>
   </data>
   <data name="ParentGroupSameAsChild" xml:space="preserve">
-    <value>The parent and child are the same groups.</value>
+    <value>The parent and child are the same group.</value>
   </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
     <value>Password must contain at least {0} of the follwing characters: one upper, one lower, one digit and one other.</value>

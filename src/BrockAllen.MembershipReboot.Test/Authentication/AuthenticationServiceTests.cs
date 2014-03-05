@@ -30,10 +30,11 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             subject = new TestAuthenticationService(userAccountService);
         }
 
-        [TestMethod]
-        public void SignInWithLinkedAccount_CreatesNewAccountFromExternalProvider()
-        {
-            subject.SignInWithLinkedAccount("google", "123", new Claim[] { });
-        }
+        //[TestMethod]
+        //[Ignore]
+        //public void SignInWithLinkedAccount_CreatesNewAccountFromExternalProvider()
+        //{
+        //    //subject.SignInWithLinkedAccount("google", "123", new Claim[] { });
+        //}
     }
 }

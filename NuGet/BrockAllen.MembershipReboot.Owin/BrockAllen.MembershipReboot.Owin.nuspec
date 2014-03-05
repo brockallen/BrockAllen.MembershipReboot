@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BrockAllen.MembershipReboot.Owin</id>
-    <version>6.0.0</version>
+    <version>7.0.0-beta-3</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://raw.github.com/brockallen/BrockAllen.MembershipReboot/master/license.txt</licenseUrl>
@@ -14,7 +14,7 @@
     <copyright>Copyright 2014</copyright>
     <tags>Membership Roles Claims Identity User Account Password Management Two Factor Authentication Certificate Authentication</tags>
     <dependencies>
-      <dependency id="BrockAllen.MembershipReboot" version="6.0.0" />
+      <dependency id="BrockAllen.MembershipReboot" version="7.0.0-beta-3" />
       <dependency id="Microsoft.Owin.Security.Cookies" version="2.1" />
     </dependencies>
   </metadata>
