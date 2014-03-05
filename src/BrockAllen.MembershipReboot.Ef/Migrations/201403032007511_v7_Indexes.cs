@@ -7,44 +7,44 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
     {
         public override void Up()
         {
-            this.CreateIndex("dbo.Groups", "ID", unique: true);
-            this.CreateIndex("dbo.Groups", new[] { "Tenant", "Name" }, unique: true);
-            this.Sql("ALTER TABLE dbo.GroupChilds ADD CONSTRAINT UK_ParentKey_ChildGroupID UNIQUE NONCLUSTERED (ParentKey, ChildGroupID)");
+            this.CreateIndex("Groups", "ID", unique: true);
+            this.CreateIndex("Groups", new[] { "Tenant", "Name" }, unique: true);
+            this.Sql("ALTER TABLE GroupChilds ADD CONSTRAINT UK_ParentKey_ChildGroupID UNIQUE NONCLUSTERED (ParentKey, ChildGroupID)");
 
-            this.CreateIndex("dbo.UserAccounts", "ID", unique: true);
-            this.CreateIndex("dbo.UserAccounts", new[] { "Tenant", "Username" }, unique: true);
-            this.CreateIndex("dbo.UserAccounts", new[] { "Tenant", "Email" }, unique: true);
-            this.CreateIndex("dbo.UserAccounts", new[] { "Tenant", "MobilePhoneNumber" }, unique: true);
-            this.CreateIndex("dbo.UserAccounts", "VerificationKey", unique: true);
-            this.CreateIndex("dbo.UserAccounts", "Username", unique: false);
-            this.CreateIndex("dbo.LinkedAccounts", new[] { "ProviderName", "ProviderAccountID" }, unique: false);
-            this.CreateIndex("dbo.UserCertificates", "Thumbprint", unique: false);
-            this.Sql("ALTER TABLE dbo.LinkedAccounts ADD CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID UNIQUE NONCLUSTERED (ParentKey, ProviderName, ProviderAccountID)");
-            this.Sql("ALTER TABLE dbo.LinkedAccountClaims ADD CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID_Type_Value UNIQUE NONCLUSTERED (ParentKey, ProviderName, ProviderAccountID, Type, Value)");
-            this.Sql("ALTER TABLE dbo.PasswordResetSecrets ADD CONSTRAINT UK_ParentKey_Question UNIQUE NONCLUSTERED (ParentKey, Question)");
-            this.Sql("ALTER TABLE dbo.UserCertificates ADD CONSTRAINT UK_ParentKey_Thumbprint UNIQUE NONCLUSTERED (ParentKey, Thumbprint)");
-            this.Sql("ALTER TABLE dbo.UserClaims ADD CONSTRAINT UK_ParentKey_Type_Value UNIQUE NONCLUSTERED (ParentKey, Type, Value)");
+            this.CreateIndex("UserAccounts", "ID", unique: true);
+            this.CreateIndex("UserAccounts", new[] { "Tenant", "Username" }, unique: true);
+            this.CreateIndex("UserAccounts", new[] { "Tenant", "Email" }, unique: true);
+            this.CreateIndex("UserAccounts", new[] { "Tenant", "MobilePhoneNumber" }, unique: true);
+            this.CreateIndex("UserAccounts", "VerificationKey", unique: true);
+            this.CreateIndex("UserAccounts", "Username", unique: false);
+            this.CreateIndex("LinkedAccounts", new[] { "ProviderName", "ProviderAccountID" }, unique: false);
+            this.CreateIndex("UserCertificates", "Thumbprint", unique: false);
+            this.Sql("ALTER TABLE LinkedAccounts ADD CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID UNIQUE NONCLUSTERED (ParentKey, ProviderName, ProviderAccountID)");
+            this.Sql("ALTER TABLE LinkedAccountClaims ADD CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID_Type_Value UNIQUE NONCLUSTERED (ParentKey, ProviderName, ProviderAccountID, Type, Value)");
+            this.Sql("ALTER TABLE PasswordResetSecrets ADD CONSTRAINT UK_ParentKey_Question UNIQUE NONCLUSTERED (ParentKey, Question)");
+            this.Sql("ALTER TABLE UserCertificates ADD CONSTRAINT UK_ParentKey_Thumbprint UNIQUE NONCLUSTERED (ParentKey, Thumbprint)");
+            this.Sql("ALTER TABLE UserClaims ADD CONSTRAINT UK_ParentKey_Type_Value UNIQUE NONCLUSTERED (ParentKey, Type, Value)");
         }
 
         public override void Down()
         {
-            this.DropIndex("dbo.Groups", new[] { "ID" });
-            this.DropIndex("dbo.Groups", new[] { "Tenant", "Name" });
-            this.Sql("ALTER TABLE dbo.GroupChilds DROP CONSTRAINT UK_ParentKey_ChildGroupID");
+            this.DropIndex("Groups", new[] { "ID" });
+            this.DropIndex("Groups", new[] { "Tenant", "Name" });
+            this.Sql("ALTER TABLE GroupChilds DROP CONSTRAINT UK_ParentKey_ChildGroupID");
 
-            this.DropIndex("dbo.UserAccounts", new[] { "ID" });
-            this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "Username" });
-            this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "Email" });
-            this.DropIndex("dbo.UserAccounts", new[] { "Tenant", "MobilePhoneNumber" });
-            this.DropIndex("dbo.UserAccounts", new[] { "VerificationKey" });
-            this.DropIndex("dbo.UserAccounts", new[] { "Username" });
-            this.DropIndex("dbo.LinkedAccounts", new[] { "ProviderName", "ProviderAccountID" });
-            this.DropIndex("dbo.UserCertificates", new[] { "Thumbprint" });
-            this.Sql("ALTER TABLE dbo.LinkedAccounts DROP CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID");
-            this.Sql("ALTER TABLE dbo.LinkedAccountClaims DROP CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID_Type_Value");
-            this.Sql("ALTER TABLE dbo.PasswordResetSecrets DROP CONSTRAINT UK_ParentKey_Question");
-            this.Sql("ALTER TABLE dbo.UserCertificates DROP CONSTRAINT UK_ParentKey_Thumbprint");
-            this.Sql("ALTER TABLE dbo.UserClaims DROP CONSTRAINT UK_ParentKey_Type_Value");
+            this.DropIndex("UserAccounts", new[] { "ID" });
+            this.DropIndex("UserAccounts", new[] { "Tenant", "Username" });
+            this.DropIndex("UserAccounts", new[] { "Tenant", "Email" });
+            this.DropIndex("UserAccounts", new[] { "Tenant", "MobilePhoneNumber" });
+            this.DropIndex("UserAccounts", new[] { "VerificationKey" });
+            this.DropIndex("UserAccounts", new[] { "Username" });
+            this.DropIndex("LinkedAccounts", new[] { "ProviderName", "ProviderAccountID" });
+            this.DropIndex("UserCertificates", new[] { "Thumbprint" });
+            this.Sql("ALTER TABLE LinkedAccounts DROP CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID");
+            this.Sql("ALTER TABLE LinkedAccountClaims DROP CONSTRAINT UK_ParentKey_ProviderName_ProviderAccountID_Type_Value");
+            this.Sql("ALTER TABLE PasswordResetSecrets DROP CONSTRAINT UK_ParentKey_Question");
+            this.Sql("ALTER TABLE UserCertificates DROP CONSTRAINT UK_ParentKey_Thumbprint");
+            this.Sql("ALTER TABLE UserClaims DROP CONSTRAINT UK_ParentKey_Type_Value");
         }
     }
 }
