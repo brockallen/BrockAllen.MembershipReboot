@@ -49,6 +49,7 @@
   <ItemGroup>
     <Content Include="license.txt" />
     <Content Include="app.config" />
+    <Content Include="Migrations\v6_to_v7.sql" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbContextGroupRepository.cs" />
