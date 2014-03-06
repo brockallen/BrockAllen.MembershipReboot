@@ -214,6 +214,53 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.UsernameRequired, ex.Message);
             }
         }
+
+        [TestMethod]
+        public void CreateAccount_EmptyEmail_FailsValidation()
+        {
+            try
+            {
+                subject.CreateAccount("test", "pass", null);
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailRequired, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void CreateAccount_AccountVerificationNotRequired_EmptyEmail_Succeeds()
+        {
+            configuration.RequireAccountVerification = false;
+            var acct = subject.CreateAccount("test", "pass", null);
+            Assert.IsNull(acct.Email);
+            Assert.IsNull(repository.GetByID(acct.ID).Email);
+        }
+
+        [TestMethod]
+        public void CreateAccount_AccountVerificationNotRequired_TwoEmptyEmails_Succeeds()
+        {
+            configuration.RequireAccountVerification = false;
+            subject.CreateAccount("test1", "pass", null);
+            subject.CreateAccount("test2", "pass", null);
+        }
+
+        [TestMethod]
+        public void CreateAccount_AccountVerificationNotRequired_DuplicateEmails_FailsValidation()
+        {
+            configuration.RequireAccountVerification = false;
+            subject.CreateAccount("test1", "pass", "test@test.com");
+            try
+            {
+                subject.CreateAccount("test2", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch(ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
+            }
+        }
         
         [TestMethod]
         public void CreateAccount_AtSignInUsername_FailsValidation()
@@ -228,7 +275,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.UsernameCannotContainAtSign, ex.Message);
             }
         }
-        
+
         [TestMethod]
         public void CreateAccount_DuplicateUsername_FailsValidation()
         {
@@ -242,6 +289,23 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             catch (ValidationException ex)
             {
                 Assert.AreEqual(Resources.ValidationMessages.UsernameAlreadyInUse, ex.Message);
+            }
+        }
+        
+        [TestMethod]
+        public void CreateAccount_EmailIsUsername_DuplicateEmails_FailsValidation()
+        {
+            configuration.EmailIsUsername = true;
+            subject.CreateAccount(null, "pass", "test@test.com");
+
+            try
+            {
+                subject.CreateAccount(null, "pass2", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
             }
         }
 
