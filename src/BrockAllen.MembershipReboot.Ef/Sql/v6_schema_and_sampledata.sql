@@ -1,81 +1,24 @@
-USE [master]
+/*
+drop table [dbo].[__MigrationHistory]
+drop table [dbo].[GroupChilds]
+drop table [dbo].[Groups]
+drop table [dbo].[LinkedAccountClaims]
+drop table [dbo].[LinkedAccounts]
+drop table [dbo].[PasswordResetSecrets]
+drop table [dbo].[TwoFactorAuthTokens]
+drop table [dbo].[UserCertificates]
+drop table [dbo].[UserClaims]
+drop table [dbo].[UserAccounts]
+*/
+
+/****** Object:  Database [MR]    Script Date: 3/5/2014 10:40:36 PM ******/
+USE MASTER
 GO
-/****** Object:  Database [MembershipReboot]    Script Date: 3/4/2014 9:01:24 PM ******/
-CREATE DATABASE [MembershipReboot]
- CONTAINMENT = NONE
- ON  PRIMARY 
-( NAME = N'MembershipReboot', FILENAME = N'C:\Users\ballen\MembershipReboot.mdf' , SIZE = 3136KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
- LOG ON 
-( NAME = N'MembershipReboot_log', FILENAME = N'C:\Users\ballen\MembershipReboot_log.ldf' , SIZE = 784KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
-GO
-ALTER DATABASE [MembershipReboot] SET COMPATIBILITY_LEVEL = 110
-GO
-IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
-begin
-EXEC [MembershipReboot].[dbo].[sp_fulltext_database] @action = 'enable'
-end
-GO
-ALTER DATABASE [MembershipReboot] SET ANSI_NULL_DEFAULT OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET ANSI_NULLS OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET ANSI_PADDING OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET ANSI_WARNINGS OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET ARITHABORT OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET AUTO_CLOSE ON 
-GO
-ALTER DATABASE [MembershipReboot] SET AUTO_CREATE_STATISTICS ON 
-GO
-ALTER DATABASE [MembershipReboot] SET AUTO_SHRINK OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET AUTO_UPDATE_STATISTICS ON 
-GO
-ALTER DATABASE [MembershipReboot] SET CURSOR_CLOSE_ON_COMMIT OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET CURSOR_DEFAULT  GLOBAL 
-GO
-ALTER DATABASE [MembershipReboot] SET CONCAT_NULL_YIELDS_NULL OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET NUMERIC_ROUNDABORT OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET QUOTED_IDENTIFIER OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET RECURSIVE_TRIGGERS OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET  ENABLE_BROKER 
-GO
-ALTER DATABASE [MembershipReboot] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET DATE_CORRELATION_OPTIMIZATION OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET TRUSTWORTHY OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET ALLOW_SNAPSHOT_ISOLATION OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET PARAMETERIZATION SIMPLE 
-GO
-ALTER DATABASE [MembershipReboot] SET READ_COMMITTED_SNAPSHOT ON 
-GO
-ALTER DATABASE [MembershipReboot] SET HONOR_BROKER_PRIORITY OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET RECOVERY SIMPLE 
-GO
-ALTER DATABASE [MembershipReboot] SET  MULTI_USER 
-GO
-ALTER DATABASE [MembershipReboot] SET PAGE_VERIFY CHECKSUM  
-GO
-ALTER DATABASE [MembershipReboot] SET DB_CHAINING OFF 
-GO
-ALTER DATABASE [MembershipReboot] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
-GO
-ALTER DATABASE [MembershipReboot] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+CREATE DATABASE MembershipReboot
 GO
 USE [MembershipReboot]
 GO
-/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 3/5/2014 10:40:36 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -91,13 +34,13 @@ CREATE TABLE [dbo].[__MigrationHistory](
 (
 	[MigrationId] ASC,
 	[ContextKey] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
 SET ANSI_PADDING OFF
 GO
-/****** Object:  Table [dbo].[GroupChilds]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[GroupChilds]    Script Date: 3/5/2014 10:40:36 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -109,11 +52,11 @@ CREATE TABLE [dbo].[GroupChilds](
 (
 	[GroupID] ASC,
 	[ChildGroupID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[Groups]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[Groups]    Script Date: 3/5/2014 10:40:36 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -127,11 +70,11 @@ CREATE TABLE [dbo].[Groups](
  CONSTRAINT [PK_dbo.Groups] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[LinkedAccountClaims]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[LinkedAccountClaims]    Script Date: 3/5/2014 10:40:37 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -149,11 +92,11 @@ CREATE TABLE [dbo].[LinkedAccountClaims](
 	[ProviderAccountID] ASC,
 	[Type] ASC,
 	[Value] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[LinkedAccounts]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[LinkedAccounts]    Script Date: 3/5/2014 10:40:37 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -168,11 +111,11 @@ CREATE TABLE [dbo].[LinkedAccounts](
 	[UserAccountID] ASC,
 	[ProviderName] ASC,
 	[ProviderAccountID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[PasswordResetSecrets]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[PasswordResetSecrets]    Script Date: 3/5/2014 10:40:38 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -185,11 +128,11 @@ CREATE TABLE [dbo].[PasswordResetSecrets](
  CONSTRAINT [PK_dbo.PasswordResetSecrets] PRIMARY KEY CLUSTERED 
 (
 	[PasswordResetSecretID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[TwoFactorAuthTokens]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[TwoFactorAuthTokens]    Script Date: 3/5/2014 10:40:38 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -202,11 +145,11 @@ CREATE TABLE [dbo].[TwoFactorAuthTokens](
 (
 	[UserAccountID] ASC,
 	[Token] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[UserAccounts]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[UserAccounts]    Script Date: 3/5/2014 10:40:38 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -243,11 +186,11 @@ CREATE TABLE [dbo].[UserAccounts](
  CONSTRAINT [PK_dbo.UserAccounts] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[UserCertificates]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[UserCertificates]    Script Date: 3/5/2014 10:40:38 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -260,11 +203,11 @@ CREATE TABLE [dbo].[UserCertificates](
 (
 	[UserAccountID] ASC,
 	[Thumbprint] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Table [dbo].[UserClaims]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Table [dbo].[UserClaims]    Script Date: 3/5/2014 10:40:38 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -278,51 +221,51 @@ CREATE TABLE [dbo].[UserClaims](
 	[UserAccountID] ASC,
 	[Type] ASC,
 	[Value] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
 
 GO
-/****** Object:  Index [IX_GroupID]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Index [IX_GroupID]    Script Date: 3/5/2014 10:40:38 PM ******/
 CREATE NONCLUSTERED INDEX [IX_GroupID] ON [dbo].[GroupChilds]
 (
 	[GroupID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_UserAccountID]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Index [IX_UserAccountID]    Script Date: 3/5/2014 10:40:38 PM ******/
 CREATE NONCLUSTERED INDEX [IX_UserAccountID] ON [dbo].[LinkedAccountClaims]
 (
 	[UserAccountID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_UserAccountID]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Index [IX_UserAccountID]    Script Date: 3/5/2014 10:40:38 PM ******/
 CREATE NONCLUSTERED INDEX [IX_UserAccountID] ON [dbo].[LinkedAccounts]
 (
 	[UserAccountID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_UserAccountID]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Index [IX_UserAccountID]    Script Date: 3/5/2014 10:40:38 PM ******/
 CREATE NONCLUSTERED INDEX [IX_UserAccountID] ON [dbo].[PasswordResetSecrets]
 (
 	[UserAccountID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_UserAccountID]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Index [IX_UserAccountID]    Script Date: 3/5/2014 10:40:38 PM ******/
 CREATE NONCLUSTERED INDEX [IX_UserAccountID] ON [dbo].[TwoFactorAuthTokens]
 (
 	[UserAccountID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_UserAccountID]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Index [IX_UserAccountID]    Script Date: 3/5/2014 10:40:38 PM ******/
 CREATE NONCLUSTERED INDEX [IX_UserAccountID] ON [dbo].[UserCertificates]
 (
 	[UserAccountID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_UserAccountID]    Script Date: 3/4/2014 9:01:24 PM ******/
+/****** Object:  Index [IX_UserAccountID]    Script Date: 3/5/2014 10:40:38 PM ******/
 CREATE NONCLUSTERED INDEX [IX_UserAccountID] ON [dbo].[UserClaims]
 (
 	[UserAccountID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
 ALTER TABLE [dbo].[UserAccounts] ADD  DEFAULT ((0)) FOR [FailedPasswordResetCount]
 GO
@@ -368,11 +311,6 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[UserClaims] CHECK CONSTRAINT [FK_dbo.UserClaims_dbo.UserAccounts_UserAccountID]
 GO
-USE [master]
-GO
-ALTER DATABASE [MembershipReboot] SET  READ_WRITE 
-GO
-
 
 INSERT [dbo].[UserAccounts] ([ID], [Tenant], [Username], [Email], [Created], [LastUpdated], [PasswordChanged], [RequiresPasswordReset], [MobileCode], [MobileCodeSent], [MobilePhoneNumber], [AccountTwoFactorAuthMode], [CurrentTwoFactorAuthStatus], [IsAccountVerified], [IsLoginAllowed], [IsAccountClosed], [AccountClosed], [LastLogin], [LastFailedLogin], [FailedLoginCount], [VerificationKey], [VerificationPurpose], [VerificationKeySent], [HashedPassword], [LastFailedPasswordReset], [FailedPasswordResetCount], [MobilePhoneNumberChanged], [VerificationStorage]) VALUES (N'56ed9544-4d7d-4fed-930b-a80ca69b3e05', N'default', N'BrockAllen', N'brockallen@gmail.com', CAST(0x0000A2E500207CE4 AS DateTime), CAST(0x0000A2E500227CB0 AS DateTime), CAST(0x0000A2E50020DF7D AS DateTime), 0, NULL, NULL, NULL, 0, 0, 1, 1, 0, NULL, CAST(0x0000A2E500227CB0 AS DateTime), NULL, 0, NULL, NULL, NULL, N'1F400.AHX3oMy62CHEpgJJNsxua/FxiMJ8O5WfZRfBcKUQF1ohqopuZ6iACNPSqX+EkIYMhg==', NULL, 0, NULL, NULL)
 GO
