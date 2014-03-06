@@ -350,6 +350,36 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CreateMethod_UsernameContainsWhitespace_FailsValidation()
+        {
+            try
+            {
+                subject.CreateAccount("test test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameOnlyContainLettersAndDigits, ex.Message);
+            }
+        }
+        
+        [TestMethod]
+        public void CreateMethod_EmailIsUsername_EmailContainsWhitespace_FailsValidation()
+        {
+            configuration.EmailIsUsername = true;
+
+            try
+            {
+                subject.CreateAccount(null, "pass", "test test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.InvalidEmail, ex.Message);
+            }
+        }
+
+        [TestMethod]
         public void CreateAccount_CanPassID_UsesID()
         {
             var id = Guid.NewGuid();
