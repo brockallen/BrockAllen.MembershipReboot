@@ -13,9 +13,8 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
 
             this.CreateIndex("UserAccounts", "ID", unique: true);
             this.CreateIndex("UserAccounts", new[] { "Tenant", "Username" }, unique: true);
-            this.CreateIndex("UserAccounts", new[] { "Tenant", "Email" }, unique: true);
-            this.CreateIndex("UserAccounts", new[] { "Tenant", "MobilePhoneNumber" }, unique: true);
-            this.CreateIndex("UserAccounts", "VerificationKey", unique: true);
+            this.CreateIndex("UserAccounts", new[] { "Tenant", "Email" }, unique: false);
+            this.CreateIndex("UserAccounts", "VerificationKey", unique: false);
             this.CreateIndex("UserAccounts", "Username", unique: false);
             this.CreateIndex("LinkedAccounts", new[] { "ProviderName", "ProviderAccountID" }, unique: false);
             this.CreateIndex("UserCertificates", "Thumbprint", unique: false);
@@ -35,7 +34,6 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
             this.DropIndex("UserAccounts", new[] { "ID" });
             this.DropIndex("UserAccounts", new[] { "Tenant", "Username" });
             this.DropIndex("UserAccounts", new[] { "Tenant", "Email" });
-            this.DropIndex("UserAccounts", new[] { "Tenant", "MobilePhoneNumber" });
             this.DropIndex("UserAccounts", new[] { "VerificationKey" });
             this.DropIndex("UserAccounts", new[] { "Username" });
             this.DropIndex("LinkedAccounts", new[] { "ProviderName", "ProviderAccountID" });
