@@ -199,28 +199,34 @@ namespace BrockAllen.MembershipReboot
                         throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountCreateFailNoEmailFromIdp));
                     }
 
-                    // guess at a name to use
-                    var name = claims.GetValue(ClaimTypes.Name);
-                    if (name == null ||
-                        this.UserAccountService.UsernameExists(tenant, name))
-                    {
-                        name = email;
-                    }
-                    else
-                    {
-                        name = name.Replace(" ", "");
-                    }
-
                     // check to see if email already exists
                     if (this.UserAccountService.EmailExists(tenant, email))
                     {
                         throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.LoginFailEmailAlreadyAssociated));
                     }
 
-                    // auto-gen a password, they can always reset it later if they want to use the password feature
-                    // this is slightly dangerous if we don't do email account verification, so if email account
-                    // verification is disabled then we need to be very confident that the external provider has
-                    // provided us with a verified email
+                    // guess at a username to use
+                    var name = claims.GetValue(ClaimTypes.Name);
+                    // remove whitespace
+                    if (name != null) name = new String(name.Where(x => Char.IsLetterOrDigit(x)).ToArray());
+                    
+                    // check to see if username already exists
+                    if (String.IsNullOrWhiteSpace(name) || this.UserAccountService.UsernameExists(tenant, name))
+                    {
+                        // try use email for name then
+                        name = email.Substring(0, email.IndexOf('@'));
+                        name = new String(name.Where(x=>Char.IsLetterOrDigit(x)).ToArray());
+
+                        if (this.UserAccountService.UsernameExists(tenant, name))
+                        {
+                            // gen random username -- this isn't ideal but 
+                            // they should always be able to change it later
+                            name = Guid.NewGuid().ToString("N");
+                        }
+                    }
+
+                    // create account without password -- user can verify their email and then 
+                    // do a password reset to assign password
                     account = this.UserAccountService.CreateAccount(tenant, name, null, email);
 
                     // update account with external claims
