@@ -21,6 +21,8 @@ namespace BrockAllen.MembershipReboot
 
         public void Send(Message msg)
         {
+            Tracing.Information("[SmtpMessageDelivery.Send] sending mail to " + msg.To);
+
             if (String.IsNullOrWhiteSpace(msg.From))
             {
                 SmtpSection smtp = ConfigurationManager.GetSection("system.net/mailSettings/smtp") as SmtpSection;

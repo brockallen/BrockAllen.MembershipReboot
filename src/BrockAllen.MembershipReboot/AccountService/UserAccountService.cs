@@ -1921,7 +1921,7 @@ namespace BrockAllen.MembershipReboot
             var result = Configuration.Crypto.VerifyHash(key, account.VerificationKey);
             if (!result)
             {
-                Tracing.Error("[UserAccountService.IsVerificationKeyValid] failed -- verification key doesn't match");
+                Tracing.Warning("[UserAccountService.IsVerificationKeyValid] failed -- verification key doesn't match");
                 return false;
             }
 
@@ -1933,13 +1933,13 @@ namespace BrockAllen.MembershipReboot
         {
             if (account.VerificationPurpose != purpose)
             {
-                Tracing.Error("[UserAccountService.IsVerificationPurposeValid] failed -- verification purpose invalid");
+                Tracing.Warning("[UserAccountService.IsVerificationPurposeValid] failed -- verification purpose invalid");
                 return false;
             }
 
             if (IsVerificationKeyStale(account))
             {
-                Tracing.Error("[UserAccountService.IsVerificationPurposeValid] failed -- verification key stale");
+                Tracing.Warning("[UserAccountService.IsVerificationPurposeValid] failed -- verification key stale");
                 return false;
             }
 

@@ -23,18 +23,22 @@ namespace BrockAllen.MembershipReboot
         public string GetTwoFactorAuthToken(UserAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
-            return GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
+            var result = GetCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
+            Tracing.Information("[CookieBasedTwoFactorAuthPolicy.ClearTwoFactorAuthToken] getting cookie for {0}, {1}, found:{2}", account.Tenant, account.Username, result);
+            return result;
         }
 
         public void IssueTwoFactorAuthToken(UserAccount account, string token)
         {
             if (account == null) throw new ArgumentNullException("account");
+            Tracing.Information("[CookieBasedTwoFactorAuthPolicy.ClearTwoFactorAuthToken] issuing cookie for {0}, {1}", account.Tenant, account.Username);
             IssueCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant, token);
         }
 
         public void ClearTwoFactorAuthToken(UserAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
+            Tracing.Information("[CookieBasedTwoFactorAuthPolicy.ClearTwoFactorAuthToken] clearning cookie for {0}, {1}", account.Tenant, account.Username);
             RemoveCookie(MembershipRebootConstants.AuthenticationService.CookieBasedTwoFactorAuthPolicyCookieName + account.Tenant);
         }
     }

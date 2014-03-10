@@ -51,6 +51,8 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentNullException("method");
 
+            Tracing.Information("[AuthenticationService.SignIn] sign in called: {0}", account.ID);
+
             if (!account.IsLoginAllowed || account.IsAccountClosed)
             {
                 throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.LoginNotAllowed));
@@ -92,7 +94,8 @@ namespace BrockAllen.MembershipReboot
             }
 
             // issue cookie
-            IssueToken(cp, persistentCookie:persistent);
+            Tracing.Verbose("[AuthenticationService.SignIn] token issued: {0}", account.ID);
+            IssueToken(cp, persistentCookie: persistent);
         }
 
         private static List<Claim> GetBasicClaims(TAccount account, string method)
@@ -179,10 +182,13 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
             if (claims == null) throw new ArgumentNullException("claims");
 
+            Tracing.Information("[AuthenticationService.SignInWithLinkedAccount] tenant: {0}, provider: {1}, id: {2}", account.ID, providerName, providerAccountID);
+
             var user = GetCurentPrincipal();
             if (user != null && user.Identity.IsAuthenticated)
             {
                 // already logged in, so use the current user's account
+                Tracing.Verbose("[AuthenticationService.SignInWithLinkedAccount] user already logged in as: {0}", user.Identity.Name);
                 account = this.UserAccountService.GetByID(user.GetUserID());
             }
             else
@@ -191,6 +197,8 @@ namespace BrockAllen.MembershipReboot
                 account = this.UserAccountService.GetByLinkedAccount(tenant, providerName, providerAccountID);
                 if (account == null)
                 {
+                    Tracing.Verbose("[AuthenticationService.SignInWithLinkedAccount] linked account not found");
+                    
                     // no account associated, so create one
                     // we need email
                     var email = claims.GetValue(ClaimTypes.Email);
@@ -227,12 +235,17 @@ namespace BrockAllen.MembershipReboot
 
                     // create account without password -- user can verify their email and then 
                     // do a password reset to assign password
+                    Tracing.Verbose("[AuthenticationService.SignInWithLinkedAccount] creating account: {0}, {1}", name, email);
                     account = this.UserAccountService.CreateAccount(tenant, name, null, email);
 
                     // update account with external claims
                     var cmd = new MapClaimsToAccount<TAccount> { Account = account, Claims = claims };
                     this.UserAccountService.ExecuteCommand(cmd);
                     this.UserAccountService.Update(account);
+                }
+                else
+                {
+                    Tracing.Verbose("[AuthenticationService.SignInWithLinkedAccount] linked account found: {0}", account.ID);
                 }
             }
 
@@ -244,16 +257,25 @@ namespace BrockAllen.MembershipReboot
             // log them in if the account if they're verified
             if (account.IsAccountVerified || !UserAccountService.Configuration.RequireAccountVerification)
             {
+                Tracing.Verbose("[AuthenticationService.SignInWithLinkedAccount] signing user in: {0}", account.ID);
                 // signin from the account
                 // if we want to include the provider's claims, then perhaps this
                 // should be done in the claims transformer
                 this.SignIn(account, providerName);
             }
+            else
+            {
+                Tracing.Error("[AuthenticationService.SignInWithLinkedAccount] user account not verified, not allowed to login: {0}", account.ID);
+            }
         }
 
         public virtual void SignOut()
         {
-            Tracing.Information("[AuthenticationService.SignOut] called: {0}", ClaimsPrincipal.Current.Claims.GetValue(ClaimTypes.NameIdentifier));
+            var p = this.GetCurentPrincipal();
+            if (p.HasUserID())
+            {
+                Tracing.Information("[AuthenticationService.SignOut] called: {0}", p.GetUserID());
+            }
 
             // clear cookie
             RevokeToken();

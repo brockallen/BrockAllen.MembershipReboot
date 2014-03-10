@@ -31,6 +31,8 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void Process(UserAccountEvent<TAccount> evt, object extra = null)
         {
+            Tracing.Information("[{0}] Processing Event: {1}", this.GetType(), evt.GetType());
+            
             var data = new Dictionary<string, string>();
             if (extra != null)
             {
