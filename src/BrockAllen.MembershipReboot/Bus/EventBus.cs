@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace BrockAllen.MembershipReboot
 {
     class EventBus : List<IEventHandler>, IEventBus
     {
-        Dictionary<Type, IEnumerable<IEventHandler>> handlerCache = new Dictionary<Type, IEnumerable<IEventHandler>>();
+        ConcurrentDictionary<Type, IEnumerable<IEventHandler>> handlerCache = new ConcurrentDictionary<Type, IEnumerable<IEventHandler>>();
         GenericMethodActionBuilder<IEventHandler, IEvent> actions = new GenericMethodActionBuilder<IEventHandler, IEvent>(typeof(IEventHandler<>), "Handle");
 
         public void RaiseEvent(IEvent evt)
@@ -40,7 +41,7 @@ namespace BrockAllen.MembershipReboot
                     where eventHandlerType.IsAssignableFrom(handler.GetType())
                     select handler;
                 var handlers = query.ToArray().Cast<IEventHandler>();
-                handlerCache.Add(eventType, handlers);
+                handlerCache[eventType] = handlers;
             }
             return handlerCache[eventType];
         }

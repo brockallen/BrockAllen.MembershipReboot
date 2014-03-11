@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -11,7 +12,7 @@ namespace BrockAllen.MembershipReboot
 {
     class GenericMethodActionBuilder<TargetBase, ParamBase>
     {
-        Dictionary<Type, Action<TargetBase, ParamBase>> actionCache = new Dictionary<Type, Action<TargetBase, ParamBase>>();
+        ConcurrentDictionary<Type, Action<TargetBase, ParamBase>> actionCache = new ConcurrentDictionary<Type, Action<TargetBase, ParamBase>>();
 
         Type targetType;
         string method;
@@ -27,7 +28,7 @@ namespace BrockAllen.MembershipReboot
 
             if (!actionCache.ContainsKey(paramType))
             {
-                actionCache.Add(paramType, BuildActionForMethod(paramType));
+                actionCache[paramType] = BuildActionForMethod(paramType);
             }
 
             return actionCache[paramType];

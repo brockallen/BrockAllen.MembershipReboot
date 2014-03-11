@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,7 +27,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        Dictionary<Type, IEnumerable<ICommandHandler>> handlerCache = new Dictionary<Type, IEnumerable<ICommandHandler>>();
+        ConcurrentDictionary<Type, IEnumerable<ICommandHandler>> handlerCache = new ConcurrentDictionary<Type, IEnumerable<ICommandHandler>>();
         GenericMethodActionBuilder<ICommandHandler, ICommand> actions = new GenericMethodActionBuilder<ICommandHandler, ICommand>(typeof(ICommandHandler<>), "Handle");
 
         Action<ICommandHandler, ICommand> GetAction(ICommand evt)
@@ -45,7 +46,7 @@ namespace BrockAllen.MembershipReboot
                     where eventHandlerType.IsAssignableFrom(handler.GetType())
                     select handler;
                 var handlers = query.ToArray().Cast<ICommandHandler>();
-                handlerCache.Add(eventType, handlers);
+                handlerCache[eventType] = handlers;
             }
             return handlerCache[eventType];
         }
