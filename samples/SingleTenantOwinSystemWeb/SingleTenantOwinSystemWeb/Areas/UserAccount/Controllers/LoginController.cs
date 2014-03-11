@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Mvc;
+using System.Web;
+using Owin;
 
 namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 {
@@ -81,7 +83,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         public ActionResult TwoFactorAuthCodeLogin()
         {
-            if (!User.HasUserID())
+            var ctx = Request.GetOwinContext();
+            var id = ctx.GetIdFromTwoFactorCookie();
+            if (id == null)
             {
                 // if the temp cookie is expired, then make the login again
                 return RedirectToAction("Index");
@@ -94,7 +98,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult TwoFactorAuthCodeLogin(string button, TwoFactorAuthInputModel model)
         {
-            if (!User.HasUserID())
+            var ctx = Request.GetOwinContext();
+            var id = ctx.GetIdFromTwoFactorCookie();
+            if (id == null)
             {
                 // if the temp cookie is expired, then make the login again
                 return RedirectToAction("Index");
@@ -105,7 +111,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 if (ModelState.IsValid)
                 {
                     BrockAllen.MembershipReboot.UserAccount account;
-                    if (userAccountService.AuthenticateWithCode(this.User.GetUserID(), model.Code, out account))
+                    if (userAccountService.AuthenticateWithCode(id.Value, model.Code, out account))
                     {
                         authSvc.SignIn(account);
 
@@ -151,10 +157,12 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     var result = false;
                     // we're allowing the use of certs for login and for two factor auth. normally you'd 
                     // do only one or the other, but for the sake of the sample we're allowing both.
-                    if (User.Identity.IsAuthenticated)
+                    var ctx = Request.GetOwinContext();
+                    var id = ctx.GetIdFromTwoFactorCookie();
+                    if (id != null)
                     {
                         // this is when we're doing cert logins for two factor auth
-                        result = this.authSvc.UserAccountService.AuthenticateWithCertificate(User.GetUserID(), cert, out account);
+                        result = this.authSvc.UserAccountService.AuthenticateWithCertificate(id.Value, cert, out account);
                     }
                     else
                     {

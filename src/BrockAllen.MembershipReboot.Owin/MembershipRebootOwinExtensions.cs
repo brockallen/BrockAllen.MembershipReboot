@@ -5,9 +5,12 @@
 
 using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Owin;
+using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Owin
 {
@@ -46,7 +49,7 @@ namespace Owin
             };
             app.UseCookieAuthentication(opts);
         }
-        
+
         public static void UseMembershipReboot(this IAppBuilder app, CookieAuthenticationOptions cookieOptions)
         {
             app.UseCookieAuthentication(cookieOptions);
@@ -57,7 +60,34 @@ namespace Owin
                 CookieSecure = cookieOptions.CookieSecure
             });
         }
-        
+
+        class TaskHelper
+        {
+            static TaskFactory taskFactory;
+            static TaskHelper()
+            {
+                taskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+            }
+
+            public static TResult RunSync<TResult>(Func<Task<TResult>> func)
+            {
+                return taskFactory.StartNew<Task<TResult>>(func).Unwrap<TResult>().GetAwaiter().GetResult();
+            }
+        }
+
+        public static Guid? GetIdFromTwoFactorCookie(this IOwinContext ctx)
+        {
+            var result = TaskHelper.RunSync(()=>ctx.Authentication.AuthenticateAsync(MembershipRebootOwinConstants.AuthenticationTwoFactorType));
+            if (result != null && 
+                result.Identity != null && 
+                result.Identity.IsAuthenticated &&
+                result.Identity.HasUserID())
+            {
+                return result.Identity.GetUserID();
+            }
+            return null;
+        }
+
         public static void SetUserAccountService<TAccount>(this IDictionary<string, object> env, Func<UserAccountService<TAccount>> func)
             where TAccount : UserAccount
         {
