@@ -182,7 +182,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(providerAccountID)) throw new ArgumentException("providerAccountID");
             if (claims == null) throw new ArgumentNullException("claims");
 
-            Tracing.Information("[AuthenticationService.SignInWithLinkedAccount] tenant: {0}, provider: {1}, id: {2}", account.ID, providerName, providerAccountID);
+            Tracing.Information("[AuthenticationService.SignInWithLinkedAccount] tenant: {0}, provider: {1}, id: {2}", tenant, providerName, providerAccountID);
 
             var user = GetCurentPrincipal();
             if (user != null && user.Identity.IsAuthenticated)
