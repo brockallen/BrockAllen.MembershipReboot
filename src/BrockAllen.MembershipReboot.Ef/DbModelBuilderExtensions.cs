@@ -14,8 +14,14 @@ namespace System.Data.Entity
 {
     public static class DbModelBuilderExtensions
     {
-        public static void RegisterUserAccountChildTablesForDelete<TAccount>(this DbContext ctx)
-            where TAccount : RelationalUserAccount
+        public static void RegisterUserAccountChildTablesForDelete<TKey, TAccount, TUserClaim, TLinkedAccount, TLinkedAccountClaim, TPasswordResetSecret, TTwoFactorAuthToken, TUserCertificate>(this DbContext ctx)
+            where TAccount : RelationalUserAccount<TKey, TUserClaim, TLinkedAccount, TLinkedAccountClaim, TPasswordResetSecret, TTwoFactorAuthToken, TUserCertificate>
+            where TUserClaim : RelationalUserClaim<TKey>, new()
+            where TLinkedAccount : RelationalLinkedAccount<TKey>, new()
+            where TLinkedAccountClaim : RelationalLinkedAccountClaim<TKey>, new()
+            where TPasswordResetSecret : RelationalPasswordResetSecret<TKey>, new()
+            where TTwoFactorAuthToken : RelationalTwoFactorAuthToken<TKey>, new()
+            where TUserCertificate : RelationalUserCertificate<TKey>, new()
         {
             ctx.Set<TAccount>().Local.CollectionChanged +=
                 delegate(object sender, NotifyCollectionChangedEventArgs e)
@@ -34,6 +40,13 @@ namespace System.Data.Entity
                     }
                 };
         }
+
+        public static void RegisterUserAccountChildTablesForDelete<TAccount>(this DbContext ctx)
+            where TAccount : RelationalUserAccount
+        {
+            ctx.RegisterUserAccountChildTablesForDelete<int, TAccount, RelationalUserClaim, RelationalLinkedAccount, RelationalLinkedAccountClaim, RelationalPasswordResetSecret, RelationalTwoFactorAuthToken, RelationalUserCertificate>();
+        }
+
         public static void RegisterGroupChildTablesForDelete<TGroup>(this DbContext ctx)
             where TGroup : RelationalGroup
         {
@@ -70,41 +83,53 @@ namespace System.Data.Entity
             }
         }
 
-        public static void ConfigureMembershipRebootUserAccounts<TAccount>(this DbModelBuilder modelBuilder)
-            where TAccount : RelationalUserAccount
+        public static void ConfigureMembershipRebootUserAccounts<TKey, TAccount, TUserClaim, TLinkedAccount, TLinkedAccountClaim, TPasswordResetSecret, TTwoFactorAuthToken, TUserCertificate>(this DbModelBuilder modelBuilder)
+            where TAccount : RelationalUserAccount<TKey, TUserClaim, TLinkedAccount, TLinkedAccountClaim, TPasswordResetSecret, TTwoFactorAuthToken, TUserCertificate>
+            where TUserClaim : RelationalUserClaim<TKey>, new()
+            where TLinkedAccount : RelationalLinkedAccount<TKey>, new()
+            where TLinkedAccountClaim : RelationalLinkedAccountClaim<TKey>, new()
+            where TPasswordResetSecret : RelationalPasswordResetSecret<TKey>, new()
+            where TTwoFactorAuthToken : RelationalTwoFactorAuthToken<TKey>, new()
+            where TUserCertificate : RelationalUserCertificate<TKey>, new()
         {
             modelBuilder.Entity<TAccount>()
                 .HasKey(x => x.Key).ToTable("UserAccounts");
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.PasswordResetSecretCollection)
-                .WithRequired().HasForeignKey(x=>x.ParentKey).WillCascadeOnDelete();
-            modelBuilder.Entity<RelationalPasswordResetSecret>()
+                .WithRequired().HasForeignKey(x => x.ParentKey).WillCascadeOnDelete();
+            modelBuilder.Entity<TPasswordResetSecret>()
                 .HasKey(x => x.Key).ToTable("PasswordResetSecrets");
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.TwoFactorAuthTokenCollection)
                 .WithRequired().HasForeignKey(x => x.ParentKey).WillCascadeOnDelete();
-            modelBuilder.Entity<RelationalTwoFactorAuthToken>()
+            modelBuilder.Entity<TTwoFactorAuthToken>()
                 .HasKey(x => x.Key).ToTable("TwoFactorAuthTokens");
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.UserCertificateCollection)
                 .WithRequired().HasForeignKey(x => x.ParentKey).WillCascadeOnDelete();
-            modelBuilder.Entity<RelationalUserCertificate>()
+            modelBuilder.Entity<TUserCertificate>()
                 .HasKey(x => x.Key).ToTable("UserCertificates");
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.ClaimCollection)
                 .WithRequired().HasForeignKey(x => x.ParentKey).WillCascadeOnDelete();
-            modelBuilder.Entity<RelationalUserClaim>()
+            modelBuilder.Entity<TUserClaim>()
                 .HasKey(x => x.Key).ToTable("UserClaims");
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.LinkedAccountCollection)
                 .WithRequired().HasForeignKey(x => x.ParentKey).WillCascadeOnDelete();
-            modelBuilder.Entity<RelationalLinkedAccount>()
+            modelBuilder.Entity<TLinkedAccount>()
                 .HasKey(x => x.Key).ToTable("LinkedAccounts");
 
             modelBuilder.Entity<TAccount>().HasMany(x => x.LinkedAccountClaimCollection)
                 .WithRequired().HasForeignKey(x => x.ParentKey).WillCascadeOnDelete();
-            modelBuilder.Entity<RelationalLinkedAccountClaim>()
+            modelBuilder.Entity<TLinkedAccountClaim>()
                 .HasKey(x => x.Key).ToTable("LinkedAccountClaims");
+        }
+        
+        public static void ConfigureMembershipRebootUserAccounts<TAccount>(this DbModelBuilder modelBuilder)
+            where TAccount : RelationalUserAccount
+        {
+            modelBuilder.ConfigureMembershipRebootUserAccounts<int, TAccount, RelationalUserClaim, RelationalLinkedAccount, RelationalLinkedAccountClaim, RelationalPasswordResetSecret, RelationalTwoFactorAuthToken, RelationalUserCertificate>();
         }
 
         public static void ConfigureMembershipRebootGroups<TGroup>(this DbModelBuilder modelBuilder)

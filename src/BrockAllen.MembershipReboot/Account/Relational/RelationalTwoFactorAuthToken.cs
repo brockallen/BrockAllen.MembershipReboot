@@ -7,9 +7,10 @@ using System;
 
 namespace BrockAllen.MembershipReboot.Relational
 {
-    public class RelationalTwoFactorAuthToken : TwoFactorAuthToken
+    public class RelationalTwoFactorAuthToken<TKey> : TwoFactorAuthToken
     {
-        public virtual int Key { get; set; }
-        public virtual int ParentKey { get; set; }
+        public virtual TKey Key { get; set; }
+        public virtual TKey ParentKey { get; set; }
     }
+    public class RelationalTwoFactorAuthToken : RelationalTwoFactorAuthToken<int> { }
 }
