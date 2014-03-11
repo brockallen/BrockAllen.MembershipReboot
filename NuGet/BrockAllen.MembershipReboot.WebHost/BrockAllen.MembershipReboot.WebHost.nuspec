@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BrockAllen.MembershipReboot.WebHost</id>
-    <version>7.0.0-beta-6</version>
+    <version>7.0.0</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://raw.github.com/brockallen/BrockAllen.MembershipReboot/master/license.txt</licenseUrl>
@@ -13,14 +13,14 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Membership Roles Claims Identity User Account Password Management Two Factor Authentication Certificate Authentication</tags>
-    
+
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="System.IdentityModel" targetFramework="net45" />
       <frameworkAssembly assemblyName="System.IdentityModel.Services" targetFramework="net45" />
     </frameworkAssemblies>
-    
+
     <dependencies>
-      <dependency id="BrockAllen.MembershipReboot" version="7.0.0-beta-6" />
+      <dependency id="BrockAllen.MembershipReboot" version="7.0.0" />
     </dependencies>
   </metadata>
 </package>
