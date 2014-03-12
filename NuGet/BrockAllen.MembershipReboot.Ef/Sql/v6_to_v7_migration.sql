@@ -1,0 +1,828 @@
+USE MembershipReboot
+GO
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+BEGIN TRANSACTION
+GO
+CREATE TABLE dbo.Tmp_Groups
+(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ID uniqueidentifier NOT NULL,
+	Tenant nvarchar(50) NOT NULL,
+	Name nvarchar(100) NOT NULL,
+	Created datetime NOT NULL,
+	LastUpdated datetime NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_Groups] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_Groups SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_Groups OFF
+GO
+IF EXISTS(SELECT * FROM dbo.Groups)
+	 EXEC('INSERT INTO dbo.Tmp_Groups (ID, Tenant, Name, Created, LastUpdated)
+		SELECT ID, Tenant, Name, Created, LastUpdated FROM dbo.Groups')
+GO
+ALTER TABLE dbo.GroupChilds
+	DROP CONSTRAINT [FK_dbo.GroupChilds_dbo.Groups_GroupID]
+GO
+DROP TABLE dbo.Groups
+GO
+EXECUTE sp_rename N'dbo.Tmp_Groups', N'Groups', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_Groups]', N'PK_dbo.Groups', 'OBJECT' 
+GO
+
+
+
+GO
+CREATE TABLE dbo.Tmp_GroupChilds
+(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NULL,
+	GroupID uniqueidentifier NOT NULL,
+	ChildGroupID uniqueidentifier NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_GroupChilds] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)  
+GO
+ALTER TABLE dbo.Tmp_GroupChilds SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_GroupChilds OFF
+GO
+IF EXISTS(SELECT * FROM dbo.GroupChilds)
+	 EXEC('INSERT INTO dbo.Tmp_GroupChilds (GroupID, ChildGroupID)
+		SELECT GroupID, ChildGroupID FROM dbo.GroupChilds')
+GO
+DROP TABLE dbo.GroupChilds
+GO
+EXECUTE sp_rename N'dbo.Tmp_GroupChilds', N'GroupChilds', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_GroupChilds]', N'PK_dbo.GroupChilds', 'OBJECT' 
+GO
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+--ALTER TABLE dbo.UserAccounts
+--	DROP CONSTRAINT DF__UserAccou__Faile__21B6055D
+--GO
+CREATE TABLE dbo.Tmp_UserAccounts
+(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ID uniqueidentifier NOT NULL,
+	Tenant nvarchar(50) NOT NULL,
+	Username nvarchar(254) NOT NULL,
+	Email nvarchar(254) NULL,
+	Created datetime NOT NULL,
+	LastUpdated datetime NOT NULL,
+	PasswordChanged datetime NULL,
+	RequiresPasswordReset bit NOT NULL,
+	MobileCode nvarchar(100) NULL,
+	MobileCodeSent datetime NULL,
+	MobilePhoneNumber nvarchar(20) NULL,
+	AccountTwoFactorAuthMode int NOT NULL,
+	CurrentTwoFactorAuthStatus int NOT NULL,
+	IsAccountVerified bit NOT NULL,
+	IsLoginAllowed bit NOT NULL,
+	IsAccountClosed bit NOT NULL,
+	AccountClosed datetime NULL,
+	LastLogin datetime NULL,
+	LastFailedLogin datetime NULL,
+	FailedLoginCount int NOT NULL,
+	VerificationKey nvarchar(100) NULL,
+	VerificationPurpose int NULL,
+	VerificationKeySent datetime NULL,
+	HashedPassword nvarchar(200) NULL,
+	LastFailedPasswordReset datetime NULL,
+	FailedPasswordResetCount int NOT NULL,
+	MobilePhoneNumberChanged datetime NULL,
+	VerificationStorage nvarchar(100) NULL
+	CONSTRAINT [PK_dbo.Tmp_UserAccounts] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_UserAccounts SET (LOCK_ESCALATION = TABLE)
+GO
+--ALTER TABLE dbo.Tmp_UserAccounts ADD CONSTRAINT
+--	DF__UserAccou__Faile__21B6055D DEFAULT ((0)) FOR FailedPasswordResetCount
+--GO
+SET IDENTITY_INSERT dbo.Tmp_UserAccounts OFF
+GO
+IF EXISTS(SELECT * FROM dbo.UserAccounts)
+	 EXEC('INSERT INTO dbo.Tmp_UserAccounts (ID, Tenant, Username, Email, Created, LastUpdated, PasswordChanged, RequiresPasswordReset, MobileCode, MobileCodeSent, MobilePhoneNumber, AccountTwoFactorAuthMode, CurrentTwoFactorAuthStatus, IsAccountVerified, IsLoginAllowed, IsAccountClosed, AccountClosed, LastLogin, LastFailedLogin, FailedLoginCount, VerificationKey, VerificationPurpose, VerificationKeySent, HashedPassword, LastFailedPasswordReset, FailedPasswordResetCount, MobilePhoneNumberChanged, VerificationStorage)
+		SELECT ID, Tenant, Username, Email, Created, LastUpdated, PasswordChanged, RequiresPasswordReset, MobileCode, MobileCodeSent, MobilePhoneNumber, AccountTwoFactorAuthMode, CurrentTwoFactorAuthStatus, IsAccountVerified, IsLoginAllowed, IsAccountClosed, AccountClosed, LastLogin, LastFailedLogin, FailedLoginCount, VerificationKey, VerificationPurpose, VerificationKeySent, HashedPassword, LastFailedPasswordReset, FailedPasswordResetCount, MobilePhoneNumberChanged, VerificationStorage FROM dbo.UserAccounts')
+GO
+ALTER TABLE dbo.LinkedAccountClaims
+	DROP CONSTRAINT [FK_dbo.LinkedAccountClaims_dbo.UserAccounts_UserAccountID]
+GO
+ALTER TABLE dbo.LinkedAccounts
+	DROP CONSTRAINT [FK_dbo.LinkedAccounts_dbo.UserAccounts_UserAccountID]
+GO
+ALTER TABLE dbo.PasswordResetSecrets
+	DROP CONSTRAINT [FK_dbo.PasswordResetSecrets_dbo.UserAccounts_UserAccountID]
+GO
+ALTER TABLE dbo.TwoFactorAuthTokens
+	DROP CONSTRAINT [FK_dbo.TwoFactorAuthTokens_dbo.UserAccounts_UserAccountID]
+GO
+ALTER TABLE dbo.UserCertificates
+	DROP CONSTRAINT [FK_dbo.UserCertificates_dbo.UserAccounts_UserAccountID]
+GO
+ALTER TABLE dbo.UserClaims
+	DROP CONSTRAINT [FK_dbo.UserClaims_dbo.UserAccounts_UserAccountID]
+GO
+DROP TABLE dbo.UserAccounts
+GO
+EXECUTE sp_rename N'dbo.Tmp_UserAccounts', N'UserAccounts', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_UserAccounts]', N'PK_dbo.UserAccounts', 'OBJECT' 
+GO
+
+
+
+
+
+GO
+ALTER TABLE dbo.UserClaims SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+GO
+ALTER TABLE dbo.UserCertificates SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+GO
+ALTER TABLE dbo.TwoFactorAuthTokens SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+GO
+ALTER TABLE dbo.PasswordResetSecrets SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+GO
+ALTER TABLE dbo.LinkedAccounts SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+GO
+ALTER TABLE dbo.LinkedAccountClaims SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_LinkedAccountClaims
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NULL,
+	UserAccountID uniqueidentifier NOT NULL,
+	ProviderName nvarchar(30) NOT NULL,
+	ProviderAccountID nvarchar(100) NOT NULL,
+	Type nvarchar(150) NOT NULL,
+	Value nvarchar(150) NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_LinkedAccountClaims] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+) 
+GO
+ALTER TABLE dbo.Tmp_LinkedAccountClaims SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_LinkedAccountClaims OFF
+GO
+IF EXISTS(SELECT * FROM dbo.LinkedAccountClaims)
+	 EXEC('INSERT INTO dbo.Tmp_LinkedAccountClaims (UserAccountID, ProviderName, ProviderAccountID, Type, Value)
+		SELECT UserAccountID, ProviderName, ProviderAccountID, Type, Value FROM dbo.LinkedAccountClaims')
+GO
+DROP TABLE dbo.LinkedAccountClaims
+GO
+EXECUTE sp_rename N'dbo.Tmp_LinkedAccountClaims', N'LinkedAccountClaims', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_LinkedAccountClaims]', N'PK_dbo.LinkedAccountClaims', 'OBJECT' 
+GO
+
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_LinkedAccounts
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NULL,
+	UserAccountID uniqueidentifier NOT NULL,
+	ProviderName nvarchar(30) NOT NULL,
+	ProviderAccountID nvarchar(100) NOT NULL,
+	LastLogin datetime NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_LinkedAccounts] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_LinkedAccounts SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_LinkedAccounts OFF
+GO
+IF EXISTS(SELECT * FROM dbo.LinkedAccounts)
+	 EXEC('INSERT INTO dbo.Tmp_LinkedAccounts (UserAccountID, ProviderName, ProviderAccountID, LastLogin)
+		SELECT UserAccountID, ProviderName, ProviderAccountID, LastLogin FROM dbo.LinkedAccounts')
+GO
+DROP TABLE dbo.LinkedAccounts
+GO
+EXECUTE sp_rename N'dbo.Tmp_LinkedAccounts', N'LinkedAccounts', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_LinkedAccounts]', N'PK_dbo.LinkedAccounts', 'OBJECT' 
+GO
+
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_PasswordResetSecrets
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NULL,
+	PasswordResetSecretID uniqueidentifier NOT NULL,
+	UserAccountID uniqueidentifier NOT NULL,
+	Question nvarchar(150) NOT NULL,
+	Answer nvarchar(150) NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_PasswordResetSecrets] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_PasswordResetSecrets SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_PasswordResetSecrets OFF
+GO
+IF EXISTS(SELECT * FROM dbo.PasswordResetSecrets)
+	 EXEC('INSERT INTO dbo.Tmp_PasswordResetSecrets (PasswordResetSecretID, UserAccountID, Question, Answer)
+		SELECT PasswordResetSecretID, UserAccountID, Question, Answer FROM dbo.PasswordResetSecrets')
+GO
+DROP TABLE dbo.PasswordResetSecrets
+GO
+EXECUTE sp_rename N'dbo.Tmp_PasswordResetSecrets', N'PasswordResetSecrets', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_PasswordResetSecrets]', N'PK_dbo.PasswordResetSecrets', 'OBJECT' 
+GO
+
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_TwoFactorAuthTokens
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NULL,
+	UserAccountID uniqueidentifier NOT NULL,
+	Token nvarchar(100) NOT NULL,
+	Issued datetime NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_TwoFactorAuthTokens] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_TwoFactorAuthTokens SET (LOCK_ESCALATION = TABLE)
+GO
+IF EXISTS(SELECT * FROM dbo.TwoFactorAuthTokens)
+	 EXEC('INSERT INTO dbo.Tmp_TwoFactorAuthTokens (UserAccountID, Token, Issued)
+		SELECT UserAccountID, Token, Issued FROM dbo.TwoFactorAuthTokens')
+GO
+DROP TABLE dbo.TwoFactorAuthTokens
+GO
+EXECUTE sp_rename N'dbo.Tmp_TwoFactorAuthTokens', N'TwoFactorAuthTokens', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_TwoFactorAuthTokens]', N'PK_dbo.TwoFactorAuthTokens', 'OBJECT' 
+GO
+
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_UserCertificates
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NULL,
+	UserAccountID uniqueidentifier NOT NULL,
+	Thumbprint nvarchar(150) NOT NULL,
+	Subject nvarchar(250) NULL
+	CONSTRAINT [PK_dbo.Tmp_UserCertificates] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_UserCertificates SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_UserCertificates OFF
+GO
+IF EXISTS(SELECT * FROM dbo.UserCertificates)
+	 EXEC('INSERT INTO dbo.Tmp_UserCertificates (UserAccountID, Thumbprint, Subject)
+		SELECT UserAccountID, Thumbprint, Subject FROM dbo.UserCertificates')
+GO
+DROP TABLE dbo.UserCertificates
+GO
+EXECUTE sp_rename N'dbo.Tmp_UserCertificates', N'UserCertificates', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_UserCertificates]', N'PK_dbo.UserCertificates', 'OBJECT' 
+GO
+
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_UserClaims
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NULL,
+	UserAccountID uniqueidentifier NOT NULL,
+	Type nvarchar(150) NOT NULL,
+	Value nvarchar(150) NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_UserClaims] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_UserClaims SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_UserClaims OFF
+GO
+IF EXISTS(SELECT * FROM dbo.UserClaims)
+	 EXEC('INSERT INTO dbo.Tmp_UserClaims (UserAccountID, Type, Value)
+		SELECT UserAccountID, Type, Value FROM dbo.UserClaims')
+GO
+DROP TABLE dbo.UserClaims
+GO
+EXECUTE sp_rename N'dbo.Tmp_UserClaims', N'UserClaims', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_UserClaims]', N'PK_dbo.UserClaims', 'OBJECT' 
+GO
+
+
+
+/* update keys */
+
+update GroupChilds set parentkey = (select [key] from Groups g where GroupID = g.ID)
+go
+update LinkedAccountClaims set parentkey = (select [key] from UserAccounts a where UserAccountID = a.ID)
+go
+update LinkedAccounts set parentkey = (select [key] from UserAccounts a where UserAccountID = a.ID)
+go
+update PasswordResetSecrets set parentkey = (select [key] from UserAccounts a where UserAccountID = a.ID)
+go
+update TwoFactorAuthTokens set parentkey = (select [key] from UserAccounts a where UserAccountID = a.ID)
+go
+update UserCertificates set parentkey = (select [key] from UserAccounts a where UserAccountID = a.ID)
+go
+update UserClaims set parentkey = (select [key] from UserAccounts a where UserAccountID = a.ID)
+go
+
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_GroupChilds
+(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NOT NULL,
+	ChildGroupID uniqueidentifier NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_GroupChilds] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)  
+GO
+ALTER TABLE dbo.Tmp_GroupChilds SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_GroupChilds ON
+GO
+IF EXISTS(SELECT * FROM dbo.GroupChilds)
+	 EXEC('INSERT INTO dbo.Tmp_GroupChilds ([Key], ParentKey, ChildGroupID)
+		SELECT [Key], ParentKey, ChildGroupID FROM dbo.GroupChilds')
+GO
+SET IDENTITY_INSERT dbo.Tmp_GroupChilds OFF
+GO
+DROP TABLE dbo.GroupChilds
+GO
+EXECUTE sp_rename N'dbo.Tmp_GroupChilds', N'GroupChilds', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_GroupChilds]', N'PK_dbo.GroupChilds', 'OBJECT' 
+GO
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_LinkedAccountClaims
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NOT NULL,
+	ProviderName nvarchar(30) NOT NULL,
+	ProviderAccountID nvarchar(100) NOT NULL,
+	Type nvarchar(150) NOT NULL,
+	Value nvarchar(150) NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_LinkedAccountClaims] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_LinkedAccountClaims SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_LinkedAccountClaims ON
+GO
+IF EXISTS(SELECT * FROM dbo.LinkedAccountClaims)
+	 EXEC('INSERT INTO dbo.Tmp_LinkedAccountClaims ([Key], ParentKey, ProviderName, ProviderAccountID, Type, Value)
+		SELECT [Key], ParentKey, ProviderName, ProviderAccountID, Type, Value FROM dbo.LinkedAccountClaims')
+GO
+SET IDENTITY_INSERT dbo.Tmp_LinkedAccountClaims OFF
+GO
+DROP TABLE dbo.LinkedAccountClaims
+GO
+EXECUTE sp_rename N'dbo.Tmp_LinkedAccountClaims', N'LinkedAccountClaims', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_LinkedAccountClaims]', N'PK_dbo.LinkedAccountClaims', 'OBJECT' 
+GO
+
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_LinkedAccounts
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NOT NULL,
+	ProviderName nvarchar(30) NOT NULL,
+	ProviderAccountID nvarchar(100) NOT NULL,
+	LastLogin datetime NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_LinkedAccounts] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_LinkedAccounts SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_LinkedAccounts ON
+GO
+IF EXISTS(SELECT * FROM dbo.LinkedAccounts)
+	 EXEC('INSERT INTO dbo.Tmp_LinkedAccounts ([Key], ParentKey, ProviderName, ProviderAccountID, LastLogin)
+		SELECT [Key], ParentKey, ProviderName, ProviderAccountID, LastLogin FROM dbo.LinkedAccounts')
+GO
+SET IDENTITY_INSERT dbo.Tmp_LinkedAccounts OFF
+GO
+DROP TABLE dbo.LinkedAccounts
+GO
+EXECUTE sp_rename N'dbo.Tmp_LinkedAccounts', N'LinkedAccounts', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_LinkedAccounts]', N'PK_dbo.LinkedAccounts', 'OBJECT' 
+GO
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_PasswordResetSecrets
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NOT NULL,
+	PasswordResetSecretID uniqueidentifier NOT NULL,
+	Question nvarchar(150) NOT NULL,
+	Answer nvarchar(150) NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_PasswordResetSecrets] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_PasswordResetSecrets SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_PasswordResetSecrets ON
+GO
+IF EXISTS(SELECT * FROM dbo.PasswordResetSecrets)
+	 EXEC('INSERT INTO dbo.Tmp_PasswordResetSecrets ([Key], ParentKey, PasswordResetSecretID, Question, Answer)
+		SELECT [Key], ParentKey, PasswordResetSecretID, Question, Answer FROM dbo.PasswordResetSecrets')
+GO
+SET IDENTITY_INSERT dbo.Tmp_PasswordResetSecrets OFF
+GO
+DROP TABLE dbo.PasswordResetSecrets
+GO
+EXECUTE sp_rename N'dbo.Tmp_PasswordResetSecrets', N'PasswordResetSecrets', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_PasswordResetSecrets]', N'PK_dbo.PasswordResetSecrets', 'OBJECT' 
+GO
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_TwoFactorAuthTokens
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NOT NULL,
+	Token nvarchar(100) NOT NULL,
+	Issued datetime NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_TwoFactorAuthTokens] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_TwoFactorAuthTokens SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_TwoFactorAuthTokens ON
+GO
+IF EXISTS(SELECT * FROM dbo.TwoFactorAuthTokens)
+	 EXEC('INSERT INTO dbo.Tmp_TwoFactorAuthTokens ([Key], ParentKey, Token, Issued)
+		SELECT [Key], ParentKey, Token, Issued FROM dbo.TwoFactorAuthTokens')
+GO
+SET IDENTITY_INSERT dbo.Tmp_TwoFactorAuthTokens OFF
+GO
+DROP TABLE dbo.TwoFactorAuthTokens
+GO
+EXECUTE sp_rename N'dbo.Tmp_TwoFactorAuthTokens', N'TwoFactorAuthTokens', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_TwoFactorAuthTokens]', N'PK_dbo.TwoFactorAuthTokens', 'OBJECT' 
+GO
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_UserCertificates
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NOT NULL,
+	Thumbprint nvarchar(150) NOT NULL,
+	Subject nvarchar(250) NULL
+	CONSTRAINT [PK_dbo.Tmp_UserCertificates] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_UserCertificates SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_UserCertificates ON
+GO
+IF EXISTS(SELECT * FROM dbo.UserCertificates)
+	 EXEC('INSERT INTO dbo.Tmp_UserCertificates ([Key], ParentKey, Thumbprint, Subject)
+		SELECT [Key], ParentKey, Thumbprint, Subject FROM dbo.UserCertificates')
+GO
+SET IDENTITY_INSERT dbo.Tmp_UserCertificates OFF
+GO
+DROP TABLE dbo.UserCertificates
+GO
+EXECUTE sp_rename N'dbo.Tmp_UserCertificates', N'UserCertificates', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_UserCertificates]', N'PK_dbo.UserCertificates', 'OBJECT' 
+GO
+
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+
+GO
+CREATE TABLE dbo.Tmp_UserClaims
+	(
+	[Key] int NOT NULL IDENTITY (1, 1),
+	ParentKey int NOT NULL,
+	Type nvarchar(150) NOT NULL,
+	Value nvarchar(150) NOT NULL
+	CONSTRAINT [PK_dbo.Tmp_UserClaims] PRIMARY KEY CLUSTERED 
+	(
+		[Key] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+)
+GO
+ALTER TABLE dbo.Tmp_UserClaims SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_UserClaims ON
+GO
+IF EXISTS(SELECT * FROM dbo.UserClaims)
+	 EXEC('INSERT INTO dbo.Tmp_UserClaims ([Key], ParentKey, Type, Value)
+		SELECT [Key], ParentKey, Type, Value FROM dbo.UserClaims')
+GO
+SET IDENTITY_INSERT dbo.Tmp_UserClaims OFF
+GO
+DROP TABLE dbo.UserClaims
+GO
+EXECUTE sp_rename N'dbo.Tmp_UserClaims', N'UserClaims', 'OBJECT' 
+GO
+EXECUTE sp_rename N'[PK_dbo.Tmp_UserClaims]', N'PK_dbo.UserClaims', 'OBJECT' 
+GO
+
+
+
+ALTER TABLE [dbo].[GroupChilds]  WITH CHECK ADD  CONSTRAINT [FK_dbo.GroupChilds_dbo.Groups_ParentKey] FOREIGN KEY([ParentKey])
+REFERENCES [dbo].[Groups] ([Key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[GroupChilds] CHECK CONSTRAINT [FK_dbo.GroupChilds_dbo.Groups_ParentKey]
+GO
+ALTER TABLE [dbo].[LinkedAccountClaims]  WITH CHECK ADD  CONSTRAINT [FK_dbo.LinkedAccountClaims_dbo.UserAccounts_ParentKey] FOREIGN KEY([ParentKey])
+REFERENCES [dbo].[UserAccounts] ([Key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[LinkedAccountClaims] CHECK CONSTRAINT [FK_dbo.LinkedAccountClaims_dbo.UserAccounts_ParentKey]
+GO
+ALTER TABLE [dbo].[LinkedAccounts]  WITH CHECK ADD  CONSTRAINT [FK_dbo.LinkedAccounts_dbo.UserAccounts_ParentKey] FOREIGN KEY([ParentKey])
+REFERENCES [dbo].[UserAccounts] ([Key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[LinkedAccounts] CHECK CONSTRAINT [FK_dbo.LinkedAccounts_dbo.UserAccounts_ParentKey]
+GO
+ALTER TABLE [dbo].[PasswordResetSecrets]  WITH CHECK ADD  CONSTRAINT [FK_dbo.PasswordResetSecrets_dbo.UserAccounts_ParentKey] FOREIGN KEY([ParentKey])
+REFERENCES [dbo].[UserAccounts] ([Key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[PasswordResetSecrets] CHECK CONSTRAINT [FK_dbo.PasswordResetSecrets_dbo.UserAccounts_ParentKey]
+GO
+ALTER TABLE [dbo].[TwoFactorAuthTokens]  WITH CHECK ADD  CONSTRAINT [FK_dbo.TwoFactorAuthTokens_dbo.UserAccounts_ParentKey] FOREIGN KEY([ParentKey])
+REFERENCES [dbo].[UserAccounts] ([Key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[TwoFactorAuthTokens] CHECK CONSTRAINT [FK_dbo.TwoFactorAuthTokens_dbo.UserAccounts_ParentKey]
+GO
+ALTER TABLE [dbo].[UserCertificates]  WITH CHECK ADD  CONSTRAINT [FK_dbo.UserCertificates_dbo.UserAccounts_ParentKey] FOREIGN KEY([ParentKey])
+REFERENCES [dbo].[UserAccounts] ([Key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[UserCertificates] CHECK CONSTRAINT [FK_dbo.UserCertificates_dbo.UserAccounts_ParentKey]
+GO
+ALTER TABLE [dbo].[UserClaims]  WITH CHECK ADD  CONSTRAINT [FK_dbo.UserClaims_dbo.UserAccounts_ParentKey] FOREIGN KEY([ParentKey])
+REFERENCES [dbo].[UserAccounts] ([Key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[UserClaims] CHECK CONSTRAINT [FK_dbo.UserClaims_dbo.UserAccounts_ParentKey]
+GO
+
+
+
+
+/****** Object:  Index [IX_ParentKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ParentKey] ON [dbo].[GroupChilds]
+(
+	[ParentKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ID]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_ID] ON [dbo].[Groups]
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_Tenant_Name]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Tenant_Name] ON [dbo].[Groups]
+(
+	[Tenant] ASC,
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ParentKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ParentKey] ON [dbo].[LinkedAccountClaims]
+(
+	[ParentKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ParentKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ParentKey] ON [dbo].[LinkedAccounts]
+(
+	[ParentKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_ProviderName_ProviderAccountID]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ProviderName_ProviderAccountID] ON [dbo].[LinkedAccounts]
+(
+	[ProviderName] ASC,
+	[ProviderAccountID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ParentKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ParentKey] ON [dbo].[PasswordResetSecrets]
+(
+	[ParentKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ParentKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ParentKey] ON [dbo].[TwoFactorAuthTokens]
+(
+	[ParentKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ID]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_ID] ON [dbo].[UserAccounts]
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_Tenant_Email]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Tenant_Email] ON [dbo].[UserAccounts]
+(
+	[Tenant] ASC,
+	[Email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_Tenant_Username]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Tenant_Username] ON [dbo].[UserAccounts]
+(
+	[Tenant] ASC,
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_Username]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Username] ON [dbo].[UserAccounts]
+(
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_VerificationKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_VerificationKey] ON [dbo].[UserAccounts]
+(
+	[VerificationKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ParentKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ParentKey] ON [dbo].[UserCertificates]
+(
+	[ParentKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_Thumbprint]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Thumbprint] ON [dbo].[UserCertificates]
+(
+	[Thumbprint] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ParentKey]    Script Date: 3/4/2014 9:01:48 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ParentKey] ON [dbo].[UserClaims]
+(
+	[ParentKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
+ALTER TABLE [dbo].[GroupChilds] ADD CONSTRAINT [UK_ParentKey_ChildGroupID] UNIQUE NONCLUSTERED  ([ParentKey], [ChildGroupID])
+GO
+ALTER TABLE [dbo].[LinkedAccountClaims] ADD CONSTRAINT [UK_ParentKey_ProviderName_ProviderAccountID_Type_Value] UNIQUE NONCLUSTERED  ([ParentKey], [ProviderName], [ProviderAccountID], [Type], [Value])
+GO
+ALTER TABLE [dbo].[LinkedAccounts] ADD CONSTRAINT [UK_ParentKey_ProviderName_ProviderAccountID] UNIQUE NONCLUSTERED  ([ParentKey], [ProviderName], [ProviderAccountID])
+GO
+ALTER TABLE [dbo].[PasswordResetSecrets] ADD CONSTRAINT [UK_ParentKey_Question] UNIQUE NONCLUSTERED  ([ParentKey], [Question])
+GO
+ALTER TABLE [dbo].[UserCertificates] ADD CONSTRAINT [UK_ParentKey_Thumbprint] UNIQUE NONCLUSTERED  ([ParentKey], [Thumbprint])
+GO
+ALTER TABLE [dbo].[UserClaims] ADD CONSTRAINT [UK_ParentKey_Type_Value] UNIQUE NONCLUSTERED  ([ParentKey], [Type], [Value])
+GO
+
+/* migration table */
+DELETE from [dbo].[__MigrationHistory] where [ContextKey] = 'BrockAllen.MembershipReboot.Ef.DefaultMembershipRebootDatabase'
+GO
+INSERT [dbo].[__MigrationHistory] ([MigrationId], [ContextKey], [Model], [ProductVersion]) VALUES (N'201403032007363_v7_InitialCreate', N'BrockAllen.MembershipReboot.Ef.Migrations.Configuration', 0x1F8B0800000000000400ED5D5973DB38127EDFAAFD0F2A3D6ED5583E66AA7653F24C39B29D756D9C782C675E5310094BDCF0507824F16FDB87FD49FB1706BC01E26003222552EB17974502DD8DC6D7381A60F7FFFEF3DFF96F3F3C77F20D879113F897D3B393D3E904FB56603BFEFA729AC4CF3FFD7DFADBAF7FFDCBFCC6F67E4CFE28CB5DA4E5484D3FBA9C6EE278FB66368BAC0DF65074E239561844C1737C6205DE0CD9C1ECFCF4F41FB3B3B3192624A684D664327F4CFCD8F170F683FC5C04BE85B77182DCFBC0C66E543C276F9619D5C907E4E1688B2C7C397D1B06D6972BD7C5FEC93DF65644A28DB37DC4AB20884F6E9EA7932BD74144AA2576C90FE4FB418C6222F39B4F115EC661E0AF975BF200B94F2F5B4CCA3D2337C2455BDED4C5A1CD3A3D4F9B35AB2B1AA9655A359834F986A8267E49C5CB9A7D397DC46E461AB9EFC220D9D28549F17FE117E60179F410065B1CC62F8FF8B920410A4D2733B6E2AC59B3AA47574AE5B89CDEF9F1C5F974F221715DB47271A5364ABFCB3808F13BECE310C5D87E40718C43A2C63B1B67EDE1D83798DD5D97BCDE258E2D60A5AEFE847DE4C72509D2D104BFD3C93DFAF11EFBEB787339FD8500F6D6F981EDF24141F693EF10B4933A7198606DB6E95F05D3B3D35EB82E429CEAB8647C4D7E3C399E3E9DF7288A3F6D6D335A1FD037679D757D53BA8DE3DA21F6170131522BB78912C2A9ADE6B679D240F56751B5DB30F01E0397B70141E9CFCB2009ADB4370270952714AE71CC366D3EAB0D50C72C33F2C7699B0F88A82D06B06C816DAAA14C575AC66ED02164AC0FAF2C2B20B3CC71F6C83847CBB45B7CF58879FECBCF473B6236FB302A20BA7083A8A6F73620A317F2B5C90989D5C2B5C9F23E583B3E595605DF771725D552464F578CB4E22D725CD2FB26D5A9AA8BCCF6771AAE1E50147D0F427BB141FE5A5FA58FF86BE284382AC93CE208C7BB6AF6C6234DECC07C80C824EB7DE7D9E9061079E708B5A1D7BF0C890EFAF93E5811B20BA29D0E567250564BEC6B373FAFFDB0097CFC2149773E2A2074272EC5D0D0140A343D7D0F6E914526BEAB24DEDCD3FA4ED78382B7BA837C12A6EB1486D092CCB749D431A3DC2CAC6C26A7A6FDDE6043F37B48C26D10B1AA6BC85315D16A8509226912E98A06ADFBB7A17FA268530F024A13306227DFD7B8C8F1C09B1A6A09FA99AB29DAD7282A28B636AA5AA2DD8DAA81EF1DFF0BB6AB7584696BD564DA9AAEAA0DD48392C46E4AD95D1FC6AAD84D0BE60A60A6DB25B6426CA686163A6DCA505607AA444D435731CC3CF2147CD1F078D042A9C9B4A945551BA81525095DA5A48417E4773E2D60238D2868B4A9435A15A80B79FD8E5C45198374483A4EBF44479EA2B4AE6A21D18F7BE20FE426BDB335C00C3F9FBD824745260CBE39360E5B7CF317BD60A8645EF456EDA7DBDFE9C0ABF1488DE7D56E5EED462A82C26BD93528050BD15768025CB194BE763C01F93DC151BEA4DCF74079E547DF95AEBB438D94FC3EE01593AA6936D3D0DE47A9BB284AB40F9F4C372AF54EE8150A2A286C126FB52508501DA9F6349C2C93D5BFC916557926A4EF07950326F128B8085CE977D1AD8BD611C584CCEAEE0B118AD630DBA4FC1E5779A526F049B56C3979393DE59ACF94CD0F28AAD267EAD2349CCB2AE77CBBF3162A5A2D73B7EFDCF46C7AAB3DDB6211B956656732C5C16051E50252A5A1BC9F219AB88AA2C072B2968B6FC188AEF1B092DCF8F644FF4E4F7DD8D1BC0D37B94FDCD8D9BA8E45F09A62A039307DF4AFB18B633CB9B2F29B7D0B1459C8E62D8BB4D8DE41D6D243249735BF22D410F86F9C1C6404C5E9B8E4207711F8511C2232B2F0C3ADE35BCE16B9DACA6C50820EDDA9822AA6CD37D7788BFD74D0D55617441A6A98E665AA58373AB34D8BF319056628C655A73AEDD0011DF188D043DF67DA37DE21274C52A1736F55DF8807E875BFA007E86CBCB8579EEFE9E10976D837648B009D350A5B20F0EAEED34E20AA3F9CD140D47A2C16D48DF18CDA6E4C4CE680D632584339221B515F17D0031BF0EEC090ED05767541D80491B3799FB603D2FEE12C08A4D9F1DA91F27A891E0661774D866C45A0AB2EC216089CE3FBB42188EA0F674210B58ED782E4D791F4C007B89B3464DB69BF1A25F702D08ED73D5A4DABC60F6732ADDA1C9EBDE42702A44E4C6A54BEE46BFC8C488F363FC5BE46315AA1A8796E94D358E2B8A89D7907A3E9A43E6D907979676A42224F2B806EE1916D219E76969A1863A460512B0F593BF1C2410026CD6FA0D53C44DE0833661A7C34580856696A46C2552F981D3FA3A9B98996077A30A8C7020018E8F1B4C186325EA97508BFB5A62AC2BFD06E8E3A46873B9566EAF1801BCE8C4E6228C292F1A1392BB2DAD3D2ACF2830F9572C1670A3B9C2A509A280633908621BE7FA192E991AD271DAB3F33812A1CEECCEECA9DDD4157809CCEC27E114E0B7BE9A09DFBA6AB6ED9438F9874467FFDD0F2E10DB437341C729DB9E43AE81998E34CD83FE235474FBDA4FE0C08DA49706F4F57FE9E0EBA08E49511F6907099D6530729BE4A82F60ED093D0892FA1837E69DFF1CBE77E66390BEE91F2DA59B5C9ACDECD677924B0E2C17C26091936BF47DBADE3AFA91062C593C9328F1FB6F869A91FA3CBCB69CCAC4810AAAB92B6E2947F0ADD784B5813496F9D30AA77C79385ED71C50CB7D425776667CDF779B9B3288BA7FFE755D491D5B82D39EFA12848DE92C67BA90324BB9D295F84F3142669C037E4A250742994E02FF17C8553465E3FBD2C4E574F7FC36B97D172680AE5333895FCB30A9A46FE044EA10A624313A91EC2E930416C685ACC0B9EDE7CD6E860CEE7C4A18B733AB258052159BC75EB0FD882405E19074D744BC8F40571CA17485351B8081540630275316863DE0C0622F90CD70B2468CFDE2E9850D239E671EF5315F48BA6533F1DCFF827D572339017A3F2E64B385D0555639ACD405FACA8EC3B3D8D169FCE35F5593CD6A3C5C4006B52645EC2E9F2C1C168C2FC5B9DA1B711288C1D801B2FE1742511C468EA9222701EC5770334CDE29101FEEB7061420BA85F9BA041A10569215D7488428BF12811958273A2C38DD1B4E9E726D4F2F84D628AF93B5DAA4CA4319E30F37A07DA42B39197D21E3F051F2909865241298D994911798C99AC14E5E0DCB8F063340BEEA519DDEAA326196D4990310DB979C00A0B98D1AFA291C9E85705E0F49B91C768D2CD7783591A0BCF647A5B290BA293640CF4D6C9122A63D83AE5C137981573F64403C579200D06B7F9A301624A749ED40BB8DA62E068A20C426E0C7063637630E49837FA14A9401C22B2D4EB57E38018C73EECA23B9378B586FEADC164D37C704C0BCF447B41766B8C9C8C151CDF207AA340B938188EC8E9D02802E75187C7A1C9D64F35366145B81B66CB553C1B20BE4527CABDC0BB2DDA4EC6098E6E08B93180BBB83BC9AC1144D7295534CA1039AC132A7F3640C871E7E5FDEDCE64F17C34C1D64A6B1448A382F63070A39EC3A95561786852D5C33DA38EBB46D12C5271AFAE5334AE4DCC0BF7487B3A36EE4E435E643A29D746440D2F518CBD93B4C0C9F2ABBB709DCCB15316B847BEF34C2696CCCED3B0ED67E78D2C6E0619D5665164BB834FAB9681AC3586956E84B02A325EE23B5F13EC64849E9D74C6DD294F90FF0D85D606855CA6A01D92A6096966A1D376CBF0931EE2C51D65F801D21A5DE2B05ED0C78554CBB87490294C13CCE3CB1AF6FF3918D417011474B3B446A31B1004BD214EF9B572F44D44484824182CE19328FD9789585C105D539124A9C04CC9C95283998C4E92C460A6A229138599F40193240C624F3BE504334589221FD86E9D2CCF0F66D2D97C7630C892C53C199869DBA5C9C1C4003094569E0BCC546EF9F1FB0ECB87D6446026542559BFBA828322C957435A5D6A8DE45EA63DA548F6D5950EC4B9BD24086EA13EB6E42CC35D8DE78774AA9E3658F731F9220CA98E3697CA70FBFA41900442D83B17FA5D2E382DEBD80970B4487D05E9F18014B4453AAA3C230346922AB1C8CE1E93669291CE86243687C8FEC6A461A408192E9C989C209D0D186CCA8FFE468B01A4FC1870D772393E3AB3E6460A0F89C7C670BBD367C686E1E56528E279B506FCDA470A8643245A907DBBCA331E66ACC59DC2C90F348062114DAD2DB4DBFEE2221E20ECA1ECC6F65870D95DCE8301825414FB0F1C24F068610BFAE2609CF83D52E80E2D6BC021013B62AC7618F97F808815C625154A79E0B8FD7B462FECBAFF5830DC5DD4FD01425814EC5628E46183E6EF19C0A00BFD63C16F4731EF07085E2E7EB27C5F860F12B5FE10BB33E5770187C66CE32E7B79C7838BA5D7EC7B65807848C8F9FC26FBE5D45E050426B9E34D1CA01A148E1E1C8D5ECA5712B55ACE9C31340577A69C883D5540977FB14F6CE15E9492F196842A9673166D551522888A8B6481C44F060AA51326BF55141D2984EB4A852CC2F2228940F172E57289560B0AB144C545524162C4B620989E08DA704C9795A2192BA2A30E3480BF2A9ABE601A68F3D0CB898953728C3D32BF2256AE241946BB4759FE6D9E307FC7F106DEEF4CB9F259A33D7EC87ED47DB830FAFD2819A2DFDE543BC4C8F89DA95931CD032223F4A5F2E185B9EF4CE1F2F54BFBB7FA7DA97B4841EBBB9D02F93559CB47EA70156B44A1E73F93261B5DD212C7CB2F61908D77E4AC6B127342D3CFD557132DCBDCF9CF41B9D96E485416697E9481636493FDEF55DA4C0229F2DAC251E4F8EBE924BBB69A7E0CB4C2F69DFF3189B7494C9A8CBD95CBECDBD31DBB8A7F166A9F9579FE719BFE8ABA680211D349AF347DF4DF26D9C2AF90FB5670A5494222750514D785D2BE8CD36B43EB978AD287C007122AD45779309EB0B775D345FA477F89BE61B96CED3A643536BF76D03A445E54D0A8EB939F047EB6F7E3D73F01D5FB6D9F9DAD0000, N'6.0.2-21211')
+GO
+INSERT [dbo].[__MigrationHistory] ([MigrationId], [ContextKey], [Model], [ProductVersion]) VALUES (N'201403032007511_v7_Indexes', N'BrockAllen.MembershipReboot.Ef.Migrations.Configuration', 0x1F8B0800000000000400ED5D5973DB38127EDFAAFD0F2A3D6ED5583E66AA7653F24C39B29D756D9C782C675E5310094BDCF0507824F16FDB87FD49FB1706BC01E26003222552EB17974502DD8DC6D7381A60F7FFFEF3DFF96F3F3C77F20D879113F897D3B393D3E904FB56603BFEFA729AC4CF3FFD7DFADBAF7FFDCBFCC6F67E4CFE28CB5DA4E5484D3FBA9C6EE278FB66368BAC0DF65074E239561844C1737C6205DE0CD9C1ECFCF4F41FB3B3B3192624A684D664327F4CFCD8F170F683FC5C04BE85B77182DCFBC0C66E543C276F9619D5C907E4E1688B2C7C397D1B06D6972BD7C5FEC93DF65644A28DB37DC4AB20884F6E9EA7932BD74144AA2576C90FE4FB418C6222F39B4F115EC661E0AF975BF200B94F2F5B4CCA3D2337C2455BDED4C5A1CD3A3D4F9B35AB2B1AA9655A359834F986A8267E49C5CB9A7D397DC46E461AB9EFC220D9D28549F17FE117E60179F410065B1CC62F8FF8B920410A4D2733B6E2AC59B3AA47574AE5B89CDEF9F1C5F974F221715DB47271A5364ABFCB3808F13BECE310C5D87E40718C43A2C63B1B67EDE1D83798DD5D97BCDE258E2D60A5AEFE847DE4C72509D2D104BFD3C93DFAF11EFBEB787339FD8500F6D6F981EDF24141F693EF10B4933A7198606DB6E95F05D3B3D35EB82E429CEAB8647C4D7E3C399E3E9DF7288A3F6D6D335A1FD037679D757D53BA8DE3DA21F6170131522BB78912C2A9ADE6B679D240F56751B5DB30F01E0397B70141E9CFCB2009ADB4370270952714AE71CC366D3EAB0D50C72C33F2C7699B0F88A82D06B06C816DAAA14C575AC66ED02164AC0FAF2C2B20B3CC71F6C83847CBB45B7CF58879FECBCF473B6236FB302A20BA7083A8A6F73620A317F2B5C90989D5C2B5C9F23E583B3E595605DF771725D552464F578CB4E22D725CD2FB26D5A9AA8BCCF6771AAE1E50147D0F427BB141FE5A5FA58FF86BE284382AC93CE208C7BB6AF6C6234DECC07C80C824EB7DE7D9E9061079E708B5A1D7BF0C890EFAF93E5811B20BA29D0E567250564BEC6B373FAFFDB0097CFC2149773E2A2074272EC5D0D0140A343D7D0F6E914526BEAB24DEDCD3FA4ED78382B7BA837C12A6EB1486D092CCB749D431A3DC2CAC6C26A7A6FDDE6043F37B48C26D10B1AA6BC85315D16A8509226912E98A06ADFBB7A17FA268530F024A13306227DFD7B8C8F1C09B1A6A09FA99AB29DAD7282A28B636AA5AA2DD8DAA81EF1DFF0BB6AB7584696BD564DA9AAEAA0DD48392C46E4AD95D1FC6AAD84D0BE60A60A6DB25B6426CA686163A6DCA505607AA444D435731CC3CF2147CD1F078D042A9C9B4A945551BA81525095DA5A48417E4773E2D60238D2868B4A9435A15A80B79FD8E5C45198374483A4EBF44479EA2B4AE6A21D18F7BE20FE426BDB335C00C3F9FBD824745260CBE39360E5B7CF317BD60A8645EF456EDA7DBDFE9C0ABF1488DE7D56E5EED462A82C26BD93528050BD15768025CB194BE763C01F93DC151BEA4DCF74079E547DF95AEBB438D94FC3EE01593AA6936D3D0DE47A9BB284AB40F9F4C372AF54EE8150A2A286C126FB52508501DA9F6349C2C93D5BFC916557926A4EF07950326F128B8085CE977D1AD8BD611C584CCEAEE0B118AD630DBA4FC1E5779A526F049B56C3979393DE59ACF94CD0F28AAD267EAD2349CCB2AE77CBBF3162A5A2D73B7EFDCF46C7AAB3DDB6211B956656732C5C16051E50252A5A1BC9F219AB88AA2C072B2968B6FC188AEF1B092DCF8F644FF4E4F7DD8D1BC0D37B94FDCD8D9BA8E45F09A62A039307DF4AFB18B633CB9B2F29B7D0B1459C8E62D8BB4D8DE41D6D243249735BF22D410F86F9C1C6404C5E9B8E4207711F8511C2232B2F0C3ADE35BCE16B9DACA6C50820EDDA9822AA6CD37D7788BFD74D0D55617441A6A98E665AA58373AB34D8BF319056628C655A73AEDD0011DF188D043DF67DA37DE21274C52A1736F55DF8807E875BFA007E86CBCB8579EEFE9E10976D837648B009D350A5B20F0EAEED34E20AA3F9CD140D47A2C16D48DF18CDA6E4C4CE680D632584339221B515F17D0031BF0EEC090ED05767541D80491B3799FB603D2FEE12C08A4D9F1DA91F27A891E0661774D866C45A0AB2EC216089CE3FBB42188EA0F674210B58ED782E4D791F4C007B89B3464DB69BF1A25F702D08ED73D5A4DABC60F6732ADDA1C9EBDE42702A44E4C6A54BEE46BFC8C488F363FC5BE46315AA1A8796E94D358E2B8A89D7907A3E9A43E6D907979676A42224F2B806EE1916D219E76969A1863A460512B0F593BF1C2410026CD6FA0D53C44DE0833661A7C34580856696A46C2552F981D3FA3A9B98996077A30A8C7020018E8F1B4C186325EA97508BFB5A62AC2BFD06E8E3A46873B9566EAF1801BCE8C4E6228C292F1A1392BB2DAD3D2ACF2830F9572C1670A3B9C2A509A280633908621BE7FA192E991AD271DAB3F33812A1CEECCEECA9DDD4157809CCEC27E114E0B7BE9A09DFBA6AB6ED9438F9874467FFDD0F2E10DB437341C729DB9E43AE81998E34CD83FE235474FBDA4FE0C08DA49706F4F57FE9E0EBA08E49511F6907099D6530729BE4A82F60ED093D0892FA1837E69DFF1CBE77E66390BEE91F2DA59B5C9ACDECD677924B0E2C17C26091936BF47DBADE3AFA91062C593C9328F1FB6F869A91FA3CBCB69CCAC4810AAAB92B6E2947F0ADD784B5813496F9D30AA77C79385ED71C50CB7D425776667CDF779B9B3288BA7FFE755D491D5B82D39EFA12848DE92C67BA90324BB9D295F84F3142669C037E4A250742994E02FF17C8553465E3FBD2C4E574F7FC36B97D172680AE5333895FCB30A9A46FE044EA10A624313A91EC2E930416C685ACC0B9EDE7CD6E860CEE7C4A18B733AB258052159BC75EB0FD882405E19074D744BC8F40571CA17485351B8081540630275316863DE0C0622F90CD70B2468CFDE2E9850D239E671EF5315F48BA6533F1DCFF827D572339017A3F2E64B385D0555639ACD405FACA8EC3B3D8D169FCE35F5593CD6A3C5C4006B52645EC2E9F2C1C168C2FC5B9DA1B711288C1D801B2FE1742511C468EA9222701EC5770334CDE29101FEEB7061420BA85F9BA041A10569215D7488428BF12811958273A2C38DD1B4E9E726D4F2F84D628AF93B5DAA4CA4319E30F37A07DA42B39197D21E3F051F2909865241298D994911798C99AC14E5E0DCB8F063340BEEA519DDEAA326196D4990310DB979C00A0B98D1AFA291C9E85705E0F49B91C768D2CD7783591A0BCF647A5B290BA293640CF4D6C9122A63D83AE5C137981573F64403C579200D06B7F9A301624A749ED40BB8DA62E068A20C426E0C7063637630E49837FA14A9401C22B2D4EB57E38018C73EECA23B9378B586FEADC164D37C704C0BCF447B41766B8C9C8C151CDF207AA340B938188EC8E9D02802E75187C7A1C9D64F35366145B81B66CB553C1B20BE4527CABDC0BB2DDA4EC6098E6E08B93180BBB83BC9AC1144D7295534CA1039AC132A7F3640C871E7E5FDEDCE64F17C34C1D64A6B1448A382F63070A39EC3A95561786852D5C33DA38EBB46D12C5271AFAE5334AE4DCC0BF7487B3A36EE4E435E643A29D746440D2F518CBD93B4C0C9F2ABBB709DCCB15316B847BEF34C2696CCCED3B0ED67E78D2C6E0619D5665164BB834FAB9681AC3586956E84B02A325EE23B5F13EC64849E9D74C6DD294F90FF0D85D606855CA6A01D92A6096966A1D376CBF0931EE2C51D65F801D21A5DE2B05ED0C78554CBB87490294C13CCE3CB1AF6FF3918D417011474B3B446A31B1004BD214EF9B572F44D44484824182CE19328FD9789585C105D539124A9C04CC9C95283998C4E92C460A6A229138599F40193240C624F3BE504334589221FD86E9D2CCF0F66D2D97C7630C892C53C199869DBA5C9C1C4003094569E0BCC546EF9F1FB0ECB87D6446026542559BFBA828322C957435A5D6A8DE45EA63DA548F6D5950EC4B9BD24086EA13EB6E42CC35D8DE78774AA9E3658F731F9220CA98E3697CA70FBFA41900442D83B17FA5D2E382DEBD80970B4487D05E9F18014B4453AAA3C230346922AB1C8CE1E93669291CE86243687C8FEC6A461A408192E9C989C209D0D186CCA8FFE468B01A4FC1870D772393E3AB3E6460A0F89C7C670BBD367C686E1E56528E279B506FCDA470A8643245A907DBBCA331E66ACC59DC2C90F348062114DAD2DB4DBFEE2221E20ECA1ECC6F65870D95DCE8301825414FB0F1C24F068610BFAE2609CF83D52E80E2D6BC021013B62AC7618F97F808815C625154A79E0B8FD7B462FECBAFF5830DC5DD4FD01425814EC5628E46183E6EF19C0A00BFD63C16F4731EF07085E2E7EB27C5F860F12B5FE10BB33E5770187C66CE32E7B79C7838BA5D7EC7B65807848C8F9FC26FBE5D45E050426B9E34D1CA01A148E1E1C8D5ECA5712B55ACE9C31340577A69C883D5540977FB14F6CE15E9492F196842A9673166D551522888A8B6481C44F060AA51326BF55141D2984EB4A852CC2F2228940F172E57289560B0AB144C545524162C4B620989E08DA704C9795A2192BA2A30E3480BF2A9ABE601A68F3D0CB898953728C3D32BF2256AE241946BB4759FE6D9E307FC7F106DEEF4CB9F259A33D7EC87ED47DB830FAFD2819A2DFDE543BC4C8F89DA95931CD032223F4A5F2E185B9EF4CE1F2F54BFBB7FA7DA97B4841EBBB9D02F93559CB47EA70156B44A1E73F93261B5DD212C7CB2F61908D77E4AC6B127342D3CFD557132DCBDCF9CF41B9D96E485416697E9481636493FDEF55DA4C0229F2DAC251E4F8EBE924BBB69A7E0CB4C2F69DFF3189B7494C9A8CBD95CBECDBD31DBB8A7F166A9F9579FE719BFE8ABA680211D349AF347DF4DF26D9C2AF90FB5670A5494222750514D785D2BE8CD36B43EB978AD287C007122AD45779309EB0B775D345FA477F89BE61B96CED3A643536BF76D03A445E54D0A8EB939F047EB6F7E3D73F01D5FB6D9F9DAD0000, N'6.0.2-21211')
+GO
+
+COMMIT
