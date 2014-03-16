@@ -291,7 +291,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.UsernameAlreadyInUse, ex.Message);
             }
         }
-        
+
         [TestMethod]
         public void CreateAccount_EmailIsUsername_DuplicateEmails_FailsValidation()
         {
@@ -306,6 +306,55 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             catch (ValidationException ex)
             {
                 Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void CreateAccount_DuplicateEmailDiffersByCase_FailsValidation()
+        {
+            subject.CreateAccount("test1", "pass", "test@test.com");
+
+            try
+            {
+                subject.CreateAccount("test2", "pass2", "TEST@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void CreateAccount_DuplicateUsernameDiffersByCase_FailsValidation()
+        {
+            subject.CreateAccount("test", "pass", "test@test.com");
+
+            try
+            {
+                subject.CreateAccount("TEST", "pass2", "test2@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameAlreadyInUse, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void CreateAccount_MultiTenant_DuplicateUsernameTenantDiffersByCase_FailsValidation()
+        {
+            configuration.MultiTenant = true;
+            subject.CreateAccount("tenant", "test", "pass", "test@test.com");
+
+            try
+            {
+                subject.CreateAccount("TENANT", "test", "pass2", "test2@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameAlreadyInUse, ex.Message);
             }
         }
 

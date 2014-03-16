@@ -26,22 +26,52 @@ namespace BrockAllen.MembershipReboot
 
         public TAccount GetByUsername(string username)
         {
-            return Queryable.SingleOrDefault(x => x.Username == username);
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                return null;
+            }
+
+            return Queryable.SingleOrDefault(x => 
+                username.Equals(x.Username, StringComparison.OrdinalIgnoreCase));
         }
 
         public TAccount GetByUsername(string tenant, string username)
         {
-            return Queryable.SingleOrDefault(x => x.Tenant == tenant && x.Username == username);
+            if (String.IsNullOrWhiteSpace(tenant) || 
+                String.IsNullOrWhiteSpace(username))
+            {
+                return null;
+            }
+
+            return Queryable.SingleOrDefault(x => 
+                tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) && 
+                username.Equals(x.Username, StringComparison.OrdinalIgnoreCase));
         }
 
         public TAccount GetByEmail(string tenant, string email)
         {
-            return Queryable.SingleOrDefault(x => x.Tenant == tenant && x.Email == email);
+            if (String.IsNullOrWhiteSpace(tenant) ||
+                String.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
+
+            return Queryable.SingleOrDefault(x => 
+                tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) &&
+                email.Equals(x.Email, StringComparison.OrdinalIgnoreCase));
         }
 
         public TAccount GetByMobilePhone(string tenant, string phone)
         {
-            return Queryable.SingleOrDefault(x => x.Tenant == tenant && x.MobilePhoneNumber == phone);
+            if (String.IsNullOrWhiteSpace(tenant) ||
+                String.IsNullOrWhiteSpace(phone))
+            {
+                return null;
+            }
+            
+            return Queryable.SingleOrDefault(x => 
+                tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) &&
+                phone.Equals(x.MobilePhoneNumber, StringComparison.OrdinalIgnoreCase));
         }
 
         public TAccount GetByVerificationKey(string key)
