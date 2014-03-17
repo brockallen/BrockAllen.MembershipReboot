@@ -11,10 +11,8 @@ namespace BrockAllen.MembershipReboot.Ef
     public class DefaultMembershipRebootDatabase : DbContext
     {
         public DefaultMembershipRebootDatabase()
-            : base("name=MembershipReboot")
+            : this("MembershipReboot")
         {
-            this.RegisterUserAccountChildTablesForDelete<RelationalUserAccount>();
-            this.RegisterGroupChildTablesForDelete<RelationalGroup>();
         }
 
         public DefaultMembershipRebootDatabase(string nameOrConnectionString)
