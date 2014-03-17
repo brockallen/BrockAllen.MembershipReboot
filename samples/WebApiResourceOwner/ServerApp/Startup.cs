@@ -81,18 +81,16 @@ namespace ServerApp
             using(var scope = container.BeginLifetimeScope())
             {
                 var svc = scope.Resolve<UserAccountService>();
-                var client = svc.GetByUsername("clients", "client");
-                if (client == null)
+                if (svc.GetByUsername("clients", "client") == null)
                 {
-                    var acct = svc.CreateAccount("clients", "client", "secret", (string)null);
-                    svc.AddClaim(acct.ID, "scope", "foo");
-                    svc.AddClaim(acct.ID, "scope", "bar");
+                    var client = svc.CreateAccount("clients", "client", "secret", (string)null);
+                    svc.AddClaim(client.ID, "scope", "foo");
+                    svc.AddClaim(client.ID, "scope", "bar");
                 }
-                var user = svc.GetByUsername("users", "alice");
-                if (user == null)
+                if (svc.GetByUsername("users", "alice") == null)
                 {
-                    var acct = svc.CreateAccount("users", "alice", "pass", "alice@alice.com");
-                    svc.AddClaim(acct.ID, "role", "people");
+                    var alice = svc.CreateAccount("users", "alice", "pass", "alice@alice.com");
+                    svc.AddClaim(alice.ID, "role", "people");
                 }
             }
         }
@@ -123,12 +121,7 @@ namespace ServerApp
                 var scopes = context.TokenRequest.ResourceOwnerPasswordCredentialsGrant.Scope;
                 if (scopes.All(scope=>client.HasClaim("scope", scope)))
                 {
-                    var uid = context.TokenRequest.ResourceOwnerPasswordCredentialsGrant.UserName;
-                    var pwd = context.TokenRequest.ResourceOwnerPasswordCredentialsGrant.Password;
-                    if (svc.Authenticate("users", uid, pwd))
-                    {
-                        context.Validated();
-                    }
+                    context.Validated();
                 }
             }
             return Task.FromResult<object>(null);
@@ -137,11 +130,14 @@ namespace ServerApp
         public override Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             var svc = context.OwinContext.Environment.GetUserAccountService<UserAccount>();
-            var user = svc.GetByUsername("users", context.UserName);
-            var claims = user.GetAllClaims();
+            UserAccount user;
+            if (svc.Authenticate("users", context.UserName, context.Password, out user))
+            {
+                var claims = user.GetAllClaims();
 
-            var id = new System.Security.Claims.ClaimsIdentity(claims, "MembershipReboot");
-            context.Validated(id);
+                var id = new System.Security.Claims.ClaimsIdentity(claims, "MembershipReboot");
+                context.Validated(id);
+            }
             
             return base.GrantResourceOwnerCredentials(context);
         }
