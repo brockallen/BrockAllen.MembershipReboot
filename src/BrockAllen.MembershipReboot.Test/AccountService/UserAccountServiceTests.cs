@@ -16,7 +16,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
     [TestClass]
     public class UserAccountServiceTests
     {
-        UserAccountService subject;
+        TestUserAccountService subject;
         FakeUserAccountRepository repository;
         MembershipRebootConfiguration configuration;
         KeyNotification key;
@@ -36,8 +36,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration = new MembershipRebootConfiguration();
             key = new KeyNotification();
             configuration.AddEventHandler(key);
-            repository = new FakeUserAccountRepository(); 
-            subject = new UserAccountService(configuration, repository);
+            repository = new FakeUserAccountRepository();
+            subject = new TestUserAccountService(configuration, repository);
         }
 
         [TestCleanup]
@@ -730,7 +730,62 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.IsFalse(subject.Authenticate((string)null, "pass"));
             Assert.IsFalse(subject.Authenticate("test2", "pass"));
         }
-        
+
+        [TestMethod]
+        public void Authenticate_TooManyBadPasswords_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.AccountLockoutFailedLoginAttempts = 5;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            Assert.IsFalse(subject.Authenticate("test", "pass"));
+        }
+
+        [TestMethod]
+        public void Authenticate_AccountLocked_AfterLockoutDuration_LoginAllowed()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.AccountLockoutFailedLoginAttempts = 5;
+            this.configuration.AccountLockoutDuration = TimeSpan.FromMinutes(1);
+
+            subject.Now = new DateTime(2014, 3, 18, 9, 0, 0);
+
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            subject.Now += new TimeSpan(0, 1, 1);
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+        }
+
+        [TestMethod]
+        public void SetPassword_AccountLocked_ResetsLockoutAndUserCanLogin()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.AccountLockoutFailedLoginAttempts = 5;
+            this.configuration.AccountLockoutDuration = TimeSpan.FromMinutes(1);
+
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            subject.SetPassword(acct.ID, "newPass");
+            Assert.IsTrue(subject.Authenticate("test", "newPass"));
+        }
+
         [TestMethod]
         public void Authenticate_ReturnsCorrectAccount()
         {
@@ -1983,6 +2038,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.MobilePhoneAlreadyInUse, ex.Message);
             }
         }
+
 
 
     }
