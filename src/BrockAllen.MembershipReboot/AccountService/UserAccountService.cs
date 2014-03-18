@@ -1331,15 +1331,10 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
-        public virtual void AddPasswordResetSecret(Guid accountID, string password, string question, string answer)
+        public virtual void AddPasswordResetSecret(Guid accountID, string question, string answer)
         {
             Tracing.Information("[UserAccountService.AddPasswordResetSecret] called: {0}", accountID);
 
-            if (String.IsNullOrWhiteSpace(password))
-            {
-                Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null oldPassword");
-                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
-            }
             if (String.IsNullOrWhiteSpace(question))
             {
                 Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- null question");
@@ -1353,12 +1348,6 @@ namespace BrockAllen.MembershipReboot
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
-
-            if (!VerifyPassword(account, password))
-            {
-                Tracing.Error("[UserAccountService.AddPasswordResetSecret] failed -- failed authN");
-                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidPassword));
-            }
 
             if (account.PasswordResetSecrets.Any(x => x.Question == question))
             {
