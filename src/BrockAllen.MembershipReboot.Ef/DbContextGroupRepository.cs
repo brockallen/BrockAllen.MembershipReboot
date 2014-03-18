@@ -14,11 +14,13 @@ namespace BrockAllen.MembershipReboot.Ef
         where TGroup : RelationalGroup
     {
         protected DbContext db;
+        bool isContextOwner;
         DbSet<TGroup> items;
         
         public DbContextGroupRepository()
             : this(new Ctx())
         {
+            isContextOwner = true;
         }
         public DbContextGroupRepository(Ctx ctx)
         {
@@ -36,11 +38,12 @@ namespace BrockAllen.MembershipReboot.Ef
 
         public void Dispose()
         {
-            if (db.TryDispose())
+            if (isContextOwner)
             {
-                db = null;
-                items = null;
+                db.TryDispose();
             }
+            db = null;
+            items = null;
         }
 
         protected override IQueryable<TGroup> Queryable

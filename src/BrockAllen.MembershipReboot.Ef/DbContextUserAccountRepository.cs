@@ -15,11 +15,13 @@ namespace BrockAllen.MembershipReboot.Ef
         where TAccount : RelationalUserAccount
     {
         protected DbContext db;
+        bool isContextOwner;
         DbSet<TAccount> items;
 
         public DbContextUserAccountRepository()
             : this(new Ctx())
         {
+            isContextOwner = true;
         }
 
         public DbContextUserAccountRepository(Ctx ctx)
@@ -38,11 +40,12 @@ namespace BrockAllen.MembershipReboot.Ef
 
         public void Dispose()
         {
-            if (db.TryDispose())
+            if (isContextOwner)
             {
-                db = null;
-                items = null;
+                db.TryDispose();
             }
+            db = null;
+            items = null;
         }
 
         protected override IQueryable<TAccount> Queryable
