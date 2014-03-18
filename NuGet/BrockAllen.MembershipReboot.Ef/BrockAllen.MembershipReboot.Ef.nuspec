@@ -16,7 +16,7 @@
     
     <dependencies>
       <dependency id="BrockAllen.MembershipReboot" version="7.0.0" />
-      <dependency id="EntityFramework" version="6.0.0" />
+      <dependency id="EntityFramework" version="6.1.0" />
     </dependencies>
   </metadata>
 </package>
