@@ -52,6 +52,9 @@
     <Compile Include="Account\NhUserAccount.cs" />
     <Compile Include="Account\NhUserCertificate.cs" />
     <Compile Include="Account\NhUserClaim.cs" />
+    <Compile Include="Extensions\ConfigurationExtensions.cs" />
+    <Compile Include="Extensions\MembershipRebootLinqToHqlGeneratorsRegistry.cs" />
+    <Compile Include="Extensions\StringComparisonEqualsGenerator.cs" />
     <Compile Include="Groups\NhGroup.cs" />
     <Compile Include="Groups\NhGroupChild.cs" />
     <Compile Include="Mappings\Mappings.cs" />

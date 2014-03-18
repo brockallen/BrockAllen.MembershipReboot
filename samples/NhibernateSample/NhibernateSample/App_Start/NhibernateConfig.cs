@@ -1,13 +1,9 @@
 ﻿namespace NhibernateSample
 {
-    using System.Reflection;
-
-    using BrockAllen.MembershipReboot.Nh.Mappings;
+    using BrockAllen.MembershipReboot.Nh.Extensions;
 
     using NHibernate;
     using NHibernate.Cfg;
-    using NHibernate.Cfg.MappingSchema;
-    using NHibernate.Mapping.ByCode;
 
     public class NhibernateConfig
     {
@@ -22,18 +18,8 @@
         {
             var config = new Configuration();
             config.Configure();
-            config.AddMapping(GetMappings());
+            config.ConfigureMembershipReboot();
             return config;
-        }
-
-        private static HbmMapping GetMappings()
-        {
-            var mapper = new ModelMapper();
-
-            mapper.AddMappings(Assembly.GetAssembly(typeof(UserAccountMapping)).GetExportedTypes());
-            var mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
-
-            return mapping;
         }
     }
 }
