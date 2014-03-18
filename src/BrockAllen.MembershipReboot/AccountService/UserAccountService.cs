@@ -84,6 +84,9 @@ namespace BrockAllen.MembershipReboot
         }
         protected void ValidatePassword(TAccount account, string value)
         {
+            // null is allowed (e.g. for external providers)
+            if (value == null) return;
+
             var result = this.passwordValidator.Value.Validate(this, account, value);
             if (result != null && result != ValidationResult.Success)
             {
@@ -1292,7 +1295,14 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[UserAccountService.ChangePasswordFromResetKey] failed -- null key");
                 account = null;
-                return false;
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidKey));
+            }
+
+            if (String.IsNullOrWhiteSpace(newPassword))
+            {
+                Tracing.Error("[UserAccountService.ChangePasswordFromResetKey] failed -- newPassword empty/null");
+                account = null;
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordRequired));
             }
 
             account = this.GetByVerificationKey(key);

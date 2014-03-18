@@ -1283,7 +1283,15 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.ResetPassword("test@test.com");
             var key = LastVerificationKey;
 
-            Assert.IsFalse(subject.ChangePasswordFromResetKey("", "pass2"));
+            try
+            {
+                subject.ChangePasswordFromResetKey("", "pass2");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.InvalidKey, ex.Message);
+            }
         }
 
         [TestMethod]
@@ -1297,6 +1305,27 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             var key = LastVerificationKey;
 
             Assert.IsFalse(subject.ChangePasswordFromResetKey("abc", "pass2"));
+        }
+
+        [TestMethod]
+        public void ChangePasswordFromResetKey_EmptyNewPass_Fails()
+        {
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
+            var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+
+            subject.ResetPassword("test@test.com");
+            var key = LastVerificationKey;
+
+            try
+            {
+                subject.ChangePasswordFromResetKey(key, "");
+                Assert.Fail();
+            }
+            catch(ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.PasswordRequired, ex.Message);
+            }
         }
 
         [TestMethod]
