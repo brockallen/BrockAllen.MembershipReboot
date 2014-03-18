@@ -59,10 +59,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     ModelState.AddModelError("", ex.Message);
                 }
             }
-            return View("Index"); 
+            return View("Index");
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ResetWithQuestions(PasswordResetWithSecretInputModel model)
@@ -71,8 +71,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    var answers = 
-                        model.Questions.Select(x=>new PasswordResetQuestionAnswer{QuestionID = x.QuestionID, Answer = x.Answer} );
+                    var answers =
+                        model.Questions.Select(x => new PasswordResetQuestionAnswer { QuestionID = x.QuestionID, Answer = x.Answer });
                     this.userAccountService.ResetPasswordFromSecretQuestionAndAnswer(model.UnprotectedAccountID.Value, answers.ToArray());
                     return View("ResetSuccess");
                 }
@@ -100,7 +100,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                 }
             }
 
-            return RedirectToAction("ResetWithSecret");
+            return RedirectToAction("Index");
         }
 
         public ActionResult Confirm(string id)
