@@ -927,7 +927,7 @@ namespace BrockAllen.MembershipReboot
 
             try
             {
-                if (HasTooManyRecentPasswordFailures(account))
+                if (CheckHasTooManyRecentPasswordFailures(account))
                 {
                     Tracing.Error("[UserAccountService.VerifyPassword] failed -- account in lockout due to failed login attempts");
                     this.AddEvent(new TooManyRecentPasswordFailuresEvent<TAccount> { Account = account });
@@ -961,12 +961,17 @@ namespace BrockAllen.MembershipReboot
             return Configuration.Crypto.VerifyHashedPassword(account.HashedPassword, password);
         }
 
-        protected virtual bool HasTooManyRecentPasswordFailures(TAccount account)
+        protected virtual bool CheckHasTooManyRecentPasswordFailures(TAccount account)
         {
             var result = false;
             if (Configuration.AccountLockoutFailedLoginAttempts <= account.FailedLoginCount)
             {
                 result = account.LastFailedLogin >= UtcNow.Subtract(Configuration.AccountLockoutDuration);
+                if (!result)
+                {
+                    // if we're past the lockout window, then reset to zero
+                    account.FailedLoginCount = 0;
+                }
             }
 
             if (result)
@@ -2058,7 +2063,7 @@ namespace BrockAllen.MembershipReboot
 
             try
             {
-                if (HasTooManyRecentPasswordFailures(account))
+                if (CheckHasTooManyRecentPasswordFailures(account))
                 {
                     Tracing.Error("[UserAccountService.VerifyMobileCode] failed -- TooManyRecentPasswordFailures");
                     return false;

@@ -768,6 +768,29 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void Authenticate_AccountLocked_AfterLockoutDuration_FailedAttemptsReset()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.AccountLockoutFailedLoginAttempts = 5;
+            this.configuration.AccountLockoutDuration = TimeSpan.FromMinutes(1);
+
+            subject.Now = new DateTime(2014, 3, 18, 9, 0, 0);
+
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            subject.Now += new TimeSpan(0, 1, 1);
+            subject.Authenticate("test", "bad");
+            acct = subject.GetByID(acct.ID);
+            Assert.AreEqual(1, acct.FailedLoginCount);
+        }
+
+        [TestMethod]
         public void SetPassword_AccountLocked_ResetsLockoutAndUserCanLogin()
         {
             this.configuration.RequireAccountVerification = false;
