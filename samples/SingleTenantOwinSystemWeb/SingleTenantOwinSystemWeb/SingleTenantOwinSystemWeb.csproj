@@ -243,7 +243,6 @@
     <Content Include="Areas\UserAccount\Views\LinkedAccount\SignInError.cshtml" />
     <Content Include="Areas\UserAccount\Views\LinkedAccount\Manage.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Index.cshtml" />
-    <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeSecretQuestion\Add.cshtml" />
     <Content Include="Areas\UserAccount\Views\PasswordReset\ResetWithQuestions.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Verify.cshtml" />
