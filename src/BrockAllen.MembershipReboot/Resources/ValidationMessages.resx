@@ -217,7 +217,7 @@
     <value>The parent and child are the same group.</value>
   </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
-    <value>Password must contain at least {0} of the follwing characters: one upper, one lower, one digit and one other.</value>
+    <value>Password must contain at least {0} of the following characters: one upper, one lower, one digit and one other.</value>
   </data>
   <data name="PasswordLength" xml:space="preserve">
     <value>Password must be at least {0} characters long.</value>
