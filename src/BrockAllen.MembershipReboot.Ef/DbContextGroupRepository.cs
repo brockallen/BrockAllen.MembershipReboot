@@ -46,6 +46,11 @@ namespace BrockAllen.MembershipReboot.Ef
             items = null;
         }
 
+        protected virtual void SaveChanges()
+        {
+            db.SaveChanges();
+        }
+
         protected override IQueryable<TGroup> Queryable
         {
             get { return items; }
@@ -61,14 +66,14 @@ namespace BrockAllen.MembershipReboot.Ef
         {
             CheckDisposed();
             items.Add(item);
-            db.SaveChanges();
+            SaveChanges();
         }
 
         public override void Remove(TGroup item)
         {
             CheckDisposed();
             items.Remove(item);
-            db.SaveChanges();
+            SaveChanges();
         }
 
         public override void Update(TGroup item)
@@ -81,7 +86,7 @@ namespace BrockAllen.MembershipReboot.Ef
                 items.Attach(item);
                 entry.State = EntityState.Modified;
             }
-            db.SaveChanges();
+            SaveChanges();
         }
 
         public override System.Collections.Generic.IEnumerable<TGroup> GetByChildID(Guid childGroupID)

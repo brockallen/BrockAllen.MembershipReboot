@@ -57,6 +57,11 @@ namespace BrockAllen.MembershipReboot.Ef
             }
         }
 
+        protected virtual void SaveChanges()
+        {
+            db.SaveChanges();
+        }
+
         public override TAccount Create()
         {
             CheckDisposed();
@@ -67,14 +72,14 @@ namespace BrockAllen.MembershipReboot.Ef
         {
             CheckDisposed();
             items.Add(item);
-            db.SaveChanges();
+            SaveChanges();
         }
 
         public override void Remove(TAccount item)
         {
             CheckDisposed();
             items.Remove(item);
-            db.SaveChanges();
+            SaveChanges();
         }
 
         public override void Update(TAccount item)
@@ -87,7 +92,7 @@ namespace BrockAllen.MembershipReboot.Ef
                 items.Attach(item);
                 entry.State = EntityState.Modified;
             }
-            db.SaveChanges();
+            SaveChanges();
         }
 
         public override TAccount GetByLinkedAccount(string tenant, string provider, string id)
