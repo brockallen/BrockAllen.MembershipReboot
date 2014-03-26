@@ -70,6 +70,10 @@
     <Compile Include="Migrations\201403032007511_v7_Indexes.Designer.cs">
       <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403261401393_v7_PhantomIndexes.cs" />
+    <Compile Include="Migrations\201403261401393_v7_PhantomIndexes.Designer.cs">
+      <DependentUpon>201403261401393_v7_PhantomIndexes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,6 +89,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403032007511_v7_Indexes.resx">
       <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403261401393_v7_PhantomIndexes.resx">
+      <DependentUpon>201403261401393_v7_PhantomIndexes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
