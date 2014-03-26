@@ -2290,20 +2290,23 @@ namespace BrockAllen.MembershipReboot
             UpdateInternal(account);
         }
 
-        public virtual void UpdateClaims(Guid accountID, IEnumerable<KeyValuePair<string, string>> additions = null, IEnumerable<KeyValuePair<string, string>> deletions = null)
+        public virtual void UpdateClaims(
+            Guid accountID, 
+            IEnumerable<KeyValuePair<string, string>> additions = null, 
+            IEnumerable<KeyValuePair<string, string>> deletions = null)
         {
-            Tracing.Information("[UserAccountService.UpdateClaimCollection] called for accountID: {0}", accountID);
+            Tracing.Information("[UserAccountService.UpdateClaims] called for accountID: {0}", accountID);
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             foreach (var addition in additions ?? Enumerable.Empty<KeyValuePair<string, string>>())
             {
-                DoAddClaim(account, addition.Key, addition.Value);
+                AddClaim(account, addition.Key, addition.Value);
             }
             foreach (var deletion in deletions ?? Enumerable.Empty<KeyValuePair<string, string>>())
             {
-                DoRemoveClaim(account, deletion.Key, deletion.Value);
+                RemoveClaim(account, deletion.Key, deletion.Value);
             }
             Update(account);
         }
@@ -2315,11 +2318,11 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
 
-            DoAddClaim(account, type, value);
+            AddClaim(account, type, value);
             Update(account);
         }
 
-        private void DoAddClaim(TAccount account, string type, string value)
+        private void AddClaim(TAccount account, string type, string value)
         {
             if (String.IsNullOrWhiteSpace(type))
             {
@@ -2379,11 +2382,11 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
 
-            DoRemoveClaim(account, type, value);
+            RemoveClaim(account, type, value);
             Update(account);
         }
 
-        private void DoRemoveClaim(TAccount account, string type, string value)
+        private void RemoveClaim(TAccount account, string type, string value)
         {
             if (String.IsNullOrWhiteSpace(type))
             {

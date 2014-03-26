@@ -2062,6 +2062,48 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
         }
 
+        [TestMethod]
+        public void AddClaim_AddsTheClaim()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.AreEqual(0, acct.Claims.Count());
+            subject.AddClaim(acct.ID, "foo", "bar");
+            acct = subject.GetByID(acct.ID);
+            Assert.AreEqual(1, acct.Claims.Count());
+            var claim = acct.Claims.First();
+            Assert.AreEqual("foo", claim.Type);
+            Assert.AreEqual("bar", claim.Value);
+        }
+
+        [TestMethod]
+        public void RemoveClaim_RemovesTheClaim()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.AddClaim(acct.ID, "foo", "bar");
+            acct = subject.GetByID(acct.ID);
+            Assert.AreEqual(1, acct.Claims.Count());
+
+            subject.RemoveClaim(acct.ID, "foo", "bar");
+            acct = subject.GetByID(acct.ID);
+            Assert.AreEqual(0, acct.Claims.Count());
+        }
+        
+        //[TestMethod]
+        //public void UpdateClaims_AddsAndRemovesClaims()
+        //{
+        //    var acct = subject.CreateAccount("test", "pass", "test@test.com");
+        //    subject.UpdateClaims(acct.ID, 
+        //        new{"foo", "bar"});
+            
+        //    subject.AddClaim(acct.ID, "foo1", "bar1");
+        //    subject.AddClaim(acct.ID, "foo2", "bar2");
+        //    subject.AddClaim(acct.ID, "foo3", "bar3");
+        //    Assert.AreEqual(3, acct.Claims.Count());
+
+        //    subject.RemoveClaim(acct.ID, "foo", "bar");
+        //    acct = subject.GetByID(acct.ID);
+        //    Assert.AreEqual(0, acct.Claims.Count());
+        //}
 
 
     }
