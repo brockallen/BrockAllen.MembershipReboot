@@ -2290,13 +2290,37 @@ namespace BrockAllen.MembershipReboot
             UpdateInternal(account);
         }
 
+        public virtual void UpdateClaims(Guid accountID, IEnumerable<KeyValuePair<string, string>> additions = null, IEnumerable<KeyValuePair<string, string>> deletions = null)
+        {
+            Tracing.Information("[UserAccountService.UpdateClaimCollection] called for accountID: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            foreach (var addition in additions ?? Enumerable.Empty<KeyValuePair<string, string>>())
+            {
+                DoAddClaim(account, addition.Key, addition.Value);
+            }
+            foreach (var deletion in deletions ?? Enumerable.Empty<KeyValuePair<string, string>>())
+            {
+                DoRemoveClaim(account, deletion.Key, deletion.Value);
+            }
+            Update(account);
+        }
+
         public virtual void AddClaim(Guid accountID, string type, string value)
         {
             Tracing.Information("[UserAccountService.AddClaim] called for accountID: {0}", accountID);
 
             var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID");
+            if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
 
+            DoAddClaim(account, type, value);
+            Update(account);
+        }
+
+        private void DoAddClaim(TAccount account, string type, string value)
+        {
             if (String.IsNullOrWhiteSpace(type))
             {
                 Tracing.Error("[UserAccountService.AddClaim] failed -- null type");
@@ -2315,12 +2339,10 @@ namespace BrockAllen.MembershipReboot
                 claim.Type = type;
                 claim.Value = value;
                 account.AddClaim(claim);
-                this.AddEvent(new ClaimAddedEvent<TAccount> { Account = account, Claim = claim });
+                this.AddEvent(new ClaimAddedEvent<TAccount> {Account = account, Claim = claim});
 
                 Tracing.Verbose("[UserAccountService.AddClaim] claim added");
             }
-
-            Update(account);
         }
 
         public virtual void RemoveClaim(Guid accountID, string type)
@@ -2328,7 +2350,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information("[UserAccountService.RemoveClaim] called for accountID: {0}", accountID);
 
             var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID");
+            if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
 
             if (String.IsNullOrWhiteSpace(type))
             {
@@ -2355,8 +2377,14 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information("[UserAccountService.RemoveClaim] called for accountID: {0}", accountID);
 
             var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID");
+            if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
 
+            DoRemoveClaim(account, type, value);
+            Update(account);
+        }
+
+        private void DoRemoveClaim(TAccount account, string type, string value)
+        {
             if (String.IsNullOrWhiteSpace(type))
             {
                 Tracing.Error("[UserAccountService.RemoveClaim] failed -- null type");
@@ -2375,11 +2403,9 @@ namespace BrockAllen.MembershipReboot
             foreach (var claim in claimsToRemove.ToArray())
             {
                 account.RemoveClaim(claim);
-                this.AddEvent(new ClaimRemovedEvent<TAccount> { Account = account, Claim = claim });
+                this.AddEvent(new ClaimRemovedEvent<TAccount> {Account = account, Claim = claim});
                 Tracing.Verbose("[UserAccountService.RemoveClaim] claim removed");
             }
-
-            Update(account);
         }
 
         protected virtual LinkedAccount GetLinkedAccount(TAccount account, string provider, string id)
