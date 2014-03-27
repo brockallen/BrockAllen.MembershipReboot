@@ -3,12 +3,27 @@
  * see license.txt
  */
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BrockAllen.MembershipReboot
 {
     public class UserClaim
     {
+        public UserClaim()
+        {
+        }
+        
+        public UserClaim(string type, string value)
+        {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
+            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentNullException("value");
+
+            this.Type = type;
+            this.Value = value;
+        }
+
         [StringLength(150)]
         [Required]
         public virtual string Type { get; protected internal set; }
@@ -16,5 +31,40 @@ namespace BrockAllen.MembershipReboot
         [StringLength(150)]
         [Required]
         public virtual string Value { get; protected internal set; }
+    }
+
+    public static class UserClaimCollectionExtensions
+    {
+        public static UserClaimCollection ToCollection(this IEnumerable<UserClaim> claims)
+        {
+            return new UserClaimCollection(claims);
+        }
+    }
+
+    public class UserClaimCollection : System.Collections.Generic.HashSet<UserClaim>
+    {
+        public static readonly UserClaimCollection Empty = new UserClaimCollection();
+
+        public static implicit operator UserClaimCollection(UserClaim[] claims)
+        {
+            return new UserClaimCollection(claims);
+        }
+
+        public UserClaimCollection()
+        {
+        }
+
+        public UserClaimCollection(System.Collections.Generic.IEnumerable<UserClaim> claims)
+        {
+            foreach (var claim in claims)
+            {
+                this.Add(claim);
+            }
+        }
+
+        public void Add(string type, string value)
+        {
+            this.Add(new UserClaim(type, value));
+        }
     }
 }

@@ -10,6 +10,9 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Collections;
+using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace BrockAllen.MembershipReboot.Test.AccountService
 {
@@ -2087,24 +2090,69 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             acct = subject.GetByID(acct.ID);
             Assert.AreEqual(0, acct.Claims.Count());
         }
-        
-        //[TestMethod]
-        //public void UpdateClaims_AddsAndRemovesClaims()
-        //{
-        //    var acct = subject.CreateAccount("test", "pass", "test@test.com");
-        //    subject.UpdateClaims(acct.ID, 
-        //        new{"foo", "bar"});
+
+        [TestMethod]
+        public void UpdateClaims_AddsAndRemovesClaims()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.UpdateClaims(acct.ID,
+                new UserClaimCollection() {
+                    {"foo1", "bar1"},
+                    {"foo2", "bar2"},
+                    {"foo3", "bar3"},
+                });
+            Assert.AreEqual(3, subject.GetByID(acct.ID).Claims.Count());
+
+            subject.UpdateClaims(acct.ID,
+                new UserClaim[] {
+                    new UserClaim("foo4", "bar4"),
+                    new UserClaim("foo5", "bar5"),
+                    new UserClaim("foo6", "bar6"),
+                });
+            Assert.AreEqual(6, subject.GetByID(acct.ID).Claims.Count());
+
+            subject.UpdateClaims(acct.ID,
+                new UserClaim[] {
+                    new UserClaim("foo4", "bar4"),
+                    new UserClaim("foo5", "bar5"),
+                    new UserClaim("foo6", "bar6"),
+                });
+            Assert.AreEqual(6, subject.GetByID(acct.ID).Claims.Count());
+
+            subject.UpdateClaims(acct.ID,
+                new UserClaim[] {
+                    new UserClaim("foo4", "bar99"),
+                    new UserClaim("foo5", "bar99"),
+                    new UserClaim("foo6", "bar99"),
+                });
+            Assert.AreEqual(9, subject.GetByID(acct.ID).Claims.Count());
             
-        //    subject.AddClaim(acct.ID, "foo1", "bar1");
-        //    subject.AddClaim(acct.ID, "foo2", "bar2");
-        //    subject.AddClaim(acct.ID, "foo3", "bar3");
-        //    Assert.AreEqual(3, acct.Claims.Count());
+            subject.UpdateClaims(acct.ID,
+                null,
+                new UserClaim[] {
+                    new UserClaim("foo4", "bar99"),
+                    new UserClaim("foo5", "bar99"),
+                    new UserClaim("foo6", "bar99"),
+                });
+            Assert.AreEqual(6, subject.GetByID(acct.ID).Claims.Count());
 
-        //    subject.RemoveClaim(acct.ID, "foo", "bar");
-        //    acct = subject.GetByID(acct.ID);
-        //    Assert.AreEqual(0, acct.Claims.Count());
-        //}
+            subject.UpdateClaims(acct.ID,
+                null,
+                new UserClaim[] {
+                    new UserClaim("foo4", "bar99"),
+                    new UserClaim("foo5", "bar99"),
+                    new UserClaim("foo6", "bar99"),
+                });
+            Assert.AreEqual(6, subject.GetByID(acct.ID).Claims.Count());
 
-
+            subject.UpdateClaims(acct.ID,
+                null,
+                new UserClaimCollection() {
+                    {"foo1", "bar1"},
+                    {"foo2", "bar2"},
+                    {"foo3", "bar3"},
+                });
+            Assert.AreEqual(3, subject.GetByID(acct.ID).Claims.Count());
+        }
     }
 }

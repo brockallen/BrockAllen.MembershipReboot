@@ -2290,23 +2290,35 @@ namespace BrockAllen.MembershipReboot
             UpdateInternal(account);
         }
 
+        public virtual void AddClaims(Guid accountID, UserClaimCollection claims)
+        {
+            Tracing.Information("[UserAccountService.AddClaims] called for accountID: {0}", accountID);
+            this.UpdateClaims(accountID, claims, null);
+        }
+
+        public virtual void RemoveClaims(Guid accountID, UserClaimCollection claims)
+        {
+            Tracing.Information("[UserAccountService.RemoveClaims] called for accountID: {0}", accountID);
+            this.UpdateClaims(accountID, null, claims);
+        }
+
         public virtual void UpdateClaims(
-            Guid accountID, 
-            IEnumerable<KeyValuePair<string, string>> additions = null, 
-            IEnumerable<KeyValuePair<string, string>> deletions = null)
+            Guid accountID,
+            UserClaimCollection additions = null,
+            UserClaimCollection deletions = null)
         {
             Tracing.Information("[UserAccountService.UpdateClaims] called for accountID: {0}", accountID);
 
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            foreach (var addition in additions ?? Enumerable.Empty<KeyValuePair<string, string>>())
+            foreach (var addition in additions ?? UserClaimCollection.Empty)
             {
-                AddClaim(account, addition.Key, addition.Value);
+                AddClaim(account, addition);
             }
-            foreach (var deletion in deletions ?? Enumerable.Empty<KeyValuePair<string, string>>())
+            foreach (var deletion in deletions ?? UserClaimCollection.Empty)
             {
-                RemoveClaim(account, deletion.Key, deletion.Value);
+                RemoveClaim(account, deletion.Type, deletion.Value);
             }
             Update(account);
         }
@@ -2315,15 +2327,6 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.AddClaim] called for accountID: {0}", accountID);
 
-            var account = this.GetByID(accountID);
-            if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
-
-            AddClaim(account, type, value);
-            Update(account);
-        }
-
-        private void AddClaim(TAccount account, string type, string value)
-        {
             if (String.IsNullOrWhiteSpace(type))
             {
                 Tracing.Error("[UserAccountService.AddClaim] failed -- null type");
@@ -2335,12 +2338,20 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccountService.AddClaim] failed -- null value");
                 throw new ArgumentException("value");
             }
+            
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
 
-            if (!account.HasClaim(type, value))
+            AddClaim(account, new UserClaim(type, value));
+            Update(account);
+        }
+
+        private void AddClaim(TAccount account, UserClaim claim)
+        {
+            if (claim == null) throw new ArgumentNullException("claim");
+
+            if (!account.HasClaim(claim.Type, claim.Value))
             {
-                var claim = new UserClaim();
-                claim.Type = type;
-                claim.Value = value;
                 account.AddClaim(claim);
                 this.AddEvent(new ClaimAddedEvent<TAccount> {Account = account, Claim = claim});
 
@@ -2393,6 +2404,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccountService.RemoveClaim] failed -- null type");
                 throw new ArgumentException("type");
             }
+
             if (String.IsNullOrWhiteSpace(value))
             {
                 Tracing.Error("[UserAccountService.RemoveClaim] failed -- null value");
