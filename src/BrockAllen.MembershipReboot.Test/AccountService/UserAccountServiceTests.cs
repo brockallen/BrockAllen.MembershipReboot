@@ -2156,5 +2156,15 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 });
             Assert.AreEqual(3, subject.GetByID(acct.ID).Claims.Count());
         }
+
+        [TestMethod]
+        public void UpdateClaims_NoChanges_AccountNotUpdated()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            var lastUpdated = acct.LastUpdated;
+            subject.UpdateClaims(acct.ID, null, Enumerable.Empty<UserClaim>().ToCollection());
+            Assert.AreEqual(lastUpdated, subject.GetByID(acct.ID).LastUpdated);
+        }
+
     }
 }

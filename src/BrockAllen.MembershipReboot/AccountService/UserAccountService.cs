@@ -2309,6 +2309,13 @@ namespace BrockAllen.MembershipReboot
         {
             Tracing.Information("[UserAccountService.UpdateClaims] called for accountID: {0}", accountID);
 
+            if ((additions == null || !additions.Any()) &&
+                (deletions == null || !deletions.Any()))
+            {
+                Tracing.Verbose("[UserAccountService.UpdateClaims] no additions or deletions -- exiting");
+                return;
+            }
+
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
