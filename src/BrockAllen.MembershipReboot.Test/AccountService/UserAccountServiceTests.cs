@@ -2111,12 +2111,14 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 });
             Assert.AreEqual(6, subject.GetByID(acct.ID).Claims.Count());
 
-            subject.UpdateClaims(acct.ID,
-                new UserClaim[] {
-                    new UserClaim("foo4", "bar4"),
-                    new UserClaim("foo5", "bar5"),
-                    new UserClaim("foo6", "bar6"),
-                });
+            var claims = new Claim[]
+            {
+                new Claim("foo4", "bar4"),
+                new Claim("foo5", "bar5"),
+                new Claim("foo6", "bar6"),
+            };
+
+            subject.UpdateClaims(acct.ID, claims);
             Assert.AreEqual(6, subject.GetByID(acct.ID).Claims.Count());
 
             subject.UpdateClaims(acct.ID,

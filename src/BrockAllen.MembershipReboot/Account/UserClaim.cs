@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -49,6 +50,11 @@ namespace BrockAllen.MembershipReboot
         {
             return new UserClaimCollection(claims);
         }
+        
+        public static implicit operator UserClaimCollection(Claim[] claims)
+        {
+            return new UserClaimCollection(claims);
+        }
 
         public UserClaimCollection()
         {
@@ -56,9 +62,22 @@ namespace BrockAllen.MembershipReboot
 
         public UserClaimCollection(System.Collections.Generic.IEnumerable<UserClaim> claims)
         {
-            foreach (var claim in claims)
+            if (claims != null)
             {
-                this.Add(claim);
+                foreach (var claim in claims)
+                {
+                    this.Add(claim);
+                }
+            }
+        }
+        public UserClaimCollection(System.Collections.Generic.IEnumerable<Claim> claims)
+        {
+            if (claims != null)
+            {
+                foreach (var claim in claims)
+                {
+                    this.Add(claim.Type, claim.Value);
+                }
             }
         }
 
