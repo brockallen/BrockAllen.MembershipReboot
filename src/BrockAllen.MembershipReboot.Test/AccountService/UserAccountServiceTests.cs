@@ -456,7 +456,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             try
             {
-                subject.CreateAccount("    ", "pass", "test@test.com");
+                subject.CreateAccount(" ", "pass", "test@test.com");
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -466,17 +466,88 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
-        public void CreateMethod_UsernameContainsWhitespace_FailsValidation()
+        public void CreateMethod_UsernameStartsOrEndNonLetterOrDigit_FailsValidation()
         {
             try
             {
-                subject.CreateAccount("test test", "pass", "test@test.com");
+                subject.CreateAccount(" test", "pass", "test@test.com");
                 Assert.Fail();
             }
             catch (ValidationException ex)
             {
-                Assert.AreEqual(Resources.ValidationMessages.UsernameOnlyContainLettersAndDigits, ex.Message);
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
             }
+            try
+            {
+                subject.CreateAccount("test ", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            } 
+            try
+            {
+                subject.CreateAccount(".test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test.", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("_test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test_", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+        }
+        
+        [TestMethod]
+        public void CreateMethod_UsernameContainsWhitespace_Succeeds()
+        {
+            subject.CreateAccount("test test", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsUnderscore_Succeeds()
+        {
+            subject.CreateAccount("test_test", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsPeriods_Succeeds()
+        {
+            subject.CreateAccount("test.test", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsDigits_Succeeds()
+        {
+            subject.CreateAccount("123", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsLetters_Succeeds()
+        {
+            subject.CreateAccount("test", "pass", "test@test.com");
         }
         
         [TestMethod]

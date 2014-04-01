@@ -47,7 +47,8 @@ namespace BrockAllen.MembershipReboot
                 if (!this.Configuration.EmailIsUsername)
                 {
                     val.Add(UserAccountValidation<TAccount>.UsernameDoesNotContainAtSign);
-                    val.Add(UserAccountValidation<TAccount>.UsernameOnlyContainsLettersAndDigits);
+                    val.Add(UserAccountValidation<TAccount>.UsernameCanOnlyStartOrEndWithLetterOrDigit);
+                    val.Add(UserAccountValidation<TAccount>.UsernameOnlyContainsValidCharacters);
                 }
                 val.Add(UserAccountValidation<TAccount>.UsernameMustNotAlreadyExist);
                 val.Add(configuration.UsernameValidator);
