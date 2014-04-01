@@ -26,13 +26,12 @@ namespace BrockAllen.MembershipReboot
 
         public static bool IsValidUsernameChar(char c)
         {
-            var cat = Char.GetUnicodeCategory(c);
             return
                 Char.IsLetterOrDigit(c) ||
                 c == '.' ||
                 c == ' ' ||
-                cat == System.Globalization.UnicodeCategory.ConnectorPunctuation ||
-                cat == System.Globalization.UnicodeCategory.DashPunctuation;
+                c == '_' ||
+                c == '-';
         }
 
         public static readonly IValidator<TAccount> UsernameOnlyContainsValidCharacters =
