@@ -53,8 +53,16 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         public ActionResult Cancel(string id)
         {
-            this.userAccountService.CancelVerification(id);
-            return View("Cancel");
+            bool closed = false;
+            try
+            {
+                this.userAccountService.CancelVerification(id, out closed);
+            }
+            catch(ValidationException ex)
+            {
+                //ModelState.AddModelError("", ex.Message);
+            }
+            return View("Cancel", closed);
         }
     }
 }
