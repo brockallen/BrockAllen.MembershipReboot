@@ -19,6 +19,11 @@ namespace BrockAllen.MembershipReboot.Ef
         {
         }
 
+        public DefaultGroupRepository(string name, string schemaName)
+            : base(new DefaultMembershipRebootDatabase(name, schemaName))
+        {
+        }
+
         IGroupRepository<RelationalGroup> This { get { return (IGroupRepository<RelationalGroup>)this; } }
 
         public new Group Create()
