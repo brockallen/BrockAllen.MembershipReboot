@@ -22,6 +22,11 @@ namespace BrockAllen.MembershipReboot.Ef
         {
         }
 
+        public DefaultUserAccountRepository(string name, string schemaName)
+            : base(new DefaultMembershipRebootDatabase(name, schemaName))
+        {
+        }
+
         IUserAccountRepository<RelationalUserAccount> This { get { return (IUserAccountRepository<RelationalUserAccount>)this; } }
 
         public new UserAccount Create()
