@@ -52,6 +52,12 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
         public ActionResult Confirm(string id)
         {
             var account = this.userAccountService.GetByVerificationKey(id);
+            if (account == null)
+            {
+                ModelState.AddModelError("", Resources.ValidationMessages.InvalidKey);
+                return View("Index");
+            }
+
             if (account.HasPassword())
             {
                 var vm = new ChangeEmailFromKeyInputModel();
