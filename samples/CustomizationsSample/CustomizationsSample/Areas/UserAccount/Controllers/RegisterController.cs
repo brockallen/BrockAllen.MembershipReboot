@@ -34,14 +34,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     account.LastName = model.LastName;
                     this.userAccountService.Update(account);
 
-                    if (userAccountService.Configuration.RequireAccountVerification)
-                    {
-                        return View("Success", model);
-                    }
-                    else
-                    {
-                        return View("Confirm", true);
-                    }
+                    ViewData["RequireAccountVerification"] = this.userAccountService.Configuration.RequireAccountVerification;
+                    return View("Success", model);
                 }
                 catch (ValidationException ex)
                 {
