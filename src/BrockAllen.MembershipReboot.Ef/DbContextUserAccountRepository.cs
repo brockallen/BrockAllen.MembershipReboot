@@ -15,7 +15,7 @@ namespace BrockAllen.MembershipReboot.Ef
         where TAccount : RelationalUserAccount
     {
         protected DbContext db;
-        bool isContextOwner;
+        protected bool isContextOwner;
         DbSet<TAccount> items;
 
         public DbContextUserAccountRepository()

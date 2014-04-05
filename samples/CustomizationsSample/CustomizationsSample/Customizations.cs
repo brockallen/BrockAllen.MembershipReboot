@@ -53,8 +53,8 @@ namespace BrockAllen.MembershipReboot.Mvc
 
     public class CustomUserAccount : RelationalUserAccount
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public virtual string FirstName { get; set; }
+        public virtual string LastName { get; set; }
         
         [NotMapped]
         public string OtherFirstName
@@ -76,11 +76,13 @@ namespace BrockAllen.MembershipReboot.Mvc
         public CustomDatabase()
             : this("name=MyDbConnectionString")
         {
+            this.RegisterUserAccountChildTablesForDelete<CustomUserAccount>();
         }
         
         public CustomDatabase(string connectionName)
             : base(connectionName)
         {
+            this.RegisterUserAccountChildTablesForDelete<CustomUserAccount>();
         }
         
         public DbSet<SomeOtherEntity> OtherStuff { get; set; }
@@ -91,7 +93,6 @@ namespace BrockAllen.MembershipReboot.Mvc
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.ConfigureMembershipRebootUserAccounts<CustomUserAccount>();
-            //modelBuilder.Entity<CustomUserAccount>().HasKey(x => x.NonGuidPrimaryKey);
         }
     }
 
@@ -102,10 +103,12 @@ namespace BrockAllen.MembershipReboot.Mvc
         public CustomRepository()
             : base(new CustomDatabase())
         {
+            this.isContextOwner = true;
         }
         public CustomRepository(string name)
             : base(new CustomDatabase(name))
         {
+            this.isContextOwner = true;
         }
         public CustomRepository(CustomDatabase db)
             : base(db)
