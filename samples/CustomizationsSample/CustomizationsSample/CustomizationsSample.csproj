@@ -174,7 +174,6 @@
     <Content Include="Areas\UserAccount\Views\PasswordReset\ResetSuccess.cshtml" />
     <Content Include="Areas\UserAccount\Views\PasswordReset\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Cancel.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Register\Confirm.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\Register\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\RegisterInputModel.cshtml" />
@@ -192,7 +191,6 @@
     <Content Include="Areas\UserAccount\Views\SendUsernameReminder\Success.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeUsername\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangeUsername\Success.cshtml" />
-    <Content Include="Areas\UserAccount\Views\Register\ConfirmResult.cshtml" />
     <Content Include="Areas\Admin\Views\Home\Detail.cshtml" />
     <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\Object.cshtml" />
