@@ -24,18 +24,40 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        public static readonly IValidator<TAccount> UsernameOnlyContainsLettersAndDigits =
+        public static bool IsValidUsernameChar(char c)
+        {
+            return
+                Char.IsLetterOrDigit(c) ||
+                c == '.' ||
+                c == ' ' ||
+                c == '_' ||
+                c == '-';
+        }
+
+        public static readonly IValidator<TAccount> UsernameOnlyContainsValidCharacters =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
-                if (!value.All(x => Char.IsLetterOrDigit(x)))
+                if (!value.All(x => IsValidUsernameChar(x)))
                 {
-                    Tracing.Verbose("[UserAccountValidation.UsernameOnlyContainsLettersAndDigits] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
+                    Tracing.Verbose("[UserAccountValidation.UsernameOnlyContainsValidCharacters] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
-                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameOnlyContainLettersAndDigits));
+                    return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameOnlyContainsValidCharacters));
                 }
                 return null;
             });
 
+        public static readonly IValidator<TAccount> UsernameCanOnlyStartOrEndWithLetterOrDigit =
+                   new DelegateValidator<TAccount>((service, account, value) =>
+                   {
+                       if (!Char.IsLetterOrDigit(value.First()) || !Char.IsLetterOrDigit(value.Last()))
+                       {
+                           Tracing.Verbose("[UserAccountValidation.UsernameCanOnlyStartOrEndWithLetterOrDigit] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
+
+                           return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit));
+                       }
+                       return null;
+                   });
+        
         public static readonly IValidator<TAccount> UsernameMustNotAlreadyExist =
             new DelegateValidator<TAccount>((service, account, value) =>
             {

@@ -252,8 +252,11 @@
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
     <value>Username cannot contain the '@' character.</value>
   </data>
-  <data name="UsernameOnlyContainLettersAndDigits" xml:space="preserve">
-    <value>Username can only contain letters and digits.</value>
+  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
+    <value>Username can begin or end only with a letter or digit.</value>
+  </data>
+  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
+    <value>Username can only contain letters, digits, spaces, periods, dashes or underscores.</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Username is required.</value>

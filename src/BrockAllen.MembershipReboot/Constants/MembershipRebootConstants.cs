@@ -96,8 +96,9 @@ namespace BrockAllen.MembershipReboot
             public const string TenantRequired = "TenantRequired";
             public const string UsernameAlreadyInUse = "UsernameAlreadyInUse";
             public const string UsernameCannotContainAtSign = "UsernameCannotContainAtSign";
-            public const string UsernameOnlyContainLettersAndDigits = "UsernameOnlyContainLettersAndDigits";
+            public const string UsernameOnlyContainsValidCharacters = "UsernameOnlyContainsValidCharacters";
             public const string UsernameRequired = "UsernameRequired";
+            public const string UsernameCanOnlyStartOrEndWithLetterOrDigit = "UsernameCanOnlyStartOrEndWithLetterOrDigit";
         }
     }
 }
