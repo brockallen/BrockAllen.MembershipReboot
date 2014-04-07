@@ -261,4 +261,7 @@
   <data name="UsernameRequired" xml:space="preserve">
     <value>Username is required.</value>
   </data>
+  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
+    <value>Username cannot have two spaces, periods, dashes or underscores next to one another.</value>
+  </data>
 </root>

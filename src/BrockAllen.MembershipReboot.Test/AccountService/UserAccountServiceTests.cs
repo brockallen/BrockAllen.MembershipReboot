@@ -466,6 +466,47 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CreateAccount_RepeatSpecialCharsInUsername_FailsValidation()
+        {
+            try
+            {
+                subject.CreateAccount("test  test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test--test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test..test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test__test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
+            }
+        }
+
+        [TestMethod]
         public void CreateMethod_UsernameStartsOrEndNonLetterOrDigit_FailsValidation()
         {
             try

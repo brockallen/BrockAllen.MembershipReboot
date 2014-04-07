@@ -466,6 +466,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Username cannot have two spaces, periods, dashes or underscores next to one another..
+        /// </summary>
+        public static string UsernameCannotRepeatSpecialCharacters {
+            get {
+                return ResourceManager.GetString("UsernameCannotRepeatSpecialCharacters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Username can begin or end only with a letter or digit..
         /// </summary>
         public static string UsernameCanOnlyStartOrEndWithLetterOrDigit {

@@ -49,6 +49,7 @@ namespace BrockAllen.MembershipReboot
                     val.Add(UserAccountValidation<TAccount>.UsernameDoesNotContainAtSign);
                     val.Add(UserAccountValidation<TAccount>.UsernameCanOnlyStartOrEndWithLetterOrDigit);
                     val.Add(UserAccountValidation<TAccount>.UsernameOnlyContainsValidCharacters);
+                    val.Add(UserAccountValidation<TAccount>.UsernameOnlySingleInstanceOfSpecialCharacters);
                 }
                 val.Add(UserAccountValidation<TAccount>.UsernameMustNotAlreadyExist);
                 val.Add(configuration.UsernameValidator);

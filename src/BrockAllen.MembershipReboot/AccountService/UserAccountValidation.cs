@@ -24,16 +24,31 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
+        static readonly char[] SpecialChars = { '.', ' ', '_', '-' };
+
         public static bool IsValidUsernameChar(char c)
         {
             return
-                Char.IsLetterOrDigit(c) ||
-                c == '.' ||
-                c == ' ' ||
-                c == '_' ||
-                c == '-';
+                Char.IsLetterOrDigit(c) || 
+                SpecialChars.Contains(c);
         }
 
+        public static readonly IValidator<TAccount> UsernameOnlySingleInstanceOfSpecialCharacters =
+                   new DelegateValidator<TAccount>((service, account, value) =>
+                   {
+                       foreach(var specialChar in SpecialChars)
+                       {
+                           var doubleChar = specialChar.ToString() + specialChar.ToString();
+                           if (value.Contains(doubleChar))
+                           {
+                               Tracing.Verbose("[UserAccountValidation.UsernameOnlySingleInstanceOfSpecialCharacters] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
+                               return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameCannotRepeatSpecialCharacters));
+                           }
+                       }
+
+                       return null;
+                   });
+        
         public static readonly IValidator<TAccount> UsernameOnlyContainsValidCharacters =
             new DelegateValidator<TAccount>((service, account, value) =>
             {
