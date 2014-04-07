@@ -114,6 +114,18 @@ namespace BrockAllen.MembershipReboot.Mvc
             : base(db)
         {
         }
+
+        protected override IQueryable<CustomUserAccount> DefaultQueryFilter(IQueryable<CustomUserAccount> query, string filter)
+        {
+            if (query == null) throw new ArgumentNullException("query");
+            if (filter == null) throw new ArgumentNullException("filter");
+
+            return
+                from a in query
+                from c in a.ClaimCollection
+                    where c.Value.Contains(filter)
+                select a;
+        }
     }
 
     // this shows the extensibility point of being notified of account activity

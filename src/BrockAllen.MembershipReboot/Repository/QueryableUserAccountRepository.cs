@@ -13,6 +13,26 @@ namespace BrockAllen.MembershipReboot
         IUserAccountQuery
         where TAccount : UserAccount
     {
+        public Func<IQueryable<TAccount>, string, IQueryable<TAccount>> QueryFilter { get; set; }
+
+        public QueryableUserAccountRepository()
+        {
+            QueryFilter = DefaultQueryFilter;
+        }
+
+        protected virtual IQueryable<TAccount> DefaultQueryFilter(IQueryable<TAccount> query, string filter)
+        {
+            if (query == null) throw new ArgumentNullException("query");
+            if (filter == null) throw new ArgumentNullException("filter");
+
+            return
+                from a in query
+                where
+                    a.Username.Contains(filter) ||
+                    a.Email.Contains(filter)
+                select a;
+        }
+
         protected abstract IQueryable<TAccount> Queryable { get; }
         public abstract TAccount Create();
         public abstract void Add(TAccount item);
@@ -104,13 +124,7 @@ namespace BrockAllen.MembershipReboot
             
             if (!String.IsNullOrWhiteSpace(filter))
             {
-                query =
-                    from a in query
-                    where
-                        a.Tenant.Contains(filter) || 
-                        a.Username.Contains(filter) ||
-                        a.Email.Contains(filter)
-                    select a;
+                query = QueryFilter(query, filter);
             }
             
             var result =
@@ -135,12 +149,7 @@ namespace BrockAllen.MembershipReboot
             
             if (!String.IsNullOrWhiteSpace(filter))
             {
-                query =
-                    from a in query
-                    where
-                        a.Username.Contains(filter) ||
-                        a.Email.Contains(filter)
-                    select a;
+                query = QueryFilter(query, filter);
             }
 
             var result =
@@ -164,13 +173,7 @@ namespace BrockAllen.MembershipReboot
             
             if (!String.IsNullOrWhiteSpace(filter))
             {
-                query =
-                    from a in query
-                    where
-                        a.Tenant.Contains(filter) ||
-                        a.Username.Contains(filter) ||
-                        a.Email.Contains(filter)
-                    select a;
+                query = QueryFilter(query, filter);
             }
 
             var result =
@@ -196,12 +199,7 @@ namespace BrockAllen.MembershipReboot
 
             if (!String.IsNullOrWhiteSpace(filter))
             {
-                query =
-                    from a in query
-                    where
-                        a.Username.Contains(filter) ||
-                        a.Email.Contains(filter)
-                    select a;
+                query = QueryFilter(query, filter);
             }
 
             var result =
