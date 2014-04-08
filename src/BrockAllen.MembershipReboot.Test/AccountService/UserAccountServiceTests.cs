@@ -2267,6 +2267,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                     {"foo3", "bar3"},
                 });
             Assert.AreEqual(3, subject.GetByID(acct.ID).Claims.Count());
+
+            subject.UpdateClaims(acct.ID, claims.Where(x=>false));
+            Assert.AreEqual(3, subject.GetByID(acct.ID).Claims.Count());
         }
 
         [TestMethod]
