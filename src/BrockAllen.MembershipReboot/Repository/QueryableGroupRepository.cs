@@ -40,7 +40,7 @@ namespace BrockAllen.MembershipReboot
 
         public System.Collections.Generic.IEnumerable<TGroup> GetByIDs(Guid[] ids)
         {
-            return Queryable.Where(x => ids.Contains(x.ID));
+            return Queryable.Where(x => ids.Contains(x.ID)).ToArray();
         }
 
         public abstract System.Collections.Generic.IEnumerable<TGroup> GetByChildID(Guid childGroupID);
