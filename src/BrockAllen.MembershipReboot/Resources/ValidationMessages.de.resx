@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccountAlreadyVerified" xml:space="preserve">
+    <value>Die Emailadresse für dieses Benutzerkonto ist bereits verifiziert.</value>
+  </data>
+  <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
+    <value>Es kann kein Konto erstellt werden, da es keine Email vom Identity-Provider gab.</value>
+  </data>
+  <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
+    <value>Dieses Konto ist nicht für eine Sicherheitsfrage oder -antwort konfiguriert.</value>
+  </data>
+  <data name="AccountNotVerified" xml:space="preserve">
+    <value>Die Emailadresse für dieses Benutzerkonto wurde noch nicht verifiziert.</value>
+  </data>
+  <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
+    <value>Dieses Konto benötigt eine Sicherheitsfrage oder -antwort, um das Passwort zurücksetzen zu können.</value>
+  </data>
+  <data name="AddClientCertForTwoFactor" xml:space="preserve">
+    <value>Fügen Sie bitte ein Client-Zertifikat hinzu, um Zertifikats-Zwei-Faktoren-Authentifizierung zu ermöglichen.</value>
+  </data>
+  <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
+    <value>Sie müssen ein Passwort auf dem lokalen Konto festlegen, ehe Sie den letzten externen Login-Provider entfernen.</value>
+  </data>
+  <data name="CertificateAlreadyInUse" xml:space="preserve">
+    <value>Dieses Zertifikat wird bereits von einem anderen Konto verwendet.</value>
+  </data>
+  <data name="CodeRequired" xml:space="preserve">
+    <value>Code wird benötigt.</value>
+  </data>
+  <data name="EmailAlreadyInUse" xml:space="preserve">
+    <value>Diese Emailadresse ist bereits in Gebrauch.</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Die Emailadresse wird benötigt.</value>
+  </data>
+  <data name="InvalidCertificate" xml:space="preserve">
+    <value>Ungültiges Zertifikat.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Ungültige Emailadresse.</value>
+  </data>
+  <data name="InvalidKey" xml:space="preserve">
+    <value>Ungültiger Schlüssel.</value>
+  </data>
+  <data name="InvalidName" xml:space="preserve">
+    <value>Ungültiger Name.</value>
+  </data>
+  <data name="InvalidNewPassword" xml:space="preserve">
+    <value>Ungültiges neues Passwort.</value>
+  </data>
+  <data name="InvalidOldPassword" xml:space="preserve">
+    <value>Ungültiges altes Passwort.</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Ungültiges Passwort.</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>Ungültige Telefonnummer.</value>
+  </data>
+  <data name="InvalidQuestionOrAnswer" xml:space="preserve">
+    <value>Ungültige Sicherheitsfrage oder -antwort.</value>
+  </data>
+  <data name="InvalidTenant" xml:space="preserve">
+    <value>Ungültiger Inhaber.</value>
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value>Ungültiger Benutzername.</value>
+  </data>
+  <data name="LinkedAccountAlreadyInUse" xml:space="preserve">
+    <value>Dieses externe Konto ist bereits einem anderen Benutzer zugeordnet.</value>
+  </data>
+  <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
+    <value>Mit diesem Provider ist kein Login möglich, weil die Emailadresse bereits einem anderen Konto zugeordnet ist.
+Bitte loggen Sie sich mit Ihrem lokalen Konto ein und weisen den Provider dann zu.</value>
+  </data>
+  <data name="LoginNotAllowed" xml:space="preserve">
+    <value>Der Login ist für dieses Konto nicht erlaubt.</value>
+  </data>
+  <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
+    <value>Diese Mobilfunknummer ist bereits durch ein anderes Konto in Gebrauch.</value>
+  </data>
+  <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
+    <value>Die Mobilfunknummer muss von der jetzigen verschieden sein.</value>
+  </data>
+  <data name="MobilePhoneRequired" xml:space="preserve">
+    <value>Eine Mobilfunknummer wird benötigt.</value>
+  </data>
+  <data name="NameAlreadyInUse" xml:space="preserve">
+    <value>Dieser Name ist bereits in Gebrauch.</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Ein Name wird benötigt.</value>
+  </data>
+  <data name="NewPasswordMustBeDifferent" xml:space="preserve">
+    <value>Das neue Passwort muss vom alten Passwort verschieden sein.</value>
+  </data>
+  <data name="ParentGroupAlreadyChild" xml:space="preserve">
+    <value>Die Elterngruppe ist bereits ein Kind der Kindgruppe.</value>
+  </data>
+  <data name="ParentGroupSameAsChild" xml:space="preserve">
+    <value>Eltern und Kind sind dieselbe Gruppe.</value>
+  </data>
+  <data name="PasswordComplexityRules" xml:space="preserve">
+    <value>Das Passwort muss mindestens {0} der folgenden Zeichen enthalten: Großbuchstabe, Kleinbuchstabe, Zahl und sonstiges.</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>Das Passwort muss mindestens {0} Zeichen lang sein.</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Passwort wird benötigt.</value>
+  </data>
+  <data name="PasswordResetErrorNoEmail" xml:space="preserve">
+    <value>Passwort zurücksetzen ist nicht möglich, da für dieses Konto keine verifizierte Emailadresse hinterlegt ist.</value>
+  </data>
+  <data name="RegisterMobileForTwoFactor" xml:space="preserve">
+    <value>Registrieren Sie bitte eine Mobilfunknummer, um mobile Zwei-Faktoren-Authentifizierung zu ermöglichen.</value>
+  </data>
+  <data name="ReopenErrorNoEmail" xml:space="preserve">
+    <value>Wiedereröffnen des Kontos ist nicht möglich, da für dieses Konto keine Emailadresse hinterlegt ist.</value>
+  </data>
+  <data name="SecretAnswerRequired" xml:space="preserve">
+    <value>Eine Sicherheitsantwort wird benötigt.</value>
+  </data>
+  <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
+    <value>Diese Passwort-Rücksetzen-Sicherheitsfrage ist bereits im Gebrauch.</value>
+  </data>
+  <data name="SecretQuestionRequired" xml:space="preserve">
+    <value>Eine Sicherheitsfrage wird benötigt.</value>
+  </data>
+  <data name="TenantRequired" xml:space="preserve">
+    <value>Ein Inhaber wird benötigt.</value>
+  </data>
+  <data name="UsernameAlreadyInUse" xml:space="preserve">
+    <value>Dieser Benutzername ist bereits in Gebrauch.</value>
+  </data>
+  <data name="UsernameCannotContainAtSign" xml:space="preserve">
+    <value>Der Benutzername darf nicht das '@'-Symbol enthalten.</value>
+  </data>
+  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
+    <value>Der Benutzername darf nur mit einem Buchstaben oder einer Zahl beginnen bzw. enden.</value>
+  </data>
+  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
+    <value>Der Benutzername darf nur Buchstaben, Zahlen, Leerzeichen, Punkte, Bindestriche oder Unterstriche enthalten.</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>Ein Benutzername wird benötigt.</value>
+  </data>
+  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
+    <value>Der Benutzername darf nicht zwei Leerzeichen, Punkte, Bindestriche oder Unterstriche direkt hintereinander enthalten.</value>
+  </data>
+</root>
