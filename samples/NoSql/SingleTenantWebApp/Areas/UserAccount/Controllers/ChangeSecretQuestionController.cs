@@ -42,7 +42,7 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             {
                 try
                 {
-                    this.userAccountService.AddPasswordResetSecret(User.GetUserID(), model.Password, model.Question, model.Answer);
+                    this.userAccountService.AddPasswordResetSecret(User.GetUserID(), model.Question, model.Answer);
                     return RedirectToAction("Index");
                 }
                 catch (ValidationException ex)
