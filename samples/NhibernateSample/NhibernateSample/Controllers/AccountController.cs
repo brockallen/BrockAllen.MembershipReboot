@@ -65,43 +65,39 @@
         [HttpPost]
         public ActionResult Login(LoginViewModel model)
         {
-            if (!this.ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                return this.View(model);
-            }
-
-            NhUserAccount account;
-            using (var tx = this.session.BeginTransaction())
-            {
-                if (this.userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password, out account))
+                NhUserAccount account;
+                using (var tx = this.session.BeginTransaction())
                 {
-                    this.authenticationService.SignIn(account, model.RememberMe);
+                    if (this.userAccountService.AuthenticateWithUsernameOrEmail(model.Username, model.Password, out account))
+                    {
+                        this.authenticationService.SignIn(account, model.RememberMe);
 
-                    if (this.userAccountService.IsPasswordExpired(account))
-                    {
-                        return this.RedirectToAction("Login", "Account");
-                    }
-                    else
-                    {
-                        if (this.Url.IsLocalUrl(model.ReturnUrl))
+                        if (this.userAccountService.IsPasswordExpired(account))
                         {
-                            return this.Redirect(model.ReturnUrl);
+                            return this.RedirectToAction("Login", "ChangePassword");
                         }
                         else
                         {
-                            return this.RedirectToAction("Index", "Home");
+                            if (this.Url.IsLocalUrl(model.ReturnUrl))
+                            {
+                                return this.Redirect(model.ReturnUrl);
+                            }
+                            else
+                            {
+                                return this.RedirectToAction("Index", "Home");
+                            }
                         }
                     }
+                    else
+                    {
+                        this.ModelState.AddModelError(string.Empty, "Invalid Username or Password");
+                    }
+                    tx.Commit();
                 }
-                else
-                {
-                    this.ModelState.AddModelError(string.Empty, "Invalid Username or Password");
-                }
-
-                tx.Commit();
             }
-
-            return this.RedirectToAction("Index", "Home");
+            return this.View(model);
         }
 
         public ActionResult SignOut()
