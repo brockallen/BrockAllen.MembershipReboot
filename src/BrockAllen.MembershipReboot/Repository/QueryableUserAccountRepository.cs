@@ -13,6 +13,8 @@ namespace BrockAllen.MembershipReboot
         IUserAccountQuery
         where TAccount : UserAccount
     {
+        public bool UseEqualsOrdinalIgnoreCaseForQueries { get; set; }
+
         public Func<IQueryable<TAccount>, string, IQueryable<TAccount>> QueryFilter { get; set; }
         public Func<IQueryable<TAccount>, IQueryable<TAccount>> QuerySort { get; set; }
 
@@ -40,8 +42,15 @@ namespace BrockAllen.MembershipReboot
                 return null;
             }
 
-            return Queryable.SingleOrDefault(x => 
-                username.Equals(x.Username, StringComparison.OrdinalIgnoreCase));
+            if (UseEqualsOrdinalIgnoreCaseForQueries)
+            {
+                return Queryable.SingleOrDefault(x =>
+                    username.Equals(x.Username, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                return Queryable.SingleOrDefault(x => username == x.Username);
+            }
         }
 
         public TAccount GetByUsername(string tenant, string username)
@@ -52,9 +61,18 @@ namespace BrockAllen.MembershipReboot
                 return null;
             }
 
-            return Queryable.SingleOrDefault(x => 
-                tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) && 
-                username.Equals(x.Username, StringComparison.OrdinalIgnoreCase));
+            if (UseEqualsOrdinalIgnoreCaseForQueries)
+            {
+                return Queryable.SingleOrDefault(x =>
+                    tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) &&
+                    username.Equals(x.Username, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                return Queryable.SingleOrDefault(x => 
+                    tenant == x.Tenant &&
+                    username == x.Username);
+            }
         }
 
         public TAccount GetByEmail(string tenant, string email)
@@ -65,9 +83,18 @@ namespace BrockAllen.MembershipReboot
                 return null;
             }
 
-            return Queryable.SingleOrDefault(x => 
-                tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) &&
-                email.Equals(x.Email, StringComparison.OrdinalIgnoreCase));
+            if (UseEqualsOrdinalIgnoreCaseForQueries)
+            {
+                return Queryable.SingleOrDefault(x =>
+                    tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) &&
+                    email.Equals(x.Email, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                return Queryable.SingleOrDefault(x =>
+                    tenant == x.Tenant &&
+                    email == x.Email);
+            }
         }
 
         public TAccount GetByMobilePhone(string tenant, string phone)
@@ -77,10 +104,19 @@ namespace BrockAllen.MembershipReboot
             {
                 return null;
             }
-            
-            return Queryable.SingleOrDefault(x => 
-                tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) &&
-                phone.Equals(x.MobilePhoneNumber, StringComparison.OrdinalIgnoreCase));
+
+            if (UseEqualsOrdinalIgnoreCaseForQueries)
+            {
+                return Queryable.SingleOrDefault(x =>
+                    tenant.Equals(x.Tenant, StringComparison.OrdinalIgnoreCase) &&
+                    phone.Equals(x.MobilePhoneNumber, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                return Queryable.SingleOrDefault(x =>
+                    tenant == x.Tenant &&
+                    phone == x.MobilePhoneNumber);
+            }
         }
 
         public TAccount GetByVerificationKey(string key)

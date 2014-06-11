@@ -14,6 +14,11 @@ namespace BrockAllen.MembershipReboot.Test
 
     public class FakeUserAccountRepository : QueryableUserAccountRepository<UserAccount>, IUserAccountRepository
     {
+        public FakeUserAccountRepository()
+        {
+            this.UseEqualsOrdinalIgnoreCaseForQueries = true;
+        }
+
         public List<UserAccount> UserAccounts = new List<UserAccount>();
 
         protected override IQueryable<UserAccount> Queryable
