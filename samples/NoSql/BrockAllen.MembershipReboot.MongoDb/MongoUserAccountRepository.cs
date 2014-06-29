@@ -12,6 +12,7 @@ namespace BrockAllen.MembershipReboot.MongoDb
 
         public MongoUserAccountRepository(MongoDatabase db)
         {
+            this.UseEqualsOrdinalIgnoreCaseForQueries = true;
             _db = db;
         }
 
