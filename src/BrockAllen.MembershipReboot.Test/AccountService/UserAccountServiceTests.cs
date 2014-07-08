@@ -507,6 +507,15 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CreateAccount_AllowAccountToBePassedIn()
+        {
+            MyUserAccount acct = new MyUserAccount();
+            var result = subject.CreateAccount("tenant", "user", "pass", "user@email.com", null, null, acct);
+            Assert.AreSame(acct, result);
+        }
+
+
+        [TestMethod]
         public void CreateMethod_UsernameStartsOrEndNonLetterOrDigit_FailsValidation()
         {
             try
