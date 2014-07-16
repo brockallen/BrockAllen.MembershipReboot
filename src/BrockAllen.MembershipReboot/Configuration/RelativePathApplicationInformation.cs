@@ -12,7 +12,8 @@ namespace BrockAllen.MembershipReboot
         public RelativePathApplicationInformation()
         {
         }
-        public RelativePathApplicationInformation(string baseUrl)
+
+        public RelativePathApplicationInformation(string baseUrl) 
         {
             this.baseUrl = baseUrl;
         }
@@ -22,6 +23,17 @@ namespace BrockAllen.MembershipReboot
         public string RelativeConfirmChangeEmailUrl { get; set; }
         public string RelativeCancelVerificationUrl { get; set; }
 
+      
+        /// <summary>
+        /// Specifies whether Urls exposed by this class are cached or not.
+        /// </summary>
+        /// <remarks>
+        /// Urls are cached by default once initially resolved. For some scenarios this might not be desirable. For example, a multi-tenant app which
+        /// identifies tenants by subdomain name: there will only be one single (logical) instance of the app, but it will be accessed through different
+        /// Urls. In this case the Urls shouldn't be cached as they will be tenant-specific and this flag can be used to turn caching off.
+        /// </remarks>
+        public bool IsUrlCachingDisabled { get; set; }
+
         protected virtual string GetApplicationBaseUrl()
         {
             throw new NotImplementedException("Either set baseUrl as ctor param or derive and override GetApplicationBaseUrl");
@@ -29,7 +41,7 @@ namespace BrockAllen.MembershipReboot
 
         public bool HasBaseUrl
         {
-            get { return baseUrl != null; }
+            get { return baseUrl != null && IsUrlCachingDisabled == false; }
         }
 
         protected void SetBaseUrl(string url)
@@ -43,11 +55,11 @@ namespace BrockAllen.MembershipReboot
         {
             get
             {
-                if (!HasBaseUrl)
+                if (!HasBaseUrl || IsUrlCachingDisabled)
                 {
                     lock (urlLock)
                     {
-                        if (!HasBaseUrl)
+                        if (!HasBaseUrl || IsUrlCachingDisabled)
                         {
                             // build URL
                             var tmp = GetApplicationBaseUrl();
@@ -77,7 +89,7 @@ namespace BrockAllen.MembershipReboot
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(base.LoginUrl))
+                if (String.IsNullOrWhiteSpace(base.LoginUrl) || IsUrlCachingDisabled)
                 {
                     LoginUrl = BaseUrl + CleanupPath(RelativeLoginUrl);
                 }
@@ -93,7 +105,7 @@ namespace BrockAllen.MembershipReboot
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(base.ConfirmPasswordResetUrl))
+                if (String.IsNullOrWhiteSpace(base.ConfirmPasswordResetUrl) || IsUrlCachingDisabled)
                 {
                     ConfirmPasswordResetUrl = BaseUrl + CleanupPath(RelativeConfirmPasswordResetUrl);
                 }
@@ -109,7 +121,7 @@ namespace BrockAllen.MembershipReboot
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(base.ConfirmChangeEmailUrl))
+                if (String.IsNullOrWhiteSpace(base.ConfirmChangeEmailUrl) || IsUrlCachingDisabled)
                 {
                     ConfirmChangeEmailUrl = BaseUrl + CleanupPath(RelativeConfirmChangeEmailUrl);
                 }
@@ -125,7 +137,7 @@ namespace BrockAllen.MembershipReboot
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(base.CancelVerificationUrl))
+                if (String.IsNullOrWhiteSpace(base.CancelVerificationUrl) || IsUrlCachingDisabled)
                 {
                     CancelVerificationUrl = BaseUrl + CleanupPath(RelativeCancelVerificationUrl);
                 }
