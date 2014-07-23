@@ -30,6 +30,7 @@ namespace BrockAllen.MembershipReboot
             this.AllowAccountDeletion = securitySettings.AllowAccountDeletion;
             this.PasswordHashingIterationCount = securitySettings.PasswordHashingIterationCount;
             this.PasswordResetFrequency = securitySettings.PasswordResetFrequency;
+            this.VerificationKeyStaleDurationMinutes = securitySettings.VerificationKeyStaleDurationMinutes;
 
             this.Crypto = new DefaultCrypto();
         }
@@ -45,6 +46,7 @@ namespace BrockAllen.MembershipReboot
         public bool AllowAccountDeletion { get; set; }
         public int PasswordHashingIterationCount { get; set; }
         public int PasswordResetFrequency { get; set; }
+        public int VerificationKeyStaleDurationMinutes { get; set; }
 
         AggregateValidator<TAccount> usernameValidators = new AggregateValidator<TAccount>();
         public void RegisterUsernameValidator(params IValidator<TAccount>[] items)

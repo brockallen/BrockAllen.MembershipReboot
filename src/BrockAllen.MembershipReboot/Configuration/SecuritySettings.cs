@@ -51,6 +51,7 @@ namespace BrockAllen.MembershipReboot
         private const string ALLOWACCOUNTDELETION = "allowAccountDeletion";
         private const string PASSWORDHASHINGITERATIONCOUNT = "passwordHashingIterationCount";
         private const string PASSWORDRESETFREQUENCY = "passwordResetFrequency";
+        private const string VERIFICATIONKEYSTALEDURATIONMINUTES = "verificationKeyStaleDurationMinutes";
 
         [ConfigurationProperty(MULTITENANT, DefaultValue = MembershipRebootConstants.SecuritySettingDefaults.MultiTenant)]
         public bool MultiTenant
@@ -127,6 +128,13 @@ namespace BrockAllen.MembershipReboot
         {
             get { return (int)this[PASSWORDRESETFREQUENCY]; }
             set { this[PASSWORDRESETFREQUENCY] = value; }
+        }
+
+        [ConfigurationProperty(PASSWORDRESETFREQUENCY, DefaultValue = MembershipRebootConstants.UserAccount.VerificationKeyStaleDurationMinutes)]
+        public int VerificationKeyStaleDurationMinutes
+        {
+            get { return (int)this[VERIFICATIONKEYSTALEDURATIONMINUTES]; }
+            set { this[VERIFICATIONKEYSTALEDURATIONMINUTES] = value; }
         }
     }
 }
