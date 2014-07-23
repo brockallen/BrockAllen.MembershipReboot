@@ -130,7 +130,7 @@ namespace BrockAllen.MembershipReboot
             set { this[PASSWORDRESETFREQUENCY] = value; }
         }
 
-        [ConfigurationProperty(PASSWORDRESETFREQUENCY, DefaultValue = MembershipRebootConstants.UserAccount.VerificationKeyStaleDurationMinutes)]
+        [ConfigurationProperty(VERIFICATIONKEYSTALEDURATIONMINUTES, DefaultValue = MembershipRebootConstants.UserAccount.VerificationKeyStaleDurationMinutes)]
         public int VerificationKeyStaleDurationMinutes
         {
             get { return (int)this[VERIFICATIONKEYSTALEDURATIONMINUTES]; }
