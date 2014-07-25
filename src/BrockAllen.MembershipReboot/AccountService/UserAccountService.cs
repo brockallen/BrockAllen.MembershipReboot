@@ -1965,7 +1965,7 @@ namespace BrockAllen.MembershipReboot
                 return true;
             }
 
-            if (account.VerificationKeySent < UtcNow.Subtract(Configuration.VerificationKeyStaleDuration))
+            if (account.VerificationKeySent < UtcNow.Subtract(Configuration.VerificationKeyLifetime))
             {
                 return true;
             }

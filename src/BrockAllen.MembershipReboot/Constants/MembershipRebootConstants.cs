@@ -26,7 +26,7 @@ namespace BrockAllen.MembershipReboot
             internal const bool AllowAccountDeletion = true;
             internal const int PasswordHashingIterationCount = 0;
             internal const int PasswordResetFrequency = 0;
-            internal const string VerificationKeyStaleDuration = "00:20:00";
+            internal const string VerificationKeyLifetime = "00:20:00";
         }
 
         public class UserAccount
