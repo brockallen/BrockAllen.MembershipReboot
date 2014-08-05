@@ -8,35 +8,21 @@ using System.Data.Entity;
 
 namespace BrockAllen.MembershipReboot.Ef
 {
-    public class DefaultMembershipRebootDatabase : DbContext
+    public class DefaultMembershipRebootDatabase : MembershipRebootDbContext<RelationalUserAccount>
     {
         public DefaultMembershipRebootDatabase()
-            : this("MembershipReboot", null)
+            : base()
         {
         }
 
         public DefaultMembershipRebootDatabase(string nameOrConnectionString)
-            : this(nameOrConnectionString, null)
+            : base()
         {
         }
 
         public DefaultMembershipRebootDatabase(string nameOrConnectionString, string schemaName)
-            : base(nameOrConnectionString)
+            : base(nameOrConnectionString, schemaName)
         {
-            this.SchemaName = schemaName;
-            this.RegisterUserAccountChildTablesForDelete<RelationalUserAccount>();
-            this.RegisterGroupChildTablesForDelete<RelationalGroup>();
-        }
-
-        public string SchemaName { get; private set; }
-
-        public DbSet<RelationalUserAccount> Users { get; set; }
-        public DbSet<RelationalGroup> Groups { get; set; }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.ConfigureMembershipRebootUserAccounts<RelationalUserAccount>(this.SchemaName);
-            modelBuilder.ConfigureMembershipRebootGroups<RelationalGroup>(this.SchemaName);
         }
     }
 }

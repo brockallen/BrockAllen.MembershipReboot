@@ -59,6 +59,7 @@
     <Compile Include="DbContextGroupRepository.cs" />
     <Compile Include="DbContextUserAccountRepository.cs" />
     <Compile Include="DbModelBuilderExtensions.cs" />
+    <Compile Include="MembershipRebootDbContext.cs" />
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
