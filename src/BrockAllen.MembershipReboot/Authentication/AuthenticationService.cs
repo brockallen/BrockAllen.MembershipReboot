@@ -76,12 +76,7 @@ namespace BrockAllen.MembershipReboot
             var claims = GetAllClaims(account, method);
             
             // get custom claims from properties
-            var cmd = new MapClaimsFromAccount<TAccount> { Account = account };
-            this.UserAccountService.ExecuteCommand(cmd);
-            if (cmd.MappedClaims != null)
-            {
-                claims.AddRange(cmd.MappedClaims);
-            }
+            claims.AddRange(this.UserAccountService.MapClaims(account));
 
             // create principal/identity
             var id = new ClaimsIdentity(claims, method);
