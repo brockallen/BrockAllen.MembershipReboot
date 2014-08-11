@@ -89,7 +89,7 @@ namespace BrockAllen.MembershipReboot
 
         private void RemoveChildGroupFromOtherGroups(Guid childGroupID)
         {
-            var groups = this.groupRepository.GetByChildID(childGroupID);
+            var groups = this.groupRepository.GetByChildID(childGroupID).ToList();
             foreach (var group in groups)
             {
                 RemoveChildGroup(group, childGroupID);
