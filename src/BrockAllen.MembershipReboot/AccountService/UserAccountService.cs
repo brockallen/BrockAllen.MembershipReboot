@@ -403,6 +403,11 @@ namespace BrockAllen.MembershipReboot
             return CreateAccount(null, username, password, email, id, dateCreated);
         }
 
+        public virtual TAccount CreateUserAccount()
+        {
+            return this.userRepository.Create();
+        }
+
         public virtual TAccount CreateAccount(string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null, TAccount account = null)
         {
             if (Configuration.EmailIsUsername)
@@ -419,7 +424,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email);
 
-            account = account ?? this.userRepository.Create();
+            account = account ?? CreateUserAccount();
             Init(account, tenant, username, password, email, id, dateCreated);
 
             ValidateEmail(account, email);
