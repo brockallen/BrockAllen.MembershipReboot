@@ -572,6 +572,24 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             {
                 Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
             }
+            try
+            {
+                subject.CreateAccount("test'", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("'test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
         }
         
         [TestMethod]
@@ -593,6 +611,11 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         public void CreateMethod_UsernameContainsDigits_Succeeds()
         {
             subject.CreateAccount("123", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsSingleQuote_Succeeds()
+        {
+            subject.CreateAccount("te'st", "pass", "test@test.com");
         }
         [TestMethod]
         public void CreateMethod_UsernameContainsLetters_Succeeds()

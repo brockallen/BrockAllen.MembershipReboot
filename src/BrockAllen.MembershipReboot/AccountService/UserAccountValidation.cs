@@ -24,7 +24,7 @@ namespace BrockAllen.MembershipReboot
                 return null;
             });
 
-        static readonly char[] SpecialChars = { '.', ' ', '_', '-' };
+        static readonly char[] SpecialChars = { '.', ' ', '_', '-', '\'' };
 
         public static bool IsValidUsernameChar(char c)
         {
