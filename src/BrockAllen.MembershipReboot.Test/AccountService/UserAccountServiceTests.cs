@@ -834,6 +834,34 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CloseAccount_ClosesAccount()
+        {
+            var now = new DateTime(2012, 2, 3, 4, 5, 6);
+            subject.Now = now;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsNotNull(repository.GetByID(acct.ID));
+            subject.CloseAccount(acct.ID);
+
+            acct = repository.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsAccountClosed);
+            Assert.IsNotNull(acct.AccountClosed);
+            Assert.AreEqual(now, acct.AccountClosed.Value);
+        }
+
+        [TestMethod]
+        public void CloseAccount_InvalidAccountID_Throws()
+        {
+            try
+            {
+                subject.CloseAccount(Guid.NewGuid());
+                Assert.Fail();
+            }
+            catch (ArgumentException)
+            {
+            }
+        }
+
+        [TestMethod]
         public void Authenticate_ValidCredentials_ReturnsTrue()
         {
             configuration.RequireAccountVerification = false;

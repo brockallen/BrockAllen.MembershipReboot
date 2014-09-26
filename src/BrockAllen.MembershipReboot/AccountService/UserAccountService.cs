@@ -617,6 +617,16 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
+        public virtual void CloseAccount(Guid accountID)
+        {
+            Tracing.Information("[UserAccountService.CloseAccount] called: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            CloseAccount(account);
+        }
+        
         protected virtual void CloseAccount(TAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
