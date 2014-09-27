@@ -10,7 +10,8 @@ namespace BrockAllen.MembershipReboot
 {
     public abstract class QueryableUserAccountRepository<TAccount> : 
         IUserAccountRepository<TAccount>,
-        IUserAccountQuery
+        IUserAccountQuery,
+        IUserAccountQuery<TAccount>
         where TAccount : UserAccount
     {
         public bool UseEqualsOrdinalIgnoreCaseForQueries { get; set; }
@@ -260,6 +261,55 @@ namespace BrockAllen.MembershipReboot
 
             var result =
                 from a in query
+                select new UserAccountQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Username = a.Username,
+                    Email = a.Email
+                };
+
+            totalCount = result.Count();
+            return result.Skip(skip).Take(count);
+        }
+
+        public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(Func<IQueryable<TAccount>, IQueryable<TAccount>> filter)
+        {
+            var query =
+                from a in Queryable
+                select a;
+
+            if (filter != null) query = filter(query);
+
+            var result =
+                from a in query
+                select new UserAccountQueryResult
+                {
+                    ID = a.ID,
+                    Tenant = a.Tenant,
+                    Username = a.Username,
+                    Email = a.Email
+                };
+
+            return result;
+        }
+
+        public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(
+            Func<IQueryable<TAccount>, IQueryable<TAccount>> filter, 
+            Func<IQueryable<TAccount>, IOrderedQueryable<TAccount>> sort,
+            int skip, int count, out int totalCount)
+        {
+            if (sort == null) throw new ArgumentNullException("sort");
+
+            var query =
+                from a in Queryable
+                select a;
+
+            if (filter != null) query = filter(query);
+            var sorted = sort(query);
+
+            var result =
+                from a in sorted
                 select new UserAccountQueryResult
                 {
                     ID = a.ID,

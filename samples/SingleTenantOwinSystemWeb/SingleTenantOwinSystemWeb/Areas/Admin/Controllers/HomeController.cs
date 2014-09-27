@@ -8,10 +8,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
 {
     public class HomeController : Controller
     {
-        IUserAccountQuery query;
+        IUserAccountQuery<BrockAllen.MembershipReboot.Relational.RelationalUserAccount> query;
         UserAccountService userAccountService;
 
-        public HomeController(IUserAccountQuery query, UserAccountService userAccountService)
+        public HomeController(IUserAccountQuery<BrockAllen.MembershipReboot.Relational.RelationalUserAccount> query, UserAccountService userAccountService)
         {
             this.userAccountService = userAccountService;
             this.query = query;
@@ -20,7 +20,16 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
         public ActionResult Index(string filter)
         {
             int count;
-            var accounts = query.Query(userAccountService.Configuration.DefaultTenant, filter, 0, 1000, out count);
+            var accounts = query.Query(list =>
+            {
+                if (filter != null)
+                {
+                    list = list.Where(x => x.Username.Contains(filter));
+                }
+                return list;
+            }, 
+            list => list.OrderBy(x=>x.Username),
+            0, 1000, out count);
 
             return View("Index", accounts.ToArray());
         }

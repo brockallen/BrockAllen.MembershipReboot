@@ -60,6 +60,7 @@ namespace SingleTenantOwinSystemWeb
             builder.RegisterType<DefaultUserAccountRepository>()
                 .As<IUserAccountRepository>()
                 .As<IUserAccountQuery>()
+                .As<IUserAccountQuery<BrockAllen.MembershipReboot.Relational.RelationalUserAccount>>()
                 .InstancePerLifetimeScope();
             builder.RegisterType<UserAccountService>().OnActivating(e =>
             {
