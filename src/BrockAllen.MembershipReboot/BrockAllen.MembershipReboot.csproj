@@ -76,6 +76,7 @@
     <Compile Include="Groups\Relational\RelationalGroup.cs" />
     <Compile Include="Query\IGroupQuery.cs" />
     <Compile Include="Query\GroupQueryResult.cs" />
+    <Compile Include="Query\IUserAccountQuery`1.cs" />
     <Compile Include="Query\UserAccountQueryResult.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
     <Compile Include="Query\IUserAccountQuery.cs" />
