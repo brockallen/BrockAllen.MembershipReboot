@@ -27,8 +27,9 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
                     list = list.Where(x => x.Username.Contains(filter));
                 }
                 return list;
-            }, 
-            list => list.OrderBy(x=>x.Username),
+            },
+            null,
+            //list => list.OrderBy(x=>x.Username),
             0, 1000, out count);
 
             return View("Index", accounts.ToArray());
