@@ -16,7 +16,7 @@ namespace BrockAllen.MembershipReboot.Ef
         }
 
         public DefaultMembershipRebootDatabase(string nameOrConnectionString)
-            : base()
+            : base(nameOrConnectionString)
         {
         }
 

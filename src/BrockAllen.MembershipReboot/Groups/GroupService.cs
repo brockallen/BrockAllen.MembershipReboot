@@ -97,7 +97,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        private void Update(TGroup group)
+        public void Update(TGroup group)
         {
             group.LastUpdated = UtcNow;
             this.groupRepository.Update(group);

@@ -12,11 +12,13 @@ namespace BrockAllen.MembershipReboot
 {
     public class SmtpMessageDelivery : IMessageDelivery
     {
-        private readonly bool sendAsHtml;
+        public bool SendAsHtml { get; set; }
+        public int SmtpTimeout { get; set; }
 
-        public SmtpMessageDelivery(bool sendAsHtml = false)
+        public SmtpMessageDelivery(bool sendAsHtml = false, int smtpTimeout = 5000)
         {
-            this.sendAsHtml = sendAsHtml;
+            this.SendAsHtml = sendAsHtml;
+            this.SmtpTimeout = smtpTimeout;
         }
 
         public void Send(Message msg)
@@ -31,13 +33,13 @@ namespace BrockAllen.MembershipReboot
 
             using (SmtpClient smtp = new SmtpClient())
             {
-                smtp.Timeout = 5000;
+                smtp.Timeout = SmtpTimeout;
                 try
                 {
                     MailMessage mailMessage = new MailMessage(msg.From, msg.To, msg.Subject, msg.Body)
-                                                        {
-                                                            IsBodyHtml = sendAsHtml
-                                                        };
+                    {
+                        IsBodyHtml = SendAsHtml
+                    };
                     smtp.Send(mailMessage);
                 }
                 catch (SmtpException e)
