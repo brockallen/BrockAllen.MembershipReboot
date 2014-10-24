@@ -55,6 +55,9 @@ namespace ServerApp
             
             builder.RegisterInstance(config);
 
+            builder.RegisterType<DefaultMembershipRebootDatabase>()
+                .InstancePerLifetimeScope();
+            
             builder.RegisterType<DefaultUserAccountRepository>()
                 .As<IUserAccountRepository>()
                 .As<IUserAccountQuery>()

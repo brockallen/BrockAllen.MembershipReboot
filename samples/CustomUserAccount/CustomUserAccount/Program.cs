@@ -28,6 +28,10 @@ namespace CustomUserAccount
 
     public class CustomUserAccountRepository : DbContextUserAccountRepository<CustomDb, CustomUserAccount>
     {
+        public CustomUserAccountRepository(CustomDb db)
+            : base(db)
+        {
+        }
     }
 
     class Program

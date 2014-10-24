@@ -10,17 +10,8 @@ namespace BrockAllen.MembershipReboot.Ef
         : DbContextGroupRepository<DefaultMembershipRebootDatabase, RelationalGroup>,
           IGroupRepository
     {
-        public DefaultGroupRepository()
-        {
-        }
-
-        public DefaultGroupRepository(string name)
-            : base(new DefaultMembershipRebootDatabase(name))
-        {
-        }
-
-        public DefaultGroupRepository(string name, string schemaName)
-            : base(new DefaultMembershipRebootDatabase(name, schemaName))
+        public DefaultGroupRepository(DefaultMembershipRebootDatabase ctx)
+            : base(ctx)
         {
         }
 

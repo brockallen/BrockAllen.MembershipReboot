@@ -55,8 +55,10 @@ namespace SingleTenantOwinSystemWeb
             var builder = new ContainerBuilder();
 
             var config = CreateMembershipRebootConfiguration(app);
-            
+
             builder.RegisterInstance(config).As<MembershipRebootConfiguration>();
+            builder.RegisterType<DefaultMembershipRebootDatabase>()
+                .InstancePerLifetimeScope();
             builder.RegisterType<DefaultUserAccountRepository>()
                 .As<IUserAccountRepository>()
                 .As<IUserAccountQuery>()

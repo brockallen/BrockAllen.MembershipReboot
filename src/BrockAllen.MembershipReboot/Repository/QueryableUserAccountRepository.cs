@@ -150,7 +150,7 @@ namespace BrockAllen.MembershipReboot
         // IUserAccountQuery
         public System.Collections.Generic.IEnumerable<string> GetAllTenants()
         {
-            return Queryable.Select(x => x.Tenant).Distinct();
+            return Queryable.Select(x => x.Tenant).Distinct().ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string filter)
@@ -179,7 +179,7 @@ namespace BrockAllen.MembershipReboot
                     Email = a.Email
                 };
 
-            return result;
+            return result.ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string tenant, string filter)
@@ -209,7 +209,7 @@ namespace BrockAllen.MembershipReboot
                     Email = a.Email
                 };
 
-            return result;
+            return result.ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string filter, int skip, int count, out int totalCount)
@@ -239,7 +239,7 @@ namespace BrockAllen.MembershipReboot
                 };
 
             totalCount = result.Count();
-            return result.Skip(skip).Take(count);
+            return result.Skip(skip).Take(count).ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
@@ -270,7 +270,7 @@ namespace BrockAllen.MembershipReboot
                 };
 
             totalCount = result.Count();
-            return result.Skip(skip).Take(count);
+            return result.Skip(skip).Take(count).ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(Func<IQueryable<TAccount>, IQueryable<TAccount>> filter)
@@ -291,7 +291,7 @@ namespace BrockAllen.MembershipReboot
                     Email = a.Email
                 };
 
-            return result;
+            return result.ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(
@@ -317,7 +317,7 @@ namespace BrockAllen.MembershipReboot
                 };
 
             totalCount = result.Count();
-            return result.Skip(skip).Take(count);
+            return result.Skip(skip).Take(count).ToArray();
         }
     }
 }

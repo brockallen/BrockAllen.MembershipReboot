@@ -13,17 +13,8 @@ namespace BrockAllen.MembershipReboot.Ef
            : DbContextUserAccountRepository<DefaultMembershipRebootDatabase, RelationalUserAccount>, 
              IUserAccountRepository
     {
-        public DefaultUserAccountRepository()
-        {
-        }
-
-        public DefaultUserAccountRepository(string name)
-            : base(new DefaultMembershipRebootDatabase(name))
-        {
-        }
-
-        public DefaultUserAccountRepository(string name, string schemaName)
-            : base(new DefaultMembershipRebootDatabase(name, schemaName))
+        public DefaultUserAccountRepository(DefaultMembershipRebootDatabase ctx)
+            : base(ctx)
         {
         }
 

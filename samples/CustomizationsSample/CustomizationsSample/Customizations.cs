@@ -100,18 +100,8 @@ namespace BrockAllen.MembershipReboot.Mvc
     {
         // you can do either style ctor (or none) -- depends how much control 
         // you want over instantiating the CustomDatabase instance
-        public CustomRepository()
-            : base(new CustomDatabase())
-        {
-            this.isContextOwner = true;
-        }
-        public CustomRepository(string name)
-            : base(new CustomDatabase(name))
-        {
-            this.isContextOwner = true;
-        }
-        public CustomRepository(CustomDatabase db)
-            : base(db)
+        public CustomRepository(CustomDatabase ctx)
+            : base(ctx)
         {
         }
 

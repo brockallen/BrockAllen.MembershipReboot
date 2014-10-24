@@ -8,6 +8,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
     using Ninject;
     using Ninject.Web.Common;
+    using RolesAdmin.Models;
     using System;
     using System.Web;
 
@@ -55,6 +56,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         {
             System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
             //System.Data.Entity.Database.SetInitializer(new System.Data.Entity.DropCreateDatabaseIfModelChanges<DefaultMembershipRebootDatabase>());
+            kernel.Bind<DefaultMembershipRebootDatabase>().ToSelf().InRequestScope();
             kernel.Bind<IGroupRepository>().To<DefaultGroupRepository>().InRequestScope();
             kernel.Bind<IGroupQuery>().To<DefaultGroupRepository>().InRequestScope();
             kernel.Bind<GroupService>().ToMethod(ctx => new GroupService("default", ctx.Kernel.Get<IGroupRepository>()));

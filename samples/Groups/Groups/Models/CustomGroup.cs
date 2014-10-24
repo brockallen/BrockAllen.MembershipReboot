@@ -31,17 +31,25 @@ namespace RolesAdmin.Models
 
     public class CustomGroupRepository : DbContextGroupRepository<CustomGroupDbContext, CustomGroup>
     {
+        public CustomGroupRepository(CustomGroupDbContext db)
+            : base(db)
+        {
+
+        }
     }
 
     public static class CustomGroupTest
     {
         public static void Test()
         {
-            var repo = new CustomGroupRepository();
-            var grpSvc = new GroupService<CustomGroup>("tenant", repo);
-            var g = grpSvc.Create("Foo");
-            g.Description = "Bar";
-            grpSvc.Update(g);
+            using (var db = new CustomGroupDbContext())
+            {
+                var repo = new CustomGroupRepository(db);
+                var grpSvc = new GroupService<CustomGroup>("tenant", repo);
+                var g = grpSvc.Create("Foo");
+                g.Description = "Bar";
+                grpSvc.Update(g);
+            }
         }
     }
 }

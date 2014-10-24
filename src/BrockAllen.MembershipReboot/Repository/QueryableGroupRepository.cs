@@ -56,7 +56,7 @@ namespace BrockAllen.MembershipReboot
         // IGroupQuery
         public System.Collections.Generic.IEnumerable<string> GetAllTenants()
         {
-            return Queryable.Select(x => x.Tenant).Distinct();
+            return Queryable.Select(x => x.Tenant).Distinct().ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string filter)
@@ -84,7 +84,7 @@ namespace BrockAllen.MembershipReboot
                     Name = a.Name
                 };
 
-            return result;
+            return result.ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string tenant, string filter)
@@ -112,7 +112,7 @@ namespace BrockAllen.MembershipReboot
                     Name = a.Name
                 };
 
-            return result;
+            return result.ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string filter, int skip, int count, out int totalCount)
@@ -141,7 +141,7 @@ namespace BrockAllen.MembershipReboot
                 };
             
             totalCount = query.Count();
-            return result.Skip(skip).Take(count);
+            return result.Skip(skip).Take(count).ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<GroupQueryResult> Query(string tenant, string filter, int skip, int count, out int totalCount)
@@ -170,12 +170,12 @@ namespace BrockAllen.MembershipReboot
                 };
 
             totalCount = query.Count();
-            return result.Skip(skip).Take(count);
+            return result.Skip(skip).Take(count).ToArray();
         }
 
         public System.Collections.Generic.IEnumerable<string> GetRoleNames(string tenant)
         {
-            return Queryable.Where(x => x.Tenant == tenant).Select(x => x.Name);
+            return Queryable.Where(x => x.Tenant == tenant).Select(x => x.Name).ToArray();
         }
     }
 }

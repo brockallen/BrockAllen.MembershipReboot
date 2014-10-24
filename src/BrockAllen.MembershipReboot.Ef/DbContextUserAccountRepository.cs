@@ -10,19 +10,12 @@ using System.Linq;
 namespace BrockAllen.MembershipReboot.Ef
 {
     public class DbContextUserAccountRepository<Ctx, TAccount> :
-        QueryableUserAccountRepository<TAccount>, IDisposable
-        where Ctx : DbContext, new()
+        QueryableUserAccountRepository<TAccount>
+        where Ctx : DbContext
         where TAccount : RelationalUserAccount
     {
         protected DbContext db;
-        protected bool isContextOwner;
         DbSet<TAccount> items;
-
-        public DbContextUserAccountRepository()
-            : this(new Ctx())
-        {
-            isContextOwner = true;
-        }
 
         public DbContextUserAccountRepository(Ctx ctx)
         {
@@ -30,29 +23,10 @@ namespace BrockAllen.MembershipReboot.Ef
             this.items = db.Set<TAccount>();
         }
 
-        void CheckDisposed()
-        {
-            if (db == null)
-            {
-                throw new ObjectDisposedException("DbContextUserAccountRepository");
-            }
-        }
-
-        public void Dispose()
-        {
-            if (isContextOwner)
-            {
-                db.TryDispose();
-            }
-            db = null;
-            items = null;
-        }
-
         protected override IQueryable<TAccount> Queryable
         {
             get
             {
-                CheckDisposed();
                 return this.items;
             }
         }
@@ -64,28 +38,23 @@ namespace BrockAllen.MembershipReboot.Ef
 
         public override TAccount Create()
         {
-            CheckDisposed();
             return items.Create();
         }
 
         public override void Add(TAccount item)
         {
-            CheckDisposed();
             items.Add(item);
             SaveChanges();
         }
 
         public override void Remove(TAccount item)
         {
-            CheckDisposed();
             items.Remove(item);
             SaveChanges();
         }
 
         public override void Update(TAccount item)
         {
-            CheckDisposed();
-
             var entry = db.Entry(item);
             if (entry.State == EntityState.Detached)
             {
