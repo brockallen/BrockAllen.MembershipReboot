@@ -11,7 +11,8 @@ namespace BrockAllen.MembershipReboot
     public interface IUserAccountQuery<TAccount>
         where TAccount : UserAccount
     {
+        IEnumerable<string> GetAllTenants(); 
         IEnumerable<UserAccountQueryResult> Query(Func<IQueryable<TAccount>, IQueryable<TAccount>> filter);
-        IEnumerable<UserAccountQueryResult> Query(Func<IQueryable<TAccount>, IQueryable<TAccount>> filter, Func<IQueryable<TAccount>, IOrderedQueryable<TAccount>> sort, int skip, int count, out int totalCount);
+        IEnumerable<UserAccountQueryResult> Query(Func<IQueryable<TAccount>, IQueryable<TAccount>> filter, Func<IQueryable<TAccount>, IQueryable<TAccount>> sort, int skip, int count, out int totalCount);
     }
 }

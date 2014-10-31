@@ -128,7 +128,7 @@ namespace BrockAllen.MembershipReboot
         public abstract TAccount GetByLinkedAccount(string tenant, string provider, string id);
         public abstract TAccount GetByCertificate(string tenant, string thumbprint);
 
-        protected virtual IOrderedQueryable<TAccount> DefaultQuerySort(IQueryable<TAccount> query)
+        protected virtual IQueryable<TAccount> DefaultQuerySort(IQueryable<TAccount> query)
         {
             return query.OrderBy(x => x.Tenant).ThenBy(x => x.Username);
         }
@@ -296,7 +296,7 @@ namespace BrockAllen.MembershipReboot
 
         public System.Collections.Generic.IEnumerable<UserAccountQueryResult> Query(
             Func<IQueryable<TAccount>, IQueryable<TAccount>> filter, 
-            Func<IQueryable<TAccount>, IOrderedQueryable<TAccount>> sort,
+            Func<IQueryable<TAccount>, IQueryable<TAccount>> sort,
             int skip, int count, out int totalCount)
         {
             var query =

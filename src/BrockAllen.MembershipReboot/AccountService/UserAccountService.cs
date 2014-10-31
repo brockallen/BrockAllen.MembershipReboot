@@ -17,7 +17,7 @@ namespace BrockAllen.MembershipReboot
     {
         public MembershipRebootConfiguration<TAccount> Configuration { get; set; }
 
-        IUserAccountRepository<TAccount> userRepository;
+        EventBusUserAccountRepository<TAccount> userRepository;
 
         Lazy<AggregateValidator<TAccount>> usernameValidator;
         Lazy<AggregateValidator<TAccount>> emailValidator;
@@ -133,6 +133,14 @@ namespace BrockAllen.MembershipReboot
         {
             commandBus.Execute(cmd);
             Configuration.CommandBus.Execute(cmd);
+        }
+
+        public virtual IUserAccountQuery<TAccount> Query 
+        {
+            get
+            {
+                return this.userRepository.inner as IUserAccountQuery<TAccount>;
+            } 
         }
 
         public virtual string GetValidationMessage(string id)

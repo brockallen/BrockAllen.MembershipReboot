@@ -3,6 +3,7 @@ using Autofac.Integration.Mvc;
 using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Ef;
 using BrockAllen.MembershipReboot.Owin;
+using BrockAllen.MembershipReboot.Relational;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Facebook;
@@ -57,13 +58,17 @@ namespace SingleTenantOwinSystemWeb
             var config = CreateMembershipRebootConfiguration(app);
 
             builder.RegisterInstance(config).As<MembershipRebootConfiguration>();
+
             builder.RegisterType<DefaultMembershipRebootDatabase>()
                 .InstancePerLifetimeScope();
+
             builder.RegisterType<DefaultUserAccountRepository>()
                 .As<IUserAccountRepository>()
+                .As<IUserAccountRepository<RelationalUserAccount>>()
                 .As<IUserAccountQuery>()
                 .As<IUserAccountQuery<BrockAllen.MembershipReboot.Relational.RelationalUserAccount>>()
                 .InstancePerLifetimeScope();
+
             builder.RegisterType<UserAccountService>().OnActivating(e =>
             {
                 var owin = e.Context.Resolve<IOwinContext>();
@@ -75,6 +80,19 @@ namespace SingleTenantOwinSystemWeb
             })
             .AsSelf()
             .InstancePerLifetimeScope();
+
+            builder.RegisterType<UserAccountService<RelationalUserAccount>>().OnActivating(e =>
+            {
+                var owin = e.Context.Resolve<IOwinContext>();
+                var debugging = false;
+#if DEBUG
+                debugging = true;
+#endif
+                e.Instance.ConfigureTwoFactorAuthenticationCookies(owin.Environment, debugging);
+            })
+            .AsSelf()
+            .InstancePerLifetimeScope();
+
             builder.Register(ctx =>
             {
                 var owin = ctx.Resolve<IOwinContext>();

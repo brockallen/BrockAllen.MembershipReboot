@@ -30,6 +30,14 @@ namespace BrockAllen.MembershipReboot
             this.groupRepository = groupRepository;
         }
 
+        public virtual IGroupQuery Query
+        {
+            get
+            {
+                return groupRepository as IGroupQuery;
+            }
+        }
+
         public TGroup Get(Guid groupID)
         {
             return this.groupRepository.GetByID(groupID);
