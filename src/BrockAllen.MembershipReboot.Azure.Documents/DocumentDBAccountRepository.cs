@@ -12,12 +12,10 @@ namespace BrockAllen.MembershipReboot.Azure.Documents
         QueryableUserAccountRepository<TAccount>
         where TAccount : HierarchicalUserAccount, new()
     {
-        private readonly DocumentDB _db;
 
-        public DocumentDBAccountRepository(DocumentDB db)
+        public DocumentDBAccountRepository()
         {
             this.UseEqualsOrdinalIgnoreCaseForQueries = true;
-            _db = db;
         }
 
         protected override IQueryable<TAccount> Queryable
