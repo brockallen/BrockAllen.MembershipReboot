@@ -1,45 +1,55 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Azure.Documents.Linq;
 
 namespace BrockAllen.MembershipReboot.Azure.Documents
 {
-    public class DocumentDbGroupRepository : 
-        QueryableGroupRepository<HierarchicalGroup>
+    public class DocumentDbGroupRepository<TGroup> : 
+        QueryableGroupRepository<TGroup>
+        where TGroup : HierarchicalGroup, new()
     {
-        private readonly DocumentDB _db;
 
-        public DocumentDbGroupRepository(DocumentDB db)
+        public DocumentDbGroupRepository()
         {
-            _db = db;
         }
 
-        protected override IQueryable<HierarchicalGroup> Queryable
+        protected override IQueryable<TGroup> Queryable
         {
-            get { return _db.Groups(); }
+            get { return DocumentDB.Client.CreateDocumentQuery<TGroup>(DocumentDB.Collection.DocumentsLink); }
         }
 
-        public override HierarchicalGroup Create()
+        public override TGroup Create()
         {
-            return new HierarchicalGroup();
+            return new TGroup();
         }
 
-        public override void Add(HierarchicalGroup item)
+        public override void Add(TGroup item)
         {
-            _db.AddGroup(item);
+            DocumentDB.Client.CreateDocumentAsync(DocumentDB.Collection.DocumentsLink, item).Wait();
         }
 
-        public override void Remove(HierarchicalGroup item)
+        public override void Remove(TGroup item)
         {
-            _db.DeleteGroup(item);
+            dynamic doc = this.Queryable.FirstOrDefault(d => d.ID == item.ID);
+
+            if (doc != null)
+            {
+                DocumentDB.Client.DeleteDocumentAsync(doc.SelfLink).Wait();
+            }
         }
 
-        public override void Update(HierarchicalGroup item)
+        public override void Update(TGroup item)
         {
-            _db.UpdateGroup(item);
+            dynamic doc = this.Queryable.FirstOrDefault(d => d.ID == item.ID);
+
+            if (doc != null)
+            {
+                DocumentDB.Client.CreateDocumentAsync(doc.SelfLink, item).Wait();
+            }
         }
 
-        public override IEnumerable<HierarchicalGroup> GetByChildID(Guid childGroupID)
+        public override IEnumerable<TGroup> GetByChildID(Guid childGroupID)
         {
             var q =
                 from g in Queryable

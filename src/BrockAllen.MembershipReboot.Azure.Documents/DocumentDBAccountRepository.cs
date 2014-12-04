@@ -1,10 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+
+using BrockAllen.MembershipReboot.Hierarchical;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.Azure.Documents.Linq;
 using BrockAllen.MembershipReboot.Hierarchical;
 
 namespace BrockAllen.MembershipReboot.Azure.Documents
 {
-    public class DocumentDBAccountRepository : 
-        QueryableUserAccountRepository<HierarchicalUserAccount>
+    public class DocumentDBAccountRepository<TAccount> : 
+        QueryableUserAccountRepository<TAccount>
+        where TAccount : HierarchicalUserAccount, new()
     {
         private readonly DocumentDB _db;
 
@@ -14,32 +20,42 @@ namespace BrockAllen.MembershipReboot.Azure.Documents
             _db = db;
         }
 
-        protected override IQueryable<HierarchicalUserAccount> Queryable
+        protected override IQueryable<TAccount> Queryable
         {
-            get { return _db.Users(); }
+            get { return DocumentDB.Client.CreateDocumentQuery<TAccount>(DocumentDB.Collection.DocumentsLink); }
         }
 
-        public override HierarchicalUserAccount Create()
+        public override TAccount Create()
         {
-            return new HierarchicalUserAccount();
+            return new TAccount();
         }
 
-        public override void Add(HierarchicalUserAccount item)
+        public override void Add(TAccount item)
         {
-            _db.AddUserAccount(item);
+            DocumentDB.Client.CreateDocumentAsync(DocumentDB.Collection.DocumentsLink, item).Wait();
         }
 
-        public override void Update(HierarchicalUserAccount item)
+        public override void Update(TAccount item)
         {
-            _db.UpdateUserAccountp(item);
+            dynamic doc = this.Queryable.FirstOrDefault(d => d.ID == item.ID);
+
+            if (doc != null)
+            {
+                DocumentDB.Client.CreateDocumentAsync(doc.SelfLink, item).Wait();
+            }
         }
 
-        public override void Remove(HierarchicalUserAccount item)
+        public override void Remove(TAccount item)
         {
-            _db.DeleteUserAccounts(item);
+            dynamic doc = this.Queryable.FirstOrDefault(d => d.ID == item.ID);
+
+            if (doc != null)
+            {
+                DocumentDB.Client.DeleteDocumentAsync(doc.SelfLink).Wait();
+            }
         }
 
-        public override HierarchicalUserAccount GetByLinkedAccount(string tenant, string provider, string id)
+        public override TAccount GetByLinkedAccount(string tenant, string provider, string id)
         {
             var query =
                 from a in Queryable
@@ -50,7 +66,7 @@ namespace BrockAllen.MembershipReboot.Azure.Documents
             return query.SingleOrDefault();
         }
 
-        public override HierarchicalUserAccount GetByCertificate(string tenant, string thumbprint)
+        public override TAccount GetByCertificate(string tenant, string thumbprint)
         {
             var query =
                 from a in Queryable

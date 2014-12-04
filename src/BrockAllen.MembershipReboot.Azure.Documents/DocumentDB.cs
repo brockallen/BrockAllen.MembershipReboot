@@ -1,4 +1,4 @@
-﻿using BrockAllen.MembershipReboot.Hierarchical;
+﻿
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
@@ -11,63 +11,34 @@ namespace BrockAllen.MembershipReboot.Azure.Documents
 {
     public class DocumentDB
     {
-        public IQueryable<HierarchicalGroup> Groups()
+        private static DocumentCollection collection;
+        public static DocumentCollection Collection
         {
-            return Client.CreateDocumentQuery<HierarchicalGroup>(Collection.DocumentsLink);
-        }
-
-        public void AddGroup(HierarchicalGroup group)
-        {
-            Client.CreateDocumentAsync(Collection.DocumentsLink, group).Wait();
-        }
-
-        public void UpdateGroup(HierarchicalGroup group)
-        {
-            dynamic doc = Groups().FirstOrDefault(d => d.ID == group.ID);
-            
-            if (doc != null)
+            get
             {
-                Client.CreateDocumentAsync(doc.SelfLink, group).Wait();
+                if (collection == null)
+                {
+                    collection = ReadOrCreateCollection(Database.SelfLink);
+                }
+
+                return collection;
             }
         }
 
-        public void DeleteGroup(HierarchicalGroup group)
+        private static DocumentClient client;
+        public static DocumentClient Client
         {
-            dynamic doc = Groups().FirstOrDefault(d => d.ID == group.ID);
-
-            if (doc != null)
+            get
             {
-                Client.DeleteDocumentAsync(doc.SelfLink).Wait();
-            }
-        }
+                if (client == null)
+                {
+                    string endpoint = ConfigurationManager.AppSettings["endpoint"];
+                    string authKey = ConfigurationManager.AppSettings["authKey"];
+                    Uri endpointUri = new Uri(endpoint);
+                    client = new DocumentClient(endpointUri, authKey);
+                }
 
-        public IQueryable<HierarchicalUserAccount> Users()
-        {
-            return Client.CreateDocumentQuery<HierarchicalUserAccount>(Collection.DocumentsLink);
-        }
-
-        public void AddUserAccount(HierarchicalUserAccount userAccounts)
-        {
-            Client.CreateDocumentAsync(Collection.DocumentsLink, userAccounts).Wait();
-        }
-
-        public void UpdateUserAccountp(HierarchicalUserAccount userAccounts)
-        {
-            dynamic doc = Users().FirstOrDefault(d => d.ID == userAccounts.ID);
-
-            if (doc != null)
-            {
-                Client.CreateDocumentAsync(doc.SelfLink, userAccounts).Wait();
-            }
-        }
-
-        public void DeleteUserAccounts(HierarchicalUserAccount userAccounts)
-        {
-            dynamic doc = Users().FirstOrDefault(d => d.ID == userAccounts.ID);
-
-            if (doc != null)
-            {
-                Client.DeleteDocumentAsync(doc.SelfLink).Wait();
+                return client;
             }
         }
 
@@ -113,37 +84,8 @@ namespace BrockAllen.MembershipReboot.Azure.Documents
             }
         }
 
-        private static DocumentCollection collection;
-        private static DocumentCollection Collection
-        {
-            get
-            {
-                if (collection == null)
-                {
-                    collection = ReadOrCreateCollection(Database.SelfLink);
-                }
 
-                return collection;
-            }
-        }
 
-        private static DocumentClient client;
-
-        private static DocumentClient Client
-        {
-            get
-            {
-                if (client == null)
-                {
-                    string endpoint = ConfigurationManager.AppSettings["endpoint"];
-                    string authKey = ConfigurationManager.AppSettings["authKey"];
-                    Uri endpointUri = new Uri(endpoint);
-                    client = new DocumentClient(endpointUri, authKey);
-                }
-
-                return client;
-            }
-        }
 
         private static DocumentCollection ReadOrCreateCollection(string databaseLink)
         {
