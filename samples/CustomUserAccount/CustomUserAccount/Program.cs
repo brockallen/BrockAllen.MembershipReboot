@@ -45,32 +45,35 @@ namespace CustomUserAccount
             // etc...
         }
 
-        static UserAccountService<CustomUserAccount> GetUserAccountService()
+        static UserAccountService<CustomUserAccount> GetUserAccountService(CustomDb db)
         {
-            var repo = new CustomUserAccountRepository();
+            var repo = new CustomUserAccountRepository(db);
             UserAccountService<CustomUserAccount> svc = new UserAccountService<CustomUserAccount>(config, repo);
             return svc;
         }
 
         static void Main(string[] args)
         {
-            var svc = GetUserAccountService();
-            var account = svc.GetByUsername("brock");
-            if (account == null)
+            using (var db = new CustomDb())
             {
-                Console.WriteLine("Creating new account");
-                account = svc.CreateAccount("brock", "pass123", "brockallen@gmail.com");
-                
-                account.FirstName = "Brock";
-                account.LastName = "Allen";
-                account.Age = 21;
-                svc.Update(account);
-            }
-            else
-            {
-                Console.WriteLine("Updating existing account");
-                account.Age++;
-                svc.Update(account);
+                var svc = GetUserAccountService(db);
+                var account = svc.GetByUsername("brock");
+                if (account == null)
+                {
+                    Console.WriteLine("Creating new account");
+                    account = svc.CreateAccount("brock", "pass123", "brockallen@gmail.com");
+
+                    account.FirstName = "Brock";
+                    account.LastName = "Allen";
+                    account.Age = 21;
+                    svc.Update(account);
+                }
+                else
+                {
+                    Console.WriteLine("Updating existing account");
+                    account.Age++;
+                    svc.Update(account);
+                }
             }
         }
     }
