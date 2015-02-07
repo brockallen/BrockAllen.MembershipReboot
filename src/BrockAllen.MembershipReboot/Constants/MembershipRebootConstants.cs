@@ -18,6 +18,7 @@ namespace BrockAllen.MembershipReboot
             internal const bool MultiTenant = false;
             internal const string DefaultTenant = "default";
             internal const bool EmailIsUsername = false;
+            internal const bool EmailIsUnique = true;
             internal const bool UsernamesUniqueAcrossTenants = false;
             internal const bool RequireAccountVerification = true;
             internal const bool AllowLoginAfterAccountCreation = true;

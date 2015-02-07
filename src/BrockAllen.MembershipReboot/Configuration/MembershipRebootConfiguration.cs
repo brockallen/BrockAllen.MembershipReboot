@@ -21,6 +21,7 @@ namespace BrockAllen.MembershipReboot
             
             this.MultiTenant = securitySettings.MultiTenant;
             this.DefaultTenant = securitySettings.DefaultTenant;
+            this.EmailIsUnique = securitySettings.EmailIsUnique;
             this.EmailIsUsername = securitySettings.EmailIsUsername;
             this.UsernamesUniqueAcrossTenants = securitySettings.UsernamesUniqueAcrossTenants;
             this.RequireAccountVerification = securitySettings.RequireAccountVerification;
@@ -37,6 +38,7 @@ namespace BrockAllen.MembershipReboot
 
         public bool MultiTenant { get; set; }
         public string DefaultTenant { get; set; }
+        public bool EmailIsUnique { get; set; }
         public bool EmailIsUsername { get; set; }
         public bool UsernamesUniqueAcrossTenants { get; set; }
         public bool RequireAccountVerification { get; set; }
@@ -47,6 +49,18 @@ namespace BrockAllen.MembershipReboot
         public int PasswordHashingIterationCount { get; set; }
         public int PasswordResetFrequency { get; set; }
         public TimeSpan VerificationKeyLifetime { get; set; }
+
+        internal void Validate()
+        {
+            if (this.EmailIsUnique == false)
+            {
+                if (this.EmailIsUsername)
+                {
+                    throw new InvalidOperationException("EmailMustBeUnique is false and EmailIsUsername is true");
+                }
+            }
+        }
+
 
         AggregateValidator<TAccount> usernameValidators = new AggregateValidator<TAccount>();
         public void RegisterUsernameValidator(params IValidator<TAccount>[] items)
