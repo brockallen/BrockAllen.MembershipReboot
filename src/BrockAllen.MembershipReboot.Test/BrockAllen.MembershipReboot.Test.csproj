@@ -54,6 +54,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="GroupService\FakeGroupRepository.cs" />
+    <Compile Include="GroupService\GroupServiceTests.cs" />
     <Compile Include="Authentication\AuthenticationServiceTests.cs" />
     <Compile Include="Authentication\TestAuthenticationService.cs" />
     <Compile Include="Configuration\MembershipRebootConfigurationTests.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Extensions\ClaimsPrincipalExtensionsTests.cs" />
     <Compile Include="Extensions\DisposableExtensionsTests.cs" />
     <Compile Include="FakeUserAccountRepository.cs" />
+    <Compile Include="GroupService\TestGroupService.cs" />
     <Compile Include="KeyNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccountService\UserAccountServiceTests.cs" />
