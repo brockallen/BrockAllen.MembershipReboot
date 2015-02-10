@@ -1012,25 +1012,6 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
-        public void SetPassword_AccountLocked_ResetsLockoutAndUserCanLogin()
-        {
-            this.configuration.RequireAccountVerification = false;
-            this.configuration.AccountLockoutFailedLoginAttempts = 5;
-            this.configuration.AccountLockoutDuration = TimeSpan.FromMinutes(1);
-
-            var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.Authenticate("test", "pass"));
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            Assert.IsFalse(subject.Authenticate("test", "pass"));
-            subject.SetPassword(acct.ID, "newPass");
-            Assert.IsTrue(subject.Authenticate("test", "newPass"));
-        }
-
-        [TestMethod]
         public void Authenticate_ReturnsCorrectAccount()
         {
             configuration.RequireAccountVerification = false;
@@ -1436,6 +1417,25 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             catch (ValidationException)
             {
             }
+        }
+
+        [TestMethod]
+        public void SetPassword_AccountLocked_ResetsLockoutAndUserCanLogin()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.AccountLockoutFailedLoginAttempts = 5;
+            this.configuration.AccountLockoutDuration = TimeSpan.FromMinutes(1);
+
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            subject.SetPassword(acct.ID, "newPass");
+            Assert.IsTrue(subject.Authenticate("test", "newPass"));
         }
 
         [TestMethod]
