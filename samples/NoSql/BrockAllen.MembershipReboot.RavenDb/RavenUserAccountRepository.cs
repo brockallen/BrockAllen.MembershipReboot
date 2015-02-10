@@ -187,7 +187,9 @@ namespace BrockAllen.MembershipReboot.RavenDb
 
         public HierarchicalUserAccount GetByVerificationKey(string key)
         {
-            throw new NotImplementedException();
+            return items.Customize(x => x.WaitForNonStaleResultsAsOfNow())
+                                           .Where(x => x.VerificationKey == key)
+                                           .SingleOrDefault();
         }
 
         public IEnumerable<string> GetAllTenants()
