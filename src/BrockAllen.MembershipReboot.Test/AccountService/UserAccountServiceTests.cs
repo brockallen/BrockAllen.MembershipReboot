@@ -915,6 +915,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.IsTrue(acct.IsAccountClosed);
             Assert.IsNotNull(acct.AccountClosed);
             Assert.AreEqual(now, acct.AccountClosed.Value);
+            Assert.IsTrue(repository.UpdateWasCalled);
         }
 
         [TestMethod]
@@ -2482,6 +2483,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             acct = subject.GetByID(acct.ID);
             Assert.IsTrue(acct.IsNew());
         }
+
+
 
 
     }

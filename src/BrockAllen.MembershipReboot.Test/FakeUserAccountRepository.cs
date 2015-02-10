@@ -14,6 +14,8 @@ namespace BrockAllen.MembershipReboot.Test
 
     public class FakeUserAccountRepository : QueryableUserAccountRepository<UserAccount>, IUserAccountRepository
     {
+        public bool UpdateWasCalled { get; set; }
+
         public FakeUserAccountRepository()
         {
             this.UseEqualsOrdinalIgnoreCaseForQueries = true;
@@ -43,6 +45,7 @@ namespace BrockAllen.MembershipReboot.Test
 
         public override void Update(UserAccount item)
         {
+            UpdateWasCalled = true;
         }
 
         public override UserAccount GetByLinkedAccount(string tenant, string provider, string id)
