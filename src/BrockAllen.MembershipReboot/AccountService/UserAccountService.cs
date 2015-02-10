@@ -1277,13 +1277,13 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
-            ValidatePassword(account, newPassword);
-
             if (!VerifyPassword(account, oldPassword))
             {
                 Tracing.Error("[UserAccountService.ChangePassword] failed -- failed authN");
                 throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidOldPassword));
             }
+
+            ValidatePassword(account, newPassword);
 
             Tracing.Verbose("[UserAccountService.ChangePassword] success");
 
