@@ -902,7 +902,7 @@ namespace BrockAllen.MembershipReboot
                     {
                         Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
                         this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
-                        result = false;
+                        return false;
                     }
 
                     Tracing.Verbose("[UserAccountService.Authenticate] authentication success");

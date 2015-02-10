@@ -2467,8 +2467,20 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.Fail();
             }
             catch (InvalidOperationException) { }
-            
         }
 
+        [TestMethod]
+        public void Logging_in_before_account_is_verified_does_not_cause_account_to_have_last_login_set()
+        {
+            configuration.RequireAccountVerification = true;
+
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+
+            var result = subject.Authenticate("test", "pass");
+            Assert.IsFalse(result);
+
+            acct = subject.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsNew());
+        }
     }
 }
