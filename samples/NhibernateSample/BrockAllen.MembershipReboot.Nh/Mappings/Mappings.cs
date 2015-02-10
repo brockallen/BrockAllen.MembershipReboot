@@ -41,7 +41,7 @@
                 spm =>
                 {
                     spm.Inverse(true);
-                    spm.Cascade(Cascade.All);
+                    spm.Cascade(Cascade.All | Cascade.DeleteOrphans);
                     spm.Key(
                         km =>
                         {
@@ -289,7 +289,7 @@
                 spm =>
                     {
                         spm.Inverse(true);
-                        spm.Cascade(Cascade.All);
+                        spm.Cascade(Cascade.All | Cascade.DeleteOrphans);
                         spm.Key(
                             km =>
                                 {
@@ -303,7 +303,7 @@
                 spm =>
                 {
                     spm.Inverse(true);
-                    spm.Cascade(Cascade.All);
+                    spm.Cascade(Cascade.All | Cascade.DeleteOrphans);
                     spm.Key(
                         km =>
                         {
@@ -317,7 +317,7 @@
                 spm =>
                 {
                     spm.Inverse(true);
-                    spm.Cascade(Cascade.All);
+                    spm.Cascade(Cascade.All | Cascade.DeleteOrphans);
                     spm.Key(
                         km =>
                         {
@@ -331,7 +331,7 @@
                 spm =>
                 {
                     spm.Inverse(true);
-                    spm.Cascade(Cascade.All);
+                    spm.Cascade(Cascade.All | Cascade.DeleteOrphans);
                     spm.Key(
                         km =>
                         {
@@ -345,7 +345,7 @@
                 spm =>
                 {
                     spm.Inverse(true);
-                    spm.Cascade(Cascade.All);
+                    spm.Cascade(Cascade.All | Cascade.DeleteOrphans);
                     spm.Key(
                         km =>
                         {
@@ -359,7 +359,7 @@
                 spm =>
                 {
                     spm.Inverse(true);
-                    spm.Cascade(Cascade.All);
+                    spm.Cascade(Cascade.All | Cascade.DeleteOrphans);
                     spm.Key(
                         km =>
                         {
