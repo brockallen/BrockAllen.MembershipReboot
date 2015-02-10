@@ -648,6 +648,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             CloseAccount(account);
+            Update(account);
         }
         
         protected virtual void CloseAccount(TAccount account)
