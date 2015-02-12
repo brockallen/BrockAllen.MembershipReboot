@@ -1,4 +1,10 @@
 call BrockAllen.MembershipReboot.cmd
+call BrockAllen.MembershipReboot.da.cmd
+call BrockAllen.MembershipReboot.de.cmd
+call BrockAllen.MembershipReboot.nl.cmd
+call BrockAllen.MembershipReboot.no.cmd
+call BrockAllen.MembershipReboot.ru.cmd
+call BrockAllen.MembershipReboot.sv.cmd
 call BrockAllen.MembershipReboot.Ef.cmd
 call BrockAllen.MembershipReboot.Owin.cmd
 call BrockAllen.MembershipReboot.WebHost.cmd

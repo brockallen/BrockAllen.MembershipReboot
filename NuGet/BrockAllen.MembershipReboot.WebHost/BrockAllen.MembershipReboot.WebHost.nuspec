@@ -13,6 +13,7 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Membership Roles Claims Identity User Account Password Management Two Factor Authentication Certificate Authentication</tags>
+    <language>en-US</language>
 
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="System.IdentityModel" targetFramework="net45" />
