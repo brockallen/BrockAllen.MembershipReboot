@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAlreadyVerified" xml:space="preserve">
-    <value>Die Emailadresse für dieses Benutzerkonto ist bereits verifiziert.</value>
+    <value>Die E-Mail-Adresse für dieses Benutzerkonto ist bereits verifiziert.</value>
   </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
-    <value>Es kann kein Konto erstellt werden, da es keine Email vom Identity-Provider gab.</value>
+    <value>Es kann kein Konto erstellt werden, da es keine E-Mail vom Identity-Provider gab.</value>
   </data>
   <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
     <value>Dieses Konto ist nicht für eine Sicherheitsfrage oder -antwort konfiguriert.</value>
   </data>
   <data name="AccountNotVerified" xml:space="preserve">
-    <value>Die Emailadresse für dieses Benutzerkonto wurde noch nicht verifiziert.</value>
+    <value>Die E-Mail-Adresse für dieses Benutzerkonto wurde noch nicht verifiziert.</value>
   </data>
   <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
     <value>Dieses Konto benötigt eine Sicherheitsfrage oder -antwort, um das Passwort zurücksetzen zu können.</value>
@@ -145,16 +145,16 @@
     <value>Code wird benötigt.</value>
   </data>
   <data name="EmailAlreadyInUse" xml:space="preserve">
-    <value>Diese Emailadresse ist bereits in Gebrauch.</value>
+    <value>Diese E-Mail-Adresse ist bereits in Gebrauch.</value>
   </data>
   <data name="EmailRequired" xml:space="preserve">
-    <value>Die Emailadresse wird benötigt.</value>
+    <value>Die E-Mail-Adresse wird benötigt.</value>
   </data>
   <data name="InvalidCertificate" xml:space="preserve">
     <value>Ungültiges Zertifikat.</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
-    <value>Ungültige Emailadresse.</value>
+    <value>Ungültige E-Mail-Adresse.</value>
   </data>
   <data name="InvalidKey" xml:space="preserve">
     <value>Ungültiger Schlüssel.</value>
@@ -187,7 +187,7 @@
     <value>Dieses externe Konto ist bereits einem anderen Benutzer zugeordnet.</value>
   </data>
   <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
-    <value>Mit diesem Provider ist kein Login möglich, weil die Emailadresse bereits einem anderen Konto zugeordnet ist.
+    <value>Mit diesem Provider ist kein Login möglich, weil die E-Mail-Adresse bereits einem anderen Konto zugeordnet ist.
 Bitte loggen Sie sich mit Ihrem lokalen Konto ein und weisen den Provider dann zu.</value>
   </data>
   <data name="LoginNotAllowed" xml:space="preserve">
@@ -218,7 +218,7 @@ Bitte loggen Sie sich mit Ihrem lokalen Konto ein und weisen den Provider dann z
     <value>Eltern und Kind sind dieselbe Gruppe.</value>
   </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
-    <value>Das Passwort muss mindestens {0} der folgenden Zeichen enthalten: Großbuchstabe, Kleinbuchstabe, Zahl und sonstiges.</value>
+    <value>Das Passwort muss mindestens {0} der folgenden Zeichen enthalten: Großbuchstabe, Kleinbuchstabe, Zahl und Sonstiges.</value>
   </data>
   <data name="PasswordLength" xml:space="preserve">
     <value>Das Passwort muss mindestens {0} Zeichen lang sein.</value>
@@ -227,13 +227,13 @@ Bitte loggen Sie sich mit Ihrem lokalen Konto ein und weisen den Provider dann z
     <value>Passwort wird benötigt.</value>
   </data>
   <data name="PasswordResetErrorNoEmail" xml:space="preserve">
-    <value>Passwort zurücksetzen ist nicht möglich, da für dieses Konto keine verifizierte Emailadresse hinterlegt ist.</value>
+    <value>Passwort zurücksetzen ist nicht möglich, da für dieses Konto keine verifizierte E-Mail-Adresse hinterlegt ist.</value>
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
     <value>Registrieren Sie bitte eine Mobilfunknummer, um mobile Zwei-Faktoren-Authentifizierung zu ermöglichen.</value>
   </data>
   <data name="ReopenErrorNoEmail" xml:space="preserve">
-    <value>Wiedereröffnen des Kontos ist nicht möglich, da für dieses Konto keine Emailadresse hinterlegt ist.</value>
+    <value>Wiedereröffnen des Kontos ist nicht möglich, da für dieses Konto keine E-Mail-Adresse hinterlegt ist.</value>
   </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
     <value>Eine Sicherheitsantwort wird benötigt.</value>
