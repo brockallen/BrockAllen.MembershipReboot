@@ -211,14 +211,14 @@ namespace BrockAllen.MembershipReboot
                     // guess at a username to use
                     var name = claims.GetValue(ClaimTypes.Name);
                     // remove whitespace
-                    if (name != null) name = new String(name.Where(x => Char.IsLetterOrDigit(x)).ToArray());
+                    if (name != null) name = ParseValidUsername(name);
                     
                     // check to see if username already exists
                     if (String.IsNullOrWhiteSpace(name) || this.UserAccountService.UsernameExists(tenant, name))
                     {
                         // try use email for name then
                         name = email.Substring(0, email.IndexOf('@'));
-                        name = new String(name.Where(x=>Char.IsLetterOrDigit(x)).ToArray());
+                        name = ParseValidUsername(name);
 
                         if (this.UserAccountService.UsernameExists(tenant, name))
                         {
@@ -262,6 +262,12 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[AuthenticationService.SignInWithLinkedAccount] user account not verified, not allowed to login: {0}", account.ID);
             }
+        }
+
+        private static string ParseValidUsername(string name)
+        {
+            IEnumerable<char> validChars = name.Where(UserAccountValidation<TAccount>.IsValidUsernameChar);
+            return new String(validChars.ToArray()).Trim();
         }
 
         public virtual void SignOut()
