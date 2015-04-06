@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountService\DebuggerEventHandler.cs" />
+    <Compile Include="AccountService\PartialAuthReason.cs" />
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountCommands.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
