@@ -159,6 +159,11 @@ namespace BrockAllen.MembershipReboot
             return result;
         }
 
+        public virtual string GetValidationMessage(AuthenticationFailureCode failureCode)
+        {
+            return GetValidationMessage(failureCode.ToString());
+        }
+
         public virtual void Update(TAccount account)
         {
             if (account == null)

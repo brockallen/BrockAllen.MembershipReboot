@@ -1278,6 +1278,24 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
         }
 
+        [TestMethod]
+        public void AuthenticationFailureCode_GetValidationMessage()
+        {
+            var failureCodes = GetEnumToSymbols<AuthenticationFailureCode>().Except(new[] { AuthenticationFailureCode.None });
+            foreach (AuthenticationFailureCode code in failureCodes)
+            {
+                Assert.IsFalse(String.IsNullOrEmpty(subject.GetValidationMessage(code)));
+            }
+        }
+
+        static IEnumerable<TEnum> GetEnumToSymbols<TEnum>() where TEnum : struct
+        {
+            return (from f in typeof(TEnum).GetFields() 
+                    where !f.IsSpecialName 
+                    select f.GetRawConstantValue()).Cast<TEnum>();
+        }
+
+
         static X509Certificate2 GetTestCert()
         {
             using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrockAllen.MembershipReboot.Test.test.cer"))
