@@ -118,159 +118,165 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAlreadyVerified" xml:space="preserve">
-    <value>Het e-mailadres voor dit account is al bevestigd.</value>
-  </data>
-  <data name="AccountClosed" xml:space="preserve">
-    <value>Account gesloten.</value>
+    <value>此帐户的电子邮件地址已通过验证。</value>
   </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
-    <value>Kan geen account aanmaken omdat er geen e-mailadres van de identiteitsprovider aanwezig is.</value>
-  </data>
-  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
-    <value>Om in te loggen, moet deze account worden geconfigureerd met certificaten.</value>
-  </data>
-  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
-    <value>Om in te loggen, moet deze account worden geconfigureerd met mobiele telefoonnummer.</value>
+    <value>无法创建一个帐户,因为没有从电子邮件的身份认证提供者。</value>
   </data>
   <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
-    <value>Er is nog geen geheime vraag voor dit account ingesteld.</value>
+    <value>此帐户未配置为使用一个密码提示问题和答案。</value>
   </data>
   <data name="AccountNotVerified" xml:space="preserve">
-    <value>Het e-mailadres voor dit account is nog niet bevestigd.</value>
+    <value>此帐户的电子邮件地址尚未验证。</value>
   </data>
   <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
-    <value>Dit account vereist een geheime vraag en antwoord om het wachtwoord opnieuw in te stellen.</value>
+    <value>此帐户需要一个密码提示问题和答案来重设密码。</value>
   </data>
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
-    <value>Voeg een client certificaat toe om two factor authenticatie met een certificaat mogelijk te maken.</value>
+    <value>添加一个客户端证书,使两个因素身份验证证书。</value>
   </data>
   <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
-    <value>U moet een wachtwoord op het lokale account instellen voordat u de laatste externe login provider verwijderd.</value>
+    <value>您必须设置一个密码的本地帐户,然后您删除最后一个外部登录提供商。</value>
   </data>
   <data name="CertificateAlreadyInUse" xml:space="preserve">
-    <value>Het certificaat is al in gebruik door een ander account.</value>
+    <value>该证书已经在使用一个不同的帐户。</value>
   </data>
   <data name="CodeRequired" xml:space="preserve">
-    <value>Code is verplicht.</value>
+    <value>代码需要</value>
   </data>
   <data name="EmailAlreadyInUse" xml:space="preserve">
-    <value>E-mailadres is al ingebruik.</value>
+    <value>电子邮件地址已在使用中。</value>
   </data>
   <data name="EmailRequired" xml:space="preserve">
-    <value>E-mailadres is verplicht.</value>
-  </data>
-  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
-    <value>Pogingen om in te loggen zijn overschreden.</value>
+    <value>电子邮件是必填的。</value>
   </data>
   <data name="InvalidCertificate" xml:space="preserve">
-    <value>Ongeldig certificaat.</value>
-  </data>
-  <data name="InvalidCredentials" xml:space="preserve">
-    <value>Ongeldige gebruikersnaam of wachtwoord.</value>
+    <value>证书无效。</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
-    <value>Ongeldig e-mailadres.</value>
+    <value>无效的电子邮件地址。</value>
   </data>
   <data name="InvalidKey" xml:space="preserve">
-    <value>Ongeldige sleutel.</value>
+    <value>无效的密钥。</value>
   </data>
   <data name="InvalidName" xml:space="preserve">
-    <value>Ongeldige naam.</value>
+    <value>无效的名称。</value>
   </data>
   <data name="InvalidNewPassword" xml:space="preserve">
-    <value>Ongeldig nieuw wachtwoord.</value>
+    <value>新密码无效。</value>
   </data>
   <data name="InvalidOldPassword" xml:space="preserve">
-    <value>Ongeldig oud wachtwoord.</value>
+    <value>旧密码无效。</value>
   </data>
   <data name="InvalidPassword" xml:space="preserve">
-    <value>Ongeldig wachtwoord.</value>
+    <value>无效的密码。</value>
   </data>
   <data name="InvalidPhone" xml:space="preserve">
-    <value>Ongeldig telefoonnummer.</value>
+    <value>无效的电话号码。</value>
   </data>
   <data name="InvalidQuestionOrAnswer" xml:space="preserve">
-    <value>Ongeldige geheime vraag of antwoord.</value>
+    <value>无效的秘密问题和答案。</value>
   </data>
   <data name="InvalidTenant" xml:space="preserve">
-    <value>Ongeldige tenant.</value>
+    <value>无效用户。</value>
   </data>
   <data name="InvalidUsername" xml:space="preserve">
-    <value>Ongeldige gebruikersnaam.</value>
+    <value>无效的用户名。</value>
   </data>
   <data name="LinkedAccountAlreadyInUse" xml:space="preserve">
-    <value>Het externe account is al gekoppeld aan een andere gebruiker.</value>
+    <value>外部帐户已经与另一用户关联。</value>
   </data>
   <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
-    <value>Kan niet inloggen met deze provider, omdat het e-mailadres is al gekoppeld aan een andere gebruiker. Log in met uw lokale account en koppel vervolgens de provider.</value>
+    <value>无法登录,因为该提供者的电子邮件地址已经与其它帐户关联。 请登录您的本地帐户,然后将该提供商。</value>
   </data>
   <data name="LoginNotAllowed" xml:space="preserve">
-    <value>Inloggen is niet toegestaan ​​voor dit account.</value>
+    <value>这个帐户不允许登录</value>
   </data>
   <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
-    <value>Het mobiele telefoonnummer is al in gebruik door een andere gebruiker.</value>
+    <value>该手机已在使用的一个不同的帐户。</value>
   </data>
   <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
-    <value>Het mobiele telefoonnummer mag niet hetzelfde zijn als uw huidige telefoonnummer.</value>
+    <value>手机号码必须是不同于当前。</value>
   </data>
   <data name="MobilePhoneRequired" xml:space="preserve">
-    <value>Het mobiele telefoonnummer is verplicht.</value>
+    <value>移动电话号码。</value>
   </data>
   <data name="NameAlreadyInUse" xml:space="preserve">
-    <value>Deze naam is al in gebruik.</value>
+    <value>该名称已在使用中。</value>
   </data>
   <data name="NameRequired" xml:space="preserve">
-    <value>Naam is verplicht.</value>
+    <value>名称是必需的。</value>
   </data>
   <data name="NewPasswordMustBeDifferent" xml:space="preserve">
-    <value>Uw wachtwoord mag niet hetzelfde zijn als uw huidige wachtwoord.</value>
+    <value>新密码必须不同于旧的密码。</value>
   </data>
   <data name="ParentGroupAlreadyChild" xml:space="preserve">
-    <value>De bovenliggende groep is al lid van de onderliggende groep.</value>
+    <value>父级组已经是一个儿童的子组。</value>
   </data>
   <data name="ParentGroupSameAsChild" xml:space="preserve">
-    <value>De bovenliggende groep en onderliggende groep zijn de zelfde groep.</value>
+    <value>父和子是同一组。</value>
   </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
-    <value>Het wachtwoord moet minimaal {0} van de volgende tekens bevatten: één hoofdletter, één kleine letter, één cijfer en één speciaal teken.</value>
+    <value>密码必须至少包含如{0}的以下字符:0上,一个小写、一个数字和一个其他。</value>
   </data>
   <data name="PasswordLength" xml:space="preserve">
-    <value>Het wachtwoord moet minimaal {0} tekens lang zijn.</value>
+    <value>密码必须至少包含{0}字符长。</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
-    <value>Wachtwoord is verplicht.</value>
+    <value>密码是必需的。</value>
   </data>
   <data name="PasswordResetErrorNoEmail" xml:space="preserve">
-    <value>Wachtwoord herstel is niet mogelijk omdat er geen bevestigd e-mailadres voor dit account aanwezig is.</value>
+    <value>密码重置不可能因为没有验证此帐户的电子邮件地址。</value>
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
-    <value>Voeg een mobiel telefoonnummer toe om two factor authenticatie met een mobiele telefoon mogelijk te maken.</value>
+    <value>注册一个手机号码,让移动双因素身份验证。</value>
   </data>
   <data name="ReopenErrorNoEmail" xml:space="preserve">
-    <value>Heropening van het account is niet mogelijk omdat er geen e-mailadres is ingesteld voor dit account.</value>
+    <value>重新打开该帐户是不可能因为没有此帐户的电子邮件地址。</value>
   </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
-    <value>Geheim antwoord is verplicht.</value>
+    <value>所需密码提示问题的答案。</value>
   </data>
   <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
-    <value>Deze geheime vraag is al gebruikt.</value>
+    <value>该密码重置密码提示问题已被使用。</value>
   </data>
   <data name="SecretQuestionRequired" xml:space="preserve">
-    <value>Geheime vraag is verplicht.</value>
+    <value>所需密码提示问题。</value>
   </data>
   <data name="TenantRequired" xml:space="preserve">
-    <value>De tenant is verplicht.</value>
+    <value>租户是必需的。</value>
   </data>
   <data name="UsernameAlreadyInUse" xml:space="preserve">
-    <value>Deze gebruikersnaam is al in gebruik.</value>
+    <value>用户名已在使用中。</value>
   </data>
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
-    <value>De gebruikersnaam mag geen '@' teken bevatten.</value>
+    <value>用户名不能包含'@'字符。</value>
   </data>
-  <data name="UsernameOnlyContainLettersAndDigits" xml:space="preserve">
-    <value>De gebruikersnaam mag alleen letters en cijfers bevatten.</value>
+  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
+    <value>用户名可以开始或结束一个字母或数字。</value>
+  </data>
+  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
+    <value>用户名只能包含字母、数字、空格、句点、连字符和下划线。</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
-    <value>Gebruikersnaam is verplicht.</value>
+    <value>用户名是必需的。</value>
+  </data>
+  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
+    <value>用户名中不能有两个空格、句点、连字符或下划线"下一步"以一个另一个。</value>
+  </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>帐户已关闭。</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>要登录,此帐户必须配置证书。</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>要登录,此帐户必须配置的移动电话号码。</value>
+  </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>登录尝试次数已超过了</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>无效的凭证</value>
   </data>
 </root>

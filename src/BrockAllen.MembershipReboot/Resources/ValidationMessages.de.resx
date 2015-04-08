@@ -265,4 +265,19 @@ Bitte loggen Sie sich mit Ihrem lokalen Konto ein und weisen den Provider dann z
   <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
     <value>Der Benutzername darf nicht zwei Leerzeichen, Punkte, Bindestriche oder Unterstriche direkt hintereinander enthalten.</value>
   </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>Konto geschlossen.</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>Um sich anzumelden, muss dieses Konto mit Zertifikaten konfiguriert werden.</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>Um sich anzumelden, muss dieses Konto mit Handynummer konfiguriert werden.</value>
+  </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>Anmeldeversuche überschritten wurden.</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Ungültiger Benutzername oder Passwort.</value>
+  </data>
 </root>
