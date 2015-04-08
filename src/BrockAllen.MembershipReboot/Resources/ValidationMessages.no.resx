@@ -264,4 +264,19 @@
   <data name="UsernameRequired" xml:space="preserve">
     <value>Brukernavn er påkrevd. </value>
   </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>Kontoen stengt.</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>For å logge inn, må denne kontoen konfigureres med sertifikater.</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>For å logge inn, må denne kontoen konfigureres med mobilnummer.</value>
+  </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>Innloggingsforsøk er overskredet.</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Ugyldig brukernavn eller passord.</value>
+  </data>
 </root>

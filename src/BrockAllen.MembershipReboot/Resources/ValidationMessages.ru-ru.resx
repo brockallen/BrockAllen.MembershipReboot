@@ -120,8 +120,17 @@
   <data name="AccountAlreadyVerified" xml:space="preserve">
     <value>Email для данного аккаунта уже подтвержден.</value>
   </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>Счет закрыт.</value>
+  </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
     <value>Невозможно создать аккаунт, т.к. отсутствует email в идентификационном провайдере.</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>Для входа в систему, эта учетная запись должна быть настроена с сертификатами.</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>Для входа в систему, эта учетная запись должна быть настроена с номером мобильного телефона.</value>
   </data>
   <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
     <value>Этот аккаунт не настроен на использование секретного вопроса и ответа.</value>
@@ -150,8 +159,14 @@
   <data name="EmailRequired" xml:space="preserve">
     <value>Необходимо указать email.</value>
   </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>Попытки войдите были превышены</value>
+  </data>
   <data name="InvalidCertificate" xml:space="preserve">
     <value>Невалидный сертификат.</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Неправильное имя пользователя или пароль.</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
     <value>Невалидный email.</value>

@@ -67,6 +67,7 @@
     <Compile Include="FakeUserAccountRepository.cs" />
     <Compile Include="GroupService\TestGroupService.cs" />
     <Compile Include="KeyNotification.cs" />
+    <Compile Include="Localisation\LocalisationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccountService\UserAccountServiceTests.cs" />
     <Compile Include="TestUserAccountService.cs" />
