@@ -1669,6 +1669,26 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void ChangePasswordFromResetKey_ResetsFailedLoginCount()
+        {
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = false;
+            var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+
+            subject.Authenticate("test", "bad_pass");
+
+            var account = subject.GetByID(id);
+            Assert.AreEqual(1, account.FailedLoginCount);
+
+            subject.ResetPassword("test@test.com");
+            var key = LastVerificationKey;
+            subject.ChangePasswordFromResetKey(key, "new_pass");
+
+            account = subject.GetByID(id);
+            Assert.AreEqual(0, account.FailedLoginCount);
+        }
+
+        [TestMethod]
         public void ChangeUsername_ChangesUsername()
         {
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
