@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
@@ -104,6 +105,27 @@ namespace BrockAllen.MembershipReboot
 
             return claims;
         }
+
+        private IEnumerable<Claim> GetPendingAuthClaims(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            var claims = new List<Claim>();
+            if (account.RequiresTwoFactorAuthCodeToSignIn())
+            {
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth, account.AccountTwoFactorAuthMode.ToString()));
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PartialAuthReason, ((int)PartialAuthReason.PendingTwoFactorAuth).ToString(CultureInfo.InvariantCulture)));
+            }
+            else if (account.RequiresPasswordReset)
+            {
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PartialAuthReason, ((int)PartialAuthReason.PasswordResetRequired).ToString(CultureInfo.InvariantCulture)));
+            }
+            else if (this.UserAccountService.IsPasswordExpired(account))
+            {
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PartialAuthReason, ((int)PartialAuthReason.PasswordExpired).ToString(CultureInfo.InvariantCulture)));
+            }
+            return claims;
+        }
         
         private static List<Claim> GetAllClaims(TAccount account, string method)
         {
@@ -123,8 +145,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[AuthenticationService.IssuePartialSignInCookieForTwoFactorAuth] Account ID: {0}", account.ID);
 
-            var claims = GetBasicClaims(account, method);
-
+            var claims = GetBasicClaims(account, method).Union(GetPendingAuthClaims(account));
+            
             var ci = new ClaimsIdentity(claims); // no auth type param so user will not be actually authenticated
             var cp = new ClaimsPrincipal(ci);
 

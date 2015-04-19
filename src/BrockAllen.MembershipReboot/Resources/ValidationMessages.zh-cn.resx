@@ -118,151 +118,150 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAlreadyVerified" xml:space="preserve">
-    <value>Die E-Mail-Adresse für dieses Benutzerkonto ist bereits verifiziert.</value>
+    <value>这个邮箱地址已经验证通过。</value>
   </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
-    <value>Es kann kein Konto erstellt werden, da es keine E-Mail vom Identity-Provider gab.</value>
+    <value>不能创建账户，因为第三方没有提供email地址。</value>
   </data>
   <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
-    <value>Dieses Konto ist nicht für eine Sicherheitsfrage oder -antwort konfiguriert.</value>
+    <value>账户没有设置安全问题和答案。</value>
   </data>
   <data name="AccountNotVerified" xml:space="preserve">
-    <value>Die E-Mail-Adresse für dieses Benutzerkonto wurde noch nicht verifiziert.</value>
+    <value>该账户的email未验证。</value>
   </data>
   <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
-    <value>Dieses Konto benötigt eine Sicherheitsfrage oder -antwort, um das Passwort zurücksetzen zu können.</value>
+    <value>该账户需要设置安全问题，才能重置密码。</value>
   </data>
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
-    <value>Fügen Sie bitte ein Client-Zertifikat hinzu, um Zertifikats-Zwei-Faktoren-Authentifizierung zu ermöglichen.</value>
+    <value>添加一个客户端证书，用于启用两步验证。</value>
   </data>
   <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
-    <value>Sie müssen ein Passwort auf dem lokalen Konto festlegen, ehe Sie den letzten externen Login-Provider entfernen.</value>
+    <value>必须设置本地账户的密码，才能移除掉第三方登录关联信息。</value>
   </data>
   <data name="CertificateAlreadyInUse" xml:space="preserve">
-    <value>Dieses Zertifikat wird bereits von einem anderen Konto verwendet.</value>
+    <value>证书已被另一个账户使用。</value>
   </data>
   <data name="CodeRequired" xml:space="preserve">
-    <value>Code wird benötigt.</value>
+    <value>需要验证码。</value>
   </data>
   <data name="EmailAlreadyInUse" xml:space="preserve">
-    <value>Diese E-Mail-Adresse ist bereits in Gebrauch.</value>
+    <value>邮箱已经被使用。</value>
   </data>
   <data name="EmailRequired" xml:space="preserve">
-    <value>Die E-Mail-Adresse wird benötigt.</value>
+    <value>需要邮箱。</value>
   </data>
   <data name="InvalidCertificate" xml:space="preserve">
-    <value>Ungültiges Zertifikat.</value>
+    <value>证书不正确。</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
-    <value>Ungültige E-Mail-Adresse.</value>
+    <value>邮箱不正确。</value>
   </data>
   <data name="InvalidKey" xml:space="preserve">
-    <value>Ungültiger Schlüssel.</value>
+    <value>Key不正确。</value>
   </data>
   <data name="InvalidName" xml:space="preserve">
-    <value>Ungültiger Name.</value>
+    <value>姓名不正确。</value>
   </data>
   <data name="InvalidNewPassword" xml:space="preserve">
-    <value>Ungültiges neues Passwort.</value>
+    <value>新密码不正确。</value>
   </data>
   <data name="InvalidOldPassword" xml:space="preserve">
-    <value>Ungültiges altes Passwort.</value>
+    <value>旧密码不正确。</value>
   </data>
   <data name="InvalidPassword" xml:space="preserve">
-    <value>Ungültiges Passwort.</value>
+    <value>密码不正确。</value>
   </data>
   <data name="InvalidPhone" xml:space="preserve">
-    <value>Ungültige Telefonnummer.</value>
+    <value>电话号码不正确。</value>
   </data>
   <data name="InvalidQuestionOrAnswer" xml:space="preserve">
-    <value>Ungültige Sicherheitsfrage oder -antwort.</value>
+    <value>安全问题不正确。</value>
   </data>
   <data name="InvalidTenant" xml:space="preserve">
-    <value>Ungültiger Inhaber.</value>
+    <value>机构不正确。</value>
   </data>
   <data name="InvalidUsername" xml:space="preserve">
-    <value>Ungültiger Benutzername.</value>
+    <value>用户名不正确。</value>
   </data>
   <data name="LinkedAccountAlreadyInUse" xml:space="preserve">
-    <value>Dieses externe Konto ist bereits einem anderen Benutzer zugeordnet.</value>
+    <value>外部账户已经被关联到其它用户。</value>
   </data>
   <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
-    <value>Mit diesem Provider ist kein Login möglich, weil die E-Mail-Adresse bereits einem anderen Konto zugeordnet ist.
-Bitte loggen Sie sich mit Ihrem lokalen Konto ein und weisen den Provider dann zu.</value>
+    <value>不能用这个第三方账户登录，因为email已经被其他用户关联。请使用你的本地账户登录，然后再关联这个第三方账户。</value>
   </data>
   <data name="LoginNotAllowed" xml:space="preserve">
-    <value>Der Login ist für dieses Konto nicht erlaubt.</value>
+    <value>该账户被禁止登录。</value>
   </data>
   <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
-    <value>Diese Mobilfunknummer ist bereits durch ein anderes Konto in Gebrauch.</value>
+    <value>该手机号码已被另一账户使用。</value>
   </data>
   <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
-    <value>Die Mobilfunknummer muss von der jetzigen verschieden sein.</value>
+    <value>手机号码不能和现有号码重复。</value>
   </data>
   <data name="MobilePhoneRequired" xml:space="preserve">
-    <value>Eine Mobilfunknummer wird benötigt.</value>
+    <value>需要一个手机号码。</value>
   </data>
   <data name="NameAlreadyInUse" xml:space="preserve">
-    <value>Dieser Name ist bereits in Gebrauch.</value>
+    <value>这个姓名已经被使用。</value>
   </data>
   <data name="NameRequired" xml:space="preserve">
-    <value>Ein Name wird benötigt.</value>
+    <value>需要姓名。</value>
   </data>
   <data name="NewPasswordMustBeDifferent" xml:space="preserve">
-    <value>Das neue Passwort muss vom alten Passwort verschieden sein.</value>
+    <value>新密码不能和旧密码一致。</value>
   </data>
   <data name="ParentGroupAlreadyChild" xml:space="preserve">
-    <value>Die Elterngruppe ist bereits ein Kind der Kindgruppe.</value>
+    <value>上级组已经是下级组的一个子组。</value>
   </data>
   <data name="ParentGroupSameAsChild" xml:space="preserve">
-    <value>Eltern und Kind sind dieselbe Gruppe.</value>
+    <value>上级组和下级组一致。</value>
   </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
-    <value>Das Passwort muss mindestens {0} der folgenden Zeichen enthalten: Großbuchstabe, Kleinbuchstabe, Zahl und Sonstiges.</value>
+    <value>密码至少含有{0}个字符，并且至少含有：1个大写，1个小写，1个数字，以及1个其它字符。</value>
   </data>
   <data name="PasswordLength" xml:space="preserve">
-    <value>Das Passwort muss mindestens {0} Zeichen lang sein.</value>
+    <value>密码至少包含{0}个字符。</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
-    <value>Passwort wird benötigt.</value>
+    <value>需要密码。</value>
   </data>
   <data name="PasswordResetErrorNoEmail" xml:space="preserve">
-    <value>Passwort zurücksetzen ist nicht möglich, da für dieses Konto keine verifizierte E-Mail-Adresse hinterlegt ist.</value>
+    <value>不能重置密码，因为邮箱未验证。</value>
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
-    <value>Registrieren Sie bitte eine Mobilfunknummer, um mobile Zwei-Faktoren-Authentifizierung zu ermöglichen.</value>
+    <value>注册一个手机号码，以便启用两步验证。</value>
   </data>
   <data name="ReopenErrorNoEmail" xml:space="preserve">
-    <value>Wiedereröffnen des Kontos ist nicht möglich, da für dieses Konto keine E-Mail-Adresse hinterlegt ist.</value>
+    <value>重新启用账户出错，因为该账户没有设置email。</value>
   </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
-    <value>Eine Sicherheitsantwort wird benötigt.</value>
+    <value>需要安全问题答案。</value>
   </data>
   <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
-    <value>Diese Passwort-Rücksetzen-Sicherheitsfrage ist bereits im Gebrauch.</value>
+    <value>这个安全问题已经被使用。</value>
   </data>
   <data name="SecretQuestionRequired" xml:space="preserve">
-    <value>Eine Sicherheitsfrage wird benötigt.</value>
+    <value>需要安全问题。</value>
   </data>
   <data name="TenantRequired" xml:space="preserve">
-    <value>Ein Inhaber wird benötigt.</value>
+    <value>需要机构。</value>
   </data>
   <data name="UsernameAlreadyInUse" xml:space="preserve">
-    <value>Dieser Benutzername ist bereits in Gebrauch.</value>
+    <value>用户名已经被使用。</value>
   </data>
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
-    <value>Der Benutzername darf nicht das '@'-Symbol enthalten.</value>
+    <value>用户名不能包含“@”字符。</value>
   </data>
   <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
-    <value>Der Benutzername darf nur mit einem Buchstaben oder einer Zahl beginnen bzw. enden.</value>
+    <value>用户名的开头和结尾只能是字母或数字。</value>
   </data>
   <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
-    <value>Der Benutzername darf nur Buchstaben, Zahlen, Leerzeichen, Punkte, Bindestriche oder Unterstriche enthalten.</value>
+    <value>用户名只能包含英文的字母，数字，空格，句号，逗号，中划线和下划线。</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
-    <value>Ein Benutzername wird benötigt.</value>
+    <value>需要用户名。</value>
   </data>
   <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
-    <value>Der Benutzername darf nicht zwei Leerzeichen, Punkte, Bindestriche oder Unterstriche direkt hintereinander enthalten.</value>
+    <value>用户名不能包含连续的2个空格，句号，中划线或者下划线。</value>
   </data>
 </root>

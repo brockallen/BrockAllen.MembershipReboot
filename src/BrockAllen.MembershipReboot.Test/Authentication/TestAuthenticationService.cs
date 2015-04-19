@@ -22,6 +22,7 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
 
         protected override void IssueToken(System.Security.Claims.ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null)
         {
+            CurentPrincipal = principal;
         }
 
         protected override void RevokeToken()

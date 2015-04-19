@@ -1347,6 +1347,20 @@ namespace BrockAllen.MembershipReboot
             UpdateInternal(account);
         }
 
+        public virtual void ResetFailedLoginCount(Guid accountID)
+        {
+            Tracing.Information("[UserAccountService.ResetFailedLoginCount] called: {0}", accountID);
+
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            account.FailedLoginCount = 0;
+
+            Update(account);
+
+            Tracing.Verbose("[UserAccountService.ResetFailedLoginCount] success");
+        }
+
         public virtual bool ChangePasswordFromResetKey(string key, string newPassword)
         {
             TAccount account;
@@ -1392,6 +1406,9 @@ namespace BrockAllen.MembershipReboot
 
             ClearVerificationKey(account);
             SetPassword(account, newPassword);
+
+            account.FailedLoginCount = 0;
+
             Update(account);
 
             return true;

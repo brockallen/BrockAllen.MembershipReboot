@@ -54,9 +54,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Authentication\SignInTests.cs" />
     <Compile Include="GroupService\FakeGroupRepository.cs" />
     <Compile Include="GroupService\GroupServiceTests.cs" />
-    <Compile Include="Authentication\AuthenticationServiceTests.cs" />
+    <Compile Include="Authentication\SignInWithLinkedAccountTests.cs" />
     <Compile Include="Authentication\TestAuthenticationService.cs" />
     <Compile Include="Configuration\MembershipRebootConfigurationTests.cs" />
     <Compile Include="Configuration\SecuritySettingsTests.cs" />
