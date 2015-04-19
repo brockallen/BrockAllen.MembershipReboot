@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccountAlreadyVerified" xml:space="preserve">
+    <value>这个邮箱地址已经验证通过。</value>
+  </data>
+  <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
+    <value>不能创建账户，因为第三方没有提供email地址。</value>
+  </data>
+  <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
+    <value>账户没有设置安全问题和答案。</value>
+  </data>
+  <data name="AccountNotVerified" xml:space="preserve">
+    <value>该账户的email未验证。</value>
+  </data>
+  <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
+    <value>该账户需要设置安全问题，才能重置密码。</value>
+  </data>
+  <data name="AddClientCertForTwoFactor" xml:space="preserve">
+    <value>添加一个客户端证书，用于启用两步验证。</value>
+  </data>
+  <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
+    <value>必须设置本地账户的密码，才能移除掉第三方登录关联信息。</value>
+  </data>
+  <data name="CertificateAlreadyInUse" xml:space="preserve">
+    <value>证书已被另一个账户使用。</value>
+  </data>
+  <data name="CodeRequired" xml:space="preserve">
+    <value>需要验证码。</value>
+  </data>
+  <data name="EmailAlreadyInUse" xml:space="preserve">
+    <value>邮箱已经被使用。</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>需要邮箱。</value>
+  </data>
+  <data name="InvalidCertificate" xml:space="preserve">
+    <value>证书不正确。</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>邮箱不正确。</value>
+  </data>
+  <data name="InvalidKey" xml:space="preserve">
+    <value>Key不正确。</value>
+  </data>
+  <data name="InvalidName" xml:space="preserve">
+    <value>姓名不正确。</value>
+  </data>
+  <data name="InvalidNewPassword" xml:space="preserve">
+    <value>新密码不正确。</value>
+  </data>
+  <data name="InvalidOldPassword" xml:space="preserve">
+    <value>旧密码不正确。</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>密码不正确。</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>电话号码不正确。</value>
+  </data>
+  <data name="InvalidQuestionOrAnswer" xml:space="preserve">
+    <value>安全问题不正确。</value>
+  </data>
+  <data name="InvalidTenant" xml:space="preserve">
+    <value>机构不正确。</value>
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value>用户名不正确。</value>
+  </data>
+  <data name="LinkedAccountAlreadyInUse" xml:space="preserve">
+    <value>外部账户已经被关联到其它用户。</value>
+  </data>
+  <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
+    <value>不能用这个第三方账户登录，因为email已经被其他用户关联。请使用你的本地账户登录，然后再关联这个第三方账户。</value>
+  </data>
+  <data name="LoginNotAllowed" xml:space="preserve">
+    <value>该账户被禁止登录。</value>
+  </data>
+  <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
+    <value>该手机号码已被另一账户使用。</value>
+  </data>
+  <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
+    <value>手机号码不能和现有号码重复。</value>
+  </data>
+  <data name="MobilePhoneRequired" xml:space="preserve">
+    <value>需要一个手机号码。</value>
+  </data>
+  <data name="NameAlreadyInUse" xml:space="preserve">
+    <value>这个姓名已经被使用。</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>需要姓名。</value>
+  </data>
+  <data name="NewPasswordMustBeDifferent" xml:space="preserve">
+    <value>新密码不能和旧密码一致。</value>
+  </data>
+  <data name="ParentGroupAlreadyChild" xml:space="preserve">
+    <value>上级组已经是下级组的一个子组。</value>
+  </data>
+  <data name="ParentGroupSameAsChild" xml:space="preserve">
+    <value>上级组和下级组一致。</value>
+  </data>
+  <data name="PasswordComplexityRules" xml:space="preserve">
+    <value>密码至少含有{0}个字符，并且至少含有：1个大写，1个小写，1个数字，以及1个其它字符。</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>密码至少包含{0}个字符。</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>需要密码。</value>
+  </data>
+  <data name="PasswordResetErrorNoEmail" xml:space="preserve">
+    <value>不能重置密码，因为邮箱未验证。</value>
+  </data>
+  <data name="RegisterMobileForTwoFactor" xml:space="preserve">
+    <value>注册一个手机号码，以便启用两步验证。</value>
+  </data>
+  <data name="ReopenErrorNoEmail" xml:space="preserve">
+    <value>重新启用账户出错，因为该账户没有设置email。</value>
+  </data>
+  <data name="SecretAnswerRequired" xml:space="preserve">
+    <value>需要安全问题答案。</value>
+  </data>
+  <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
+    <value>这个安全问题已经被使用。</value>
+  </data>
+  <data name="SecretQuestionRequired" xml:space="preserve">
+    <value>需要安全问题。</value>
+  </data>
+  <data name="TenantRequired" xml:space="preserve">
+    <value>需要机构。</value>
+  </data>
+  <data name="UsernameAlreadyInUse" xml:space="preserve">
+    <value>用户名已经被使用。</value>
+  </data>
+  <data name="UsernameCannotContainAtSign" xml:space="preserve">
+    <value>用户名不能包含“@”字符。</value>
+  </data>
+  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
+    <value>用户名的开头和结尾只能是字母或数字。</value>
+  </data>
+  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
+    <value>用户名只能包含英文的字母，数字，空格，句号，逗号，中划线和下划线。</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>需要用户名。</value>
+  </data>
+  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
+    <value>用户名不能包含连续的2个空格，句号，中划线或者下划线。</value>
+  </data>
+</root>
