@@ -48,21 +48,47 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             subject.SignInWithLinkedAccount("google", "123", new[]
             {
                 new Claim(ClaimTypes.Email, "test@gmail.com"),
-                new Claim(ClaimTypes.Name, "Christian"),
+                new Claim(ClaimTypes.Name, "Christian")
             });
             var addedAccount = repository.UserAccounts[0];
             Assert.AreEqual("Christian", addedAccount.Username);
         }
 
         [TestMethod]
-        public void Failback_To_Guessing_Username_From_Email_For_New_UserAccount()
+        public void Use_NameClaim_Stripped_Of_Invalid_Chars_For_New_UserAccount()
         {
             subject.SignInWithLinkedAccount("google", "123", new[]
             {
-                new Claim(ClaimTypes.Email, "test@gmail.com")
+                new Claim(ClaimTypes.Email, "test@gmail.com"),
+                new Claim(ClaimTypes.Name, " ~ Christian Crowhurst @ ")
             });
             var addedAccount = repository.UserAccounts[0];
-            Assert.AreEqual("test", addedAccount.Username);
+            Assert.AreEqual("Christian Crowhurst", addedAccount.Username);
+        }
+
+        [TestMethod]
+        public void Guessed_Username_Should_Strip_Invalid_Chars()
+        {
+            subject.SignInWithLinkedAccount("google", "123", new[]
+            {
+                new Claim(ClaimTypes.Email, "test@gmail.com"),
+                new Claim(ClaimTypes.Name, " ~ Christian Crowhurst @ ")
+            });
+            var addedAccount = repository.UserAccounts[0];
+            Assert.AreEqual("Christian Crowhurst", addedAccount.Username);
+        }
+
+        [TestMethod]
+        [Description("For list of allowed special chars see UserAccountValidation<TAccount>")]
+        public void Guessed_Username_Should_Allow_Special_Chars()
+        {
+            subject.SignInWithLinkedAccount("google", "123", new[]
+            {
+                new Claim(ClaimTypes.Email, "test@gmail.com"),
+                new Claim(ClaimTypes.Name, @" ~ Christian.Forrest-Smith_OK @ ")
+            });
+            var addedAccount = repository.UserAccounts[0];
+            Assert.AreEqual("Christian.Forrest-Smith_OK", addedAccount.Username);
         }
     }
 }
