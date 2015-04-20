@@ -936,21 +936,32 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsTrue(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
         
+
         [TestMethod]
         public void Authenticate_InvalidCredentials_ReturnsFalse()
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsFalse(subject.Authenticate("test", "abc"));
-            Assert.IsFalse(subject.Authenticate("test", "123"));
-            Assert.IsFalse(subject.Authenticate("test", ""));
-            Assert.IsFalse(subject.Authenticate("test", null));
-            Assert.IsFalse(subject.Authenticate("", "pass"));
-            Assert.IsFalse(subject.Authenticate((string)null, "pass"));
-            Assert.IsFalse(subject.Authenticate("test2", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "abc", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test", "123", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test", "", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test", null, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate((string) null, "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test2", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
         }
 
         [TestMethod]
@@ -965,7 +976,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.Authenticate("test", "bad");
             subject.Authenticate("test", "bad");
             subject.Authenticate("test", "bad");
-            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.FailedLoginAttemptsExceeded, failureCode);
         }
 
         [TestMethod]
@@ -1013,6 +1026,82 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void Authenticate_AccountNotVerified_Fails()
+        {
+            this.configuration.RequireAccountVerification = true;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotVerified, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_LoginNotAllowed_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.IsLoginAllowed = false;
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.LoginNotAllowed, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_AccountClosed_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.IsAccountClosed = true;
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountClosed, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_AccountMissingPassword_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            string nullPassword = null;
+// ReSharper disable ExpressionIsAlwaysNull
+            subject.CreateAccount("test", nullPassword, "test@test.com");
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", nullPassword, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+// ReSharper restore ExpressionIsAlwaysNull
+        }
+
+        [TestMethod]
+        public void Authenticate_MobileTwoFactorAuthRequired_MissingMobileNumber_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.MobilePhoneNumber = "";
+            acc.AccountTwoFactorAuthMode = TwoFactorAuthMode.Mobile;
+
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotConfiguredWithMobilePhone, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_CertificateTwoFactorAuthRequired_NoConfiguredCerts_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.AccountTwoFactorAuthMode = TwoFactorAuthMode.Certificate;
+
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotConfiguredWithCertificates, failureCode);
+        }
+
+        [TestMethod]
         public void Authenticate_ReturnsCorrectAccount()
         {
             configuration.RequireAccountVerification = false;
@@ -1027,7 +1116,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.AuthenticateWithEmail("test@test.com", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsTrue(subject.AuthenticateWithEmail("test@test.com", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
 
         [TestMethod]
@@ -1045,13 +1136,21 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsFalse(subject.Authenticate("test@test.com", "abc"));
-            Assert.IsFalse(subject.Authenticate("test@test.com", "123"));
-            Assert.IsFalse(subject.Authenticate("test@test.com", ""));
-            Assert.IsFalse(subject.Authenticate("test@test.com", null));
-            Assert.IsFalse(subject.Authenticate("", "pass"));
-            Assert.IsFalse(subject.Authenticate((string)null, "pass"));
-            Assert.IsFalse(subject.Authenticate("test2", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", "abc", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", "123", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", "", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", null, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail(null, "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test2", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
         }
 
         [TestMethod]
@@ -1072,8 +1171,11 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.RequireAccountVerification = false;
             subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct;
-            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct));
-            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct));
+            AuthenticationFailureCode failureCode;
+            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
+            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
 
         [TestMethod]
@@ -1083,8 +1185,10 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.RequireAccountVerification = false;
             subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct;
-            Assert.IsFalse(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct));
-            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct, out failureCode));
+            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
         
         [TestMethod]
@@ -1173,6 +1277,24 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             {
             }
         }
+
+        [TestMethod]
+        public void AuthenticationFailureCode_GetValidationMessage()
+        {
+            var failureCodes = GetEnumToSymbols<AuthenticationFailureCode>().Except(new[] { AuthenticationFailureCode.None });
+            foreach (AuthenticationFailureCode code in failureCodes)
+            {
+                Assert.IsFalse(String.IsNullOrEmpty(subject.GetValidationMessage(code)));
+            }
+        }
+
+        static IEnumerable<TEnum> GetEnumToSymbols<TEnum>() where TEnum : struct
+        {
+            return (from f in typeof(TEnum).GetFields() 
+                    where !f.IsSpecialName 
+                    select f.GetRawConstantValue()).Cast<TEnum>();
+        }
+
 
         static X509Certificate2 GetTestCert()
         {
