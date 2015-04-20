@@ -1248,13 +1248,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
             ValidatePassword(account, newPassword);
-
             SetPassword(account, newPassword);
-
-            // setting failed count to zero here (and not in SetPassword(account, newPassword))
-            // since this API is meant to be an admin-API to reset user's passwords
-            account.FailedLoginCount = 0;
-            
             Update(account);
 
             Tracing.Verbose("[UserAccountService.SetPassword] success");
@@ -1406,9 +1400,6 @@ namespace BrockAllen.MembershipReboot
 
             ClearVerificationKey(account);
             SetPassword(account, newPassword);
-
-            account.FailedLoginCount = 0;
-
             Update(account);
 
             return true;
@@ -2074,6 +2065,7 @@ namespace BrockAllen.MembershipReboot
             account.HashedPassword = Configuration.Crypto.HashPassword(password, this.Configuration.PasswordHashingIterationCount);
             account.PasswordChanged = UtcNow;
             account.RequiresPasswordReset = false;
+            account.FailedLoginCount = 0;
 
             this.AddEvent(new PasswordChangedEvent<TAccount> { Account = account, NewPassword = password });
         }
