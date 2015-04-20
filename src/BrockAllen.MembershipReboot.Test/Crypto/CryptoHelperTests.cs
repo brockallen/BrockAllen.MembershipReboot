@@ -28,23 +28,23 @@ namespace BrockAllen.MembershipReboot.Test.Crypto
         public void HashPassword_CountStoredInHashedPassword()
         {
             {
-                var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator);
+                var result = crypto.HashPassword("pass", new SecuritySettings().PasswordHashingIterationCount);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator, "Default Count");
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 5000;
                 var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, crypto.EncodeIterations(5000) + DefaultCrypto.PasswordHashingIterationCountSeparator);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(5000) + DefaultCrypto.PasswordHashingIterationCountSeparator, "5000");
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 10000;
                 var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, crypto.EncodeIterations(10000) + DefaultCrypto.PasswordHashingIterationCountSeparator);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(10000) + DefaultCrypto.PasswordHashingIterationCountSeparator, "10000");
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 50;
                 var result = crypto.HashPassword("pass", SecuritySettings.Instance.PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, crypto.EncodeIterations(50) + DefaultCrypto.PasswordHashingIterationCountSeparator);
+                StringAssert.StartsWith(result, crypto.EncodeIterations(50) + DefaultCrypto.PasswordHashingIterationCountSeparator, "50");
             }
         }
 

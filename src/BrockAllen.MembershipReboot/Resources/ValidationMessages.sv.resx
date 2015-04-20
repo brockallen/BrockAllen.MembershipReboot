@@ -264,4 +264,19 @@
   <data name="UsernameRequired" xml:space="preserve">
     <value>Användarnamn krävs. </value>
   </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>Account stängd.</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>För att logga in, måste detta konto konfigureras med certifikat.</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>För att logga in, måste detta konto konfigureras med mobilnummer.</value>
+  </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>Försök att logga in har överskridits</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Fel användarnamn eller lösenord.</value>
+  </data>
 </root>
