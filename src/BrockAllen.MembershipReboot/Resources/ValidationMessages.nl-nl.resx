@@ -120,8 +120,17 @@
   <data name="AccountAlreadyVerified" xml:space="preserve">
     <value>Het e-mailadres voor dit account is al bevestigd.</value>
   </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>Account gesloten.</value>
+  </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
     <value>Kan geen account aanmaken omdat er geen e-mailadres van de identiteitsprovider aanwezig is.</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>Om in te loggen, moet deze account worden geconfigureerd met certificaten.</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>Om in te loggen, moet deze account worden geconfigureerd met mobiele telefoonnummer.</value>
   </data>
   <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
     <value>Er is nog geen geheime vraag voor dit account ingesteld.</value>
@@ -150,8 +159,14 @@
   <data name="EmailRequired" xml:space="preserve">
     <value>E-mailadres is verplicht.</value>
   </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>Pogingen om in te loggen zijn overschreden.</value>
+  </data>
   <data name="InvalidCertificate" xml:space="preserve">
     <value>Ongeldig certificaat.</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Ongeldige gebruikersnaam of wachtwoord.</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
     <value>Ongeldig e-mailadres.</value>

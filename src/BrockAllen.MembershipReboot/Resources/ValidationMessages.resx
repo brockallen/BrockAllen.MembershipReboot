@@ -264,4 +264,19 @@
   <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
     <value>Username cannot have two spaces, periods, dashes or underscores next to one another.</value>
   </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>Account closed.</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>To login, this account must be configured with certificates.</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>To login, this account must be configured with mobile phone number.</value>
+  </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>Attempts to login have been exceeded</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid username or password.</value>
+  </data>
 </root>

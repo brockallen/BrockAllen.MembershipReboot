@@ -40,6 +40,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountService\AuthenticationFailureCode.cs" />
     <Compile Include="AccountService\DebuggerEventHandler.cs" />
     <Compile Include="AccountService\PartialAuthReason.cs" />
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
@@ -83,11 +84,6 @@
     <Compile Include="Query\IUserAccountQuery.cs" />
     <Compile Include="Repository\QueryableGroupRepository.cs" />
     <Compile Include="Repository\QueryableUserAccountRepository.cs" />
-    <Compile Include="Resources\ValidationMessages.ru-ru.Designer.cs">
-      <DependentUpon>ValidationMessages.ru-ru.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Resources\ValidationMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -181,6 +177,7 @@
     <EmbeddedResource Include="Resources\ValidationMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ValidationMessages.sv.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.zh-cn.resx" />
