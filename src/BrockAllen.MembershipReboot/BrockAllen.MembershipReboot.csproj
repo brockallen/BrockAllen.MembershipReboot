@@ -165,11 +165,6 @@
     <EmbeddedResource Include="Notification\Email\EmailTemplates\EmailVerifiedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Body.txt" />
-    <EmbeddedResource Include="Resources\ValidationMessages.zh-cn.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ValidationMessages.zh-cn.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\ValidationMessages.da.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.de.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.nl-nl.resx" />
