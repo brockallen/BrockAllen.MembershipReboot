@@ -2131,6 +2131,14 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
+        public virtual bool IsVerificationKeyStale(Guid accountID)
+        {
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            return IsVerificationKeyStale(account);
+        }
+        
         protected virtual bool IsVerificationKeyStale(TAccount account)
         {
             if (account.VerificationKeySent == null)
