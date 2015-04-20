@@ -1688,6 +1688,23 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void ResetFailedLoginCount_ResetsFailedLoginCount()
+        {
+            var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyEmailFromKey(this.LastVerificationKey, "pass");
+
+            subject.Authenticate("test", "bad_pass");
+
+            var account = subject.GetByID(id);
+            Assert.AreEqual(1, account.FailedLoginCount);
+
+            subject.ResetFailedLoginCount(id);
+            
+            account = subject.GetByID(id);
+            Assert.AreEqual(0, account.FailedLoginCount);
+        }
+
+        [TestMethod]
         public void ChangeUsername_ChangesUsername()
         {
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
