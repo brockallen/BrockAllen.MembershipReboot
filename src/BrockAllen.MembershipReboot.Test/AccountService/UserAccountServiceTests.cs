@@ -1671,9 +1671,8 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void ChangePasswordFromResetKey_ResetsFailedLoginCount()
         {
-            configuration.AllowLoginAfterAccountCreation = true;
-            configuration.RequireAccountVerification = false;
             var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyEmailFromKey(this.LastVerificationKey, "pass");
 
             subject.Authenticate("test", "bad_pass");
 
