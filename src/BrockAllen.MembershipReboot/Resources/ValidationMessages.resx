@@ -196,7 +196,7 @@
     <value>That mobile phone is already in use by a different account.</value>
   </data>
   <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
-    <value>Mobile phone number must be different then the current.</value>
+    <value>Mobile phone number must be different from the current one.</value>
   </data>
   <data name="MobilePhoneRequired" xml:space="preserve">
     <value>Mobile phone number required.</value>
@@ -208,7 +208,7 @@
     <value>Name is required.</value>
   </data>
   <data name="NewPasswordMustBeDifferent" xml:space="preserve">
-    <value>The new password must be different than the old password.</value>
+    <value>The new password must be different from the old password.</value>
   </data>
   <data name="ParentGroupAlreadyChild" xml:space="preserve">
     <value>The parent group is already a child of the child group.</value>
