@@ -118,28 +118,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAlreadyVerified" xml:space="preserve">
-    <value>E-postadressen för kontot redan verifierats. </value>
+    <value>E-postadressen för detta konto är redan bekräftad.</value>
   </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
-    <value>Konto kan inte skapas eftersom det saknar ett mail från identitetstylbyderen.</value>
+    <value>Kontot kunde inte skapas eftersom det inte kommit ett e-postmeddelande från identitetsleverantören.</value>
   </data>
   <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
-    <value>Kontot är inte konfigurerad för att använda säkerhetsfråga och svar. </value>
+    <value>Säkerhetsfråga saknas för detta konto.</value>
   </data>
   <data name="AccountNotVerified" xml:space="preserve">
-    <value>E-postadressen för kontot har inte verifierats ännu. </value>
+    <value>E-postadressen för detta konto har inte bekräftats.</value>
   </data>
   <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
-    <value>Detta konto kräver en säkerhetsfråga och svar. </value>
+    <value>Säkerhetsfrågan måste besvaras för att återställa lösenordet.</value>
   </data>
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
-    <value>Lägg ett klientcertifikat för att möjliggöra tvåfaktorsautentisering. </value>
+    <value>Lägg till ett klientcertifikat för att aktivera tvåstegsverifiering.</value>
   </data>
   <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
-    <value>Du måste ange ett lösenord för det lokala kontot innan du tar bort de sista externa påloggstilbyderen. </value>
+    <value>Du måste ange ett lösenord för det lokala kontot innan du deaktiverar det externa kontot.</value>
   </data>
   <data name="CertificateAlreadyInUse" xml:space="preserve">
-    <value>Certifikatet används redan av ett annat konto </value>
+    <value>Certifikatet används redan i ett annat konto.</value>
   </data>
   <data name="CodeRequired" xml:space="preserve">
     <value>Kod krävs. </value>
@@ -148,7 +148,7 @@
     <value>E-postadressen används redan. </value>
   </data>
   <data name="EmailRequired" xml:space="preserve">
-    <value>E krävs. </value>
+    <value>E-postadress krävs.</value>
   </data>
   <data name="InvalidCertificate" xml:space="preserve">
     <value>Ogiltigt certifikat </value>
@@ -163,22 +163,22 @@
     <value>Ogiltigt namn. </value>
   </data>
   <data name="InvalidNewPassword" xml:space="preserve">
-    <value>Ogiltigt lösenord. </value>
+    <value>Det nya lösenordet är ogiltigt.</value>
   </data>
   <data name="InvalidOldPassword" xml:space="preserve">
-    <value>Ogiltig gamla lösenordet. </value>
+    <value>Det tidigare lösenordet är felaktigt.</value>
   </data>
   <data name="InvalidPassword" xml:space="preserve">
-    <value>Ogiltigt lösenord. </value>
+    <value>Felaktigt lösenord.</value>
   </data>
   <data name="InvalidPhone" xml:space="preserve">
-    <value>Ogiltig telefon. </value>
+    <value>Ogiltigt telefonnummer.</value>
   </data>
   <data name="InvalidQuestionOrAnswer" xml:space="preserve">
-    <value>Ogiltig säkerhet. </value>
+    <value>Ogiltig säkerhetsfråga.</value>
   </data>
   <data name="InvalidTenant" xml:space="preserve">
-    <value>Ogiltig hyresgäst. </value>
+    <value>Ogiltig innehavare.</value>
   </data>
   <data name="InvalidUsername" xml:space="preserve">
     <value>Ogiltigt användarnamn. </value>
@@ -187,79 +187,79 @@
     <value>Den externa kontot är redan kopplat till en annan användare. </value>
   </data>
   <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
-    <value>Kan inte logga in med den här påloggstilbyderen eftersom e-post är redan kopplat till ett annat konto. Logga in med ditt lokala konto och därefter knuten till dig påloggstilbyderen. </value>
+    <value>Kan inte logga in med det externa kontot eftersom e-postadressen redan är kopplad till ett annat konto. Logga in med ditt lokala konto och lägg sedan till det externa kontot.</value>
   </data>
   <data name="LoginNotAllowed" xml:space="preserve">
-    <value>Logga inte tillåtet för detta konto. </value>
+    <value>Inloggning är inte tillåtet för detta konto.</value>
   </data>
   <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
-    <value>Mobiltelefonen används redan av ett annat konto. </value>
+    <value>Mobilnumret används i ett annat konto.</value>
   </data>
   <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
-    <value>Mobilnummer måste vara annorlunda än den nuvarande. </value>
+    <value>Det nya mobilnumret får inte vara samma som det gamla.</value>
   </data>
   <data name="MobilePhoneRequired" xml:space="preserve">
-    <value>Mobiltelefonnummer är obligatoriska. </value>
+    <value>Mobilnummer krävs.</value>
   </data>
   <data name="NameAlreadyInUse" xml:space="preserve">
-    <value>Det namnet används redan. </value>
+    <value>Det namnet används redan.</value>
   </data>
   <data name="NameRequired" xml:space="preserve">
     <value>Namn krävs. </value>
   </data>
   <data name="NewPasswordMustBeDifferent" xml:space="preserve">
-    <value>Det nya lösenordet måste skilja sig från det gamla lösenordet. </value>
+    <value>Det nya lösenordet får inte vara samma som det gamla.</value>
   </data>
   <data name="ParentGroupAlreadyChild" xml:space="preserve">
-    <value>Moder gruppen är redan ett barn i barngrupp. </value>
+    <value>Den överordnade gruppen är redan medlem i den underordnade gruppen.</value>
   </data>
   <data name="ParentGroupSameAsChild" xml:space="preserve">
-    <value>Föräldrar och barn är i samma grupp. </value>
+    <value>Den överordnade gruppen är samma som den underordnade.</value>
   </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
-    <value>Lösenordet måste innehålla minst {0} av följande tecken: en stor bokstav, en liten bokstav, en siffra och en annan. </value>
+    <value>Lösenordet måste innehålla minst {0} av följande teckenkategorier: versaler, gemener, siffror och specialsymboler.</value>
   </data>
   <data name="PasswordLength" xml:space="preserve">
-    <value>Lösenord måste vara minst {0} tecken. </value>
+    <value>Lösenord innehålla minst {0} tecken.</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Lösenord krävs. </value>
   </data>
   <data name="PasswordResetErrorNoEmail" xml:space="preserve">
-    <value>Återställ lösenord är inte möjligt eftersom det inte finns någon e-postadress för kontot. </value>
+    <value>Lösenordsåterställning är inte möjligt eftersom det inte finns en bekräftad e-postadress för detta konto.</value>
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
-    <value>Registrera ditt mobilnummer för att aktivera mobil autentisering med två faktorer. </value>
+    <value>Registrera ett mobilnummer för att aktivera tvåstegsverifiering via mobiltelefon.</value>
   </data>
   <data name="ReopenErrorNoEmail" xml:space="preserve">
-    <value>Nyöppning av kontot är inte möjligt eftersom det inte finns någon e-postadress för kontot. </value>
+    <value>Det går inte att återöppna kontot eftersom det inte finns någon e-postadress för detta konto.</value>
   </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
-    <value>Hemliga svar krävs. </value>
+    <value>Säkerhetsfrågan måste besvaras.</value>
   </data>
   <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
-    <value>Den säkerhetsfrågan för återställning av lösenord används redan. </value>
+    <value>Denna säkerhetsfråga har redan använts för lösenordsåterställning.</value>
   </data>
   <data name="SecretQuestionRequired" xml:space="preserve">
     <value>Säkerhetsfråga krävs. </value>
   </data>
   <data name="TenantRequired" xml:space="preserve">
-    <value>Hyresgästerna krävs. </value>
+    <value>Innehavare krävs.</value>
   </data>
   <data name="UsernameAlreadyInUse" xml:space="preserve">
     <value>Användarnamnet används redan. </value>
   </data>
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
-    <value>Användarnamn kan inte innehålla "@" - karaktär. </value>
+    <value>Användarnamnet får inte innehålla "@"-tecken.</value>
   </data>
   <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
-    <value>Användarnamn kan inte ha två utrymmen, punkter, bindestreck och understreck sida vid sida. </value>
+    <value>Användarnamnet får inte ha två mellanslag, punkter, bindestreck eller understreck efter varandra.</value>
   </data>
   <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
-    <value>Användarnamn kan bara börja eller sluta med en bokstav eller siffra. </value>
+    <value>Användarnamnet måste börja och sluta med en bokstav eller siffra.</value>
   </data>
   <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
-    <value>Användarnamn får bara innehålla bokstäver, siffror, mellanslag, punkter, bindestreck och understreck. </value>
+    <value>Användarnamnet får endast innehålla bokstäver, siffror, mellanslag, punkter, bindestreck eller understreck.</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Användarnamn krävs. </value>
