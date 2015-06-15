@@ -675,14 +675,14 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_CanPassCreatedDate_UsesCreatedDate()
         {
-            var created = DateTime.Now;
+            var created = DateTime.UtcNow;
             var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);
             Assert.AreEqual(created, acct.Created);
         }
         [TestMethod]
         public void CreateAccount_FutureCreatedDate_Throws()
         {
-            var created = DateTime.Now.AddDays(1);
+            var created = DateTime.UtcNow.AddDays(1);
             try
             {
                 var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);
