@@ -118,165 +118,165 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAlreadyVerified" xml:space="preserve">
-    <value>E-postadressen för detta konto är redan bekräftad.</value>
+    <value>Sähköpostiosoite tälle käyttäjätilille on jo varmistettu.</value>
   </data>
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
-    <value>Kontot kunde inte skapas eftersom det inte kommit ett e-postmeddelande från identitetsleverantören.</value>
+    <value>Käyttäjätiliä ei voida luoda koska varmennussähköpostia ei ole vastaanotettu identiteetin varmistajalta.</value>
   </data>
   <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
-    <value>Säkerhetsfråga saknas för detta konto.</value>
+    <value>Tälle käyttäjätilille ei ole määritelty salaista kysymystä taikka sen vastausta.</value>
   </data>
   <data name="AccountNotVerified" xml:space="preserve">
-    <value>E-postadressen för detta konto har inte bekräftats.</value>
+    <value>Tämän käyttäjätilin sähköpostiosoitetta ei ole vielä varmistettu.</value>
   </data>
   <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
-    <value>Säkerhetsfrågan måste besvaras för att återställa lösenordet.</value>
+    <value>Tämä käyttäjätili vaatii salaisen kysymyksen ja sen vastauksen salasanan resetointia varten.</value>
   </data>
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
-    <value>Lägg till ett klientcertifikat för att aktivera tvåstegsverifiering.</value>
+    <value>Lisää käyttäjäsertifikaatti kahden tason varmennuksen käyttämiseksi.</value>
   </data>
   <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
-    <value>Du måste ange ett lösenord för det lokala kontot innan du deaktiverar det externa kontot.</value>
+    <value>Sinun täytyy asettaa salasana paikalliselle käyttäjätilille ennen kuin voit poistaa viimeisen ulkoisen kirjautumisen tarjoajan.</value>
   </data>
   <data name="CertificateAlreadyInUse" xml:space="preserve">
-    <value>Certifikatet används redan i ett annat konto.</value>
+    <value>Määritelty sertifikaatti on jo käytössä toisella käyttäjätilillä.</value>
   </data>
   <data name="CodeRequired" xml:space="preserve">
-    <value>Kod krävs. </value>
+    <value>Koodi vaadittu.</value>
   </data>
   <data name="EmailAlreadyInUse" xml:space="preserve">
-    <value>E-postadressen används redan. </value>
+    <value>Sähköpostiosoite jo käytössä.</value>
   </data>
   <data name="EmailRequired" xml:space="preserve">
-    <value>E-postadress krävs.</value>
+    <value>Sähköpostiosoite vaadittu.</value>
   </data>
   <data name="InvalidCertificate" xml:space="preserve">
-    <value>Ogiltigt certifikat </value>
+    <value>Virheellinen sertifikaatti.</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
-    <value>Ogiltig e-post. </value>
+    <value>Virheellinen sähköpostiosoite.</value>
   </data>
   <data name="InvalidKey" xml:space="preserve">
-    <value>Ogiltig nyckel. </value>
+    <value>Virheellinen avain.</value>
   </data>
   <data name="InvalidName" xml:space="preserve">
-    <value>Ogiltigt namn. </value>
+    <value>Virheellinen nimi.</value>
   </data>
   <data name="InvalidNewPassword" xml:space="preserve">
-    <value>Det nya lösenordet är ogiltigt.</value>
+    <value>Virheellinen uusi salasana.</value>
   </data>
   <data name="InvalidOldPassword" xml:space="preserve">
-    <value>Det tidigare lösenordet är felaktigt.</value>
+    <value>Virheellinen vanha salasana.</value>
   </data>
   <data name="InvalidPassword" xml:space="preserve">
-    <value>Felaktigt lösenord.</value>
+    <value>Virheellinen salasana.</value>
   </data>
   <data name="InvalidPhone" xml:space="preserve">
-    <value>Ogiltigt telefonnummer.</value>
+    <value>Virheellinen puhelinnumero.</value>
   </data>
   <data name="InvalidQuestionOrAnswer" xml:space="preserve">
-    <value>Ogiltig säkerhetsfråga.</value>
+    <value>Virheellinen salainen kysymys tai sen vastaus.</value>
   </data>
   <data name="InvalidTenant" xml:space="preserve">
-    <value>Ogiltig innehavare.</value>
+    <value>Virheellinen haltija.</value>
   </data>
   <data name="InvalidUsername" xml:space="preserve">
-    <value>Ogiltigt användarnamn. </value>
+    <value>Virheellinen käyttäjänimi.</value>
   </data>
   <data name="LinkedAccountAlreadyInUse" xml:space="preserve">
-    <value>Den externa kontot är redan kopplat till en annan användare. </value>
+    <value>Ulkoinen käyttäjätili on jo määriteltynä toiselle käyttäjälle.</value>
   </data>
   <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
-    <value>Kan inte logga in med det externa kontot eftersom e-postadressen redan är kopplad till ett annat konto. Logga in med ditt lokala konto och lägg sedan till det externa kontot.</value>
+    <value>Mahdotonta kirjautua tämän palvelun tarjoajan tilille, koska sähköpostiosoite on jo yhdistetty toiseen tiliin. Kirjaudu käyttäen paikallista tiliäsi ja liitä sitten palvelun tarjoaja mukaan.</value>
   </data>
   <data name="LoginNotAllowed" xml:space="preserve">
-    <value>Inloggning är inte tillåtet för detta konto.</value>
+    <value>Sisäänkirjautuminen ei sallittu tälle käyttäjätilille.</value>
   </data>
   <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
-    <value>Mobilnumret används i ett annat konto.</value>
+    <value>Puhelinnumero on käytössä jo toisella käyttäjätilillä.</value>
   </data>
   <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
-    <value>Det nya mobilnumret får inte vara samma som det gamla.</value>
+    <value>Puhelinnumeron tulee olla eri kuin aikaisemmin määritelty.</value>
   </data>
   <data name="MobilePhoneRequired" xml:space="preserve">
-    <value>Mobilnummer krävs.</value>
+    <value>Puhelinnumero vaadittu.</value>
   </data>
   <data name="NameAlreadyInUse" xml:space="preserve">
-    <value>Det namnet används redan.</value>
+    <value>Nimi on jo käytössä.</value>
   </data>
   <data name="NameRequired" xml:space="preserve">
-    <value>Namn krävs. </value>
+    <value>Nimi on vaadittu.</value>
   </data>
   <data name="NewPasswordMustBeDifferent" xml:space="preserve">
-    <value>Det nya lösenordet får inte vara samma som det gamla.</value>
+    <value>Uuden salasanan tulee olla eri kuin vanha salasana.</value>
   </data>
   <data name="ParentGroupAlreadyChild" xml:space="preserve">
-    <value>Den överordnade gruppen är redan medlem i den underordnade gruppen.</value>
+    <value>Emoryhmä on jo tytärryhmän tytär.</value>
   </data>
   <data name="ParentGroupSameAsChild" xml:space="preserve">
-    <value>Den överordnade gruppen är samma som den underordnade.</value>
+    <value>Emo- ja tytärryhmä ovat sama ryhmä.</value>
   </data>
   <data name="PasswordComplexityRules" xml:space="preserve">
-    <value>Lösenordet måste innehålla minst {0} av följande teckenkategorier: versaler, gemener, siffror och specialsymboler.</value>
+    <value>Salasanan on sisällettävä vähintään {0} seuraavista merkeistä: suuraakkonen, pienaakkonen, numero ja jokin muu.</value>
   </data>
   <data name="PasswordLength" xml:space="preserve">
-    <value>Lösenord innehålla minst {0} tecken.</value>
+    <value>Salasanan pituuden on oltava vähintään {0} merkkiä.</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
-    <value>Lösenord krävs. </value>
+    <value>Vaaditaan salasana.</value>
   </data>
   <data name="PasswordResetErrorNoEmail" xml:space="preserve">
-    <value>Lösenordsåterställning är inte möjligt eftersom det inte finns en bekräftad e-postadress för detta konto.</value>
+    <value>Annettu salasana ei ole mahdollinen, koska tilille ei ole tarkastettua sähköpostiosoitetta.</value>
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
-    <value>Registrera ett mobilnummer för att aktivera tvåstegsverifiering via mobiltelefon.</value>
+    <value>Rekisteröi matkapuhelinnumero kaksiosaisen kännykkätodennuksen mahdollistamiseksi.</value>
   </data>
   <data name="ReopenErrorNoEmail" xml:space="preserve">
-    <value>Det går inte att återöppna kontot eftersom det inte finns någon e-postadress för detta konto.</value>
+    <value>Tiliä ei voi avata uudelleen, koska tiliin ei ole yhdistetty mitään sähköpostiosoitetta.</value>
   </data>
   <data name="SecretAnswerRequired" xml:space="preserve">
-    <value>Säkerhetsfrågan måste besvaras.</value>
+    <value>Vaaditaan salainen vastaus.</value>
   </data>
   <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
-    <value>Denna säkerhetsfråga har redan använts för lösenordsåterställning.</value>
+    <value>Tämä salasanan salainen kysymys on jo käytössä.</value>
   </data>
   <data name="SecretQuestionRequired" xml:space="preserve">
-    <value>Säkerhetsfråga krävs. </value>
+    <value>Vaaditaan salainen kysymys.</value>
   </data>
   <data name="TenantRequired" xml:space="preserve">
-    <value>Innehavare krävs.</value>
+    <value>Vaaditaan haltija.</value>
   </data>
   <data name="UsernameAlreadyInUse" xml:space="preserve">
-    <value>Användarnamnet används redan. </value>
+    <value>Käyttäjätunnus on jo käytössä.</value>
   </data>
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
-    <value>Användarnamnet får inte innehålla "@"-tecken.</value>
+    <value>Käyttäjätunnus ei voi sisältää merkkiä @.</value>
   </data>
   <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
-    <value>Användarnamnet får inte ha två mellanslag, punkter, bindestreck eller understreck efter varandra.</value>
+    <value>Käyttäjätunnuksessa ei voi olla kahta välilyöntiä, pistettä, ajatus- tai alaviivaa vierekkäin.</value>
   </data>
   <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
-    <value>Användarnamnet måste börja och sluta med en bokstav eller siffra.</value>
+    <value>Käyttäjätunnuksen alussa tai lopussa voi olla ainoastaan kirjain tai numero.</value>
   </data>
   <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
-    <value>Användarnamnet får endast innehålla bokstäver, siffror, mellanslag, punkter, bindestreck eller understreck.</value>
+    <value>Käyttäjätunnus voi sisältää ainoastaan kirjaimia, numeroita, välilyöntejä, pisteitä, ajatus- tai alaviivoja.</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
-    <value>Användarnamn krävs. </value>
+    <value>Vaaditaan käyttäjätunnus.</value>
   </data>
   <data name="AccountClosed" xml:space="preserve">
-    <value>Kontot är avslutat.</value>
+    <value>Tili suljettu.</value>
   </data>
   <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
-    <value>Certifikat måste konfigureras innan inloggning.</value>
+    <value>Sisään kirjautumiseksi tiliin on määriteltävä sertifikaatit.</value>
   </data>
   <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
-    <value>Mobiltelefonnummer måste konfigureras innan inloggning.</value>
+    <value>Sisään kirjautumiseksi tiliin on määriteltävä matkapuhelinnumero.</value>
   </data>
   <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
-    <value>Max antal inloggningsförsök har överskridits.</value>
+    <value>Kirjautumisyritysten määrä on ylittynyt</value>
   </data>
   <data name="InvalidCredentials" xml:space="preserve">
-    <value>Ogiltigt användarnamn eller lösenord.</value>
+    <value>Virheellinen käyttäjänimi tai salasana.</value>
   </data>
 </root>

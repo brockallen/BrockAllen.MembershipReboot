@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>BrockAllen.MembershipReboot.nl</id>
+    <id>BrockAllen.MembershipReboot.zh</id>
     <version>8.3.0</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
@@ -13,7 +13,7 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>Membership Roles Claims Identity User Account Password Management Two Factor Authentication Certificate Authentication</tags>
-    <language>nl</language>
+    <language>zh</language>
 
     <dependencies>
 		<dependency id="BrockAllen.MembershipReboot" version="[8.3.0]" />

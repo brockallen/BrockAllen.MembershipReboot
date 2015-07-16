@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BrockAllen.MembershipReboot.da</id>
-    <version>8.2.1</version>
+    <version>8.3.0</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://raw.github.com/brockallen/BrockAllen.MembershipReboot/master/license.txt</licenseUrl>
@@ -16,7 +16,7 @@
     <language>da</language>
 
     <dependencies>
-		<dependency id="BrockAllen.MembershipReboot" version="[8.2.1]" />
+		<dependency id="BrockAllen.MembershipReboot" version="[8.3.0]" />
     </dependencies>
   </metadata>
 </package>
