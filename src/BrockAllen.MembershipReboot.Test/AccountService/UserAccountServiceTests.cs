@@ -539,6 +539,22 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.AreSame(acct, result);
         }
 
+        [TestMethod]
+        public void CreateAccount_AllowClaimsToBePassedIn()
+        {
+            MyUserAccount acct = new MyUserAccount();
+            List<Claim> claims = new List<Claim> {new Claim("foo", "bar")};
+            var result = subject.CreateAccount("tenant", "user", "pass", "user@email.com", null, null, acct, claims);
+            Assert.AreSame(acct, result);
+
+            var comparer = new UserClaimComparer();
+            var userClaims = claims.Select(c => new UserClaim(c.Type, c.Value));
+            CollectionAssert.AreEqual(
+                userClaims.OrderBy(c => c, comparer).ToList(),
+                result.Claims.OrderBy(c => c, comparer).ToList(),
+                comparer);
+        }
+
 
         [TestMethod]
         public void CreateMethod_UsernameStartsOrEndNonLetterOrDigit_FailsValidation()
@@ -675,14 +691,14 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_CanPassCreatedDate_UsesCreatedDate()
         {
-            var created = DateTime.Now;
+            var created = DateTime.UtcNow;
             var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);
             Assert.AreEqual(created, acct.Created);
         }
         [TestMethod]
         public void CreateAccount_FutureCreatedDate_Throws()
         {
-            var created = DateTime.Now.AddDays(1);
+            var created = DateTime.UtcNow.AddDays(1);
             try
             {
                 var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);

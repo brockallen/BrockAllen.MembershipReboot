@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
@@ -32,6 +33,22 @@ namespace BrockAllen.MembershipReboot
         [StringLength(150)]
         [Required]
         public virtual string Value { get; protected internal set; }
+    }
+
+    public class UserClaimComparer : IComparer, IComparer<UserClaim>
+    {
+        public int Compare(object x, object y)
+        {
+            return Compare(x as UserClaim, y as UserClaim);
+        }
+
+        public int Compare(UserClaim x, UserClaim y)
+        {
+            int temp;
+            return (temp = string.Compare(x.Type, y.Type, StringComparison.Ordinal)) != 0 
+                ? temp 
+                : string.Compare(x.Value, y.Value, StringComparison.Ordinal);
+        }
     }
 
     public static class UserClaimCollectionExtensions

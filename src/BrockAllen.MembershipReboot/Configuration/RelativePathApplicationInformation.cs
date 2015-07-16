@@ -51,7 +51,7 @@ namespace BrockAllen.MembershipReboot
 
         string baseUrl;
         object urlLock = new object();
-        string BaseUrl
+        protected string BaseUrl
         {
             get
             {
@@ -72,7 +72,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        string CleanupPath(string path)
+        protected string CleanupPath(string path)
         {
             if (path.StartsWith("~/"))
             {
