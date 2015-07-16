@@ -47,7 +47,7 @@ namespace BrockAllen.MembershipReboot.Test.GroupService
             Assert.AreEqual(dutch, "Account gesloten.");
             Assert.AreEqual(norwegian, "Kontoen stengt.");
             Assert.AreEqual(russian, "Счет закрыт.");
-            Assert.AreEqual(swedish, "Account stängd.");
+            Assert.AreEqual(swedish, "Kontot är avslutat.");
             Assert.AreEqual(chinese, "帐户已关闭。");
 
 
