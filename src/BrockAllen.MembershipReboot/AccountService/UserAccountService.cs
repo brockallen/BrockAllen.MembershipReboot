@@ -426,9 +426,9 @@ namespace BrockAllen.MembershipReboot
             return false;
         }
 
-        public virtual TAccount CreateAccount(string username, string password, string email, Guid? id = null, DateTime? dateCreated = null)
+        public virtual TAccount CreateAccount(string username, string password, string email, Guid? id = null, DateTime? dateCreated = null, IEnumerable<Claim> claims = null)
         {
-            return CreateAccount(null, username, password, email, id, dateCreated);
+            return CreateAccount(null, username, password, email, id, dateCreated, null, claims);
         }
 
         public virtual TAccount CreateUserAccount()
@@ -436,7 +436,7 @@ namespace BrockAllen.MembershipReboot
             return this.userRepository.Create();
         }
 
-        public virtual TAccount CreateAccount(string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null, TAccount account = null)
+        public virtual TAccount CreateAccount(string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null, TAccount account = null, IEnumerable<Claim> claims = null)
         {
             if (Configuration.EmailIsUsername)
             {
@@ -453,7 +453,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email);
 
             account = account ?? CreateUserAccount();
-            Init(account, tenant, username, password, email, id, dateCreated);
+            Init(account, tenant, username, password, email, id, dateCreated, claims);
 
             ValidateEmail(account, email);
             ValidateUsername(account, username);
@@ -466,7 +466,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        protected void Init(TAccount account, string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null)
+        protected void Init(TAccount account, string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null, IEnumerable<Claim> claims = null)
         {
             Tracing.Information("[UserAccountService.Init] called");
 
@@ -528,6 +528,14 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Verbose("[UserAccountService.CreateAccount] Email was provided, so creating email verification request");
                 key = SetVerificationKey(account, VerificationKeyPurpose.ChangeEmail, state: account.Email);
+            }
+
+            if (claims != null)
+            {
+                foreach (var claim in claims)
+                {
+                    AddClaim(account, new UserClaim(claim.Type, claim.Value));
+                }
             }
 
             this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, InitialPassword = password, VerificationKey = key });
