@@ -165,9 +165,14 @@ namespace BrockAllen.MembershipReboot.Owin
 
         protected override ClaimsPrincipal GetCurentPrincipal()
         {
-            var cp = context.Request.User as ClaimsPrincipal;
-            if (cp == null) cp = new ClaimsPrincipal(context.Request.User);
-            return cp;
+            var u = context.Request.User;
+            if (u != null && u.Identity.AuthenticationType == authenticationType)
+            {
+                var cp = context.Request.User as ClaimsPrincipal;
+                if (cp == null) cp = new ClaimsPrincipal(context.Request.User);
+                return cp;
+            }
+            return null;
         }
     }
 }
