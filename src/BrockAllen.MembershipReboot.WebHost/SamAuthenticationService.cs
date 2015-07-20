@@ -66,7 +66,7 @@ namespace BrockAllen.MembershipReboot.WebHost
             sam.SignOut();
         }
 
-        protected override ClaimsPrincipal GetCurentPrincipal()
+        protected override ClaimsPrincipal GetCurrentPrincipal()
         {
             return ClaimsPrincipal.Current;
         }
@@ -129,7 +129,7 @@ namespace BrockAllen.MembershipReboot.WebHost
             sam.SignOut();
         }
 
-        protected override ClaimsPrincipal GetCurentPrincipal()
+        protected override ClaimsPrincipal GetCurrentPrincipal()
         {
             return ClaimsPrincipal.Current;
         }
