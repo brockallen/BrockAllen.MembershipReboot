@@ -43,10 +43,10 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             subject.SignIn(acc, "Bearer");
 
             // then
-            AssertHasBasicClaims(subject.CurentPrincipal);
-            Assert.IsTrue(subject.CurentPrincipal.HasClaim(ClaimTypes.Email));
-            Assert.IsTrue(subject.CurentPrincipal.HasClaim(ClaimTypes.MobilePhone));
-            Assert.IsTrue(subject.CurentPrincipal.HasClaim("TestClaim"));
+            AssertHasBasicClaims(subject.CurrentPrincipal);
+            Assert.IsTrue(subject.CurrentPrincipal.HasClaim(ClaimTypes.Email));
+            Assert.IsTrue(subject.CurrentPrincipal.HasClaim(ClaimTypes.MobilePhone));
+            Assert.IsTrue(subject.CurrentPrincipal.HasClaim("TestClaim"));
         }
 
 
@@ -65,11 +65,11 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             subject.SignIn(acc, "Bearer");
 
             // then
-            AssertHasBasicClaims(subject.CurentPrincipal);
-            Assert.AreEqual(PartialAuthReason.PendingTwoFactorAuth, subject.CurentPrincipal.GetPartialAuthReason());
+            AssertHasBasicClaims(subject.CurrentPrincipal);
+            Assert.AreEqual(PartialAuthReason.PendingTwoFactorAuth, subject.CurrentPrincipal.GetPartialAuthReason());
             Assert.AreEqual(TwoFactorAuthMode.Mobile.ToString(), 
-                subject.CurentPrincipal.Claims.GetValue(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth));
-            Assert.IsFalse(subject.CurentPrincipal.HasClaim("TestClaim"));
+                subject.CurrentPrincipal.Claims.GetValue(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth));
+            Assert.IsFalse(subject.CurrentPrincipal.HasClaim("TestClaim"));
 
         }
 
@@ -84,9 +84,9 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             subject.SignIn(acc, "Bearer");
 
             // then
-            AssertHasBasicClaims(subject.CurentPrincipal);
-            Assert.AreEqual(PartialAuthReason.PasswordResetRequired, subject.CurentPrincipal.GetPartialAuthReason());
-            Assert.IsFalse(subject.CurentPrincipal.HasClaim("TestClaim"));
+            AssertHasBasicClaims(subject.CurrentPrincipal);
+            Assert.AreEqual(PartialAuthReason.PasswordResetRequired, subject.CurrentPrincipal.GetPartialAuthReason());
+            Assert.IsFalse(subject.CurrentPrincipal.HasClaim("TestClaim"));
         }
 
         [TestMethod]
@@ -100,9 +100,9 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             subject.SignIn(acc, "Bearer");
 
             // then
-            AssertHasBasicClaims(subject.CurentPrincipal);
-            Assert.AreEqual(PartialAuthReason.PasswordExpired, subject.CurentPrincipal.GetPartialAuthReason());
-            Assert.IsFalse(subject.CurentPrincipal.HasClaim("TestClaim"));
+            AssertHasBasicClaims(subject.CurrentPrincipal);
+            Assert.AreEqual(PartialAuthReason.PasswordExpired, subject.CurrentPrincipal.GetPartialAuthReason());
+            Assert.IsFalse(subject.CurrentPrincipal.HasClaim("TestClaim"));
         }
 
         private void AssertHasBasicClaims(ClaimsPrincipal signingInUser)

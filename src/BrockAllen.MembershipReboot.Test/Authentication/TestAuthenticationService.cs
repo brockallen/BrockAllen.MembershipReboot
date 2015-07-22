@@ -14,15 +14,15 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
         {
         }
 
-        public ClaimsPrincipal CurentPrincipal { get; set; }
-        protected override System.Security.Claims.ClaimsPrincipal GetCurentPrincipal()
+        public ClaimsPrincipal CurrentPrincipal { get; set; }
+        protected override System.Security.Claims.ClaimsPrincipal GetCurrentPrincipal()
         {
-            return CurentPrincipal;
+            return CurrentPrincipal;
         }
 
         protected override void IssueToken(System.Security.Claims.ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null)
         {
-            CurentPrincipal = principal;
+            CurrentPrincipal = principal;
         }
 
         protected override void RevokeToken()
