@@ -1,0 +1,19 @@
+﻿@model BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Models.TwoFactorAuthInputModel
+@{
+    ViewBag.Title = "Authenticator Code Auth";
+}
+
+<h2>To signin enter the code displayed by the authenticator application on your smartphone</h2>
+@using (Html.BeginForm("Rfc6238CodeLogin", "Login"))
+{
+    @Html.ValidationSummary()
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.ReturnUrl)
+    <p>
+        @Html.LabelFor(x => x.Code)
+        @Html.EditorFor(x => x.Code)
+    </p>
+    <p>
+        <button name="button" value="signin">Sign In</button>
+    </p>
+}

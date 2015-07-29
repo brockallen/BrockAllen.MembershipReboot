@@ -7,6 +7,8 @@ using BrockAllen.MembershipReboot.Helpers;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BrockAllen.MembershipReboot
 {
@@ -59,6 +61,25 @@ namespace BrockAllen.MembershipReboot
             val = Math.Abs(val);
 
             return val.ToString("D" + digits);
+        }
+
+        public string GenerateAlphaCode(int digits)
+        {
+            char[] chars = new char[62];
+            chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            byte[] data = new byte[1];
+            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
+            {
+                crypto.GetNonZeroBytes(data);
+                data = new byte[digits];
+                crypto.GetNonZeroBytes(data);
+            }
+            StringBuilder result = new StringBuilder(digits);
+            foreach (byte b in data)
+            {
+                result.Append(chars[b % (chars.Length)]);
+            }
+            return result.ToString();
         }
 
         public string GenerateSalt()

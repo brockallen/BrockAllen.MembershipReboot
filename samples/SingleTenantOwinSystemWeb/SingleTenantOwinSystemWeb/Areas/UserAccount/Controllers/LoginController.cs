@@ -40,6 +40,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     {
                         return RedirectToAction("TwoFactorAuthCodeLogin");
                     }
+                    if (account.RequiresRFC6238CodeToSignIn())
+                    {
+                        return RedirectToAction("RFC6238CodeLogin");
+                    }
                     if (account.RequiresTwoFactorCertificateToSignIn())
                     {
                         return RedirectToAction("CertificateLogin");
@@ -191,6 +195,60 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
             }
             
             return View();
+        }
+
+        public ActionResult Rfc6238CodeLogin() {
+            var ctx = Request.GetOwinContext();
+            var id = ctx.GetIdFromTwoFactorCookie();
+            if (id == null)
+            {
+                // if the temp cookie is expired, then make the login again
+                return RedirectToAction("Index");
+            }
+
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Rfc6238CodeLogin(string button, TwoFactorAuthInputModel model)
+        {
+            var ctx = Request.GetOwinContext();
+            var id = ctx.GetIdFromTwoFactorCookie();
+            if (id == null)
+            {
+                // if the temp cookie is expired, then make the login again
+                return RedirectToAction("Index");
+            }
+
+            if (button == "signin")
+            {
+                if (ModelState.IsValid)
+                {
+                    MembershipReboot.UserAccount account;
+                    if (userAccountService.AuthenticateWithAutenticatorCode(id.Value, model.Code, out account))
+                    {
+                        authSvc.SignIn(account);
+
+                        if (userAccountService.IsPasswordExpired(account))
+                        {
+                            return RedirectToAction("Index", "ChangePassword");
+                        }
+
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Invalid Code");
+                    }
+                }
+            }
+
+            return View("Rfc6238CodeLogin", model);
         }
     }
 }

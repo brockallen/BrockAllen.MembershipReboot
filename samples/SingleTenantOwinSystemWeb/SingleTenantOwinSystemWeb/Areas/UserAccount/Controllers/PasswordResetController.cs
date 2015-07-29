@@ -130,6 +130,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                             {
                                 return RedirectToAction("TwoFactorAuthCodeLogin", "Login");
                             }
+                            if (account.RequiresRFC6238CodeToSignIn())
+                            {
+                                return RedirectToAction("RFC6238CodeLogin", "Login");
+                            }
                             if (account.RequiresTwoFactorCertificateToSignIn())
                             {
                                 return RedirectToAction("CertificateLogin", "Login");
