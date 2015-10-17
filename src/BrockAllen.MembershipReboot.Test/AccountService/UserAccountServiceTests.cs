@@ -424,17 +424,16 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
-        public void CreateAccount_SettingsRequireMultiTenant_EmptyTenant_Throws()
+        public void CreateAccount_SettingsMultiTenantOn_EmptyTenant_Succeeds()
         {
             configuration.MultiTenant = true;
             try
             {
                 subject.CreateAccount("", "test", "pass", "test@test.com");
-                Assert.Fail();
             }
-            catch (ArgumentNullException ex)
+            catch (ValidationException ex)
             {
-                StringAssert.Contains(ex.Message, "tenant");
+                Assert.AreNotEqual(Resources.ValidationMessages.TenantRequired, ex.Message);
             }
         }
         

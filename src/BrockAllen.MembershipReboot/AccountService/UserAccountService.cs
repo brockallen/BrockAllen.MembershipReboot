@@ -479,7 +479,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant))
             {
                 Tracing.Error("[UserAccountService.Init] failed -- no tenant");
-                throw new ArgumentNullException("tenant");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.TenantRequired));
             }
 
             if (String.IsNullOrWhiteSpace(username))
