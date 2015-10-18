@@ -26,7 +26,7 @@ namespace BrockAllen.MembershipReboot
             this.MinimumLength = minimumLength;
             
             if (minimumNumberOfComplexityRules < 0) minimumNumberOfComplexityRules = 0;
-            if (minimumNumberOfComplexityRules > 4) minimumNumberOfComplexityRules = 4;
+            if (minimumNumberOfComplexityRules > 4) MinimumNumberOfComplexityRules = 4;
             this.MinimumNumberOfComplexityRules = minimumNumberOfComplexityRules;
         }
 
