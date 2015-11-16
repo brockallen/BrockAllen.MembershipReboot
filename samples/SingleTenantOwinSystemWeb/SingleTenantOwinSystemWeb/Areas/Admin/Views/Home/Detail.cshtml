@@ -3,21 +3,22 @@
 @{
     ViewBag.Title = "FindResult";
 }
+<div class="container">
 
-<h2>FindResult</h2>
-@if (Model == null)
-{
-    <p>Not Found</p>
-}
-else
-{
-    using (Html.BeginForm("Reopen", "Home"))
+    <h2>FindResult</h2>
+    @if (Model == null)
     {
-        <input type="hidden" name="id" value="@Model.ID">
-        <button>Reopen</button>
+    <p>Not Found</p>
     }
-    @Html.DisplayForModel()
-}
-<p>
-    @Html.ActionLink("Home", "Index", "Home", new { area = "UserAccount" }, null)
-</p>
+    else
+    {
+        using (Html.BeginForm("Reopen", "Home"))
+        {
+        <input type="hidden" name="id" value="@Model.ID"><button>Reopen</button>
+        }
+        @Html.DisplayForModel()
+    }
+    <p>
+        @Html.ActionLink("Home", "Index", "Home", new { area = "UserAccount" }, null)
+    </p>
+</div>

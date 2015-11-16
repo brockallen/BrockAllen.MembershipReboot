@@ -38,7 +38,12 @@
         <p>
             <label for="mobile">Mobile</label>
             <input id="mobile" type="radio" name="mode" value="1"
-                checked="@(Model.AccountTwoFactorAuthMode == BrockAllen.MembershipReboot.TwoFactorAuthMode.Mobile)" />
+                   checked="@(Model.AccountTwoFactorAuthMode == BrockAllen.MembershipReboot.TwoFactorAuthMode.Mobile)" />
+        </p>
+        <p>
+            <label for="mobile">Authenticator</label>
+            <input id="mobile" type="radio" name="mode" value="3"
+                   checked="@(Model.AccountTwoFactorAuthMode == BrockAllen.MembershipReboot.TwoFactorAuthMode.TimeBasedToken)" />
         </p>
         <p>
             <label for="cert">Certificate</label>

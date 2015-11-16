@@ -67,8 +67,31 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             // then
             AssertHasBasicClaims(subject.CurentPrincipal);
             Assert.AreEqual(PartialAuthReason.PendingTwoFactorAuth, subject.CurentPrincipal.GetPartialAuthReason());
-            Assert.AreEqual(TwoFactorAuthMode.Mobile.ToString(), 
+            Assert.AreEqual(TwoFactorAuthMode.Mobile.ToString(),
                 subject.CurentPrincipal.Claims.GetValue(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth));
+            Assert.IsFalse(subject.CurentPrincipal.HasClaim("TestClaim"));
+
+        }
+        [TestMethod]
+        public void SignedIn_RequiresAuthenticatorTwoFactorAuthToSignIn_Claims()
+        {
+            // given... 
+
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            userAccountService.ResetAuthenticatorSecret(acc);
+            acc.AuthenticatorActive = true;
+            acc.AuthenticatorActivated = DateTime.UtcNow.AddDays(-19);
+            acc.AccountTwoFactorAuthMode = TwoFactorAuthMode.TimeBasedToken;
+            // fake a request for two-factor auth
+            acc.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.TimeBasedToken;
+
+            // when
+            subject.SignIn(acc, "Bearer");
+
+            // then
+            AssertHasBasicClaims(subject.CurentPrincipal);
+            Assert.AreEqual(PartialAuthReason.PendingTwoFactorAuth, subject.CurentPrincipal.GetPartialAuthReason());
+            Assert.AreEqual(TwoFactorAuthMode.TimeBasedToken.ToString(), subject.CurentPrincipal.Claims.GetValue(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth));
             Assert.IsFalse(subject.CurentPrincipal.HasClaim("TestClaim"));
 
         }

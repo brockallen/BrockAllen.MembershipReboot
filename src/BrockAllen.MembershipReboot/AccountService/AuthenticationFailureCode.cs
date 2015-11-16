@@ -12,6 +12,7 @@
         None,
         AccountClosed,
         AccountNotConfiguredWithCertificates,
+        AccountNotConfiguredWithAuthenticator,
         AccountNotConfiguredWithMobilePhone,
         AccountNotVerified,
         FailedLoginAttemptsExceeded,

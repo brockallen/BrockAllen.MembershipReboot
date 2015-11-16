@@ -71,8 +71,16 @@ namespace BrockAllen.MembershipReboot
         {
             if (account == null) throw new ArgumentException("account");
             return
-                account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile &&
-                account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile;
+                (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Mobile &&
+                account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.Mobile);
+        }
+
+        public static bool RequiresRFC6238CodeToSignIn(this UserAccount account)
+        {
+            if (account == null) throw new ArgumentException("account");
+            return
+                account.AccountTwoFactorAuthMode == TwoFactorAuthMode.TimeBasedToken &&
+                account.CurrentTwoFactorAuthStatus == TwoFactorAuthMode.TimeBasedToken;
         }
 
         public static bool HasPassword(this UserAccount account)

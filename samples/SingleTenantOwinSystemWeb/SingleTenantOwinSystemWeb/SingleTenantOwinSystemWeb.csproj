@@ -22,6 +22,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -186,6 +187,7 @@
     <Compile Include="Areas\UserAccount\Controllers\PasswordResetController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\ChangeEmailController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\RegisterController.cs" />
+    <Compile Include="Areas\UserAccount\Controllers\RFC6238Controller.cs" />
     <Compile Include="Areas\UserAccount\Controllers\SendUsernameReminderController.cs" />
     <Compile Include="Areas\UserAccount\Controllers\TwoFactorAuthController.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeEmailRequestInputModel.cs" />
@@ -196,6 +198,7 @@
     <Compile Include="Areas\UserAccount\Models\ChangeUsernameInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeMobileRequestInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\ChangeMobileFromCodeInputModel.cs" />
+    <Compile Include="Areas\UserAccount\Models\RFC6238Model.cs" />
     <Compile Include="Areas\UserAccount\Models\TwoFactorAuthInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\LoginInputModel.cs" />
     <Compile Include="Areas\UserAccount\Models\PasswordResetInputModel.cs" />
@@ -259,20 +262,17 @@
     <Content Include="Areas\UserAccount\Views\LinkedAccount\NotLoggedIn.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangePassword\SendPasswordReset.cshtml" />
     <Content Include="Areas\UserAccount\Views\ChangePassword\Sent.cshtml" />
-    <None Include="Content\Site.less" />
+    <Content Include="Areas\UserAccount\Views\Login\Rfc6238CodeLogin.cshtml" />
+    <None Include="Areas\UserAccount\Views\RFC6238\Index.cshtml" />
     <Content Include="configuring_client_certs_readme.txt" />
-    <Content Include="Content\Site.css">
-      <DependentUpon>Site.less</DependentUpon>
-    </Content>
-    <Content Include="Content\Site.min.css">
-      <DependentUpon>Site.less</DependentUpon>
-    </Content>
+    <Content Include="Content\Site.css" />
     <Content Include="Global.asax" />
     <Content Include="Areas\UserAccount\Views\Login\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\Logout\Index.cshtml" />
     <Content Include="Areas\UserAccount\Views\Shared\EditorTemplates\Object.cshtml" />
     <Content Include="Areas\UserAccount\Views\Web.config" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Scripts\base32.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -285,6 +285,7 @@
     <Content Include="Scripts\knockout-2.1.0.debug.js" />
     <Content Include="Scripts\knockout-2.1.0.js" />
     <Content Include="Scripts\modernizr-2.5.3.js" />
+    <Content Include="Scripts\qrcode.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
