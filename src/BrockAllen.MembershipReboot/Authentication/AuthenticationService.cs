@@ -111,7 +111,7 @@ namespace BrockAllen.MembershipReboot
             if (account == null) throw new ArgumentNullException("account");
 
             var claims = new List<Claim>();
-            if (account.RequiresTwoFactorAuthCodeToSignIn())
+            if (account.RequiresTwoFactorAuthCodeToSignIn() || account.RequiresRFC6238CodeToSignIn())
             {
                 claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth, account.AccountTwoFactorAuthMode.ToString()));
                 claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PartialAuthReason, ((int)PartialAuthReason.PendingTwoFactorAuth).ToString(CultureInfo.InvariantCulture)));

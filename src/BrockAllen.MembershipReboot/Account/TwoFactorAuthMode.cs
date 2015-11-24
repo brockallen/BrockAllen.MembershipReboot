@@ -9,6 +9,7 @@ namespace BrockAllen.MembershipReboot
     {
         None = 0,
         Mobile = 1,
-        Certificate = 2
+        Certificate = 2,
+        TimeBasedToken = 3
     }
 }

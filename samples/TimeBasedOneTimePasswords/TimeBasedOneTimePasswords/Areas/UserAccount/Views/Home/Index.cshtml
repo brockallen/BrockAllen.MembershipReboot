@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>User Account Home</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <h2>Signed In</h2>
+    using (Html.BeginForm())
+    {
+        <fieldset>
+            <legend>Profile</legend>
+            <p>
+                <label>Gender</label>
+                <select name="gender">
+                    <option value="">-not set-</option>
+                    <option value="male">male</option>
+                    <option value="female">female</option>
+                </select>
+            </p>
+            <p><button>Save Changes</button></p>
+        </fieldset>
+    }
+}
+else
+{
+    <h2>Not Signed In</h2>
+}
+
+<h3>Your Claims</h3>
+<dl>
+    @foreach (var claim in System.Security.Claims.ClaimsPrincipal.Current.Claims)
+    {
+        <dt>@claim.Type</dt>
+        <dd>@claim.Value</dd>
+        <dd>@claim.Issuer</dd>
+    }
+</dl>

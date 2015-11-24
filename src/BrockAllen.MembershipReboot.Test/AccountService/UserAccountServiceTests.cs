@@ -1116,6 +1116,18 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
             Assert.AreEqual(AuthenticationFailureCode.AccountNotConfiguredWithCertificates, failureCode);
         }
+        [TestMethod]
+        public void Authenticate_CertificateTwoFactorAuthRequired_AuthenticatorNotActive_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.AccountTwoFactorAuthMode = TwoFactorAuthMode.TimeBasedToken;
+
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotConfiguredWithAuthenticator, failureCode);
+        }
 
         [TestMethod]
         public void Authenticate_ReturnsCorrectAccount()
