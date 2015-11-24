@@ -72,6 +72,29 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             Assert.IsFalse(subject.CurrentPrincipal.HasClaim("TestClaim"));
 
         }
+		[TestMethod]
+        public void SignedIn_RequiresAuthenticatorTwoFactorAuthToSignIn_Claims()
+        {
+            // given... 
+
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            userAccountService.ResetAuthenticatorSecret(acc);
+            acc.AuthenticatorActive = true;
+            acc.AuthenticatorActivated = DateTime.UtcNow.AddDays(-19);
+            acc.AccountTwoFactorAuthMode = TwoFactorAuthMode.TimeBasedToken;
+            // fake a request for two-factor auth
+            acc.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.TimeBasedToken;
+
+            // when
+            subject.SignIn(acc, "Bearer");
+
+            // then
+            AssertHasBasicClaims(subject.CurrentPrincipal);
+            Assert.AreEqual(PartialAuthReason.PendingTwoFactorAuth, subject.CurrentPrincipal.GetPartialAuthReason());
+            Assert.AreEqual(TwoFactorAuthMode.TimeBasedToken.ToString(), subject.CurrentPrincipal.Claims.GetValue(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth));
+            Assert.IsFalse(subject.CurrentPrincipal.HasClaim("TestClaim"));
+
+        }
 
         [TestMethod]
         public void SignedIn_RequiresPasswordReset_Claims()
