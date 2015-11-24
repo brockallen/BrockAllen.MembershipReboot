@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Login With:</h2>
+<ul>
+    <li>@Html.ActionLink("Google", "Login", new { type = "Google" })</li>
+    <li>@Html.ActionLink("Facebook", "Login", new { type = "Facebook"})</li>
+</ul>
+@{
+    var id = System.Security.Claims.ClaimsPrincipal.Current;
+    if (id.Identity.IsAuthenticated)
+    {
+        <p>@Html.ActionLink("Sign Out", "Logout")</p>
+        <p>@Html.ActionLink("Close Account", "CloseAccount")</p>
+        <h2>Claims</h2>
+        <dl>
+            @foreach (var claim in id.Claims)
+            {
+                <dt>@claim.Type</dt>
+                <dd>@claim.Value</dd>
+                <dd>@claim.Issuer</dd>
+            }
+        </dl>
+    }
+}
+

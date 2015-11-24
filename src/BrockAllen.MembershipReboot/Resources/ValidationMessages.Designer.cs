@@ -97,6 +97,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to To login, this account must be configured to use the authenticator app..
+        /// </summary>
+        public static string AccountNotConfiguredWithAuthenticator {
+            get {
+                return ResourceManager.GetString("AccountNotConfiguredWithAuthenticator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to To login, this account must be configured with certificates..
         /// </summary>
         public static string AccountNotConfiguredWithCertificates {
