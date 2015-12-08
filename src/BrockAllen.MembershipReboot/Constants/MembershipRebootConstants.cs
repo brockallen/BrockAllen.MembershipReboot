@@ -112,6 +112,7 @@ namespace BrockAllen.MembershipReboot
             public const string UsernameCannotRepeatSpecialCharacters = "UsernameCannotRepeatSpecialCharacters";
             public const string UsernameRequired = "UsernameRequired";
             public const string UsernameCanOnlyStartOrEndWithLetterOrDigit = "UsernameCanOnlyStartOrEndWithLetterOrDigit";
+            public const string LinkedAccountAlreadyInUse = "LinkedAccountAlreadyInUse";
         }
     }
 }
