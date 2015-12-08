@@ -2652,7 +2652,7 @@ namespace BrockAllen.MembershipReboot
             if (otherAcct != null && otherAcct.ID != account.ID)
             {
                 Tracing.Error("[UserAccountService.AddOrUpdateLinkedAccount] failed -- adding linked account that is already associated with another account");
-                throw new ValidationException(GetValidationMessage("LinkedAccountAlreadyInUse"));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.LinkedAccountAlreadyInUse));
             }
 
             RemoveLinkedAccountClaims(account, provider, id);
