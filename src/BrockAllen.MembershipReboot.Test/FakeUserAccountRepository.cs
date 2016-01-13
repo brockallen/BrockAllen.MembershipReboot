@@ -6,6 +6,7 @@ namespace BrockAllen.MembershipReboot.Test
 {
     public class MyUserAccount : HierarchicalUserAccount 
     {
+        public string FirstName { get; set; }
         protected internal override void AddClaim(UserClaim item)
         {
             base.AddClaim(item);
