@@ -3,12 +3,17 @@
  * see license.txt
  */
 
-using System.Web;
+using Microsoft.AspNet.Http;
+using HttpContext = System.Web.HttpContext;
+
 namespace BrockAllen.MembershipReboot.WebHost
 {
     public class AspNetApplicationInformation : RelativePathApplicationInformation
     {
+        public IHttpContextAccessor ContextAccessor { get; set; }
+
         public AspNetApplicationInformation(
+            IHttpContextAccessor contextAccessor,
             string appName,
             string emailSig,
             string relativeLoginUrl,
@@ -17,6 +22,7 @@ namespace BrockAllen.MembershipReboot.WebHost
             string relativeConfirmPasswordResetUrl
         )
         {
+            this.ContextAccessor = contextAccessor;
             this.ApplicationName = appName;
             this.EmailSignature = emailSig;
             this.RelativeLoginUrl = relativeLoginUrl;
