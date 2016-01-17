@@ -15,8 +15,8 @@ namespace BrockAllen.MembershipReboot
         IMessageFormatter<TAccount> messageFormatter;
         IMessageDelivery messageDelivery;
 
-        public EmailEventHandler(IMessageFormatter<TAccount> messageFormatter)
-            : this(messageFormatter, new SmtpMessageDelivery())
+        public EmailEventHandler(IMessageFormatter<TAccount> messageFormatter, SmtpDeliveryConfig smtpConfig)
+            : this(messageFormatter, new SmtpMessageDelivery(smtpConfig))
         {
         }
 
@@ -88,8 +88,8 @@ namespace BrockAllen.MembershipReboot
         IEventHandler<LinkedAccountRemovedEvent<T>>
         where T : UserAccount
     {
-        public EmailAccountEventsHandler(IMessageFormatter<T> messageFormatter)
-            : base(messageFormatter)
+        public EmailAccountEventsHandler(IMessageFormatter<T> messageFormatter, SmtpDeliveryConfig smtpConfig)
+            : base(messageFormatter, smtpConfig)
         {
         }
         public EmailAccountEventsHandler(IMessageFormatter<T> messageFormatter, IMessageDelivery messageDelivery)
@@ -190,8 +190,8 @@ namespace BrockAllen.MembershipReboot
 
     public class EmailAccountEventsHandler : EmailAccountEventsHandler<UserAccount>
     {
-        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter)
-            : base(messageFormatter)
+        public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter, SmtpDeliveryConfig smtpConfig)
+            : base(messageFormatter, smtpConfig)
         {
         }
         public EmailAccountEventsHandler(IMessageFormatter<UserAccount> messageFormatter, IMessageDelivery messageDelivery)
