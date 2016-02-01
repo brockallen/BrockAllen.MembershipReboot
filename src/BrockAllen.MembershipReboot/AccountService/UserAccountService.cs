@@ -988,7 +988,7 @@ namespace BrockAllen.MembershipReboot
                     }
 
                     if (Configuration.RequireAccountVerification &&
-                        !account.IsAccountVerified)
+                        (!account.IsAccountVerified && UnverifiedAccountAllowanceHasExpired(account)))
                     {
                         Tracing.Error("[UserAccountService.Authenticate] failed -- account not verified");
                         this.AddEvent(new AccountNotVerifiedEvent<TAccount>() { Account = account });
@@ -1056,6 +1056,16 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.Authenticate] authentication outcome: {0}", result ? "Successful Login" : "Failed Login");
 
             return result;
+        }
+
+        private bool UnverifiedAccountAllowanceHasExpired(TAccount account)
+        {
+            if (Configuration.AllowUnverifiedAccountsWindow.HasValue)
+            {
+                return account.Created.Add(Configuration.AllowUnverifiedAccountsWindow.Value) < UtcNow;
+            }
+
+            return true;
         }
 
         protected virtual bool Authenticate(TAccount account, string password)

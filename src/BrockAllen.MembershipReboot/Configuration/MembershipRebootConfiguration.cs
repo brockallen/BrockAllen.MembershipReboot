@@ -31,7 +31,8 @@ namespace BrockAllen.MembershipReboot
             this.AllowAccountDeletion = securitySettings.AllowAccountDeletion;
             this.PasswordHashingIterationCount = securitySettings.PasswordHashingIterationCount;
             this.PasswordResetFrequency = securitySettings.PasswordResetFrequency;
-            this.VerificationKeyLifetime = securitySettings.VerificationKeyLifetime;
+            this.AllowUnverifiedAccountsWindow = securitySettings.AllowUnverifiedAccountsWindow;
+            this.VerificationKeyLifetime = securitySettings.AllowUnverifiedAccountsWindow ?? securitySettings.VerificationKeyLifetime;
 
             this.Crypto = new DefaultCrypto();
         }
@@ -49,6 +50,7 @@ namespace BrockAllen.MembershipReboot
         public int PasswordHashingIterationCount { get; set; }
         public int PasswordResetFrequency { get; set; }
         public TimeSpan VerificationKeyLifetime { get; set; }
+        public TimeSpan? AllowUnverifiedAccountsWindow { get; set; }
 
         internal void Validate()
         {
