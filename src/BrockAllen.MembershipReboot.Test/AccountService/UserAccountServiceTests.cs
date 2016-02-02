@@ -1081,6 +1081,32 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void Authenticate_AccountNotVerified_VerificationWindowOpen_LoginAllowed()
+        {
+            this.configuration.RequireAccountVerification = true;
+            this.configuration.AllowUnverifiedAccountsWindow = TimeSpan.FromDays(1);
+            
+            subject.Now = new DateTime(2016, 2, 1, 11, 53, 0);
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+        }
+
+        [TestMethod]
+        public void Authenticate_AccountNotVerified_VerificationWindowOpen_Fails()
+        {
+            this.configuration.RequireAccountVerification = true;
+            this.configuration.AllowUnverifiedAccountsWindow = TimeSpan.FromDays(1);
+            var unvarifiedAccountAccessWindow = this.configuration.AllowUnverifiedAccountsWindow = TimeSpan.FromDays(1);
+
+            subject.Now = new DateTime(2016, 2, 1, 11, 53, 0);
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.Now += unvarifiedAccountAccessWindow.Value.Add(TimeSpan.FromMilliseconds(1));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotVerified, failureCode);
+        }
+
+        [TestMethod]
         public void Authenticate_LoginNotAllowed_Fails()
         {
             this.configuration.RequireAccountVerification = false;
