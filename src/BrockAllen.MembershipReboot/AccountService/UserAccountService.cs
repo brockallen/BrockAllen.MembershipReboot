@@ -2466,7 +2466,7 @@ namespace BrockAllen.MembershipReboot
             }
             else
             {
-                Tracing.Verbose("[UserAccountService.RequestTwoFactorAuthCode] success, but not issing a new code");
+                Tracing.Verbose("[UserAccountService.RequestTwoFactorAuthCode] success, but not issuing a new code");
             }
 
             return true;
