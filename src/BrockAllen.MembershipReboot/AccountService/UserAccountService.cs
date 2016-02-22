@@ -1837,13 +1837,14 @@ namespace BrockAllen.MembershipReboot
             // one last check
             ValidateEmail(account, account.VerificationStorage);
 
+            bool isNewAccount = account.IsNew();
             account.Email = account.VerificationStorage;
             account.IsAccountVerified = true;
             account.LastLogin = UtcNow;
 
             ClearVerificationKey(account);
 
-            this.AddEvent(new EmailVerifiedEvent<TAccount> { Account = account });
+            this.AddEvent(new EmailVerifiedEvent<TAccount> { Account = account, IsNewAccount = isNewAccount });
 
             if (Configuration.EmailIsUsername)
             {
@@ -2465,7 +2466,7 @@ namespace BrockAllen.MembershipReboot
             }
             else
             {
-                Tracing.Verbose("[UserAccountService.RequestTwoFactorAuthCode] success, but not issing a new code");
+                Tracing.Verbose("[UserAccountService.RequestTwoFactorAuthCode] success, but not issuing a new code");
             }
 
             return true;

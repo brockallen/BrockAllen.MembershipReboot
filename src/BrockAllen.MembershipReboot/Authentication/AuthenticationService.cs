@@ -253,12 +253,14 @@ namespace BrockAllen.MembershipReboot
                     // create account without password -- user can verify their email and then 
                     // do a password reset to assign password
                     Tracing.Verbose("[AuthenticationService.SignInWithLinkedAccount] creating account: {0}, {1}", name, email);
-                    account = this.UserAccountService.CreateAccount(tenant, name, null, email);
-
+                    
+                    account = this.UserAccountService.CreateUserAccount();
+                    
                     // update account with external claims
                     var cmd = new MapClaimsToAccount<TAccount> { Account = account, Claims = claims };
                     this.UserAccountService.ExecuteCommand(cmd);
-                    this.UserAccountService.Update(account);
+
+                    this.UserAccountService.CreateAccount(tenant, name, null, email, account: account);
                 }
                 else
                 {

@@ -810,6 +810,34 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void VerifyEmailFromKey_Success_Raises_EmailVerifiedEvent_New_Account()
+        {
+            var emailVerifiedEvent = CaptureLatestEvent.For<EmailVerifiedEvent<UserAccount>>();
+            configuration.AddEventHandler(emailVerifiedEvent);
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
+            subject.CreateAccount("test", "pass", "test@test.com");
+
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            Assert.IsTrue(emailVerifiedEvent.Latest.IsNewAccount);
+        }
+
+        [TestMethod]
+        public void VerifyEmailFromKey_Success_Raises_EmailVerifiedEvent_Account_Existing_Account()
+        {
+            var emailVerifiedEvent = CaptureLatestEvent.For<EmailVerifiedEvent<UserAccount>>();
+            configuration.AddEventHandler(emailVerifiedEvent);
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
+            var account = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            subject.ChangeEmailRequest(account.ID, account.Email);
+
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            Assert.IsFalse(emailVerifiedEvent.Latest.IsNewAccount);
+        }
+
+        [TestMethod]
         public void CancelVerification_CloseAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
