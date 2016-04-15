@@ -19,6 +19,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
     [TestClass]
     public class UserAccountServiceTests
     {
+        CaptureLatestEvent<AccountUnlockedEvent<UserAccount>, UserAccount> accountUnlockedEvent;
         TestUserAccountService subject;
         FakeUserAccountRepository repository;
         MembershipRebootConfiguration configuration;
@@ -39,6 +40,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration = new MembershipRebootConfiguration();
             key = new KeyNotification();
             configuration.AddEventHandler(key);
+            accountUnlockedEvent = CaptureLatestEvent.For<AccountUnlockedEvent<UserAccount>>();
+            configuration.AddEventHandler(accountUnlockedEvent);
+
             repository = new FakeUserAccountRepository();
             subject = new TestUserAccountService(configuration, repository);
         }
@@ -227,6 +231,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.AllowLoginAfterAccountCreation = true;
             subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
+            Assert.IsNull(accountUnlockedEvent.Latest);
         }
 
         [TestMethod]
@@ -2555,6 +2560,59 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.MobilePhoneAlreadyInUse, ex.Message);
             }
         }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_IsLoginAllowed()
+        {
+            // given
+            configuration.AllowLoginAfterAccountCreation = false;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when, then
+            subject.SetIsLoginAllowed(acct.ID, true);
+            Assert.IsTrue(subject.GetByID(acct.ID).IsLoginAllowed);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountLocked_WhenTrue_RaisesAccountUnlockedEvent()
+        {
+            // given
+            configuration.AllowLoginAfterAccountCreation = false;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when
+            subject.SetIsLoginAllowed(acct.ID, true);
+
+            // then
+            Assert.IsNotNull(accountUnlockedEvent.Latest);
+            Assert.AreEqual(acct, accountUnlockedEvent.Latest.Account);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountUnlocked_WhenTrue_DoesNotRaiseAccountUnlockedEvent()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(acct.IsLoginAllowed, "Checking assumptions");
+            subject.SetIsLoginAllowed(acct.ID, true);
+            Assert.IsNull(accountUnlockedEvent.Latest);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountLocked_WhenFalse_DoesNotRaiseAccountUnlockedEvent()
+        {
+            // given
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when
+            subject.SetIsLoginAllowed(acct.ID, true);
+
+            // then
+            Assert.IsNull(accountUnlockedEvent.Latest);
+        }
+
 
         [TestMethod]
         public void AddClaim_AddsTheClaim()
