@@ -1327,9 +1327,15 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID");
 
+            bool originalIsLoginAllowed = account.IsLoginAllowed;
             account.IsLoginAllowed = isLoginAllowed;
 
             Tracing.Verbose("[UserAccountService.SetIsLoginAllowed] success");
+
+            if (!originalIsLoginAllowed && isLoginAllowed)
+            {
+                this.AddEvent(new AccountUnlockedEvent<TAccount> { Account = account });
+            }
 
             Update(account);
         }
