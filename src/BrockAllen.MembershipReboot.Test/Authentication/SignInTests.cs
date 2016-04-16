@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -103,6 +104,39 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             AssertHasBasicClaims(subject.CurrentPrincipal);
             Assert.AreEqual(PartialAuthReason.PasswordExpired, subject.CurrentPrincipal.GetPartialAuthReason());
             Assert.IsFalse(subject.CurrentPrincipal.HasClaim("TestClaim"));
+        }
+
+        [TestMethod]
+        public void SignedIn_LoginNotAllowed_Throws()
+        {
+            // given... 
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            userAccountService.SetIsLoginAllowed(acc.ID, false);
+
+            // when
+            try
+            {
+                subject.SignIn(acc, "Bearer");
+                Assert.Fail();
+            }
+            catch (ValidationException) { }
+        }
+
+        
+        [TestMethod]
+        public void SignedIn_AccountClosed_Throws()
+        {
+            // given... 
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            userAccountService.CloseAccount(acc.ID);
+
+            // when
+            try
+            {
+                subject.SignIn(acc, "Bearer");
+                Assert.Fail();
+            }
+            catch (ValidationException) { }
         }
 
         private void AssertHasBasicClaims(ClaimsPrincipal signingInUser)
