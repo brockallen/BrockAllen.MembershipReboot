@@ -279,4 +279,7 @@
   <data name="InvalidCredentials" xml:space="preserve">
     <value>Ugyldig brukernavn eller passord.</value>
   </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>Kontotilgangen er ikke godkjent.</value>
+  </data>
 </root>

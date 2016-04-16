@@ -25,6 +25,7 @@ namespace BrockAllen.MembershipReboot
             this.EmailIsUsername = securitySettings.EmailIsUsername;
             this.UsernamesUniqueAcrossTenants = securitySettings.UsernamesUniqueAcrossTenants;
             this.RequireAccountVerification = securitySettings.RequireAccountVerification;
+            this.RequireAccountApproval = securitySettings.RequireAccountApproval;
             this.AllowLoginAfterAccountCreation = securitySettings.AllowLoginAfterAccountCreation;
             this.AccountLockoutFailedLoginAttempts = securitySettings.AccountLockoutFailedLoginAttempts;
             this.AccountLockoutDuration = securitySettings.AccountLockoutDuration;
@@ -42,6 +43,7 @@ namespace BrockAllen.MembershipReboot
         public bool EmailIsUsername { get; set; }
         public bool UsernamesUniqueAcrossTenants { get; set; }
         public bool RequireAccountVerification { get; set; }
+        public bool RequireAccountApproval { get; set; }
         public bool AllowLoginAfterAccountCreation { get; set; }
         public int AccountLockoutFailedLoginAttempts { get; set; }
         public TimeSpan AccountLockoutDuration { get; set; }

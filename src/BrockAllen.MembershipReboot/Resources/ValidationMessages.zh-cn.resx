@@ -279,4 +279,7 @@
   <data name="InvalidCredentials" xml:space="preserve">
     <value>无效的凭证</value>
   </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>帐户访问还没有被批准。</value>
+  </data>
 </root>

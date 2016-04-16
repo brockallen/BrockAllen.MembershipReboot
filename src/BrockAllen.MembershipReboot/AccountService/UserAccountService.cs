@@ -764,6 +764,80 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.ReopenAccount] success");
         }
 
+        public virtual void ApproveAccount(Guid accountID)
+        {
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            ApproveAccount(account);
+        }
+
+        public virtual void ApproveAccount(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            if (account.IsAccountApproved)
+            {
+                Tracing.Warning("[UserAccountService.ApproveAccount] account is already approved");
+                return;
+            }
+
+            if (account.IsAccountClosed)
+            {
+                Tracing.Error("[UserAccountService.ApproveAccount] account closed");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountClosed));
+            }
+
+            account.AccountApproved = UtcNow;
+            account.AccountRejected = null;
+
+            this.AddEvent(new AccountApprovedEvent<TAccount> { Account = account });
+
+            Update(account);
+
+            Tracing.Verbose("[UserAccountService.ApproveAccount] success");
+        }
+
+        public virtual void RejectAccount(Guid accountID)
+        {
+            var account = this.GetByID(accountID);
+            if (account == null) throw new ArgumentException("Invalid AccountID");
+
+            RejectAccount(account);
+        }
+
+        public virtual void RejectAccount(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            if (account.IsAccountRejected)
+            {
+                Tracing.Warning("[UserAccountService.RejectAccount] account is already rejected");
+                return;
+            }
+            
+            if (account.IsAccountClosed)
+            {
+                Tracing.Error("[UserAccountService.RejectAccount] account closed");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountClosed));
+            }
+
+            if (account.IsAccountApproved)
+            {
+                Tracing.Error("[UserAccountService.RejectAccount] account already approved");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.RejectAlreadyApproved));
+            }
+
+            account.AccountRejected = UtcNow;
+
+            this.AddEvent(new AccountRejectedEvent<TAccount> { Account = account });
+
+            Update(account);
+
+            Tracing.Verbose("[UserAccountService.RejectAccount] success");
+        }
+
+
         public virtual bool Authenticate(string username, string password)
         {
             return Authenticate(null, username, password);
@@ -988,6 +1062,14 @@ namespace BrockAllen.MembershipReboot
                         Tracing.Error("[UserAccountService.Authenticate] failed -- account closed");
                         this.AddEvent(new InvalidAccountEvent<TAccount> { Account = account });
                         failureCode = AuthenticationFailureCode.AccountClosed;
+                        return false;
+                    }
+
+                    if (Configuration.RequireAccountApproval && !account.IsAccountApproved)
+                    {
+                        Tracing.Error("[UserAccountService.Authenticate] failed -- account not approved");
+                        this.AddEvent(new AccountLockedEvent<TAccount> { Account = account });
+                        failureCode = AuthenticationFailureCode.AccountNotApproved;
                         return false;
                     }
 

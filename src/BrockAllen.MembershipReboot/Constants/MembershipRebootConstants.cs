@@ -23,6 +23,7 @@ namespace BrockAllen.MembershipReboot
             internal const bool EmailIsUnique = true;
             internal const bool UsernamesUniqueAcrossTenants = false;
             internal const bool RequireAccountVerification = true;
+            internal const bool RequireAccountApproval = false;
             internal const bool AllowLoginAfterAccountCreation = true;
             internal const int AccountLockoutFailedLoginAttempts = 5;
             internal const string AccountLockoutDuration = "00:05:00";
@@ -65,6 +66,7 @@ namespace BrockAllen.MembershipReboot
             public const string AccountNotConfiguredWithCertificates = "AccountNotConfiguredWithCertificates";
             public const string AccountNotConfiguredWithMobilePhone = "AccountNotConfiguredWithMobilePhone";
             public const string AccountNotConfiguredWithSecretQuestion = "AccountNotConfiguredWithSecretQuestion";
+            public const string AccountNotApproved = "AccountNotApproved";
             public const string AccountNotVerified = "AccountNotVerified";
             public const string AccountPasswordResetRequiresSecretQuestion = "AccountPasswordResetRequiresSecretQuestion";
             public const string AddClientCertForTwoFactor = "AddClientCertForTwoFactor";
@@ -102,6 +104,7 @@ namespace BrockAllen.MembershipReboot
             public const string PasswordResetErrorNoEmail = "PasswordResetErrorNoEmail";
             public const string RegisterMobileForTwoFactor = "RegisterMobileForTwoFactor";
             public const string ReopenErrorNoEmail = "ReopenErrorNoEmail";
+            public const string RejectAlreadyApproved = "RejectAlreadyApproved";
             public const string SecretAnswerRequired = "SecretAnswerRequired";
             public const string SecretQuestionAlreadyInUse = "SecretQuestionAlreadyInUse";
             public const string SecretQuestionRequired = "SecretQuestionRequired";

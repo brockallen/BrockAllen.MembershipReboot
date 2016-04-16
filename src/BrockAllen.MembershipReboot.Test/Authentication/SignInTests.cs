@@ -14,13 +14,14 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
         TestAuthenticationService subject;
         UserAccountService userAccountService;
         FakeUserAccountRepository repository;
+        private MembershipRebootConfiguration configuration;
 
         [TestInitialize]
         public void Init()
         {
             SecuritySettings.Instance.PasswordHashingIterationCount = 1; // tests will run faster
 
-            var configuration = new MembershipRebootConfiguration
+            configuration = new MembershipRebootConfiguration
             {
                 RequireAccountVerification = false,
                 PasswordResetFrequency = 1 // every day
@@ -129,6 +130,23 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             // given... 
             UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
             userAccountService.CloseAccount(acc.ID);
+
+            // when
+            try
+            {
+                subject.SignIn(acc, "Bearer");
+                Assert.Fail();
+            }
+            catch (ValidationException) { }
+        }
+
+        [TestMethod]
+        public void SignedIn_RequiresApproval_AccountUnappoved_Throws()
+        {
+            // given... 
+            configuration.RequireAccountApproval = true;
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            Assert.IsFalse(acc.IsAccountApproved, "checking assumptions");
 
             // when
             try
