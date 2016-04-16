@@ -44,6 +44,7 @@ namespace BrockAllen.MembershipReboot
         public bool UsernamesUniqueAcrossTenants { get; set; }
         public bool RequireAccountVerification { get; set; }
         public bool RequireAccountApproval { get; set; }
+        [Obsolete(@"Use RequireAccountApproval instead and make calls to UserAccountService.ApproveAccount")]
         public bool AllowLoginAfterAccountCreation { get; set; }
         public int AccountLockoutFailedLoginAttempts { get; set; }
         public TimeSpan AccountLockoutDuration { get; set; }

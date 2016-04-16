@@ -47,6 +47,7 @@ namespace BrockAllen.MembershipReboot
         private const string USERNAMESUNIQUEACROSSTENANTS = "usernamesUniqueAcrossTenants";
         private const string REQUIREACCOUNTAPPROVAL = "requireAccountApproval";
         private const string REQUIREACCOUNTVERIFICATION = "requireAccountVerification";
+        [Obsolete("Replaced by REQUIREACCOUNTAPPROVAL")]
         private const string ALLOWLOGINAFTERACCOUNTCREATION = "allowLoginAfterAccountCreation";
         private const string ACCOUNTLOCKOUTFAILEDLOGINATTEMPTS = "accountLockoutFailedLoginAttempts";
         private const string ACCOUNTLOCKOUTDURATION = "accountLockoutDuration";
@@ -104,6 +105,7 @@ namespace BrockAllen.MembershipReboot
             set { this[REQUIREACCOUNTAPPROVAL] = value; }
         }
 
+        [Obsolete("Replaced by RequireAccountApproval")]
         [ConfigurationProperty(ALLOWLOGINAFTERACCOUNTCREATION, DefaultValue = MembershipRebootConstants.SecuritySettingDefaults.AllowLoginAfterAccountCreation)]
         public bool AllowLoginAfterAccountCreation
         {

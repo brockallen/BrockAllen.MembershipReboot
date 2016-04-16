@@ -24,6 +24,7 @@ namespace BrockAllen.MembershipReboot
             internal const bool UsernamesUniqueAcrossTenants = false;
             internal const bool RequireAccountVerification = true;
             internal const bool RequireAccountApproval = false;
+            [Obsolete("Replaced by RequireAccountApproval")]
             internal const bool AllowLoginAfterAccountCreation = true;
             internal const int AccountLockoutFailedLoginAttempts = 5;
             internal const string AccountLockoutDuration = "00:05:00";

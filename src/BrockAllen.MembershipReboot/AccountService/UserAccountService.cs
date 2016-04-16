@@ -524,7 +524,10 @@ namespace BrockAllen.MembershipReboot
             account.AccountTwoFactorAuthMode = TwoFactorAuthMode.None;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
 
+            // todo: once AllowLoginAfterAccountCreation has been removed use the commented out line of code instead
             account.IsLoginAllowed = Configuration.AllowLoginAfterAccountCreation;
+//            account.IsLoginAllowed = true;
+
             Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.AllowLoginAfterAccountCreation is set to: {0}", account.IsLoginAllowed);
 
             string key = null;
