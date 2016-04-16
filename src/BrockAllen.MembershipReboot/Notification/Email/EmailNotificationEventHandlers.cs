@@ -137,6 +137,11 @@ namespace BrockAllen.MembershipReboot
             Process(evt, new { evt.VerificationKey });
         }
 
+        public void Handle(AccountUnlockedEvent<T> evt)
+        {
+            Process(evt);
+        }
+
         public void Handle(UsernameChangedEvent<T> evt)
         {
             Process(evt);
