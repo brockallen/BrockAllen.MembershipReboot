@@ -15,7 +15,7 @@ namespace BrockAllen.MembershipReboot.Test
         {
         }
 
-        protected override DateTime UtcNow
+        protected internal override DateTime UtcNow
         {
             get
             {

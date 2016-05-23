@@ -30,6 +30,14 @@ namespace BrockAllen.MembershipReboot
             this.groupRepository = groupRepository;
         }
 
+        public virtual IGroupQuery Query
+        {
+            get
+            {
+                return groupRepository as IGroupQuery;
+            }
+        }
+
         public TGroup Get(Guid groupID)
         {
             return this.groupRepository.GetByID(groupID);
@@ -89,7 +97,7 @@ namespace BrockAllen.MembershipReboot
 
         private void RemoveChildGroupFromOtherGroups(Guid childGroupID)
         {
-            var groups = this.groupRepository.GetByChildID(childGroupID);
+            var groups = this.groupRepository.GetByChildID(childGroupID).ToList();
             foreach (var group in groups)
             {
                 RemoveChildGroup(group, childGroupID);
@@ -97,7 +105,7 @@ namespace BrockAllen.MembershipReboot
             }
         }
 
-        private void Update(TGroup group)
+        public void Update(TGroup group)
         {
             group.LastUpdated = UtcNow;
             this.groupRepository.Update(group);

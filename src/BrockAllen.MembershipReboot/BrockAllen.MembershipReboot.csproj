@@ -40,7 +40,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountService\AuthenticationFailureCode.cs" />
     <Compile Include="AccountService\DebuggerEventHandler.cs" />
+    <Compile Include="AccountService\PartialAuthReason.cs" />
     <Compile Include="AccountService\PasswordResetQuestionAnswer.cs" />
     <Compile Include="AccountService\UserAccountCommands.cs" />
     <Compile Include="AccountService\UserAccountValidator.cs" />
@@ -76,16 +78,12 @@
     <Compile Include="Groups\Relational\RelationalGroup.cs" />
     <Compile Include="Query\IGroupQuery.cs" />
     <Compile Include="Query\GroupQueryResult.cs" />
+    <Compile Include="Query\IUserAccountQuery`1.cs" />
     <Compile Include="Query\UserAccountQueryResult.cs" />
     <Compile Include="Repository\IGroupRepository.cs" />
     <Compile Include="Query\IUserAccountQuery.cs" />
     <Compile Include="Repository\QueryableGroupRepository.cs" />
     <Compile Include="Repository\QueryableUserAccountRepository.cs" />
-    <Compile Include="Resources\ValidationMessages.ru-ru.Designer.cs">
-      <DependentUpon>ValidationMessages.ru-ru.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Resources\ValidationMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -134,6 +132,8 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="license.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountUnlockedEvent_Subject.txt" />
+    <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountUnlockedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountReopenedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountReopenedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\LinkedAccountRemovedEvent_Subject.txt" />
@@ -167,7 +167,11 @@
     <EmbeddedResource Include="Notification\Email\EmailTemplates\EmailVerifiedEvent_Body.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Subject.txt" />
     <EmbeddedResource Include="Notification\Email\EmailTemplates\AccountCreatedEvent_Body.txt" />
+    <EmbeddedResource Include="Resources\ValidationMessages.da.resx" />
+    <EmbeddedResource Include="Resources\ValidationMessages.de.resx" />
+    <EmbeddedResource Include="Resources\ValidationMessages.fi.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.nl-nl.resx" />
+    <EmbeddedResource Include="Resources\ValidationMessages.no.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.ru-ru.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.ru-ru.Designer.cs</LastGenOutput>
@@ -176,7 +180,10 @@
     <EmbeddedResource Include="Resources\ValidationMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ValidationMessages.sv.resx" />
+    <EmbeddedResource Include="Resources\ValidationMessages.zh-cn.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

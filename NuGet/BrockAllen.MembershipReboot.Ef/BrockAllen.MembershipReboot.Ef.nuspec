@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BrockAllen.MembershipReboot.Ef</id>
-    <version>7.0.3</version>
+    <version>8.0.0</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://raw.github.com/brockallen/BrockAllen.MembershipReboot/master/license.txt</licenseUrl>
@@ -13,10 +13,11 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Membership Roles Claims Identity User Account Password Management Two Factor Authentication Certificate Authentication</tags>
-    
+    <language>en-US</language>
+
     <dependencies>
-      <dependency id="BrockAllen.MembershipReboot" version="7.0.0" />
-      <dependency id="EntityFramework" version="6.1.0" />
+      <dependency id="BrockAllen.MembershipReboot" version="8.0.0" />
+      <dependency id="EntityFramework" version="6.1.1" />
     </dependencies>
   </metadata>
 </package>

@@ -196,7 +196,7 @@
     <value>That mobile phone is already in use by a different account.</value>
   </data>
   <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
-    <value>Mobile phone number must be different then the current.</value>
+    <value>Mobile phone number must be different from the current one.</value>
   </data>
   <data name="MobilePhoneRequired" xml:space="preserve">
     <value>Mobile phone number required.</value>
@@ -208,7 +208,7 @@
     <value>Name is required.</value>
   </data>
   <data name="NewPasswordMustBeDifferent" xml:space="preserve">
-    <value>The new password must be different than the old password.</value>
+    <value>The new password must be different from the old password.</value>
   </data>
   <data name="ParentGroupAlreadyChild" xml:space="preserve">
     <value>The parent group is already a child of the child group.</value>
@@ -252,10 +252,31 @@
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
     <value>Username cannot contain the '@' character.</value>
   </data>
-  <data name="UsernameOnlyContainLettersAndDigits" xml:space="preserve">
-    <value>Username can only contain letters and digits.</value>
+  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
+    <value>Username can begin or end only with a letter or digit.</value>
+  </data>
+  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
+    <value>Username can only contain letters, digits, spaces, periods, dashes or underscores.</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Username is required.</value>
+  </data>
+  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
+    <value>Username cannot have two spaces, periods, dashes or underscores next to one another.</value>
+  </data>
+  <data name="AccountClosed" xml:space="preserve">
+    <value>Account closed.</value>
+  </data>
+  <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
+    <value>To login, this account must be configured with certificates.</value>
+  </data>
+  <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
+    <value>To login, this account must be configured with mobile phone number.</value>
+  </data>
+  <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
+    <value>Attempts to login have been exceeded</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid username or password.</value>
   </data>
 </root>

@@ -11,6 +11,8 @@ namespace BrockAllen.MembershipReboot
         public class ClaimTypes
         {
             public const string Tenant = "http://brockallen.com/membershipreboot/claims/tenant";
+            public const string PendingTwoFactorAuth = "http://brockallen.com/membershipreboot/claims/pending2fauth";
+            public const string PartialAuthReason = "http://brockallen.com/membershipreboot/claims/partialauthreason";
         }
 
         public class SecuritySettingDefaults
@@ -18,6 +20,7 @@ namespace BrockAllen.MembershipReboot
             internal const bool MultiTenant = false;
             internal const string DefaultTenant = "default";
             internal const bool EmailIsUsername = false;
+            internal const bool EmailIsUnique = true;
             internal const bool UsernamesUniqueAcrossTenants = false;
             internal const bool RequireAccountVerification = true;
             internal const bool AllowLoginAfterAccountCreation = true;
@@ -26,11 +29,11 @@ namespace BrockAllen.MembershipReboot
             internal const bool AllowAccountDeletion = true;
             internal const int PasswordHashingIterationCount = 0;
             internal const int PasswordResetFrequency = 0;
+            internal const string VerificationKeyLifetime = "00:20:00";
         }
 
         public class UserAccount
         {
-            internal const int VerificationKeyStaleDurationMinutes = 20;
             internal const int MobileCodeLength = 6;
             internal const int MobileCodeResendDelayMinutes = 1;
             internal const int MobileCodeStaleDurationMinutes = 10;
@@ -50,10 +53,17 @@ namespace BrockAllen.MembershipReboot
             internal const int NumberOfComplexityRules = 3;
         }
 
+        /// <remarks>
+        /// Note to maintainers: <see cref="AuthenticationFailureCode"/> symbol names should have a matching
+        /// constant declared in <see cref="MembershipRebootConstants.ValidationMessages"/>
+        /// </remarks>
         public static class ValidationMessages
         {
             public const string AccountAlreadyVerified = "AccountAlreadyVerified";
+            public const string AccountClosed = "AccountClosed";
             public const string AccountCreateFailNoEmailFromIdp = "AccountCreateFailNoEmailFromIdp";
+            public const string AccountNotConfiguredWithCertificates = "AccountNotConfiguredWithCertificates";
+            public const string AccountNotConfiguredWithMobilePhone = "AccountNotConfiguredWithMobilePhone";
             public const string AccountNotConfiguredWithSecretQuestion = "AccountNotConfiguredWithSecretQuestion";
             public const string AccountNotVerified = "AccountNotVerified";
             public const string AccountPasswordResetRequiresSecretQuestion = "AccountPasswordResetRequiresSecretQuestion";
@@ -63,6 +73,7 @@ namespace BrockAllen.MembershipReboot
             public const string CodeRequired = "CodeRequired";
             public const string EmailAlreadyInUse = "EmailAlreadyInUse";
             public const string EmailRequired = "EmailRequired";
+            public const string FailedLoginAttemptsExceeded = "FailedLoginAttemptsExceeded";
             public const string InvalidCertificate = "InvalidCertificate";
             public const string InvalidEmail = "InvalidEmail";
             public const string InvalidKey = "InvalidKey";
@@ -74,6 +85,7 @@ namespace BrockAllen.MembershipReboot
             public const string InvalidQuestionOrAnswer = "InvalidQuestionOrAnswer";
             public const string InvalidTenant = "InvalidTenant";
             public const string InvalidUsername = "InvalidUsername";
+            public const string InvalidCredentials = "InvalidCredentials";
             public const string LoginFailEmailAlreadyAssociated = "LoginFailEmailAlreadyAssociated";
             public const string LoginNotAllowed = "LoginNotAllowed";
             public const string MobilePhoneAlreadyInUse = "MobilePhoneAlreadyInUse";
@@ -96,8 +108,11 @@ namespace BrockAllen.MembershipReboot
             public const string TenantRequired = "TenantRequired";
             public const string UsernameAlreadyInUse = "UsernameAlreadyInUse";
             public const string UsernameCannotContainAtSign = "UsernameCannotContainAtSign";
-            public const string UsernameOnlyContainLettersAndDigits = "UsernameOnlyContainLettersAndDigits";
+            public const string UsernameOnlyContainsValidCharacters = "UsernameOnlyContainsValidCharacters";
+            public const string UsernameCannotRepeatSpecialCharacters = "UsernameCannotRepeatSpecialCharacters";
             public const string UsernameRequired = "UsernameRequired";
+            public const string UsernameCanOnlyStartOrEndWithLetterOrDigit = "UsernameCanOnlyStartOrEndWithLetterOrDigit";
+            public const string LinkedAccountAlreadyInUse = "LinkedAccountAlreadyInUse";
         }
     }
 }

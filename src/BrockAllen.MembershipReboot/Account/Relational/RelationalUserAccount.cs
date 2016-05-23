@@ -15,9 +15,16 @@ namespace BrockAllen.MembershipReboot.Relational
         where TTwoFactorAuthToken : RelationalTwoFactorAuthToken<TKey>, new()
         where TUserCertificate : RelationalUserCertificate<TKey>, new()
     {
+        private ICollection<TUserClaim> claimCollection; 
+        
         public virtual TKey Key { get; set; }
 
-        public virtual ICollection<TUserClaim> ClaimCollection { get; set; }
+        public virtual ICollection<TUserClaim> ClaimCollection
+        {
+            get { return claimCollection ?? (claimCollection = new HashSet<TUserClaim>()); }
+            set { claimCollection = value; }
+        }
+        
         public override IEnumerable<UserClaim> Claims
         {
             get { return ClaimCollection; }

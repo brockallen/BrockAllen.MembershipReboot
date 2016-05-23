@@ -6,7 +6,8 @@ namespace BrockAllen.MembershipReboot.Test
 {
     public class MyUserAccount : HierarchicalUserAccount 
     {
-        protected override void AddClaim(UserClaim item)
+        public string FirstName { get; set; }
+        protected internal override void AddClaim(UserClaim item)
         {
             base.AddClaim(item);
         }
@@ -14,6 +15,13 @@ namespace BrockAllen.MembershipReboot.Test
 
     public class FakeUserAccountRepository : QueryableUserAccountRepository<UserAccount>, IUserAccountRepository
     {
+        public bool UpdateWasCalled { get; set; }
+
+        public FakeUserAccountRepository()
+        {
+            this.UseEqualsOrdinalIgnoreCaseForQueries = true;
+        }
+
         public List<UserAccount> UserAccounts = new List<UserAccount>();
 
         protected override IQueryable<UserAccount> Queryable
@@ -38,6 +46,7 @@ namespace BrockAllen.MembershipReboot.Test
 
         public override void Update(UserAccount item)
         {
+            UpdateWasCalled = true;
         }
 
         public override UserAccount GetByLinkedAccount(string tenant, string provider, string id)

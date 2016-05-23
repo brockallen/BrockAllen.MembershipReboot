@@ -35,6 +35,21 @@ namespace BrockAllen.MembershipReboot
             throw new Exception("Invalid NameIdentifier");
         }
 
+        public static PartialAuthReason GetPartialAuthReason(this IPrincipal p)
+        {
+            var cp = p as ClaimsPrincipal;
+            if (cp != null)
+            {
+                var rawValue = cp.Claims.GetValue(MembershipRebootConstants.ClaimTypes.PartialAuthReason);
+                PartialAuthReason value;
+                if (Enum.TryParse(rawValue, out value))
+                {
+                    return value;
+                }
+            }
+            return PartialAuthReason.None;
+        }
+
         public static bool HasUserID(this IPrincipal p)
         {
             var cp = p as ClaimsPrincipal;

@@ -34,14 +34,8 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     account.LastName = model.LastName;
                     this.userAccountService.Update(account);
 
-                    if (userAccountService.Configuration.RequireAccountVerification)
-                    {
-                        return View("Success", model);
-                    }
-                    else
-                    {
-                        return View("Confirm", true);
-                    }
+                    ViewData["RequireAccountVerification"] = this.userAccountService.Configuration.RequireAccountVerification;
+                    return View("Success", model);
                 }
                 catch (ValidationException ex)
                 {
@@ -53,8 +47,16 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
 
         public ActionResult Cancel(string id)
         {
-            this.userAccountService.CancelVerification(id);
-            return View("Cancel");
+            bool closed = false;
+            try
+            {
+                this.userAccountService.CancelVerification(id, out closed);
+            }
+            catch(ValidationException ex)
+            {
+                //ModelState.AddModelError("", ex.Message);
+            }
+            return View("Cancel", closed);
         }
     }
 }

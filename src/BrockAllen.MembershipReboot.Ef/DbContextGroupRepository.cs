@@ -9,41 +9,17 @@ using System.Linq;
 namespace BrockAllen.MembershipReboot.Ef
 {
     public class DbContextGroupRepository<Ctx, TGroup> :
-        QueryableGroupRepository<TGroup>, IDisposable
-        where Ctx : DbContext, new()
+        QueryableGroupRepository<TGroup>
+        where Ctx : DbContext
         where TGroup : RelationalGroup
     {
         protected DbContext db;
-        bool isContextOwner;
         DbSet<TGroup> items;
         
-        public DbContextGroupRepository()
-            : this(new Ctx())
-        {
-            isContextOwner = true;
-        }
         public DbContextGroupRepository(Ctx ctx)
         {
             this.db = ctx;
             this.items = db.Set<TGroup>();
-        }
-
-        void CheckDisposed()
-        {
-            if (db == null)
-            {
-                throw new ObjectDisposedException("DbContextGroupRepository");
-            }
-        }
-
-        public void Dispose()
-        {
-            if (isContextOwner)
-            {
-                db.TryDispose();
-            }
-            db = null;
-            items = null;
         }
 
         protected virtual void SaveChanges()
@@ -58,28 +34,23 @@ namespace BrockAllen.MembershipReboot.Ef
 
         public override TGroup Create()
         {
-            CheckDisposed();
             return items.Create();
         }
 
         public override void Add(TGroup item)
         {
-            CheckDisposed();
             items.Add(item);
             SaveChanges();
         }
 
         public override void Remove(TGroup item)
         {
-            CheckDisposed();
             items.Remove(item);
             SaveChanges();
         }
 
         public override void Update(TGroup item)
         {
-            CheckDisposed();
-
             var entry = db.Entry(item);
             if (entry.State == EntityState.Detached)
             {
@@ -96,7 +67,7 @@ namespace BrockAllen.MembershipReboot.Ef
                 from c in g.ChildrenCollection
                 where c.ChildGroupID == childGroupID
                 select g;
-            return query;
+            return query.ToArray();
         }
     }
 }

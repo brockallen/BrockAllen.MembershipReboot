@@ -53,8 +53,8 @@ namespace BrockAllen.MembershipReboot.Mvc
 
     public class CustomUserAccount : RelationalUserAccount
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public virtual string FirstName { get; set; }
+        public virtual string LastName { get; set; }
         
         [NotMapped]
         public string OtherFirstName
@@ -76,11 +76,13 @@ namespace BrockAllen.MembershipReboot.Mvc
         public CustomDatabase()
             : this("name=MyDbConnectionString")
         {
+            this.RegisterUserAccountChildTablesForDelete<CustomUserAccount>();
         }
         
         public CustomDatabase(string connectionName)
             : base(connectionName)
         {
+            this.RegisterUserAccountChildTablesForDelete<CustomUserAccount>();
         }
         
         public DbSet<SomeOtherEntity> OtherStuff { get; set; }
@@ -91,7 +93,6 @@ namespace BrockAllen.MembershipReboot.Mvc
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.ConfigureMembershipRebootUserAccounts<CustomUserAccount>();
-            //modelBuilder.Entity<CustomUserAccount>().HasKey(x => x.NonGuidPrimaryKey);
         }
     }
 
@@ -99,17 +100,21 @@ namespace BrockAllen.MembershipReboot.Mvc
     {
         // you can do either style ctor (or none) -- depends how much control 
         // you want over instantiating the CustomDatabase instance
-        public CustomRepository()
-            : base(new CustomDatabase())
+        public CustomRepository(CustomDatabase ctx)
+            : base(ctx)
         {
         }
-        public CustomRepository(string name)
-            : base(new CustomDatabase(name))
+
+        protected override IQueryable<CustomUserAccount> DefaultQueryFilter(IQueryable<CustomUserAccount> query, string filter)
         {
-        }
-        public CustomRepository(CustomDatabase db)
-            : base(db)
-        {
+            if (query == null) throw new ArgumentNullException("query");
+            if (filter == null) throw new ArgumentNullException("filter");
+
+            return
+                from a in query
+                from c in a.ClaimCollection
+                    where c.Value.Contains(filter)
+                select a;
         }
     }
 

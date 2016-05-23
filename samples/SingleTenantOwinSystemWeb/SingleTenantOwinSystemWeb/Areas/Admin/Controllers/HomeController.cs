@@ -1,4 +1,5 @@
 ﻿using BrockAllen.MembershipReboot.Ef;
+using BrockAllen.MembershipReboot.Relational;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,19 +9,29 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.Admin.Controllers
 {
     public class HomeController : Controller
     {
-        IUserAccountQuery query;
-        UserAccountService userAccountService;
+        UserAccountService<RelationalUserAccount> userAccountService;
+        IUserAccountQuery<RelationalUserAccount> query;
 
-        public HomeController(IUserAccountQuery query, UserAccountService userAccountService)
+        public HomeController(UserAccountService<RelationalUserAccount> userAccountService)
         {
             this.userAccountService = userAccountService;
-            this.query = query;
+            this.query = userAccountService.Query;
         }
 
         public ActionResult Index(string filter)
         {
             int count;
-            var accounts = query.Query(userAccountService.Configuration.DefaultTenant, filter, 0, 1000, out count);
+            var accounts = query.Query(list =>
+            {
+                if (filter != null)
+                {
+                    list = list.Where(x => x.Username.Contains(filter));
+                }
+                return list;
+            },
+            null,
+            //list => list.OrderBy(x=>x.Username),
+            0, 1000, out count);
 
             return View("Index", accounts.ToArray());
         }

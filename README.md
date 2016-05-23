@@ -1,5 +1,7 @@
 # What is MembershipReboot
 
+[![Join the chat at https://gitter.im/brockallen/BrockAllen.MembershipReboot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brockallen/BrockAllen.MembershipReboot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 MembershipReboot is a user identity management and authentication library. It has nothing to do with the ASP.NET Membership Provider, but was inspired by it due to [frustrations](http://brockallen.com/2012/09/02/think-twice-about-using-membershipprovider-and-simplemembership/) with the built-in ASP.NET Membership system. The goals are to improve upon and provide missing features from ASP.NET Membership. It is designed to encapsulate the important security logic while leaving most of the other aspects of account management either configurable or extensible for application developers to customize as needed.
 
 Some of the features of MembershipReboot are:

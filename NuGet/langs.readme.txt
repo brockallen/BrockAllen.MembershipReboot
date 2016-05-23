@@ -1,0 +1,8 @@
+* Seperate satallite nuget packages will be published for each supported language
+* **IMPORTANT** whenever the version of BrockAllen.MembershipReboot\BrockAllen.MembershipReboot.nuspec 
+  is rev'ed the nuspec file for each *satallite package* must be updated thusly:
+	* the <version> tag updated to match the vs# in BrockAllen.MembershipReboot.nuspec
+	* the version attribute of the <dependency id="BrockAllen.MembershipReboot"> tag updated to match this same vs#
+
+For more information about packaging satallite assemblies see:
+https://docs.nuget.org/create/creating-localized-packages

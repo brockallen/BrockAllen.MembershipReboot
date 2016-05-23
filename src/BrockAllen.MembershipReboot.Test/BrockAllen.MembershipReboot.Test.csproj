@@ -54,15 +54,22 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Authentication\AuthenticationServiceTests.cs" />
+    <Compile Include="Authentication\SignInTests.cs" />
+    <Compile Include="CaptureLatestEvent.cs" />
+    <Compile Include="GroupService\FakeGroupRepository.cs" />
+    <Compile Include="GroupService\GroupServiceTests.cs" />
+    <Compile Include="Authentication\SignInWithLinkedAccountTests.cs" />
     <Compile Include="Authentication\TestAuthenticationService.cs" />
+    <Compile Include="Configuration\MembershipRebootConfigurationTests.cs" />
     <Compile Include="Configuration\SecuritySettingsTests.cs" />
     <Compile Include="Crypto\CryptoHelperTests.cs" />
     <Compile Include="Extensions\ClaimsExtensionsTests.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensionsTests.cs" />
     <Compile Include="Extensions\DisposableExtensionsTests.cs" />
     <Compile Include="FakeUserAccountRepository.cs" />
+    <Compile Include="GroupService\TestGroupService.cs" />
     <Compile Include="KeyNotification.cs" />
+    <Compile Include="Localisation\LocalisationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccountService\UserAccountServiceTests.cs" />
     <Compile Include="TestUserAccountService.cs" />

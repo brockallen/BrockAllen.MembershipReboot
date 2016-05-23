@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
@@ -76,12 +77,7 @@ namespace BrockAllen.MembershipReboot
             var claims = GetAllClaims(account, method);
             
             // get custom claims from properties
-            var cmd = new MapClaimsFromAccount<TAccount> { Account = account };
-            this.UserAccountService.ExecuteCommand(cmd);
-            if (cmd.MappedClaims != null)
-            {
-                claims.AddRange(cmd.MappedClaims);
-            }
+            claims.AddRange(this.UserAccountService.MapClaims(account));
 
             // create principal/identity
             var id = new ClaimsIdentity(claims, method);
@@ -109,6 +105,27 @@ namespace BrockAllen.MembershipReboot
 
             return claims;
         }
+
+        private IEnumerable<Claim> GetPendingAuthClaims(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            var claims = new List<Claim>();
+            if (account.RequiresTwoFactorAuthCodeToSignIn())
+            {
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PendingTwoFactorAuth, account.AccountTwoFactorAuthMode.ToString()));
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PartialAuthReason, ((int)PartialAuthReason.PendingTwoFactorAuth).ToString(CultureInfo.InvariantCulture)));
+            }
+            else if (account.RequiresPasswordReset)
+            {
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PartialAuthReason, ((int)PartialAuthReason.PasswordResetRequired).ToString(CultureInfo.InvariantCulture)));
+            }
+            else if (this.UserAccountService.IsPasswordExpired(account))
+            {
+                claims.Add(new Claim(MembershipRebootConstants.ClaimTypes.PartialAuthReason, ((int)PartialAuthReason.PasswordExpired).ToString(CultureInfo.InvariantCulture)));
+            }
+            return claims;
+        }
         
         private static List<Claim> GetAllClaims(TAccount account, string method)
         {
@@ -128,8 +145,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[AuthenticationService.IssuePartialSignInCookieForTwoFactorAuth] Account ID: {0}", account.ID);
 
-            var claims = GetBasicClaims(account, method);
-
+            var claims = GetBasicClaims(account, method).Union(GetPendingAuthClaims(account));
+            
             var ci = new ClaimsIdentity(claims); // no auth type param so user will not be actually authenticated
             var cp = new ClaimsPrincipal(ci);
 
@@ -216,14 +233,14 @@ namespace BrockAllen.MembershipReboot
                     // guess at a username to use
                     var name = claims.GetValue(ClaimTypes.Name);
                     // remove whitespace
-                    if (name != null) name = new String(name.Where(x => Char.IsLetterOrDigit(x)).ToArray());
+                    if (name != null) name = ParseValidUsername(name);
                     
                     // check to see if username already exists
                     if (String.IsNullOrWhiteSpace(name) || this.UserAccountService.UsernameExists(tenant, name))
                     {
                         // try use email for name then
                         name = email.Substring(0, email.IndexOf('@'));
-                        name = new String(name.Where(x=>Char.IsLetterOrDigit(x)).ToArray());
+                        name = ParseValidUsername(name);
 
                         if (this.UserAccountService.UsernameExists(tenant, name))
                         {
@@ -236,12 +253,14 @@ namespace BrockAllen.MembershipReboot
                     // create account without password -- user can verify their email and then 
                     // do a password reset to assign password
                     Tracing.Verbose("[AuthenticationService.SignInWithLinkedAccount] creating account: {0}, {1}", name, email);
-                    account = this.UserAccountService.CreateAccount(tenant, name, null, email);
-
+                    
+                    account = this.UserAccountService.CreateUserAccount();
+                    
                     // update account with external claims
                     var cmd = new MapClaimsToAccount<TAccount> { Account = account, Claims = claims };
                     this.UserAccountService.ExecuteCommand(cmd);
-                    this.UserAccountService.Update(account);
+
+                    this.UserAccountService.CreateAccount(tenant, name, null, email, account: account);
                 }
                 else
                 {
@@ -267,6 +286,12 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[AuthenticationService.SignInWithLinkedAccount] user account not verified, not allowed to login: {0}", account.ID);
             }
+        }
+
+        private static string ParseValidUsername(string name)
+        {
+            IEnumerable<char> validChars = name.Where(UserAccountValidation<TAccount>.IsValidUsernameChar);
+            return new String(validChars.ToArray()).Trim();
         }
 
         public virtual void SignOut()

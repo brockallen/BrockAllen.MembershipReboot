@@ -19,6 +19,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
     [TestClass]
     public class UserAccountServiceTests
     {
+        CaptureLatestEvent<AccountUnlockedEvent<UserAccount>, UserAccount> accountUnlockedEvent;
         TestUserAccountService subject;
         FakeUserAccountRepository repository;
         MembershipRebootConfiguration configuration;
@@ -39,6 +40,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration = new MembershipRebootConfiguration();
             key = new KeyNotification();
             configuration.AddEventHandler(key);
+            accountUnlockedEvent = CaptureLatestEvent.For<AccountUnlockedEvent<UserAccount>>();
+            configuration.AddEventHandler(accountUnlockedEvent);
+
             repository = new FakeUserAccountRepository();
             subject = new TestUserAccountService(configuration, repository);
         }
@@ -164,6 +168,31 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void EmailExists_WhenEmailIsNotUnique_Throws()
+        {
+            configuration.EmailIsUnique = false;
+            try
+            {
+                subject.EmailExists("test@test.com");
+                Assert.Fail();
+            }
+            catch (InvalidOperationException) { }
+        }
+        
+        [TestMethod]
+        public void GetByEmail_WhenEmailIsNotUnique_Throws()
+        {
+            configuration.EmailIsUnique = false;
+            try
+            {
+                subject.GetByEmail("test@test.com");
+                Assert.Fail();
+            }
+            catch (InvalidOperationException) { }
+        }
+
+
+        [TestMethod]
         public void CreateAccount_CreatesAccountInRepository()
         {
             var result = subject.CreateAccount("test", "test", "test@test.com");
@@ -202,6 +231,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.AllowLoginAfterAccountCreation = true;
             subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
+            Assert.IsNull(accountUnlockedEvent.Latest);
         }
 
         [TestMethod]
@@ -456,7 +486,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             try
             {
-                subject.CreateAccount("    ", "pass", "test@test.com");
+                subject.CreateAccount(" ", "pass", "test@test.com");
                 Assert.Fail();
             }
             catch (ValidationException ex)
@@ -466,17 +496,177 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
-        public void CreateMethod_UsernameContainsWhitespace_FailsValidation()
+        public void CreateAccount_RepeatSpecialCharsInUsername_FailsValidation()
         {
             try
             {
-                subject.CreateAccount("test test", "pass", "test@test.com");
+                subject.CreateAccount("test  test", "pass", "test@test.com");
                 Assert.Fail();
             }
             catch (ValidationException ex)
             {
-                Assert.AreEqual(Resources.ValidationMessages.UsernameOnlyContainLettersAndDigits, ex.Message);
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
             }
+            try
+            {
+                subject.CreateAccount("test--test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test..test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test__test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCannotRepeatSpecialCharacters, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void CreateAccount_AllowAccountToBePassedIn()
+        {
+            MyUserAccount acct = new MyUserAccount();
+            var result = subject.CreateAccount("tenant", "user", "pass", "user@email.com", null, null, acct);
+            Assert.AreSame(acct, result);
+        }
+
+        [TestMethod]
+        public void CreateAccount_AllowClaimsToBePassedIn()
+        {
+            MyUserAccount acct = new MyUserAccount();
+            List<Claim> claims = new List<Claim> {new Claim("foo", "bar")};
+            var result = subject.CreateAccount("tenant", "user", "pass", "user@email.com", null, null, acct, claims);
+            Assert.AreSame(acct, result);
+
+            var comparer = new UserClaimComparer();
+            var userClaims = claims.Select(c => new UserClaim(c.Type, c.Value));
+            CollectionAssert.AreEqual(
+                userClaims.OrderBy(c => c, comparer).ToList(),
+                result.Claims.OrderBy(c => c, comparer).ToList(),
+                comparer);
+        }
+
+
+        [TestMethod]
+        public void CreateMethod_UsernameStartsOrEndNonLetterOrDigit_FailsValidation()
+        {
+            try
+            {
+                subject.CreateAccount(" test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test ", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            } 
+            try
+            {
+                subject.CreateAccount(".test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test.", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("_test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test_", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("test'", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+            try
+            {
+                subject.CreateAccount("'test", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch (ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.UsernameCanOnlyStartOrEndWithLetterOrDigit, ex.Message);
+            }
+        }
+        
+        [TestMethod]
+        public void CreateMethod_UsernameContainsWhitespace_Succeeds()
+        {
+            subject.CreateAccount("test test", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsUnderscore_Succeeds()
+        {
+            subject.CreateAccount("test_test", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsPeriods_Succeeds()
+        {
+            subject.CreateAccount("test.test", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsDigits_Succeeds()
+        {
+            subject.CreateAccount("123", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsSingleQuote_Succeeds()
+        {
+            subject.CreateAccount("te'st", "pass", "test@test.com");
+        }
+        [TestMethod]
+        public void CreateMethod_UsernameContainsLetters_Succeeds()
+        {
+            subject.CreateAccount("test", "pass", "test@test.com");
         }
         
         [TestMethod]
@@ -506,14 +696,14 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         [TestMethod]
         public void CreateAccount_CanPassCreatedDate_UsesCreatedDate()
         {
-            var created = DateTime.Now;
+            var created = DateTime.UtcNow;
             var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);
             Assert.AreEqual(created, acct.Created);
         }
         [TestMethod]
         public void CreateAccount_FutureCreatedDate_Throws()
         {
-            var created = DateTime.Now.AddDays(1);
+            var created = DateTime.UtcNow.AddDays(1);
             try
             {
                 var acct = subject.CreateAccount("user", "pass", "test@test.com", null, created);
@@ -535,11 +725,32 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CreateAccount_EmailIsNotUnique_CanCreateTwoAccountsWithSameEmail()
+        {
+            configuration.EmailIsUnique = false;
+            var acct1 = subject.CreateAccount("test1", null, "test@test.com");
+            var acct2 = subject.CreateAccount("test2", null, "test@test.com");
+        }
+
+        [TestMethod]
         public void VerifiyEmailFromKey_AllowsUserToLogin()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
             subject.VerifyEmailFromKey(LastVerificationKey, "pass");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
+        }
+        
+        [TestMethod]
+        public void VerifiyEmailFromKey_WhenEmailIsNotUnique_MustMatchCorrectAccount()
+        {
+            configuration.EmailIsUnique = false;
+            var acct1 = subject.CreateAccount("test1", "pass", "test@test.com");
+            var acct2 = subject.CreateAccount("test2", "pass", "test@test.com");
+            
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+
+            Assert.IsFalse(subject.Authenticate("test1", "pass"));
+            Assert.IsTrue(subject.Authenticate("test2", "pass"));
         }
 
         [TestMethod]
@@ -601,6 +812,34 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             {
                 Assert.AreEqual(Resources.ValidationMessages.InvalidKey, ex.Message);
             }
+        }
+
+        [TestMethod]
+        public void VerifyEmailFromKey_Success_Raises_EmailVerifiedEvent_New_Account()
+        {
+            var emailVerifiedEvent = CaptureLatestEvent.For<EmailVerifiedEvent<UserAccount>>();
+            configuration.AddEventHandler(emailVerifiedEvent);
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
+            subject.CreateAccount("test", "pass", "test@test.com");
+
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            Assert.IsTrue(emailVerifiedEvent.Latest.IsNewAccount);
+        }
+
+        [TestMethod]
+        public void VerifyEmailFromKey_Success_Raises_EmailVerifiedEvent_Account_Existing_Account()
+        {
+            var emailVerifiedEvent = CaptureLatestEvent.For<EmailVerifiedEvent<UserAccount>>();
+            configuration.AddEventHandler(emailVerifiedEvent);
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
+            var account = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            subject.ChangeEmailRequest(account.ID, account.Email);
+
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            Assert.IsFalse(emailVerifiedEvent.Latest.IsNewAccount);
         }
 
         [TestMethod]
@@ -713,25 +952,65 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void CloseAccount_ClosesAccount()
+        {
+            var now = new DateTime(2012, 2, 3, 4, 5, 6);
+            subject.Now = now;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsNotNull(repository.GetByID(acct.ID));
+            subject.CloseAccount(acct.ID);
+
+            acct = repository.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsAccountClosed);
+            Assert.IsNotNull(acct.AccountClosed);
+            Assert.AreEqual(now, acct.AccountClosed.Value);
+            Assert.IsTrue(repository.UpdateWasCalled);
+        }
+
+        [TestMethod]
+        public void CloseAccount_InvalidAccountID_Throws()
+        {
+            try
+            {
+                subject.CloseAccount(Guid.NewGuid());
+                Assert.Fail();
+            }
+            catch (ArgumentException)
+            {
+            }
+        }
+
+        [TestMethod]
         public void Authenticate_ValidCredentials_ReturnsTrue()
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsTrue(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
         
+
         [TestMethod]
         public void Authenticate_InvalidCredentials_ReturnsFalse()
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsFalse(subject.Authenticate("test", "abc"));
-            Assert.IsFalse(subject.Authenticate("test", "123"));
-            Assert.IsFalse(subject.Authenticate("test", ""));
-            Assert.IsFalse(subject.Authenticate("test", null));
-            Assert.IsFalse(subject.Authenticate("", "pass"));
-            Assert.IsFalse(subject.Authenticate((string)null, "pass"));
-            Assert.IsFalse(subject.Authenticate("test2", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "abc", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test", "123", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test", "", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test", null, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate((string) null, "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.Authenticate("test2", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
         }
 
         [TestMethod]
@@ -746,7 +1025,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.Authenticate("test", "bad");
             subject.Authenticate("test", "bad");
             subject.Authenticate("test", "bad");
-            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.FailedLoginAttemptsExceeded, failureCode);
         }
 
         [TestMethod]
@@ -794,22 +1075,79 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
-        public void SetPassword_AccountLocked_ResetsLockoutAndUserCanLogin()
+        public void Authenticate_AccountNotVerified_Fails()
+        {
+            this.configuration.RequireAccountVerification = true;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotVerified, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_LoginNotAllowed_Fails()
         {
             this.configuration.RequireAccountVerification = false;
-            this.configuration.AccountLockoutFailedLoginAttempts = 5;
-            this.configuration.AccountLockoutDuration = TimeSpan.FromMinutes(1);
 
-            var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.Authenticate("test", "pass"));
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            subject.Authenticate("test", "bad");
-            Assert.IsFalse(subject.Authenticate("test", "pass"));
-            subject.SetPassword(acct.ID, "newPass");
-            Assert.IsTrue(subject.Authenticate("test", "newPass"));
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.IsLoginAllowed = false;
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.LoginNotAllowed, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_AccountClosed_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.IsAccountClosed = true;
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountClosed, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_AccountMissingPassword_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            string nullPassword = null;
+// ReSharper disable ExpressionIsAlwaysNull
+            subject.CreateAccount("test", nullPassword, "test@test.com");
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", nullPassword, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+// ReSharper restore ExpressionIsAlwaysNull
+        }
+
+        [TestMethod]
+        public void Authenticate_MobileTwoFactorAuthRequired_MissingMobileNumber_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.MobilePhoneNumber = "";
+            acc.AccountTwoFactorAuthMode = TwoFactorAuthMode.Mobile;
+
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotConfiguredWithMobilePhone, failureCode);
+        }
+
+        [TestMethod]
+        public void Authenticate_CertificateTwoFactorAuthRequired_NoConfiguredCerts_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.AccountTwoFactorAuthMode = TwoFactorAuthMode.Certificate;
+
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotConfiguredWithCertificates, failureCode);
         }
 
         [TestMethod]
@@ -827,7 +1165,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsTrue(subject.AuthenticateWithEmail("test@test.com", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsTrue(subject.AuthenticateWithEmail("test@test.com", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
 
         [TestMethod]
@@ -845,13 +1185,33 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         {
             configuration.RequireAccountVerification = false;
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
-            Assert.IsFalse(subject.Authenticate("test@test.com", "abc"));
-            Assert.IsFalse(subject.Authenticate("test@test.com", "123"));
-            Assert.IsFalse(subject.Authenticate("test@test.com", ""));
-            Assert.IsFalse(subject.Authenticate("test@test.com", null));
-            Assert.IsFalse(subject.Authenticate("", "pass"));
-            Assert.IsFalse(subject.Authenticate((string)null, "pass"));
-            Assert.IsFalse(subject.Authenticate("test2", "pass"));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", "abc", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", "123", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", "", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test@test.com", null, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail(null, "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+            Assert.IsFalse(subject.AuthenticateWithEmail("test2", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.InvalidCredentials, failureCode);
+        }
+
+        [TestMethod]
+        public void AuthenticateWithEmail_EmailIsNotUnique_Throws()
+        {
+            configuration.EmailIsUnique = false;
+            try
+            {
+                subject.AuthenticateWithEmail("test@test.com", "pass");
+                Assert.Fail();
+            }
+            catch (InvalidOperationException) { }
         }
 
         [TestMethod]
@@ -860,8 +1220,11 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.RequireAccountVerification = false;
             subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct;
-            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct));
-            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct));
+            AuthenticationFailureCode failureCode;
+            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
+            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
 
         [TestMethod]
@@ -871,8 +1234,10 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.RequireAccountVerification = false;
             subject.CreateAccount("test", "pass", "test@test.com");
             UserAccount acct;
-            Assert.IsFalse(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct));
-            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct));
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.AuthenticateWithUsernameOrEmail("test", "pass", out acct, out failureCode));
+            Assert.IsTrue(subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct, out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.None, failureCode);
         }
         
         [TestMethod]
@@ -887,6 +1252,19 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             
             subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct2);
             Assert.AreEqual(acct.ID, acct2.ID);
+        }
+
+        [TestMethod]
+        public void AuthenticateWithUsernameOrEmail_EmailIsNotUnique_Throws()
+        {
+            configuration.EmailIsUnique = false;
+            try
+            {
+                UserAccount acct;
+                subject.AuthenticateWithUsernameOrEmail("test@test.com", "pass", out acct);
+                Assert.Fail();
+            }
+            catch (InvalidOperationException) { }
         }
 
         [TestMethod]
@@ -948,6 +1326,24 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             {
             }
         }
+
+        [TestMethod]
+        public void AuthenticationFailureCode_GetValidationMessage()
+        {
+            var failureCodes = GetEnumToSymbols<AuthenticationFailureCode>().Except(new[] { AuthenticationFailureCode.None });
+            foreach (AuthenticationFailureCode code in failureCodes)
+            {
+                Assert.IsFalse(String.IsNullOrEmpty(subject.GetValidationMessage(code)));
+            }
+        }
+
+        static IEnumerable<TEnum> GetEnumToSymbols<TEnum>() where TEnum : struct
+        {
+            return (from f in typeof(TEnum).GetFields() 
+                    where !f.IsSpecialName 
+                    select f.GetRawConstantValue()).Cast<TEnum>();
+        }
+
 
         static X509Certificate2 GetTestCert()
         {
@@ -1196,6 +1592,25 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void SetPassword_AccountLocked_ResetsLockoutAndUserCanLogin()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.AccountLockoutFailedLoginAttempts = 5;
+            this.configuration.AccountLockoutDuration = TimeSpan.FromMinutes(1);
+
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(subject.Authenticate("test", "pass"));
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            subject.Authenticate("test", "bad");
+            Assert.IsFalse(subject.Authenticate("test", "pass"));
+            subject.SetPassword(acct.ID, "newPass");
+            Assert.IsTrue(subject.Authenticate("test", "newPass"));
+        }
+
+        [TestMethod]
         public void ChangePassword_ChangesPassword()
         {
             configuration.AllowLoginAfterAccountCreation = true;
@@ -1343,6 +1758,21 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void ResetPasswordFromEmail_EmailIsNotUnique_Fails()
+        {
+            configuration.EmailIsUnique = false;
+
+            try
+            {
+                subject.ResetPassword("test2@test.com");
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+        }
+
+        [TestMethod]
         public void ChangePasswordFromResetKey_RequiresResetPassword()
         {
             configuration.AllowLoginAfterAccountCreation = true;
@@ -1407,6 +1837,42 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             {
                 Assert.AreEqual(Resources.ValidationMessages.PasswordRequired, ex.Message);
             }
+        }
+
+        [TestMethod]
+        public void ChangePasswordFromResetKey_ResetsFailedLoginCount()
+        {
+            var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyEmailFromKey(this.LastVerificationKey, "pass");
+
+            subject.Authenticate("test", "bad_pass");
+
+            var account = subject.GetByID(id);
+            Assert.AreEqual(1, account.FailedLoginCount);
+
+            subject.ResetPassword("test@test.com");
+            var key = LastVerificationKey;
+            subject.ChangePasswordFromResetKey(key, "new_pass");
+
+            account = subject.GetByID(id);
+            Assert.AreEqual(0, account.FailedLoginCount);
+        }
+
+        [TestMethod]
+        public void ResetFailedLoginCount_ResetsFailedLoginCount()
+        {
+            var id = subject.CreateAccount("test", "pass", "test@test.com").ID;
+            subject.VerifyEmailFromKey(this.LastVerificationKey, "pass");
+
+            subject.Authenticate("test", "bad_pass");
+
+            var account = subject.GetByID(id);
+            Assert.AreEqual(1, account.FailedLoginCount);
+
+            subject.ResetFailedLoginCount(id);
+            
+            account = subject.GetByID(id);
+            Assert.AreEqual(0, account.FailedLoginCount);
         }
 
         [TestMethod]
@@ -1509,6 +1975,23 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
             }
         }
+
+        [TestMethod]
+        public void ChangeEmailRequest_EmailIsNotUnique_CanChangeEmailToSameEmailAsAnotherAccount()
+        {
+            configuration.EmailIsUnique = false;
+
+            var id1 = subject.CreateAccount("test1", "pass", "test1@test.com").ID;
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            var id2 = subject.CreateAccount("test2", "pass", "test2@test.com").ID;
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+
+            subject.ChangeEmailRequest(id1, "test2@test.com");
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            var acct = repository.GetByID(id1);
+            Assert.AreEqual("test2@test.com", acct.Email);
+        }
+        
         [TestMethod]
         public void ChangeEmailRequest_InvalidAccountId_Throws()
         {
@@ -1984,6 +2467,19 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
             }
         }
+        
+        [TestMethod]
+        public void SetConfirmedEmail_EmailIsNotUnique_ForAccountWithExistingEmail_Succeeds()
+        {
+            configuration.EmailIsUnique = false;
+
+            subject.CreateAccount("test1", "pass", "test1@test.com");
+            var acct = subject.CreateAccount("test2", "pass", "test2@test.com");
+            subject.SetConfirmedEmail(acct.ID, "test1@test.com");
+
+            acct = subject.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsAccountVerified);
+        }
 
         [TestMethod]
         public void SetConfirmedEmail_EmptyEmail_Fails()
@@ -2064,6 +2560,59 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.MobilePhoneAlreadyInUse, ex.Message);
             }
         }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_IsLoginAllowed()
+        {
+            // given
+            configuration.AllowLoginAfterAccountCreation = false;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when, then
+            subject.SetIsLoginAllowed(acct.ID, true);
+            Assert.IsTrue(subject.GetByID(acct.ID).IsLoginAllowed);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountLocked_WhenTrue_RaisesAccountUnlockedEvent()
+        {
+            // given
+            configuration.AllowLoginAfterAccountCreation = false;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when
+            subject.SetIsLoginAllowed(acct.ID, true);
+
+            // then
+            Assert.IsNotNull(accountUnlockedEvent.Latest);
+            Assert.AreEqual(acct, accountUnlockedEvent.Latest.Account);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountUnlocked_WhenTrue_DoesNotRaiseAccountUnlockedEvent()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(acct.IsLoginAllowed, "Checking assumptions");
+            subject.SetIsLoginAllowed(acct.ID, true);
+            Assert.IsNull(accountUnlockedEvent.Latest);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountLocked_WhenFalse_DoesNotRaiseAccountUnlockedEvent()
+        {
+            // given
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when
+            subject.SetIsLoginAllowed(acct.ID, true);
+
+            // then
+            Assert.IsNull(accountUnlockedEvent.Latest);
+        }
+
 
         [TestMethod]
         public void AddClaim_AddsTheClaim()
@@ -2155,6 +2704,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                     {"foo3", "bar3"},
                 });
             Assert.AreEqual(3, subject.GetByID(acct.ID).Claims.Count());
+
+            subject.UpdateClaims(acct.ID, claims.Where(x=>false));
+            Assert.AreEqual(3, subject.GetByID(acct.ID).Claims.Count());
         }
 
         [TestMethod]
@@ -2165,6 +2717,35 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.UpdateClaims(acct.ID, null, Enumerable.Empty<UserClaim>().ToCollection());
             Assert.AreEqual(lastUpdated, subject.GetByID(acct.ID).LastUpdated);
         }
+
+        [TestMethod]
+        public void SendUsernameReminder_EmailIsNotUnique_Fails()
+        {
+            configuration.EmailIsUnique = false;
+            try
+            {
+                subject.SendUsernameReminder("test@test.com");
+                Assert.Fail();
+            }
+            catch (InvalidOperationException) { }
+        }
+
+        [TestMethod]
+        public void Logging_in_before_account_is_verified_does_not_cause_account_to_have_last_login_set()
+        {
+            configuration.RequireAccountVerification = true;
+
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+
+            var result = subject.Authenticate("test", "pass");
+            Assert.IsFalse(result);
+
+            acct = subject.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsNew());
+        }
+
+
+
 
     }
 }
