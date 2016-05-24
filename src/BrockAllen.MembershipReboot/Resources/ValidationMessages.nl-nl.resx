@@ -142,7 +142,7 @@
     <value>Dit account vereist een geheime vraag en antwoord om het wachtwoord opnieuw in te stellen.</value>
   </data>
   <data name="AddClientCertForTwoFactor" xml:space="preserve">
-    <value>Voeg een client certificaat toe om two factor authenticatie met een certificaat mogelijk te maken.</value>
+    <value>Voeg een client certificaat toe om twee staps authenticatie met een certificaat mogelijk te maken.</value>
   </data>
   <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
     <value>U moet een wachtwoord op het lokale account instellen voordat u de laatste externe login provider verwijderd.</value>
@@ -244,7 +244,7 @@
     <value>Wachtwoord herstel is niet mogelijk omdat er geen bevestigd e-mailadres voor dit account aanwezig is.</value>
   </data>
   <data name="RegisterMobileForTwoFactor" xml:space="preserve">
-    <value>Voeg een mobiel telefoonnummer toe om two factor authenticatie met een mobiele telefoon mogelijk te maken.</value>
+    <value>Voeg een mobiel telefoonnummer toe om twee staps authenticatie met een mobiele telefoon mogelijk te maken.</value>
   </data>
   <data name="ReopenErrorNoEmail" xml:space="preserve">
     <value>Heropening van het account is niet mogelijk omdat er geen e-mailadres is ingesteld voor dit account.</value>
@@ -267,10 +267,16 @@
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
     <value>De gebruikersnaam mag geen '@' teken bevatten.</value>
   </data>
-  <data name="UsernameOnlyContainLettersAndDigits" xml:space="preserve">
-    <value>De gebruikersnaam mag alleen letters en cijfers bevatten.</value>
-  </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Gebruikersnaam is verplicht.</value>
+  </data>
+  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
+    <value>De gebruikersnaam mag alleen letters, cijfers, spaties, slashes en lage streepjes bevatten.</value>
+  </data>
+  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
+    <value>De gebruikersnaam mag alleen beginnen of eindigen met een letter of cijfer.</value>
+  </data>
+  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
+    <value>De gebruikersnaam mag geen twee spaties, punten en lage streepjes naast elkaar hebben.</value>
   </data>
 </root>
