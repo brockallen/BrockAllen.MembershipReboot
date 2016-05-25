@@ -18,6 +18,7 @@ namespace BrockAllen.MembershipReboot
         public MembershipRebootConfiguration<TAccount> Configuration { get; set; }
 
         EventBusUserAccountRepository<TAccount> userRepository;
+        AggregateCommandBus aggregateCommandBus;
 
         Lazy<AggregateValidator<TAccount>> usernameValidator;
         Lazy<AggregateValidator<TAccount>> emailValidator;
@@ -36,6 +37,10 @@ namespace BrockAllen.MembershipReboot
             configuration.Validate();
 
             this.Configuration = configuration;
+
+            aggregateCommandBus = new AggregateCommandBus() {
+                commandBus, configuration.CommandBus
+            };
 
             var validationEventBus = new EventBus();
             validationEventBus.Add(new UserAccountValidator<TAccount>(this));
@@ -136,8 +141,7 @@ namespace BrockAllen.MembershipReboot
         CommandBus commandBus = new CommandBus();
         protected internal void ExecuteCommand(ICommand cmd)
         {
-            commandBus.Execute(cmd);
-            Configuration.CommandBus.Execute(cmd);
+            aggregateCommandBus.Execute(cmd);
         }
 
         public virtual IUserAccountQuery<TAccount> Query 

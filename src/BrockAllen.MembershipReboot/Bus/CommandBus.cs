@@ -51,4 +51,14 @@ namespace BrockAllen.MembershipReboot
             return handlerCache[eventType];
         }
     }
+    class AggregateCommandBus : List<ICommandBus>, ICommandBus
+    {
+        public void Execute(ICommand evt)
+        {
+            foreach (var eb in this)
+            {
+                eb.Execute(evt);
+            }
+        }
+    }
 }
