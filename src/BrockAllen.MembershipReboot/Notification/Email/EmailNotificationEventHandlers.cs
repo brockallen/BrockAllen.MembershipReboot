@@ -76,6 +76,7 @@ namespace BrockAllen.MembershipReboot
         IEventHandler<UsernameReminderRequestedEvent<T>>,
         IEventHandler<AccountClosedEvent<T>>,
         IEventHandler<AccountReopenedEvent<T>>,
+        IEventHandler<AccountUnlockedEvent<T>>,
         IEventHandler<UsernameChangedEvent<T>>,
         IEventHandler<EmailChangeRequestedEvent<T>>,
         IEventHandler<EmailChangedEvent<T>>,
@@ -135,6 +136,11 @@ namespace BrockAllen.MembershipReboot
         public void Handle(AccountReopenedEvent<T> evt)
         {
             Process(evt, new { evt.VerificationKey });
+        }
+
+        public void Handle(AccountUnlockedEvent<T> evt)
+        {
+            Process(evt);
         }
 
         public void Handle(UsernameChangedEvent<T> evt)
