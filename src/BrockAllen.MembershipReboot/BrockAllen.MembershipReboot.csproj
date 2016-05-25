@@ -170,6 +170,7 @@
     <EmbeddedResource Include="Resources\ValidationMessages.da.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.de.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.fi.resx" />
+    <EmbeddedResource Include="Resources\ValidationMessages.fr.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.nl-nl.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.no.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.ru-ru.resx">
