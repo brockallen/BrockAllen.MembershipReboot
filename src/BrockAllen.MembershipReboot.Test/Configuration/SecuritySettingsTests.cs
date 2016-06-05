@@ -28,6 +28,7 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
             Assert.AreEqual(0, settings.PasswordHashingIterationCount);
             Assert.AreEqual(0, settings.PasswordResetFrequency);
             Assert.AreEqual(TimeSpan.FromMinutes(20), settings.VerificationKeyLifetime);
+            Assert.AreEqual(true, settings.CertificateIsUnique);
         }
     }
 }

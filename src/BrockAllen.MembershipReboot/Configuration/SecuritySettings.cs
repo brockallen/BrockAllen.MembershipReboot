@@ -53,6 +53,7 @@ namespace BrockAllen.MembershipReboot
         private const string PASSWORDHASHINGITERATIONCOUNT = "passwordHashingIterationCount";
         private const string PASSWORDRESETFREQUENCY = "passwordResetFrequency";
         private const string VERIFICATIONKEYLIFETIME = "verificationKeyLifetime";
+        private const string CERTIFICATEISUNIQUE = "certificateIsUnique";
 
         [ConfigurationProperty(MULTITENANT, DefaultValue = MembershipRebootConstants.SecuritySettingDefaults.MultiTenant)]
         public bool MultiTenant
@@ -144,5 +145,13 @@ namespace BrockAllen.MembershipReboot
             get { return (TimeSpan)this[VERIFICATIONKEYLIFETIME]; }
             set { this[VERIFICATIONKEYLIFETIME] = value; }
         }
+
+        [ConfigurationProperty(CERTIFICATEISUNIQUE, DefaultValue = MembershipRebootConstants.SecuritySettingDefaults.CertificateIsUnique)]
+        public bool CertificateIsUnique
+        {
+            get { return (bool) this[CERTIFICATEISUNIQUE]; }
+            set { this[CERTIFICATEISUNIQUE] = value; }
+        }
+
     }
 }
