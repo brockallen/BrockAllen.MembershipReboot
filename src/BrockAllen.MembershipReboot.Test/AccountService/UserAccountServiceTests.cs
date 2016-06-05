@@ -2745,7 +2745,23 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
 
+        [TestMethod]
+        public void SetConfirmedMobilePhone_PhoneAlreadyInUse_PhoneIsNotUnique_Succeeds()
+        {
+            configuration.MobilePhoneIsUnique = false;
 
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            subject.SetConfirmedMobilePhone(acct1.ID, "123");
+            var acct2 = subject.CreateAccount("test2", "pass", "test2@test.com");
+            try
+            {
+                subject.SetConfirmedMobilePhone(acct2.ID, "123");
+            }
+            catch (ValidationException ex)
+            {
+                Assert.Fail("Different accounts should be allowed to have the same phone number.");
+            }
+        }
 
     }
 }

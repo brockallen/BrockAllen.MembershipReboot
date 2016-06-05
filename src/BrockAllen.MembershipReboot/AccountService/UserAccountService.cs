@@ -422,10 +422,13 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(phone)) return false;
 
-            var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
-            if (acct2 != null)
+            if (this.Configuration.MobilePhoneIsUnique)
             {
-                return account.ID != acct2.ID;
+                var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
+                if (acct2 != null)
+                {
+                    return account.ID != acct2.ID;
+                }
             }
             return false;
         }
