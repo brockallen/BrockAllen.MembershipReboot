@@ -2866,7 +2866,7 @@ namespace BrockAllen.MembershipReboot
                 this.AddEvent(new CertificateRemovedEvent<TAccount> { Account = account, Certificate = cert });
                 account.RemoveCertificate(cert);
             }
-            Tracing.Error("[UserAccountService.RemoveCertificate] certs removed: {0}", certs.Length);
+            Tracing.Verbose("[UserAccountService.RemoveCertificate] certs removed: {0}", certs.Length);
 
             if (!account.Certificates.Any() &&
                 account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
