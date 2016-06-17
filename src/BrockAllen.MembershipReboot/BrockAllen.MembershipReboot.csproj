@@ -173,6 +173,7 @@
     <EmbeddedResource Include="Resources\ValidationMessages.fr.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.nl-nl.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.no.resx" />
+    <EmbeddedResource Include="Resources\ValidationMessages.pt-br.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.ru-ru.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.ru-ru.Designer.cs</LastGenOutput>

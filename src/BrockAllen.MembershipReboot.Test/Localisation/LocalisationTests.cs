@@ -40,6 +40,9 @@ namespace BrockAllen.MembershipReboot.Test.GroupService
             Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("zh-cn");
             string chinese = Resources.ValidationMessages.AccountClosed;
 
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("pt-br");
+            string portugueseBrazil = Resources.ValidationMessages.AccountClosed;
+
 
             Assert.AreEqual(english, "Account closed.");
             Assert.AreEqual(danish, "Konto lukket.");
@@ -49,9 +52,7 @@ namespace BrockAllen.MembershipReboot.Test.GroupService
             Assert.AreEqual(russian, "Счет закрыт.");
             Assert.AreEqual(swedish, "Kontot är avslutat.");
             Assert.AreEqual(chinese, "帐户已关闭。");
-
-
-
+            Assert.AreEqual(portugueseBrazil, "Conta fechada.");
         }
     }
 }
