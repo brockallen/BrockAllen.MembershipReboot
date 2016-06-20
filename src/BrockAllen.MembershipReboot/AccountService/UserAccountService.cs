@@ -1512,7 +1512,8 @@ namespace BrockAllen.MembershipReboot
 
             ValidatePassword(account, newPassword);
 
-            if (!account.IsAccountVerified)
+            // IsAccountVerified checks should be consistent with Configuration.RequireAccountVerification
+            if (Configuration.RequireAccountVerification && !account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccountService.ChangePasswordFromResetKey] failed -- account not verified");
                 return false;
@@ -1711,7 +1712,8 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByEmail(tenant, email);
             if (account == null) throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidEmail));
 
-            if (!account.IsAccountVerified)
+            // IsAccountVerified checks should be consistent with Configuration.RequireAccountVerification
+            if (Configuration.RequireAccountVerification && !account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- account not verified");
                 throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotVerified));
@@ -2219,7 +2221,8 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordResetErrorNoEmail));
             }
 
-            if (!account.IsAccountVerified)
+            // IsAccountVerified checks should be consistent with Configuration.RequireAccountVerification
+            if (Configuration.RequireAccountVerification && !account.IsAccountVerified)
             {
                 // if they've not yet verified then don't allow password reset
                 if (account.IsNew())

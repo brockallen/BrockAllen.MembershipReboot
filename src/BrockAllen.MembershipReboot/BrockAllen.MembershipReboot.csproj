@@ -183,6 +183,7 @@
       <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ValidationMessages.sk.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.sv.resx" />
     <EmbeddedResource Include="Resources\ValidationMessages.zh-cn.resx" />
   </ItemGroup>
