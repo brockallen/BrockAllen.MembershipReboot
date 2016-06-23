@@ -68,6 +68,7 @@ namespace BrockAllen.MembershipReboot
 
     public class EmailAccountEventsHandler<T> :
         EmailEventHandler<T>,
+        IEventHandler<AccountCreationSecurityAlertEvent<T>>,        
         IEventHandler<AccountCreatedEvent<T>>,        
         IEventHandler<PasswordResetRequestedEvent<T>>,
         IEventHandler<PasswordChangedEvent<T>>,
@@ -96,6 +97,11 @@ namespace BrockAllen.MembershipReboot
         public EmailAccountEventsHandler(IMessageFormatter<T> messageFormatter, IMessageDelivery messageDelivery)
             : base(messageFormatter, messageDelivery)
         {
+        }
+
+        public void Handle(AccountCreationSecurityAlertEvent<T> evt)
+        {
+            Process(evt);
         }
 
         public void Handle(AccountCreatedEvent<T> evt)

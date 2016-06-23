@@ -15,6 +15,11 @@ namespace BrockAllen.MembershipReboot
         public TAccount Account { get; set; }
     }
 
+    public class AccountCreationSecurityAlertEvent<T> : UserAccountEvent<T>
+    {
+         
+    }
+
     public class AccountCreatedEvent<T> : UserAccountEvent<T>
     {
         // InitialPassword might be null if this is a re-send

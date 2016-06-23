@@ -19,6 +19,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
     [TestClass]
     public class UserAccountServiceTests
     {
+        CaptureLatestEvent<AccountCreatedEvent<UserAccount>, UserAccount> accountCreatedEvent;
         CaptureLatestEvent<AccountUnlockedEvent<UserAccount>, UserAccount> accountUnlockedEvent;
         TestUserAccountService subject;
         FakeUserAccountRepository repository;
@@ -42,6 +43,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.AddEventHandler(key);
             accountUnlockedEvent = CaptureLatestEvent.For<AccountUnlockedEvent<UserAccount>>();
             configuration.AddEventHandler(accountUnlockedEvent);
+
+            accountCreatedEvent = CaptureLatestEvent.For<AccountCreatedEvent<UserAccount>>();
+            configuration.AddEventHandler(accountCreatedEvent);
 
             repository = new FakeUserAccountRepository();
             subject = new TestUserAccountService(configuration, repository);
@@ -199,6 +203,16 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.AreSame(repository.GetByID(result.ID), result);
         }
 
+        
+        [TestMethod]
+        public void CreateAccount_RaisesAccountCreatedEvent()
+        {
+            var user = subject.CreateAccount("test", "test", "test@test.com");
+            Assert.IsNotNull(accountCreatedEvent.Latest);
+            Assert.AreSame(accountCreatedEvent.Latest.Account, user);
+        }
+
+
         [TestMethod]
         public void CreateAccount_SettingsRequiresVerification_CannotLogin()
         {
@@ -281,6 +295,23 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
         [TestMethod]
         public void CreateAccount_AccountVerificationNotRequired_DuplicateEmails_FailsValidation()
+        {
+            configuration.RequireAccountVerification = false;
+            subject.CreateAccount("test1", "pass", "test@test.com");
+            try
+            {
+                subject.CreateAccount("test2", "pass", "test@test.com");
+                Assert.Fail();
+            }
+            catch(ValidationException ex)
+            {
+                Assert.AreEqual(Resources.ValidationMessages.EmailAlreadyInUse, ex.Message);
+            }
+        }
+
+        
+        [TestMethod]
+        public void CreateAccount_AccountVerificationNotRequired_DuplicateEmails_RaisesEvent()
         {
             configuration.RequireAccountVerification = false;
             subject.CreateAccount("test1", "pass", "test@test.com");
