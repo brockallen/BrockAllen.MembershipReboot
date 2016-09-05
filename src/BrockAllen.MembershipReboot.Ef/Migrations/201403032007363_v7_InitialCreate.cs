@@ -87,7 +87,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
                     {
                         Key = c.Int(nullable: false, identity: true),
                         ParentKey = c.Int(nullable: false),
-                        ProviderName = c.String(nullable: false, maxLength: 30),
+                        ProviderName = c.String(nullable: false, maxLength: 200),
                         ProviderAccountID = c.String(nullable: false, maxLength: 100),
                         Type = c.String(nullable: false, maxLength: 150),
                         Value = c.String(nullable: false, maxLength: 150),
@@ -102,7 +102,7 @@ namespace BrockAllen.MembershipReboot.Ef.Migrations
                     {
                         Key = c.Int(nullable: false, identity: true),
                         ParentKey = c.Int(nullable: false),
-                        ProviderName = c.String(nullable: false, maxLength: 30),
+                        ProviderName = c.String(nullable: false, maxLength: 200),
                         ProviderAccountID = c.String(nullable: false, maxLength: 100),
                         LastLogin = c.DateTime(nullable: false),
                     })

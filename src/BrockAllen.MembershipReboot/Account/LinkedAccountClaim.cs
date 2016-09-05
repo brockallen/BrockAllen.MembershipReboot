@@ -9,7 +9,7 @@ namespace BrockAllen.MembershipReboot
 {
     public class LinkedAccountClaim
     {
-        [StringLength(30)]
+        [StringLength(200)]
         [Required]
         public virtual string ProviderName { get; protected internal set; }
         [StringLength(100)]
