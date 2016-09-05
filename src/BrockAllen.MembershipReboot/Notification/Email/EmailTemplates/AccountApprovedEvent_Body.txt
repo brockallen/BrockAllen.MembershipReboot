@@ -1,0 +1,11 @@
+﻿Your account with {applicationName} has been approved.
+
+Username: {username}
+
+You can now login at this address:
+
+{loginUrl}
+
+Thanks!
+
+{emailSignature}

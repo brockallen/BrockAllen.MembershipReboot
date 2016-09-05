@@ -279,4 +279,10 @@
   <data name="InvalidCredentials" xml:space="preserve">
     <value>Invalid username or password.</value>
   </data>
+  <data name="RejectAlreadyApproved" xml:space="preserve">
+    <value>Account already approved.</value>
+  </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>Account access has not been approved.</value>
+  </data>
 </root>
