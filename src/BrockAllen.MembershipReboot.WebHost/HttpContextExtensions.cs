@@ -8,6 +8,7 @@ using System.Web;
 
 namespace BrockAllen.MembershipReboot.WebHost
 {
+    [Obsolete("Introduce replacements and replace all uses.")]
     public static class HttpContextExtensions
     {
         public static string GetApplicationUrl(this HttpContext ctx)

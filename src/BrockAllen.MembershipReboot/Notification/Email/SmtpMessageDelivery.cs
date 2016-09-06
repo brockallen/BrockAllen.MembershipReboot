@@ -5,30 +5,43 @@
 
 using System;
 using System.Configuration;
+using System.Net;
 using System.Net.Configuration;
 using System.Net.Mail;
 
 namespace BrockAllen.MembershipReboot
 {
+    public class SmtpDeliveryConfig
+    {
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public bool EnableSsl { get; set; }
+        public string FromEmailAddress { get; set; }
+    }
+    
     public class SmtpMessageDelivery : IMessageDelivery
     {
         public bool SendAsHtml { get; set; }
         public int SmtpTimeout { get; set; }
+        public SmtpDeliveryConfig Config { get; set; }
 
-        public SmtpMessageDelivery(bool sendAsHtml = false, int smtpTimeout = 5000)
+        public SmtpMessageDelivery(SmtpDeliveryConfig config, bool sendAsHtml = false, int smtpTimeout = 5000)
         {
+            if(config == null) throw new ArgumentNullException("config");
+            this.Config = config;
             this.SendAsHtml = sendAsHtml;
             this.SmtpTimeout = smtpTimeout;
         }
-
+        
         public void Send(Message msg)
         {
             Tracing.Information("[SmtpMessageDelivery.Send] sending mail to " + msg.To);
 
             if (String.IsNullOrWhiteSpace(msg.From))
             {
-                SmtpSection smtp = ConfigurationManager.GetSection("system.net/mailSettings/smtp") as SmtpSection;
-                msg.From = smtp.From;
+                msg.From = Config.FromEmailAddress;
             }
 
             using (SmtpClient smtp = new SmtpClient())
@@ -40,6 +53,12 @@ namespace BrockAllen.MembershipReboot
                     {
                         IsBodyHtml = SendAsHtml
                     };
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Host = Config.Host;
+                    smtp.Credentials = new NetworkCredential(Config.UserName, Config.Password);
+                    smtp.Port = Config.Port;
+                    smtp.EnableSsl = Config.EnableSsl;
+
                     smtp.Send(mailMessage);
                 }
                 catch (SmtpException e)
