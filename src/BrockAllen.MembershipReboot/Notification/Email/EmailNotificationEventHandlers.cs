@@ -74,6 +74,8 @@ namespace BrockAllen.MembershipReboot
         IEventHandler<PasswordResetSecretAddedEvent<T>>,
         IEventHandler<PasswordResetSecretRemovedEvent<T>>,
         IEventHandler<UsernameReminderRequestedEvent<T>>,
+        IEventHandler<AccountApprovedEvent<T>>,
+        IEventHandler<AccountRejectedEvent<T>>,
         IEventHandler<AccountClosedEvent<T>>,
         IEventHandler<AccountReopenedEvent<T>>,
         IEventHandler<AccountUnlockedEvent<T>>,
@@ -129,6 +131,16 @@ namespace BrockAllen.MembershipReboot
         }
 
         public void Handle(AccountClosedEvent<T> evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(AccountApprovedEvent<T> evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(AccountRejectedEvent<T> evt)
         {
             Process(evt);
         }

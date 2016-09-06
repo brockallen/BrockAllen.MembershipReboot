@@ -75,6 +75,10 @@
     <Compile Include="Migrations\201403261401393_v7_PhantomIndexes.Designer.cs">
       <DependentUpon>201403261401393_v7_PhantomIndexes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604161443267_AddAccountApproval.cs" />
+    <Compile Include="Migrations\201604161443267_AddAccountApproval.Designer.cs">
+      <DependentUpon>201604161443267_AddAccountApproval.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -93,6 +97,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403261401393_v7_PhantomIndexes.resx">
       <DependentUpon>201403261401393_v7_PhantomIndexes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604161443267_AddAccountApproval.resx">
+      <DependentUpon>201604161443267_AddAccountApproval.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
