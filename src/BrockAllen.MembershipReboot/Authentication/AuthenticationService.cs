@@ -30,7 +30,7 @@ namespace BrockAllen.MembershipReboot
             this.ClaimsAuthenticationManager = claimsAuthenticationManager;
         }
 
-        protected abstract ClaimsPrincipal GetCurentPrincipal();
+        protected abstract ClaimsPrincipal GetCurrentPrincipal();
         protected abstract void IssueToken(ClaimsPrincipal principal, TimeSpan? tokenLifetime = null, bool? persistentCookie = null);
         protected abstract void RevokeToken();
 
@@ -57,6 +57,11 @@ namespace BrockAllen.MembershipReboot
             if (!account.IsLoginAllowed || account.IsAccountClosed)
             {
                 throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.LoginNotAllowed));
+            }
+
+            if (!account.IsAccountApproved && UserAccountService.Configuration.RequireAccountApproval)
+            {
+                throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotApproved));
             }
 
             if (!account.IsAccountVerified && UserAccountService.Configuration.RequireAccountVerification)
@@ -201,7 +206,7 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[AuthenticationService.SignInWithLinkedAccount] tenant: {0}, provider: {1}, id: {2}", tenant, providerName, providerAccountID);
 
-            var user = GetCurentPrincipal();
+            var user = GetCurrentPrincipal();
             if (user != null && user.Identity.IsAuthenticated)
             {
                 // already logged in, so use the current user's account
@@ -296,7 +301,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void SignOut()
         {
-            var p = this.GetCurentPrincipal();
+            var p = this.GetCurrentPrincipal();
             if (p.HasUserID())
             {
                 Tracing.Information("[AuthenticationService.SignOut] called: {0}", p.GetUserID());

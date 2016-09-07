@@ -123,7 +123,10 @@ namespace BrockAllen.MembershipReboot.Mvc.Areas.UserAccount.Controllers
                     BrockAllen.MembershipReboot.UserAccount account;
                     if (this.userAccountService.ChangePasswordFromResetKey(model.Key, model.Password, out account))
                     {
-                        if (account.IsLoginAllowed && !account.IsAccountClosed)
+                        AuthenticationFailureCode failureCode;
+                        this.userAccountService.Authenticate(this.userAccountService.Configuration.DefaultTenant,
+                            account.Username, model.Password, out account, out failureCode);
+                        if (failureCode == AuthenticationFailureCode.None)
                         {
                             this.authenticationService.SignIn(account);
                             if (account.RequiresTwoFactorAuthCodeToSignIn())

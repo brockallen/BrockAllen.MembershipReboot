@@ -80,7 +80,7 @@ namespace BrockAllen.MembershipReboot.Owin
                 MembershipRebootOwinConstants.AuthenticationTwoFactorType);
         }
 
-        protected override ClaimsPrincipal GetCurentPrincipal()
+        protected override ClaimsPrincipal GetCurrentPrincipal()
         {
             var u = context.Request.User;
             if (u != null && u.Identity.AuthenticationType == authenticationType)
@@ -163,7 +163,7 @@ namespace BrockAllen.MembershipReboot.Owin
                 MembershipRebootOwinConstants.AuthenticationTwoFactorType);
         }
 
-        protected override ClaimsPrincipal GetCurentPrincipal()
+        protected override ClaimsPrincipal GetCurrentPrincipal()
         {
             var u = context.Request.User;
             if (u != null && u.Identity.AuthenticationType == authenticationType)

@@ -26,9 +26,19 @@ namespace BrockAllen.MembershipReboot
 
         public virtual DateTime Created { get; protected internal set; }
         public virtual DateTime LastUpdated { get; protected internal set; }
+        public virtual bool IsAccountApproved { get { return AccountApproved.HasValue; } }
+        public virtual DateTime? AccountApproved { get; protected internal set; }
+        public virtual bool IsAccountRejected { get { return AccountRejected.HasValue; } }
+        public virtual DateTime? AccountRejected { get; protected internal set; }
         public virtual bool IsAccountClosed { get; protected internal set; }
         public virtual DateTime? AccountClosed { get; protected internal set; }
 
+        /// <summary>
+        /// Returns true when the account is locked
+        /// </summary>
+        /// <remarks>
+        /// An locked account will not be able to sign in
+        /// </remarks>
         public virtual bool IsLoginAllowed { get; protected internal set; }
         public virtual DateTime? LastLogin { get; protected internal set; }
         public virtual DateTime? LastFailedLogin { get; protected internal set; }

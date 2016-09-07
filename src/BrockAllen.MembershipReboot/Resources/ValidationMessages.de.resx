@@ -280,4 +280,7 @@ Bitte loggen Sie sich mit Ihrem lokalen Konto ein und weisen den Provider dann z
   <data name="InvalidCredentials" xml:space="preserve">
     <value>Ungültiger Benutzername oder Passwort.</value>
   </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>Zugriff auf das Konto ist nicht zugelassen.</value>
+  </data>
 </root>

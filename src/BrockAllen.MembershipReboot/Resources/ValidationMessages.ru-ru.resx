@@ -267,4 +267,7 @@
   <data name="UsernameRequired" xml:space="preserve">
     <value>Необходимо указать имя пользователя.</value>
   </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>Доступ к аккаунту не был утвержден.</value>
+  </data>
 </root>

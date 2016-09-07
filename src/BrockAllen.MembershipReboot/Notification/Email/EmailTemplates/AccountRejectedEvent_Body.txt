@@ -1,0 +1,5 @@
+﻿This email is to confirm that your account application with {applicationName} has been rejected at this time.
+
+Sorry for the inconvenience.
+
+{emailSignature}
