@@ -188,7 +188,7 @@ CREATE TABLE dbo.Tmp_LinkedAccountClaims
 	[Key] int NOT NULL IDENTITY (1, 1),
 	ParentKey int NULL,
 	UserAccountID uniqueidentifier NOT NULL,
-	ProviderName nvarchar(30) NOT NULL,
+	ProviderName nvarchar(200) NOT NULL,
 	ProviderAccountID nvarchar(100) NOT NULL,
 	Type nvarchar(150) NOT NULL,
 	Value nvarchar(150) NOT NULL
@@ -223,7 +223,7 @@ CREATE TABLE dbo.Tmp_LinkedAccounts
 	[Key] int NOT NULL IDENTITY (1, 1),
 	ParentKey int NULL,
 	UserAccountID uniqueidentifier NOT NULL,
-	ProviderName nvarchar(30) NOT NULL,
+	ProviderName nvarchar(200) NOT NULL,
 	ProviderAccountID nvarchar(100) NOT NULL,
 	LastLogin datetime NOT NULL
 	CONSTRAINT [PK_dbo.Tmp_LinkedAccounts] PRIMARY KEY CLUSTERED 
