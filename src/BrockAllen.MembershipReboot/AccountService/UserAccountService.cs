@@ -422,10 +422,13 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(phone)) return false;
 
-            var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
-            if (acct2 != null)
+            if (this.Configuration.MobilePhoneIsUnique)
             {
-                return account.ID != acct2.ID;
+                var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
+                if (acct2 != null)
+                {
+                    return account.ID != acct2.ID;
+                }
             }
             return false;
         }
@@ -1384,7 +1387,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccountService.Authenticate] cert: {0}", certificate.Thumbprint);
 
-            if (!(certificate.NotBefore < UtcNow && UtcNow < certificate.NotAfter))
+            var localNow = DateTime.Now;
+            if (!(certificate.NotBefore < localNow && localNow < certificate.NotAfter))
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- invalid certificate dates");
                 this.AddEvent(new InvalidCertificateEvent<TAccount> { Account = account, Certificate = certificate });
@@ -1593,7 +1597,8 @@ namespace BrockAllen.MembershipReboot
 
             ValidatePassword(account, newPassword);
 
-            if (!account.IsAccountVerified)
+            // IsAccountVerified checks should be consistent with Configuration.RequireAccountVerification
+            if (Configuration.RequireAccountVerification && !account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccountService.ChangePasswordFromResetKey] failed -- account not verified");
                 return false;
@@ -1792,7 +1797,8 @@ namespace BrockAllen.MembershipReboot
             var account = this.GetByEmail(tenant, email);
             if (account == null) throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.InvalidEmail));
 
-            if (!account.IsAccountVerified)
+            // IsAccountVerified checks should be consistent with Configuration.RequireAccountVerification
+            if (Configuration.RequireAccountVerification && !account.IsAccountVerified)
             {
                 Tracing.Error("[UserAccountService.SendUsernameReminder] failed -- account not verified");
                 throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotVerified));
@@ -2300,7 +2306,8 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.PasswordResetErrorNoEmail));
             }
 
-            if (!account.IsAccountVerified)
+            // IsAccountVerified checks should be consistent with Configuration.RequireAccountVerification
+            if (Configuration.RequireAccountVerification && !account.IsAccountVerified)
             {
                 // if they've not yet verified then don't allow password reset
                 if (account.IsNew())
@@ -2948,7 +2955,7 @@ namespace BrockAllen.MembershipReboot
                 this.AddEvent(new CertificateRemovedEvent<TAccount> { Account = account, Certificate = cert });
                 account.RemoveCertificate(cert);
             }
-            Tracing.Error("[UserAccountService.RemoveCertificate] certs removed: {0}", certs.Length);
+            Tracing.Verbose("[UserAccountService.RemoveCertificate] certs removed: {0}", certs.Length);
 
             if (!account.Certificates.Any() &&
                 account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)

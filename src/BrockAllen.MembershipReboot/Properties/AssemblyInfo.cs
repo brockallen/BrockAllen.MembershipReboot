@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BrockAllen.MembershipReboot")]
+[assembly: AssemblyTitle("BrockAllen.MembershipReboot - sfera")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Brock Allen Consulting, LLC")]
@@ -35,4 +35,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("8.4.0.0")]
-[assembly: AssemblyFileVersion("8.4.0.0")]
+[assembly: AssemblyFileVersion("8.4.1.1")]
