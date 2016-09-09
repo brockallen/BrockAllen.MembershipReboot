@@ -71,7 +71,8 @@ namespace BrockAllen.MembershipReboot
             var count = iterations;
             if (count <= 0)
             {
-                count = GetIterationsFromYear(GetCurrentYear());
+                //count = GetIterationsFromYear(GetCurrentYear());
+                count = 50000; // changed to a default of 50K due to outdated OWASP/PKCS
             }
             var result = Crypto.HashPassword(password, count);
             return EncodeIterations(count) + PasswordHashingIterationCountSeparator + result;
