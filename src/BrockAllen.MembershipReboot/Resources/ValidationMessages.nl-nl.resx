@@ -126,6 +126,9 @@
   <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
     <value>Kan geen account aanmaken omdat er geen e-mailadres van de identiteitsprovider aanwezig is.</value>
   </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>Account toegang is niet goedgekeurd.</value>
+  </data>
   <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
     <value>Om in te loggen, moet deze account worden geconfigureerd met certificaten.</value>
   </data>

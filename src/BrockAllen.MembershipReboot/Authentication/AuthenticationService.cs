@@ -59,6 +59,11 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.LoginNotAllowed));
             }
 
+            if (!account.IsAccountApproved && UserAccountService.Configuration.RequireAccountApproval)
+            {
+                throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotApproved));
+            }
+
             if (!account.IsAccountVerified && UserAccountService.Configuration.RequireAccountVerification)
             {
                 throw new ValidationException(UserAccountService.GetValidationMessage(MembershipRebootConstants.ValidationMessages.AccountNotVerified));

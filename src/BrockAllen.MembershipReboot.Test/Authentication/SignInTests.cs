@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -13,13 +14,14 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
         TestAuthenticationService subject;
         UserAccountService userAccountService;
         FakeUserAccountRepository repository;
+        private MembershipRebootConfiguration configuration;
 
         [TestInitialize]
         public void Init()
         {
             SecuritySettings.Instance.PasswordHashingIterationCount = 1; // tests will run faster
 
-            var configuration = new MembershipRebootConfiguration
+            configuration = new MembershipRebootConfiguration
             {
                 RequireAccountVerification = false,
                 PasswordResetFrequency = 1 // every day
@@ -103,6 +105,56 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             AssertHasBasicClaims(subject.CurrentPrincipal);
             Assert.AreEqual(PartialAuthReason.PasswordExpired, subject.CurrentPrincipal.GetPartialAuthReason());
             Assert.IsFalse(subject.CurrentPrincipal.HasClaim("TestClaim"));
+        }
+
+        [TestMethod]
+        public void SignedIn_LoginNotAllowed_Throws()
+        {
+            // given... 
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            userAccountService.SetIsLoginAllowed(acc.ID, false);
+
+            // when
+            try
+            {
+                subject.SignIn(acc, "Bearer");
+                Assert.Fail();
+            }
+            catch (ValidationException) { }
+        }
+
+        
+        [TestMethod]
+        public void SignedIn_AccountClosed_Throws()
+        {
+            // given... 
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            userAccountService.CloseAccount(acc.ID);
+
+            // when
+            try
+            {
+                subject.SignIn(acc, "Bearer");
+                Assert.Fail();
+            }
+            catch (ValidationException) { }
+        }
+
+        [TestMethod]
+        public void SignedIn_RequiresApproval_AccountUnappoved_Throws()
+        {
+            // given... 
+            configuration.RequireAccountApproval = true;
+            UserAccount acc = userAccountService.CreateAccount("test", "abcdefg123", "test@gmail.com");
+            Assert.IsFalse(acc.IsAccountApproved, "checking assumptions");
+
+            // when
+            try
+            {
+                subject.SignIn(acc, "Bearer");
+                Assert.Fail();
+            }
+            catch (ValidationException) { }
         }
 
         private void AssertHasBasicClaims(ClaimsPrincipal signingInUser)

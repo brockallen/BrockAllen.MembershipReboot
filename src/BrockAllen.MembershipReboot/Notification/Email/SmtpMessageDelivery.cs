@@ -24,6 +24,10 @@ namespace BrockAllen.MembershipReboot
         public void Send(Message msg)
         {
             Tracing.Information("[SmtpMessageDelivery.Send] sending mail to " + msg.To);
+            if (!String.IsNullOrWhiteSpace(msg.Cc))
+            {
+                Tracing.Information("[SmtpMessageDelivery.Send] cc'ing mail to " + msg.Cc);
+            }
 
             if (String.IsNullOrWhiteSpace(msg.From))
             {
@@ -40,6 +44,13 @@ namespace BrockAllen.MembershipReboot
                     {
                         IsBodyHtml = SendAsHtml
                     };
+                    if (!String.IsNullOrWhiteSpace(msg.Cc))
+                    {
+                        foreach (string email in msg.Cc.Split(',', ';'))
+                        {
+                            mailMessage.CC.Add(email);
+                        }
+                    }
                     smtp.Send(mailMessage);
                 }
                 catch (SmtpException e)

@@ -57,12 +57,34 @@ namespace BrockAllen.MembershipReboot
                 {
                     msg.To = evt.Account.Email;
                 }
+
+                msg = CustomizeEmail(msg, evt, data);
                 
-                if (!String.IsNullOrWhiteSpace(msg.To))
+                if (msg != null && !String.IsNullOrWhiteSpace(msg.To))
                 {
                     this.messageDelivery.Send(msg);
                 }
             }
+        }
+
+        /// <summary>
+        /// Apply transformations on the <paramref name="message"/> just before it is sent
+        /// </summary>
+        /// <remarks>
+        /// Tip: Override this method to changes things like the email recipient(s)
+        /// <para>
+        /// A note to subclass implementors: whatever message is returned by this override will be the one that 
+        /// is sent. The message you return can be the same as the <paramref name="message"/> supplied.
+        /// If you do not return a message then no email will be sent.
+        /// </para>
+        /// </remarks>
+        /// <param name="message"></param>
+        /// <param name="evt"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        protected virtual Message CustomizeEmail(Message message, UserAccountEvent<TAccount> evt, Dictionary<string, string> data)
+        {
+            return message;
         }
     }
 
@@ -74,6 +96,8 @@ namespace BrockAllen.MembershipReboot
         IEventHandler<PasswordResetSecretAddedEvent<T>>,
         IEventHandler<PasswordResetSecretRemovedEvent<T>>,
         IEventHandler<UsernameReminderRequestedEvent<T>>,
+        IEventHandler<AccountApprovedEvent<T>>,
+        IEventHandler<AccountRejectedEvent<T>>,
         IEventHandler<AccountClosedEvent<T>>,
         IEventHandler<AccountReopenedEvent<T>>,
         IEventHandler<AccountUnlockedEvent<T>>,
@@ -129,6 +153,16 @@ namespace BrockAllen.MembershipReboot
         }
 
         public void Handle(AccountClosedEvent<T> evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(AccountApprovedEvent<T> evt)
+        {
+            Process(evt);
+        }
+
+        public void Handle(AccountRejectedEvent<T> evt)
         {
             Process(evt);
         }

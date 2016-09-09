@@ -24,6 +24,9 @@ namespace BrockAllen.MembershipReboot
         public string VerificationKey { get; set; }
     }
 
+    public class AccountApprovedEvent<T> : UserAccountEvent<T> { }
+    public class AccountRejectedEvent<T> : UserAccountEvent<T> { }
+
     public class AccountUnlockedEvent<T> : UserAccountEvent<T> { }
 
     public class PasswordResetFailedEvent<T> : UserAccountEvent<T> { }

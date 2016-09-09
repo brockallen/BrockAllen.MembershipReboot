@@ -279,4 +279,7 @@
   <data name="InvalidCredentials" xml:space="preserve">
     <value>Virheellinen käyttäjänimi tai salasana.</value>
   </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>Tilin pääsy ei ole hyväksytty.</value>
+  </data>
 </root>
