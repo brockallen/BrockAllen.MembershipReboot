@@ -63,23 +63,6 @@
     <Compile Include="DefaultUserAccountRepository.cs" />
     <Compile Include="DefaultGroupRepository.cs" />
     <Compile Include="DefaultMembershipRebootDatabase.cs" />
-    <Compile Include="Migrations\201403032007363_v7_InitialCreate.cs" />
-    <Compile Include="Migrations\201403032007363_v7_InitialCreate.Designer.cs">
-      <DependentUpon>201403032007363_v7_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403032007511_v7_Indexes.cs" />
-    <Compile Include="Migrations\201403032007511_v7_Indexes.Designer.cs">
-      <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403261401393_v7_PhantomIndexes.cs" />
-    <Compile Include="Migrations\201403261401393_v7_PhantomIndexes.Designer.cs">
-      <DependentUpon>201403261401393_v7_PhantomIndexes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201604161443267_AddAccountApproval.cs" />
-    <Compile Include="Migrations\201604161443267_AddAccountApproval.Designer.cs">
-      <DependentUpon>201604161443267_AddAccountApproval.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -87,20 +70,6 @@
       <Project>{a33fe01f-ae9b-4bde-b521-ab13916b1cfa}</Project>
       <Name>BrockAllen.MembershipReboot</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403032007363_v7_InitialCreate.resx">
-      <DependentUpon>201403032007363_v7_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403032007511_v7_Indexes.resx">
-      <DependentUpon>201403032007511_v7_Indexes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403261401393_v7_PhantomIndexes.resx">
-      <DependentUpon>201403261401393_v7_PhantomIndexes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604161443267_AddAccountApproval.resx">
-      <DependentUpon>201604161443267_AddAccountApproval.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
