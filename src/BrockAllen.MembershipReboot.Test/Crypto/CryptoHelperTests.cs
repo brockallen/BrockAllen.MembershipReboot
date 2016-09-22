@@ -22,14 +22,14 @@ namespace BrockAllen.MembershipReboot.Test.Crypto
         TestCrypto crypto = new TestCrypto();
         MembershipRebootConfiguration config = new MembershipRebootConfiguration();
 
-        const int IterationsForCurrentYear = 64000;
+        const int DefaultIterationCount = 50000;
 
         [TestMethod]
         public void HashPassword_CountStoredInHashedPassword()
         {
             {
                 var result = crypto.HashPassword("pass", new SecuritySettings().PasswordHashingIterationCount);
-                StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator, "Default Count");
+                StringAssert.StartsWith(result, crypto.EncodeIterations(DefaultIterationCount) + DefaultCrypto.PasswordHashingIterationCountSeparator, "Default Count");
             }
             {
                 SecuritySettings.Instance.PasswordHashingIterationCount = 5000;
@@ -49,17 +49,17 @@ namespace BrockAllen.MembershipReboot.Test.Crypto
         }
 
         [TestMethod]
-        public void NegativeCount_UsesCurrentYearPrefix()
+        public void NegativeCount_UsesDefaultPrefix()
         {
             var result = crypto.HashPassword("pass", -1);
-            StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator);
+            StringAssert.StartsWith(result, crypto.EncodeIterations(DefaultIterationCount) + DefaultCrypto.PasswordHashingIterationCountSeparator);
         }
 
         [TestMethod]
-        public void ZeroCount_UsesCurrentYearPrefix()
+        public void ZeroCount_UsesDefaultPrefix()
         {
             var result = crypto.HashPassword("pass", 0);
-            StringAssert.StartsWith(result, crypto.EncodeIterations(IterationsForCurrentYear) + DefaultCrypto.PasswordHashingIterationCountSeparator);
+            StringAssert.StartsWith(result, crypto.EncodeIterations(DefaultIterationCount) + DefaultCrypto.PasswordHashingIterationCountSeparator);
         }
 
         [TestMethod]

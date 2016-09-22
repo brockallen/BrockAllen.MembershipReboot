@@ -17,6 +17,7 @@
         AccountNotVerified,
         FailedLoginAttemptsExceeded,
         InvalidCredentials,
-        LoginNotAllowed
+        LoginNotAllowed,
+        AccountNotApproved
     }
 }

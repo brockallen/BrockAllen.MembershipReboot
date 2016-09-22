@@ -19,6 +19,9 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
     [TestClass]
     public class UserAccountServiceTests
     {
+        CaptureLatestEvent<AccountUnlockedEvent<UserAccount>, UserAccount> accountUnlockedEvent;
+        CaptureLatestEvent<AccountApprovedEvent<UserAccount>, UserAccount> accountApprovedEvent;
+        CaptureLatestEvent<AccountRejectedEvent<UserAccount>, UserAccount> accountRejectedEvent;
         TestUserAccountService subject;
         FakeUserAccountRepository repository;
         MembershipRebootConfiguration configuration;
@@ -39,6 +42,13 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration = new MembershipRebootConfiguration();
             key = new KeyNotification();
             configuration.AddEventHandler(key);
+            accountUnlockedEvent = CaptureLatestEvent.For<AccountUnlockedEvent<UserAccount>>();
+            configuration.AddEventHandler(accountUnlockedEvent);
+            accountApprovedEvent = CaptureLatestEvent.For<AccountApprovedEvent<UserAccount>>();
+            configuration.AddEventHandler(accountApprovedEvent);
+            accountRejectedEvent = CaptureLatestEvent.For<AccountRejectedEvent<UserAccount>>();
+            configuration.AddEventHandler(accountRejectedEvent);
+
             repository = new FakeUserAccountRepository();
             subject = new TestUserAccountService(configuration, repository);
         }
@@ -227,6 +237,7 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             configuration.AllowLoginAfterAccountCreation = true;
             subject.CreateAccount("test", "pass", "test@test.com");
             Assert.IsTrue(subject.Authenticate("test", "pass"));
+            Assert.IsNull(accountUnlockedEvent.Latest);
         }
 
         [TestMethod]
@@ -810,6 +821,34 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void VerifyEmailFromKey_Success_Raises_EmailVerifiedEvent_New_Account()
+        {
+            var emailVerifiedEvent = CaptureLatestEvent.For<EmailVerifiedEvent<UserAccount>>();
+            configuration.AddEventHandler(emailVerifiedEvent);
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
+            subject.CreateAccount("test", "pass", "test@test.com");
+
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            Assert.IsTrue(emailVerifiedEvent.Latest.IsNewAccount);
+        }
+
+        [TestMethod]
+        public void VerifyEmailFromKey_Success_Raises_EmailVerifiedEvent_Account_Existing_Account()
+        {
+            var emailVerifiedEvent = CaptureLatestEvent.For<EmailVerifiedEvent<UserAccount>>();
+            configuration.AddEventHandler(emailVerifiedEvent);
+            configuration.AllowLoginAfterAccountCreation = true;
+            configuration.RequireAccountVerification = true;
+            var account = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            subject.ChangeEmailRequest(account.ID, account.Email);
+
+            subject.VerifyEmailFromKey(LastVerificationKey, "pass");
+            Assert.IsFalse(emailVerifiedEvent.Latest.IsNewAccount);
+        }
+
+        [TestMethod]
         public void CancelVerification_CloseAccount()
         {
             var acct = subject.CreateAccount("test", "pass", "test@test.com");
@@ -948,6 +987,170 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void RejectAccount_RejectsAccount()
+        {
+            // given
+            var now = new DateTime(2012, 2, 3, 4, 5, 6);
+            subject.Now = now;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+
+            // when
+            subject.RejectAccount(acct.ID);
+
+            // then
+            acct = repository.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsAccountRejected);
+            Assert.AreEqual(now, acct.AccountRejected);
+            Assert.IsTrue(repository.UpdateWasCalled);
+        }
+
+        [TestMethod]
+        public void RejectAccount_Raises_AccountRejectedEvent()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.RejectAccount(acct.ID);
+            Assert.IsNotNull(accountRejectedEvent.Latest);
+        }
+
+        [TestMethod]
+        public void RejectAccount_AlreadyRejected_Ignored()
+        {
+            // given
+            var previously = new DateTime(2012, 2, 3, 4, 5, 6);
+            subject.Now = previously;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.RejectAccount(acct.ID);
+            repository.UpdateWasCalled = false; // reset
+            subject.Now = new DateTime(2016, 2, 3, 4, 5, 6);
+
+            // when
+            subject.RejectAccount(acct.ID);
+
+            // then
+            acct = repository.GetByID(acct.ID);
+            Assert.AreEqual(previously, acct.AccountRejected);
+            Assert.IsFalse(repository.UpdateWasCalled);
+        }
+
+        [TestMethod]
+        public void RejectAccount_AlreadyApproved_Throws()
+        {
+            // given
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.ApproveAccount(acct.ID);
+
+            // when,then
+            try
+            {
+                subject.RejectAccount(acct.ID);
+                Assert.Fail();
+            }
+            catch (ValidationException) {}
+        }
+
+        [TestMethod]
+        public void RejectAccount_AccountClosed_Throws()
+        {
+            // given
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.CloseAccount(acct.ID);
+
+            // when,then
+            try
+            {
+                subject.RejectAccount(acct.ID);
+                Assert.Fail();
+            }
+            catch (ValidationException) {}
+        }
+
+        [TestMethod]
+        public void ApproveAccount_ApprovesAccount()
+        {
+            // given
+            var now = new DateTime(2012, 2, 3, 4, 5, 6);
+            subject.Now = now;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+
+            // when
+            subject.ApproveAccount(acct.ID);
+
+            // then
+            acct = repository.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsAccountApproved);
+            Assert.AreEqual(now, acct.AccountApproved);
+            Assert.IsTrue(repository.UpdateWasCalled);
+        }
+
+        [TestMethod]
+        public void ApproveAccount_Raises_AccountApprovedEvent()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.ApproveAccount(acct.ID);
+            Assert.IsNotNull(accountApprovedEvent.Latest);
+        }
+
+
+        [TestMethod]
+        public void ApproveAccount_AlreadyApproved_Ignored()
+        {
+            // given
+            var previously = new DateTime(2012, 2, 3, 4, 5, 6);
+            subject.Now = previously;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.ApproveAccount(acct.ID);
+            repository.UpdateWasCalled = false; // reset
+            subject.Now = new DateTime(2016, 2, 3, 4, 5, 6);
+
+            // when
+            subject.ApproveAccount(acct.ID);
+
+            // then
+            acct = repository.GetByID(acct.ID);
+            Assert.AreEqual(previously, acct.AccountApproved);
+            Assert.IsFalse(repository.UpdateWasCalled);
+        }
+
+        [TestMethod]
+        public void ApproveAccount_AccountRejected_ApprovesAccount()
+        {
+            // given
+            var now = new DateTime(2012, 2, 3, 4, 5, 6);
+            subject.Now = now;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.RejectAccount(acct.ID);
+            repository.UpdateWasCalled = false; // reset
+
+            // when
+            subject.ApproveAccount(acct.ID);
+
+            // then
+            acct = repository.GetByID(acct.ID);
+            Assert.IsTrue(acct.IsAccountApproved);
+            Assert.AreEqual(now, acct.AccountApproved);
+            Assert.IsFalse(acct.IsAccountRejected);
+            Assert.IsNull(acct.AccountRejected);
+            Assert.IsTrue(repository.UpdateWasCalled);
+        }
+
+        [TestMethod]
+        public void ApproveAccount_AccountClosed_Throws()
+        {
+            // given
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            subject.CloseAccount(acct.ID);
+
+            // when,then
+            try
+            {
+                subject.ApproveAccount(acct.ID);
+                Assert.Fail();
+            }
+            catch (ValidationException) { }
+        }
+
+
+        [TestMethod]
         public void Authenticate_ValidCredentials_ReturnsTrue()
         {
             configuration.RequireAccountVerification = false;
@@ -1053,6 +1256,18 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void Authenticate_ApprovalRequired_AccountNotApproved_Fails()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.RequireAccountApproval = true;
+
+            subject.CreateAccount("test", "pass", "test@test.com");
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountNotApproved, failureCode);
+        }
+
+        [TestMethod]
         public void Authenticate_LoginNotAllowed_Fails()
         {
             this.configuration.RequireAccountVerification = false;
@@ -1075,6 +1290,20 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
             Assert.AreEqual(AuthenticationFailureCode.AccountClosed, failureCode);
         }
+
+        [TestMethod]
+        public void Authenticate_AccountClosedAndNotApproved_FailsWithAccountClosed()
+        {
+            this.configuration.RequireAccountVerification = false;
+            this.configuration.RequireAccountApproval = true;
+
+            var acc = subject.CreateAccount("test", "pass", "test@test.com");
+            acc.IsAccountClosed = true;
+            AuthenticationFailureCode failureCode;
+            Assert.IsFalse(subject.Authenticate("test", "pass", out failureCode));
+            Assert.AreEqual(AuthenticationFailureCode.AccountClosed, failureCode);
+        }
+
 
         [TestMethod]
         public void Authenticate_AccountMissingPassword_Fails()
@@ -2539,6 +2768,59 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
                 Assert.AreEqual(Resources.ValidationMessages.MobilePhoneAlreadyInUse, ex.Message);
             }
         }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_IsLoginAllowed()
+        {
+            // given
+            configuration.AllowLoginAfterAccountCreation = false;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when, then
+            subject.SetIsLoginAllowed(acct.ID, true);
+            Assert.IsTrue(subject.GetByID(acct.ID).IsLoginAllowed);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountLocked_WhenTrue_RaisesAccountUnlockedEvent()
+        {
+            // given
+            configuration.AllowLoginAfterAccountCreation = false;
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsFalse(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when
+            subject.SetIsLoginAllowed(acct.ID, true);
+
+            // then
+            Assert.IsNotNull(accountUnlockedEvent.Latest);
+            Assert.AreEqual(acct, accountUnlockedEvent.Latest.Account);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountUnlocked_WhenTrue_DoesNotRaiseAccountUnlockedEvent()
+        {
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(acct.IsLoginAllowed, "Checking assumptions");
+            subject.SetIsLoginAllowed(acct.ID, true);
+            Assert.IsNull(accountUnlockedEvent.Latest);
+        }
+
+        [TestMethod]
+        public void SetIsLoginAllowed_AccountLocked_WhenFalse_DoesNotRaiseAccountUnlockedEvent()
+        {
+            // given
+            var acct = subject.CreateAccount("test", "pass", "test@test.com");
+            Assert.IsTrue(acct.IsLoginAllowed, "Checking assumptions");
+
+            // when
+            subject.SetIsLoginAllowed(acct.ID, true);
+
+            // then
+            Assert.IsNull(accountUnlockedEvent.Latest);
+        }
+
 
         [TestMethod]
         public void AddClaim_AddsTheClaim()

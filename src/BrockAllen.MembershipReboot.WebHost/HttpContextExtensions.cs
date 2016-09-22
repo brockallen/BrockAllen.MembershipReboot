@@ -31,7 +31,7 @@ namespace BrockAllen.MembershipReboot.WebHost
             var baseUrl =
                 request.Url.Scheme +
                 "://" +
-                request.Url.Host + (request.Url.Port == 80 ? "" : ":" + request.Url.Port) +
+                request.Url.Host + (request.Url.Port == 80 || request.Url.Port == 443 ? "" : ":" + request.Url.Port) +
                 request.ApplicationPath;
             if (!baseUrl.EndsWith("/")) baseUrl += "/";
 

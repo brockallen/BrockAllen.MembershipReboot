@@ -88,6 +88,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account access has not been approved..
+        /// </summary>
+        public static string AccountNotApproved {
+            get {
+                return ResourceManager.GetString("AccountNotApproved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to To login, this account must be configured to use the authenticator app..
         /// </summary>
         public static string AccountNotConfiguredWithAuthenticator {
@@ -453,6 +462,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         public static string RegisterMobileForTwoFactor {
             get {
                 return ResourceManager.GetString("RegisterMobileForTwoFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account already approved..
+        /// </summary>
+        public static string RejectAlreadyApproved {
+            get {
+                return ResourceManager.GetString("RejectAlreadyApproved", resourceCulture);
             }
         }
         

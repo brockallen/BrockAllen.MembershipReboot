@@ -118,168 +118,165 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAlreadyVerified" xml:space="preserve">
-    <value>Epostadressen for denne kontoen er allerede verifisert.</value>
-  </data>
-  <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
-    <value>Konto kan ikke opprettes fordi det mangler en epost fra identitetstilbyderen.</value>
-  </data>
-  <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
-    <value>Kontoen er ikke konfigurert for å benytte sikkerhetsspørsmål og -svar. </value>
-  </data>
-  <data name="AccountNotVerified" xml:space="preserve">
-    <value>Epostadressen for denne kontoen er ikke verifisert enda.</value>
-  </data>
-  <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
-    <value>Denne kontoen krever et sikkerhetsspørsmål og -svar.</value>
-  </data>
-  <data name="AddClientCertForTwoFactor" xml:space="preserve">
-    <value>Legg til et klientsertifikat for å aktivere 2-faktor autentisering.</value>
-  </data>
-  <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
-    <value>Du må sette et passord på den lokale kontoen før du fjerner den siste eksterne påloggstilbyderen. </value>
-  </data>
-  <data name="CertificateAlreadyInUse" xml:space="preserve">
-    <value>Dette sertifikatet er allerede i bruk av en annen konto</value>
-  </data>
-  <data name="CodeRequired" xml:space="preserve">
-    <value>Kode kreves.</value>
-  </data>
-  <data name="EmailAlreadyInUse" xml:space="preserve">
-    <value>Epostadressen er allerede i bruk.</value>
-  </data>
-  <data name="EmailRequired" xml:space="preserve">
-    <value>Epost er påkrevet.</value>
-  </data>
-  <data name="InvalidCertificate" xml:space="preserve">
-    <value>Ugyldig sertifikat</value>
-  </data>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>Ugyldig epost.</value>
-  </data>
-  <data name="InvalidKey" xml:space="preserve">
-    <value>Ugyldig nøkkel.</value>
-  </data>
-  <data name="InvalidName" xml:space="preserve">
-    <value>Ugyldig navn.</value>
-  </data>
-  <data name="InvalidNewPassword" xml:space="preserve">
-    <value>Ugyldig nytt passord.</value>
-  </data>
-  <data name="InvalidOldPassword" xml:space="preserve">
-    <value>Ugyldig gammelt passord.</value>
-  </data>
-  <data name="InvalidPassword" xml:space="preserve">
-    <value>Ugyldig passord.</value>
-  </data>
-  <data name="InvalidPhone" xml:space="preserve">
-    <value>Ugyldig telefonnummer.</value>
-  </data>
-  <data name="InvalidQuestionOrAnswer" xml:space="preserve">
-    <value>Ugyldig sikkerhetsspørsmål.</value>
-  </data>
-  <data name="InvalidTenant" xml:space="preserve">
-    <value>Ugyldig leietaker.</value>
-  </data>
-  <data name="InvalidUsername" xml:space="preserve">
-    <value>Ugyldig brukernavn.</value>
-  </data>
-  <data name="LinkedAccountAlreadyInUse" xml:space="preserve">
-    <value>Den eksterne kontoen er allerede knyttet til en annen bruker.</value>
-  </data>
-  <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
-    <value>Kan ikke logge inn med denne påloggstilbyderen fordi e-posten allerede er knyttet til en annen konto. Logg deg inn med din lokale konto og deretter knytt til deg påloggstilbyderen.</value>
-  </data>
-  <data name="LoginNotAllowed" xml:space="preserve">
-    <value>Login ikke tillatt for denne kontoen.</value>
-  </data>
-  <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
-    <value>Mobiltelefonen er allerede i bruk av en annen konto. </value>
-  </data>
-  <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
-    <value>Mobilnummer må være forskjellig da den nåværende. </value>
-  </data>
-  <data name="MobilePhoneRequired" xml:space="preserve">
-    <value>Mobiltelefonnummer er påkrevet felt.  </value>
-  </data>
-  <data name="NameAlreadyInUse" xml:space="preserve">
-    <value>Det navnet er allerede i bruk. </value>
-  </data>
-  <data name="NameRequired" xml:space="preserve">
-    <value>Navn er påkrevd. </value>
-  </data>
-  <data name="NewPasswordMustBeDifferent" xml:space="preserve">
-    <value>Det nye passordet må være annerledes enn det gamle passordet. </value>
-  </data>
-  <data name="ParentGroupAlreadyChild" xml:space="preserve">
-    <value>Den overordnede gruppen er allerede et barn av barnegruppen. </value>
-  </data>
-  <data name="ParentGroupSameAsChild" xml:space="preserve">
-    <value>Foreldre og barn er den samme gruppen.</value>
-  </data>
-  <data name="PasswordComplexityRules" xml:space="preserve">
-    <value>Passordet må inneholde minst {0} av følgende tegn: en stor bokstav, en liten bokstav, ett tall og ett annet.</value>
-  </data>
-  <data name="PasswordLength" xml:space="preserve">
-    <value>Passord må være minst {0} tegn. </value>
-  </data>
-  <data name="PasswordRequired" xml:space="preserve">
-    <value>Passord er påkrevd. </value>
-  </data>
-  <data name="PasswordResetErrorNoEmail" xml:space="preserve">
-    <value>Reset passord er ikke mulig siden det ikke er noen e-post adresse for denne kontoen. </value>
-  </data>
-  <data name="RegisterMobileForTwoFactor" xml:space="preserve">
-    <value>Registrer et mobilnummer for å aktivere mobil 2-faktor autentisering. </value>
-  </data>
-  <data name="ReopenErrorNoEmail" xml:space="preserve">
-    <value>Gjenåpning av konto er ikke mulig siden det ikke er noen e-postadresse for denne kontoen. </value>
-  </data>
-  <data name="SecretAnswerRequired" xml:space="preserve">
-    <value>Hemmelig svar påkrevd. </value>
-  </data>
-  <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
-    <value>Det sikkerhetsspørsmålet for tilbakestilling av passordet er allerede i bruk. </value>
-  </data>
-  <data name="SecretQuestionRequired" xml:space="preserve">
-    <value>Sikkerhetsspørsmål er påkrevet. </value>
-  </data>
-  <data name="TenantRequired" xml:space="preserve">
-    <value>Leietaker er nødvendig. </value>
-  </data>
-  <data name="UsernameAlreadyInUse" xml:space="preserve">
-    <value>Brukernavn er allerede er i bruk.</value>
-  </data>
-  <data name="UsernameCannotContainAtSign" xml:space="preserve">
-    <value>Brukernavn kan ikke inneholde '@'-tegnet. </value>
-  </data>
-  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
-    <value>Brukernavn kan ikke ha to mellomrom, punktum, bindestrek eller understrek ved siden av hverandre. </value>
-  </data>
-  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
-    <value>Brukernavn kan kun begynne eller ende med en bokstav eller et tall. </value>
-  </data>
-  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
-    <value>Brukernavn kan bare inneholde bokstaver, tall, mellomrom, punktum, bindestrek eller understrek. </value>
-  </data>
-  <data name="UsernameRequired" xml:space="preserve">
-    <value>Brukernavn er påkrevd. </value>
+    <value>O endereço de email para esta conta já está verificado.</value>
   </data>
   <data name="AccountClosed" xml:space="preserve">
-    <value>Kontoen stengt.</value>
+    <value>Conta fechada.</value>
+  </data>
+  <data name="AccountCreateFailNoEmailFromIdp" xml:space="preserve">
+    <value>Não é possível criar uma conta porque o provedor de identidade não contém email.</value>
   </data>
   <data name="AccountNotConfiguredWithCertificates" xml:space="preserve">
-    <value>For å logge inn, må denne kontoen konfigureres med sertifikater.</value>
+    <value>Para logar precisa configurar um certificado.</value>
   </data>
   <data name="AccountNotConfiguredWithMobilePhone" xml:space="preserve">
-    <value>For å logge inn, må denne kontoen konfigureres med mobilnummer.</value>
+    <value>Para logar é necessário que seja configurado um número de telefone móvel.</value>
+  </data>
+  <data name="AccountNotConfiguredWithSecretQuestion" xml:space="preserve">
+    <value>Não foi configurado uma pergunta ou resposta secreta para esta conta.</value>
+  </data>
+  <data name="AccountNotVerified" xml:space="preserve">
+    <value>O endereço de email desta conta ainda não foi verificado.</value>
+  </data>
+  <data name="AccountPasswordResetRequiresSecretQuestion" xml:space="preserve">
+    <value>Esta conta requer uma pergunta e resposta secreta para resetar a senha.</value>
+  </data>
+  <data name="AddClientCertForTwoFactor" xml:space="preserve">
+    <value>Adicione um cliente certificado para habilitar a autenticação de duas fases.</value>
+  </data>
+  <data name="CantRemoveLastLinkedAccountIfNoPassword" xml:space="preserve">
+    <value>Você precisa configurar uma senha para a conta local antes de remover o último provedor externo.</value>
+  </data>
+  <data name="CertificateAlreadyInUse" xml:space="preserve">
+    <value>Este certificado já está em uso por uma conta diferente.</value>
+  </data>
+  <data name="CodeRequired" xml:space="preserve">
+    <value>Código obrigatório.</value>
+  </data>
+  <data name="EmailAlreadyInUse" xml:space="preserve">
+    <value>Email já está em uso.</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email obrigatório.</value>
   </data>
   <data name="FailedLoginAttemptsExceeded" xml:space="preserve">
-    <value>Innloggingsforsøk er overskredet.</value>
+    <value>Tentativas de login excedeu o limite.</value>
+  </data>
+  <data name="InvalidCertificate" xml:space="preserve">
+    <value>Certificado inválido.</value>
   </data>
   <data name="InvalidCredentials" xml:space="preserve">
-    <value>Ugyldig brukernavn eller passord.</value>
+    <value>Usuário ou senha inválido.</value>
   </data>
-  <data name="AccountNotApproved" xml:space="preserve">
-    <value>Kontotilgangen er ikke godkjent.</value>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Email inválido.</value>
+  </data>
+  <data name="InvalidKey" xml:space="preserve">
+    <value>Chave inválida.</value>
+  </data>
+  <data name="InvalidName" xml:space="preserve">
+    <value>Nome inválido.</value>
+  </data>
+  <data name="InvalidNewPassword" xml:space="preserve">
+    <value>Nova senha inválida.</value>
+  </data>
+  <data name="InvalidOldPassword" xml:space="preserve">
+    <value>Senha antiga inválida.</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Senha inválida.</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>Número de telefone inválido.</value>
+  </data>
+  <data name="InvalidQuestionOrAnswer" xml:space="preserve">
+    <value>Pergunta ou resposta secreta inválida.</value>
+  </data>
+  <data name="InvalidTenant" xml:space="preserve">
+    <value>Tenant inválido.</value>
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value>Usuário inválido.</value>
+  </data>
+  <data name="LinkedAccountAlreadyInUse" xml:space="preserve">
+    <value>A conta externa já está associada a outro usuário.</value>
+  </data>
+  <data name="LoginFailEmailAlreadyAssociated" xml:space="preserve">
+    <value>Não é possível logar com este provedor porque o email já está associado a outra conta. Por favor, logue com sua conta local e entao vincule ao provedor.</value>
+  </data>
+  <data name="LoginNotAllowed" xml:space="preserve">
+    <value>Login não está habilitado para está conta.</value>
+  </data>
+  <data name="MobilePhoneAlreadyInUse" xml:space="preserve">
+    <value>O número de telefone já está em uso em outra conta.</value>
+  </data>
+  <data name="MobilePhoneMustBeDifferent" xml:space="preserve">
+    <value>O número de telefone precisa ser diferente do atual.</value>
+  </data>
+  <data name="MobilePhoneRequired" xml:space="preserve">
+    <value>Número do telefone é obrigatório.</value>
+  </data>
+  <data name="NameAlreadyInUse" xml:space="preserve">
+    <value>Este nome já está em uso.</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Nome é obrigatório.</value>
+  </data>
+  <data name="NewPasswordMustBeDifferent" xml:space="preserve">
+    <value>A nova senha precisa ser diferente.</value>
+  </data>
+  <data name="ParentGroupAlreadyChild" xml:space="preserve">
+    <value>Este grupo pai já é filho de um grupo filho.</value>
+  </data>
+  <data name="ParentGroupSameAsChild" xml:space="preserve">
+    <value>O grupo pai e o grupo filho são os mesmos.</value>
+  </data>
+  <data name="PasswordComplexityRules" xml:space="preserve">
+    <value>A senha deve conter pelo menos {0} dos seguintes caractéres: caixa alta, caixa baixa, pele menos um dígito.</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>A senha deve conter pelo menos {0} caracteres.</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Senha é obrigatória.</value>
+  </data>
+  <data name="PasswordResetErrorNoEmail" xml:space="preserve">
+    <value>Não é possível redefinir a senha uma vez que o email ainda não foi verifiado para esta conta.</value>
+  </data>
+  <data name="RegisterMobileForTwoFactor" xml:space="preserve">
+    <value>Registre um número de telefone para habilitar a autenticação em duas fases.</value>
+  </data>
+  <data name="ReopenErrorNoEmail" xml:space="preserve">
+    <value>Não é possível reabrir a conta visto que não há email para esta conta.</value>
+  </data>
+  <data name="SecretAnswerRequired" xml:space="preserve">
+    <value>Resposta secreta é obrigatória.</value>
+  </data>
+  <data name="SecretQuestionAlreadyInUse" xml:space="preserve">
+    <value>Essa redefinição de pergunta secreta já está sendo usado.</value>
+  </data>
+  <data name="SecretQuestionRequired" xml:space="preserve">
+    <value>Pergunta secreta é obrigatória.</value>
+  </data>
+  <data name="TenantRequired" xml:space="preserve">
+    <value>Tenant é obrigatório.</value>
+  </data>
+  <data name="UsernameAlreadyInUse" xml:space="preserve">
+    <value>Usuário já está em uso.</value>
+  </data>
+  <data name="UsernameCannotContainAtSign" xml:space="preserve">
+    <value>Usuário não pode conter '@'.</value>
+  </data>
+  <data name="UsernameCannotRepeatSpecialCharacters" xml:space="preserve">
+    <value>Usuário não pode conter dois espaços, traços, pontos e sublinhado ao lado do outro.</value>
+  </data>
+  <data name="UsernameCanOnlyStartOrEndWithLetterOrDigit" xml:space="preserve">
+    <value>Usuário pode iniciar ou finalizar somente com letras e números.</value>
+  </data>
+  <data name="UsernameOnlyContainsValidCharacters" xml:space="preserve">
+    <value>Usuário pode conter letras, números, espaços, traços, pontos e sublinhados.</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>Usuário é obrigatório.</value>
   </data>
 </root>

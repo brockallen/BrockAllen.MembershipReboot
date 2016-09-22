@@ -64,7 +64,7 @@ namespace BrockAllen.MembershipReboot.Mvc.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
 
             var config = MembershipRebootConfig.Create();
             kernel.Bind<MembershipRebootConfiguration>().ToConstant(config);

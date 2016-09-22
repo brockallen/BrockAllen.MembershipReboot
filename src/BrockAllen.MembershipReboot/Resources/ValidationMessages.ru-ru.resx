@@ -264,10 +264,10 @@
   <data name="UsernameCannotContainAtSign" xml:space="preserve">
     <value>Имя пользователя не может содержать символ '@'.</value>
   </data>
-  <data name="UsernameOnlyContainLettersAndDigits" xml:space="preserve">
-    <value>Имя пользователя может содержать только буквы и цифры.</value>
-  </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Необходимо указать имя пользователя.</value>
+  </data>
+  <data name="AccountNotApproved" xml:space="preserve">
+    <value>Доступ к аккаунту не был утвержден.</value>
   </data>
 </root>

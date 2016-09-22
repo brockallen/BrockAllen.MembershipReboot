@@ -12,7 +12,20 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
         UserAccountService userAccountService;
         FakeUserAccountRepository repository;
         MembershipRebootConfiguration configuration;
-        KeyNotification key;
+        CaptureLatestEvent<AccountCreatedEvent<UserAccount>, UserAccount> accountCreatedEvent;
+
+
+        public class TestMapClaimsToAccountHandler : ICommandHandler<MapClaimsToAccount<UserAccount>>
+        {
+            public void Handle(MapClaimsToAccount<UserAccount> cmd)
+            {
+                var givenName = cmd.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
+                if (givenName != null)
+                {
+                    ((MyUserAccount) cmd.Account).FirstName = givenName.Value;
+                }
+            }
+        }
 
         [TestInitialize]
         public void Init()
@@ -23,8 +36,9 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             {
                 RequireAccountVerification = false
             };
-            key = new KeyNotification();
-            configuration.AddEventHandler(key);
+            accountCreatedEvent = CaptureLatestEvent.For<AccountCreatedEvent<UserAccount>>();
+            configuration.AddEventHandler(accountCreatedEvent);
+            configuration.AddCommandHandler(new TestMapClaimsToAccountHandler());
             repository = new FakeUserAccountRepository();
             userAccountService = new UserAccountService(configuration, repository);
 
@@ -89,6 +103,33 @@ namespace BrockAllen.MembershipReboot.Test.Authentication
             });
             var addedAccount = repository.UserAccounts[0];
             Assert.AreEqual("Christian.Forrest-Smith_OK", addedAccount.Username);
+        }
+
+        
+        [TestMethod]
+        public void Should_Use_Registered_MapClaimsToAccount_Handler_To_Set_Properties()
+        {
+            subject.SignInWithLinkedAccount("google", "123", new[]
+            {
+                new Claim(ClaimTypes.Email, "test@gmail.com"),
+                new Claim(ClaimTypes.Name, @" ~ Christian.Forrest-Smith_OK @ "),
+                new Claim(ClaimTypes.GivenName, "Christian")
+            });
+            var addedAccount = (MyUserAccount)repository.UserAccounts[0];
+            Assert.AreEqual("Christian", addedAccount.FirstName);
+        }
+
+        [TestMethod]
+        public void Claims_Mapped_Account_Properties_Should_Be_Available_In_AccountCreatedEvent()
+        {
+            subject.SignInWithLinkedAccount("google", "123", new[]
+            {
+                new Claim(ClaimTypes.Email, "test@gmail.com"),
+                new Claim(ClaimTypes.Name, @" ~ Christian.Forrest-Smith_OK @ "),
+                new Claim(ClaimTypes.GivenName, "Christian")
+            });
+            var account = (MyUserAccount)accountCreatedEvent.Latest.Account;
+            Assert.AreEqual("Christian", account.FirstName);
         }
     }
 }
