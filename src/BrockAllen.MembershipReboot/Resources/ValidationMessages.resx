@@ -288,4 +288,7 @@
   <data name="AccountNotConfiguredWithAuthenticator" xml:space="preserve">
     <value>To login, this account must be configured to use the authenticator app.</value>
   </data>
+  <data name="ConfigureAuthenticatorForTwoFactor" xml:space="preserve">
+    <value>Configure the Authenticator app to enable authenticator two factor authentication.</value>
+  </data>
 </root>

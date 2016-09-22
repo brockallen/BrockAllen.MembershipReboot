@@ -2513,7 +2513,7 @@ namespace BrockAllen.MembershipReboot
             if (mode == TwoFactorAuthMode.TimeBasedToken && !account.AuthenticatorActive)
             {
                 Tracing.Error("[UserAccountService.ConfigureTwoFactorAuthentication] failed -- TimeBasedToken requested but authenticator has not been activated");
-                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.RegisterMobileForTwoFactor));
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.ConfigureAuthenticatorForTwoFactor));
             }
 
             if (mode == TwoFactorAuthMode.Certificate &&

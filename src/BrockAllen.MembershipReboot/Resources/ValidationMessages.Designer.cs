@@ -187,6 +187,15 @@ namespace BrockAllen.MembershipReboot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configure the Authenticator app to enable authenticator two factor authentication..
+        /// </summary>
+        public static string ConfigureAuthenticatorForTwoFactor {
+            get {
+                return ResourceManager.GetString("ConfigureAuthenticatorForTwoFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email already in use..
         /// </summary>
         public static string EmailAlreadyInUse {
