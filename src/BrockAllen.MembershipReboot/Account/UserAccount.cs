@@ -64,6 +64,10 @@ namespace BrockAllen.MembershipReboot
         public virtual string MobilePhoneNumber { get; protected internal set; }
         public virtual DateTime? MobilePhoneNumberChanged { get; protected internal set; }
 
+        public virtual string AuthenticatorSecret { get; protected internal set; }
+        public virtual bool AuthenticatorActive { get; protected internal set; }
+        public virtual DateTime? AuthenticatorActivated { get; protected internal set; }
+
         public virtual TwoFactorAuthMode AccountTwoFactorAuthMode { get; protected internal set; }
         public virtual TwoFactorAuthMode CurrentTwoFactorAuthStatus { get; protected internal set; }
 
