@@ -1571,6 +1571,34 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             Assert.IsTrue(subject.AuthenticateWithCertificate(cert));
         }
+
+        [TestMethod]
+        public void AuthenticateWithCertificate_ValidCertWithTenant_ReturnsTrue()
+        {
+            var cert = GetTestCert();
+
+            configuration.RequireAccountVerification = false;
+            configuration.MultiTenant = true;
+            const string Tenant = "TestTenant";
+            var acct = subject.CreateAccount(Tenant, "test", "pass", "test@test.com");
+            subject.AddCertificate(acct.ID, cert);
+
+            Assert.IsTrue(subject.AuthenticateWithCertificate(Tenant, cert));
+        }
+
+        [TestMethod]
+        public void AuthenticateWithCertificate_ValidCertWithWrongTenant_ReturnsTrue()
+        {
+            var cert = GetTestCert();
+
+            configuration.RequireAccountVerification = false;
+            configuration.MultiTenant = true;
+            const string Tenant = "TestTenant";
+            var acct = subject.CreateAccount(Tenant, "test", "pass", "test@test.com");
+            subject.AddCertificate(acct.ID, cert);
+
+            Assert.IsFalse(subject.AuthenticateWithCertificate("BadTenant", cert));
+        }
         
         [TestMethod]
         public void AuthenticateWithCertificate_ValidCertAndValidAccountID_ReturnsTrue()
@@ -1595,6 +1623,21 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
 
             UserAccount acct2;
             subject.AuthenticateWithCertificate(cert, out acct2);
+            Assert.AreEqual(acct.ID, acct2.ID);
+        }
+
+        [TestMethod]
+        public void AuthenticateWithCertificate_ValidCertWithTenant_ReturnsCorrectAccount()
+        {
+            var cert = GetTestCert();
+
+            configuration.RequireAccountVerification = false;
+            const string Tenant = "testTenant";
+            var acct = subject.CreateAccount(Tenant, "test", "pass", "test@test.com");
+            subject.AddCertificate(acct.ID, cert);
+
+            UserAccount acct2;
+            subject.AuthenticateWithCertificate(Tenant, cert, out acct2);
             Assert.AreEqual(acct.ID, acct2.ID);
         }
         
@@ -1626,6 +1669,20 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
         }
 
         [TestMethod]
+        public void AuthenticateWithCertificate_WrongCertWithTenant_ReturnsFalse()
+        {
+            var cert = GetTestCert();
+            var cert2 = GetTestCert2();
+            const string Tenant = "TestTenant";
+            configuration.RequireAccountVerification = false;
+            configuration.MultiTenant = true;
+            var acct = subject.CreateAccount(Tenant, "test", "pass", "test@test.com");
+            subject.AddCertificate(acct.ID, cert);
+
+            Assert.IsFalse(subject.AuthenticateWithCertificate(Tenant, cert2));
+        }
+
+        [TestMethod]
         public void AuthenticateWithCertificate_InvalidCert_ReturnsFalse()
         {
             var cert = GetTestCert();
@@ -1636,6 +1693,21 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             subject.AddCertificate(acct.ID, cert);
 
             Assert.IsFalse(subject.AuthenticateWithCertificate(cert2));
+        }
+
+        [TestMethod]
+        public void AuthenticateWithCertificate_InvalidCertWithTenant_ReturnsFalse()
+        {
+            var cert = GetTestCert();
+            var cert2 = new X509Certificate2();
+            const string Tenant = "TestTenant";
+
+            configuration.RequireAccountVerification = false;
+            configuration.MultiTenant = true;
+            var acct = subject.CreateAccount(Tenant, "test", "pass", "test@test.com");
+            subject.AddCertificate(acct.ID, cert);
+
+            Assert.IsFalse(subject.AuthenticateWithCertificate(Tenant, cert2));
         }
 
         [TestMethod]
