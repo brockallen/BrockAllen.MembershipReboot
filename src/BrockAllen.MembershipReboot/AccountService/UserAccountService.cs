@@ -1316,6 +1316,34 @@ namespace BrockAllen.MembershipReboot
             return true;
         }
 
+        public virtual bool AuthenticateWithCertificate(string tenant, X509Certificate2 certificate)
+        {
+            TAccount account;
+            return AuthenticateWithCertificate(tenant, certificate, out account);
+        }
+
+        public virtual bool AuthenticateWithCertificate(string tenant, X509Certificate2 certificate, out TAccount account)
+        {
+            Tracing.Information("[UserAccountService.AuthenticateWithCertificate] called");
+
+            if (!certificate.Validate())
+            {
+                Tracing.Error("[UserAccountService.AuthenticateWithCertificate] failed -- cert failed to validate");
+                account = null;
+                return false;
+            }
+
+            account = this.GetByCertificate(tenant, certificate.Thumbprint);
+            if (account == null) return false;
+
+            var result = Authenticate(account, certificate);
+            UpdateInternal(account);
+
+            Tracing.Verbose("[UserAccountService.AuthenticateWithCertificate] result {0}", result);
+
+            return result;
+        }
+
         public virtual bool AuthenticateWithCertificate(X509Certificate2 certificate)
         {
             TAccount account;
