@@ -167,3 +167,7 @@ pip-log.txt
 
 # SQL Lite DB files
 *.sqlite
+/NuGet/BrockAllen.MembershipReboot/lib/net45
+/NuGet/BrockAllen.MembershipReboot.Owin/lib/net45
+/NuGet/BrockAllen.MembershipReboot.sk/lib/net45/sk
+/NuGet/NuGet.exe

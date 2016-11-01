@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>BrockAllen.MembershipReboot.Owin</id>
+    <id>BrockAllen.MembershipReboot.Owin-sfera</id>
     <version>7.1.1</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://raw.github.com/brockallen/BrockAllen.MembershipReboot/master/license.txt</licenseUrl>
-    <projectUrl>https://github.com/brockallen/BrockAllen.MembershipReboot</projectUrl>
+    <projectUrl>https://github.com/mirecg/BrockAllen.MembershipReboot</projectUrl>
     <iconUrl>http://0.gravatar.com/avatar/f17c1816a6f9bff29a515c75b950460a?s=128&amp;d=mm&amp;r=G</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Claims-based user account and identity management framework</description>
@@ -15,7 +15,7 @@
     <tags>Membership Roles Claims Identity User Account Password Management Two Factor Authentication Certificate Authentication</tags>
     <language>en-US</language>
     <dependencies>
-      <dependency id="BrockAllen.MembershipReboot" version="8.4.0" />
+      <dependency id="BrockAllen.MembershipReboot-sfera" version="8.4.1" />
       <dependency id="Microsoft.Owin.Security.Cookies" version="2.1" />
     </dependencies>
   </metadata>
