@@ -2763,5 +2763,22 @@ namespace BrockAllen.MembershipReboot.Test.AccountService
             }
         }
 
+        [TestMethod]
+        public void CreateAccount_RequirePasswordResetAfterAccountCreation_Sets_RequiresPasswordReset_True()
+        {
+            configuration.RequirePasswordResetAfterAccountCreation = true;
+
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            Assert.IsTrue(acct1.RequiresPasswordReset, "RequirePasswordResetAfterAccountCreation = true should set Account.RequiresPasswordReset = true after account creation");
+        }
+
+        [TestMethod]
+        public void CreateAccount_Not_RequirePasswordResetAfterAccountCreation_Sets_RequiresPasswordReset_False()
+        {
+            configuration.RequirePasswordResetAfterAccountCreation = false;
+
+            var acct1 = subject.CreateAccount("test1", "pass", "test1@test.com");
+            Assert.IsFalse(acct1.RequiresPasswordReset, "RequirePasswordResetAfterAccountCreation = false should set Account.RequiresPasswordReset = false after account creation");
+        }
     }
 }

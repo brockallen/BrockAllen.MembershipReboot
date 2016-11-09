@@ -55,6 +55,7 @@ namespace BrockAllen.MembershipReboot
         private const string VERIFICATIONKEYLIFETIME = "verificationKeyLifetime";
         private const string CERTIFICATEISUNIQUE = "certificateIsUnique";
         private const string MOBILEPHONEISUNIQUE = "mobilePhoneIsUnique";
+        private const string REQUIREPASSWORDRESETAFTERACCOUNTCREATION = "requirePasswordResetAfterAccountCreation";
 
         [ConfigurationProperty(MULTITENANT, DefaultValue = MembershipRebootConstants.SecuritySettingDefaults.MultiTenant)]
         public bool MultiTenant
@@ -159,6 +160,13 @@ namespace BrockAllen.MembershipReboot
         {
             get { return (bool) this[MOBILEPHONEISUNIQUE]; }
             set { this[MOBILEPHONEISUNIQUE] = value; }
+        }
+
+        [ConfigurationProperty(REQUIREPASSWORDRESETAFTERACCOUNTCREATION, DefaultValue = MembershipRebootConstants.SecuritySettingDefaults.RequirePasswordResetAfterAccountCreation)]
+        public bool RequirePasswordResetAfterAccountCreation
+        {
+            get { return (bool) this[REQUIREPASSWORDRESETAFTERACCOUNTCREATION]; }
+            set { this[REQUIREPASSWORDRESETAFTERACCOUNTCREATION] = value; }
         }
     }
 }

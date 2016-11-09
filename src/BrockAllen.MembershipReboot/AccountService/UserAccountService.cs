@@ -445,6 +445,11 @@ namespace BrockAllen.MembershipReboot
 
         public virtual TAccount CreateAccount(string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null, TAccount account = null, IEnumerable<Claim> claims = null)
         {
+            return CreateAccount(tenant, username, password, email, null, id, dateCreated, account, claims);
+        }
+
+        public virtual TAccount CreateAccount(string tenant, string username, string password, string email, string mobilePhoneNumber, Guid? id = null, DateTime? dateCreated = null, TAccount account = null, IEnumerable<Claim> claims = null)
+        {
             if (Configuration.EmailIsUsername)
             {
                 Tracing.Verbose("[UserAccountService.CreateAccount] applying email is username");
@@ -460,7 +465,7 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information("[UserAccountService.CreateAccount] called: {0}, {1}, {2}", tenant, username, email);
 
             account = account ?? CreateUserAccount();
-            Init(account, tenant, username, password, email, id, dateCreated, claims);
+            Init(account, tenant, username, password, email, mobilePhoneNumber, id, dateCreated, claims);
 
             ValidateEmail(account, email);
             ValidateUsername(account, username);
@@ -473,7 +478,7 @@ namespace BrockAllen.MembershipReboot
             return account;
         }
 
-        protected void Init(TAccount account, string tenant, string username, string password, string email, Guid? id = null, DateTime? dateCreated = null, IEnumerable<Claim> claims = null)
+        protected void Init(TAccount account, string tenant, string username, string password, string email, string mobilePhoneNumber = null, Guid? id = null, DateTime? dateCreated = null, IEnumerable<Claim> claims = null)
         {
             Tracing.Information("[UserAccountService.Init] called");
 
@@ -518,6 +523,7 @@ namespace BrockAllen.MembershipReboot
             account.Tenant = tenant;
             account.Username = username;
             account.Email = email;
+            account.MobilePhoneNumber = mobilePhoneNumber;
             account.Created = dateCreated ?? now;
             account.LastUpdated = now;
             account.HashedPassword = password != null ?
@@ -529,6 +535,9 @@ namespace BrockAllen.MembershipReboot
 
             account.IsLoginAllowed = Configuration.AllowLoginAfterAccountCreation;
             Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.AllowLoginAfterAccountCreation is set to: {0}", account.IsLoginAllowed);
+
+            account.RequiresPasswordReset = this.Configuration.RequirePasswordResetAfterAccountCreation;
+            Tracing.Verbose("[UserAccountService.CreateAccount] SecuritySettings.RequirePasswordResetAfterAccountCreation is set to: {0}", account.RequiresPasswordReset);
 
             string key = null;
             if (!String.IsNullOrWhiteSpace(account.Email))
@@ -545,7 +554,17 @@ namespace BrockAllen.MembershipReboot
                 }
             }
 
+            InitAccountAfterCreation(account);
+
             this.AddEvent(new AccountCreatedEvent<TAccount> { Account = account, InitialPassword = password, VerificationKey = key });
+        }
+
+        /// <summary>
+        /// Post-inicializácia účtu, volané po vytvorení účtu.
+        /// </summary>
+        /// <param name="account">The account.</param>
+        protected virtual void InitAccountAfterCreation(TAccount account)
+        {
         }
 
         public virtual void RequestAccountVerification(Guid accountID)

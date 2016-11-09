@@ -30,6 +30,7 @@ namespace BrockAllen.MembershipReboot.Test.Accounts
             Assert.AreEqual(TimeSpan.FromMinutes(20), settings.VerificationKeyLifetime);
             Assert.AreEqual(true, settings.CertificateIsUnique);
             Assert.AreEqual(true, settings.MobilePhoneIsUnique);
+            Assert.AreEqual(false, settings.RequirePasswordResetAfterAccountCreation);
         }
     }
 }

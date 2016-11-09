@@ -34,6 +34,7 @@ namespace BrockAllen.MembershipReboot
             this.VerificationKeyLifetime = securitySettings.VerificationKeyLifetime;
             this.CertificateIsUnique = securitySettings.CertificateIsUnique;
             this.MobilePhoneIsUnique = securitySettings.MobilePhoneIsUnique;
+            this.RequirePasswordResetAfterAccountCreation = securitySettings.RequirePasswordResetAfterAccountCreation;
 
             this.Crypto = new DefaultCrypto();
         }
@@ -53,6 +54,7 @@ namespace BrockAllen.MembershipReboot
         public TimeSpan VerificationKeyLifetime { get; set; }
         public bool CertificateIsUnique { get; set; }
         public bool MobilePhoneIsUnique { get; set; }
+        public bool RequirePasswordResetAfterAccountCreation { get; set; }
 
 
         internal void Validate()

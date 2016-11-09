@@ -32,6 +32,7 @@ namespace BrockAllen.MembershipReboot
             internal const string VerificationKeyLifetime = "00:20:00";
             internal const bool CertificateIsUnique = true;
             internal const bool MobilePhoneIsUnique = true;
+            internal const bool RequirePasswordResetAfterAccountCreation = false;
         }
 
         public class UserAccount
