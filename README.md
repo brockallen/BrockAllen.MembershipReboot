@@ -1,3 +1,7 @@
+As of 2017 MembershipReboot will no longer be maintained. It has served its purpose, and ASP.NET Identity has finally caught up (and surpassed) this library in terms of security and functionality. If you are interested in taking over maintenance, let me know.
+
+---
+
 # What is MembershipReboot
 
 [![Join the chat at https://gitter.im/brockallen/BrockAllen.MembershipReboot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brockallen/BrockAllen.MembershipReboot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
