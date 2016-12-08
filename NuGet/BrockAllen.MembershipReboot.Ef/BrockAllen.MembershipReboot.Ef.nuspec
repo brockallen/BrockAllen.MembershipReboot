@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BrockAllen.MembershipReboot.Ef</id>
-    <version>8.0.0</version>
+    <version>9.0.0</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://raw.github.com/brockallen/BrockAllen.MembershipReboot/master/license.txt</licenseUrl>
@@ -16,7 +16,7 @@
     <language>en-US</language>
 
     <dependencies>
-      <dependency id="BrockAllen.MembershipReboot" version="8.0.0" />
+      <dependency id="BrockAllen.MembershipReboot" version="9.0.0" />
       <dependency id="EntityFramework" version="6.1.1" />
     </dependencies>
   </metadata>
