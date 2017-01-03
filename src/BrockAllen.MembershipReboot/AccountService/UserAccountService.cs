@@ -203,7 +203,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual TAccount GetByUsername(string tenant, string username)
         {
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.GetByUsername] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -243,7 +243,7 @@ namespace BrockAllen.MembershipReboot
                 throw new InvalidOperationException("GetByEmail can't be used when EmailIsUnique is false");
             }
             
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.GetByEmail] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -297,7 +297,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual TAccount GetByLinkedAccount(string tenant, string provider, string id)
         {
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.GetByLinkedAccount] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -324,7 +324,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual TAccount GetByCertificate(string tenant, string thumbprint)
         {
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.GetByCertificate] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -360,7 +360,7 @@ namespace BrockAllen.MembershipReboot
             }
             else
             {
-                if (!Configuration.MultiTenant)
+                if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
                 {
                     Tracing.Verbose("[UserAccountService.UsernameExists] applying default tenant");
                     tenant = Configuration.DefaultTenant;
@@ -384,7 +384,7 @@ namespace BrockAllen.MembershipReboot
                 throw new InvalidOperationException("EmailExists can't be used when EmailIsUnique is false");
             }
 
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.EmailExists] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -448,7 +448,7 @@ namespace BrockAllen.MembershipReboot
                 username = email;
             }
 
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.CreateAccount] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -483,7 +483,7 @@ namespace BrockAllen.MembershipReboot
             if (String.IsNullOrWhiteSpace(tenant))
             {
                 Tracing.Error("[UserAccountService.Init] failed -- no tenant");
-                throw new ArgumentNullException("tenant");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.TenantRequired));
             }
 
             if (String.IsNullOrWhiteSpace(username))
@@ -703,7 +703,7 @@ namespace BrockAllen.MembershipReboot
 
         public virtual void ReopenAccount(string tenant, string username, string password)
         {
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.ReopenAccount] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -883,7 +883,7 @@ namespace BrockAllen.MembershipReboot
         {
             account = null;
 
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.Authenticate] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -959,7 +959,7 @@ namespace BrockAllen.MembershipReboot
                 throw new InvalidOperationException("AuthenticateWithEmail can't be used when EmailIsUnique is false");
             }
             
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.AuthenticateWithEmail] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -1012,7 +1012,7 @@ namespace BrockAllen.MembershipReboot
                 throw new InvalidOperationException("AuthenticateWithUsernameOrEmail can't be used when EmailIsUnique is false");
             }
             
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.AuthenticateWithUsernameOrEmail] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -1544,7 +1544,7 @@ namespace BrockAllen.MembershipReboot
                 throw new InvalidOperationException("ResetPassword via email can't be used when EmailIsUnique is false");
             }
             
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.ResetPassword] applying default tenant");
                 tenant = Configuration.DefaultTenant;
@@ -1798,7 +1798,7 @@ namespace BrockAllen.MembershipReboot
                 throw new InvalidOperationException("SendUsernameReminder can't be used when EmailIsUnique is false");
             }
 
-            if (!Configuration.MultiTenant)
+            if ((Configuration.MultiTenant) && (string.IsNullOrWhiteSpace(tenant)))
             {
                 Tracing.Verbose("[UserAccountService.SendUsernameReminder] applying default tenant");
                 tenant = Configuration.DefaultTenant;
