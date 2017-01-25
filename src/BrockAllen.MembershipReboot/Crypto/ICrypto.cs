@@ -13,6 +13,7 @@ namespace BrockAllen.MembershipReboot
         string Hash(string value, string key);
         bool VerifyHash(string value, string key, string hash);
         string GenerateNumericCode(int digits);
+        string GenerateAlphaCode(int digits);
         string GenerateSalt();
         string HashPassword(string password, int iterations);
         bool VerifyHashedPassword(string hashedPassword, string password);

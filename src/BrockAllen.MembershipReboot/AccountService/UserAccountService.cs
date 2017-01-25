@@ -10,6 +10,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
+using BrockAllen.MembershipReboot.Extensions;
+using BrockAllen.MembershipReboot.Otp;
+
 namespace BrockAllen.MembershipReboot
 {
     public class UserAccountService<TAccount> : IEventSource
@@ -1128,6 +1131,16 @@ namespace BrockAllen.MembershipReboot
                                     failureCode = AuthenticationFailureCode.AccountNotConfiguredWithMobilePhone;
                                 }
                             }
+
+                            if (account.AccountTwoFactorAuthMode == TwoFactorAuthMode.TimeBasedToken)
+                            {
+                                Tracing.Verbose("[UserAccountService.Authenticate] requesting 2fa time based code: {0}, {1}", account.Tenant, account.Username);
+                                result = RequestTwoFactorAuthbyAuthenticator(account);
+                                if (!result)
+                                {
+                                    failureCode = AuthenticationFailureCode.AccountNotConfiguredWithAuthenticator;
+                                }
+                            }
                         }
                         else
                         {
@@ -1257,6 +1270,60 @@ namespace BrockAllen.MembershipReboot
 
         public virtual bool AuthenticateWithCode(Guid accountID, string code, out TAccount account)
         {
+            return this.AuthenticationWithCodeVerification(accountID, code, (acc, s) =>
+            {
+
+                if (acc.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+                {
+                    Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- two factor auth mode not mobile");
+                    return false;
+                }
+
+                if (acc.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
+                {
+                    Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- current auth status not mobile");
+                    return false;
+                }
+
+                if (!this.VerifyMobileCode(acc, code))
+                {
+                    Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- mobile code failed to verify");
+                    return false;
+                }
+
+                this.ClearMobileAuthCode(acc);
+                return true;
+            }, out account);
+        }
+
+        public virtual bool AuthenticateWithAutenticatorCode(Guid accountID, string code, out TAccount account)
+        {
+            return this.AuthenticationWithCodeVerification(accountID, code, (acc, s) =>
+            {
+
+                if (acc.AccountTwoFactorAuthMode != TwoFactorAuthMode.TimeBasedToken)
+                {
+                    Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- two factor auth mode not authenticator");
+                    return false;
+                }
+
+                if (acc.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.TimeBasedToken)
+                {
+                    Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- current auth status not authenticator");
+                    return false;
+                }
+
+                if (!this.ValidateAuthenticatorCode(acc, code))
+                {
+                    Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- authenticator code failed to verify");
+                    return false;
+                }
+                return true;
+            }, out account);
+        }
+
+        public virtual bool AuthenticationWithCodeVerification(Guid accountID, string code, Func<TAccount, string, bool> authenticateCode, out TAccount account)
+        {
             Tracing.Information("[UserAccountService.AuthenticateWithCode] called {0}", accountID);
 
             account = this.GetByID(accountID);
@@ -1282,25 +1349,15 @@ namespace BrockAllen.MembershipReboot
                 return false;
             }
 
-            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            if (authenticateCode != null)
             {
-                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- two factor auth mode not mobile");
+                var verificationOutcome = authenticateCode(account, code);
+                if (!verificationOutcome)
+            {
                 return false;
             }
-
-            if (account.CurrentTwoFactorAuthStatus != TwoFactorAuthMode.Mobile)
-            {
-                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- current auth status not mobile");
-                return false;
             }
 
-            if (!VerifyMobileCode(account, code))
-            {
-                Tracing.Error("[UserAccountService.AuthenticateWithCode] failed -- mobile code failed to verify");
-                return false;
-            }
-
-            ClearMobileAuthCode(account);
 
             account.LastLogin = UtcNow;
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.None;
@@ -1309,9 +1366,9 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccountService.AuthenticateWithCode] success ");
 
-            CreateTwoFactorAuthToken(account);
+            this.CreateTwoFactorAuthToken(account);
 
-            UpdateInternal(account);
+            this.UpdateInternal(account);
 
             return true;
         }
@@ -2481,6 +2538,12 @@ namespace BrockAllen.MembershipReboot
                 throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.RegisterMobileForTwoFactor));
             }
 
+            if (mode == TwoFactorAuthMode.TimeBasedToken && !account.AuthenticatorActive)
+            {
+                Tracing.Error("[UserAccountService.ConfigureTwoFactorAuthentication] failed -- TimeBasedToken requested but authenticator has not been activated");
+                throw new ValidationException(GetValidationMessage(MembershipRebootConstants.ValidationMessages.ConfigureAuthenticatorForTwoFactor));
+            }
+
             if (mode == TwoFactorAuthMode.Certificate &&
                 !account.Certificates.Any())
             {
@@ -2540,6 +2603,42 @@ namespace BrockAllen.MembershipReboot
             Tracing.Verbose("[UserAccountService.RequestTwoFactorAuthCertificate] success");
 
             account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.Certificate;
+
+            return true;
+        }
+        protected virtual bool RequestTwoFactorAuthbyAuthenticator(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            Tracing.Information("[UserAccountService.RequestTwoFactorAuthCertificate] called for accountID: {0}", account.ID);
+
+            if (account.IsAccountClosed)
+            {
+                Tracing.Error("[UserAccountService.RequestTwoFactorAuthCertificate] failed -- account closed");
+                return false;
+            }
+
+            if (!account.IsLoginAllowed)
+            {
+                Tracing.Error("[UserAccountService.RequestTwoFactorAuthCertificate] failed -- login not allowed");
+                return false;
+            }
+
+            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.TimeBasedToken)
+            {
+                Tracing.Error("[UserAccountService.RequestTwoFactorAuthCertificate] failed -- current auth mode is not TimeBasedToken");
+                return false;
+            }
+
+            if (!account.AuthenticatorActive)
+            {
+                Tracing.Error("[UserAccountService.RequestTwoFactorAuthCertificate] failed -- authenticator has not been activated");
+                return false;
+            }
+
+            Tracing.Verbose("[UserAccountService.RequestTwoFactorAuthCertificate] success");
+
+            account.CurrentTwoFactorAuthStatus = TwoFactorAuthMode.TimeBasedToken;
 
             return true;
         }
@@ -2604,6 +2703,40 @@ namespace BrockAllen.MembershipReboot
 
             RequestTwoFactorAuthCode(account, true);
             UpdateInternal(account);
+        }
+
+        public virtual void ResetAuthenticatorSecret(TAccount account)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+            account.AuthenticatorSecret = this.Configuration.Crypto.GenerateAlphaCode(8);
+            account.AuthenticatorActive = false;
+            UpdateInternal(account);
+        }
+
+        public virtual void ValidateAuthenticatorSecret(TAccount account, string twoFactorToken)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+            if (this.ValidateAuthenticatorCode(account, twoFactorToken))
+            {
+                account.AuthenticatorActive = true;
+                account.AuthenticatorActivated = this.UtcNow;
+                this.UpdateInternal(account);
+            }
+        }
+
+        public virtual bool ValidateAuthenticatorCode(TAccount account, string twoFactorToken)
+        {
+            if (account == null) throw new ArgumentNullException("account");
+
+            var googleAuthenticatorToken = new TimeOtpToken
+            {
+                Secret = Base32.FromBase32String(account.AuthenticatorSecret),
+                Generator = new TimeOtpGenerator
+                {
+                    Digits = 6
+                }
+            };
+            return twoFactorToken == googleAuthenticatorToken.GenerateCurrentOneTimePassword();
         }
 
         public virtual void AddClaims(Guid accountID, UserClaimCollection claims)
@@ -2992,9 +3125,10 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[UserAccountService.CreateTwoFactorAuthToken] called for accountID: {0}", account.ID);
 
-            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile &&
+            account.AccountTwoFactorAuthMode != TwoFactorAuthMode.TimeBasedToken)
             {
-                Tracing.Error("[UserAccountService.CreateTwoFactorAuthToken] AccountTwoFactorAuthMode is not mobile");
+                Tracing.Error("[UserAccountService.CreateTwoFactorAuthToken] AccountTwoFactorAuthMode is not mobile or authenticator");
                 throw new Exception("AccountTwoFactorAuthMode is not Mobile");
             }
 
@@ -3025,9 +3159,11 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Information("[UserAccountService.VerifyTwoFactorAuthToken] called for accountID: {0}", account.ID);
 
-            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile)
+            if (account.AccountTwoFactorAuthMode != TwoFactorAuthMode.Mobile &&
+            account.AccountTwoFactorAuthMode != TwoFactorAuthMode.TimeBasedToken
+            )
             {
-                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthToken] AccountTwoFactorAuthMode is not mobile");
+                Tracing.Error("[UserAccountService.VerifyTwoFactorAuthToken] AccountTwoFactorAuthMode is not mobile or TimeBasedToken");
                 return false;
             }
 

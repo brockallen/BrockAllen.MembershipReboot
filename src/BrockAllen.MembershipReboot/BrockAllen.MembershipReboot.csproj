@@ -64,6 +64,7 @@
     <Compile Include="Configuration\RelativePathApplicationInformation.cs" />
     <Compile Include="Crypto\DefaultCrypto.cs" />
     <Compile Include="Crypto\ICrypto.cs" />
+    <Compile Include="Extensions\Base32.cs" />
     <Compile Include="Extensions\ClaimsIdentityExtensions.cs" />
     <Compile Include="Extensions\ConfigurationExtensions.cs" />
     <Compile Include="Extensions\UserAccountExtensions.cs" />
@@ -76,6 +77,10 @@
     <Compile Include="Groups\GroupService.cs" />
     <Compile Include="Groups\Hierarchical\HierarchicalGroup.cs" />
     <Compile Include="Groups\Relational\RelationalGroup.cs" />
+    <Compile Include="Otp\OtpToken.cs" />
+    <Compile Include="Otp\OtpGenerator.cs" />
+    <Compile Include="Otp\TimeOtpGenerator.cs" />
+    <Compile Include="Otp\TimeOtpToken.cs" />
     <Compile Include="Query\IGroupQuery.cs" />
     <Compile Include="Query\GroupQueryResult.cs" />
     <Compile Include="Query\IUserAccountQuery`1.cs" />

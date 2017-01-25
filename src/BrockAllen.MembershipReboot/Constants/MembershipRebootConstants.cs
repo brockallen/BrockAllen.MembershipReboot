@@ -74,6 +74,7 @@ namespace BrockAllen.MembershipReboot
             public const string CantRemoveLastLinkedAccountIfNoPassword = "CantRemoveLastLinkedAccountIfNoPassword";
             public const string CertificateAlreadyInUse = "CertificateAlreadyInUse";
             public const string CodeRequired = "CodeRequired";
+            public const string ConfigureAuthenticatorForTwoFactor = "ConfigureAuthenticatorForTwoFactor";
             public const string EmailAlreadyInUse = "EmailAlreadyInUse";
             public const string EmailRequired = "EmailRequired";
             public const string FailedLoginAttemptsExceeded = "FailedLoginAttemptsExceeded";
