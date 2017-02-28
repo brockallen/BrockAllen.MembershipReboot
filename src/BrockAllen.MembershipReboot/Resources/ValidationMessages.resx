@@ -285,4 +285,7 @@
   <data name="AccountNotApproved" xml:space="preserve">
     <value>Account access has not been approved.</value>
   </data>
+  <data name="AccountNotConfiguredWithAuthenticator" xml:space="preserve">
+    <value>To login, this account must be configured to use the authenticator app.</value>
+  </data>
 </root>
