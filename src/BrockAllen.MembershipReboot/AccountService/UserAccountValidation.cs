@@ -78,7 +78,7 @@ namespace BrockAllen.MembershipReboot
             {
                 if (service.UsernameExists(account.Tenant, value))
                 {
-                    Tracing.Verbose("[UserAccountValidation.EmailMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
+                    Tracing.Verbose("[UserAccountValidation.UsernameMustNotAlreadyExist] validation failed: {0}, {1}, {2}", account.Tenant, account.Username, value);
 
                     return new ValidationResult(service.GetValidationMessage(MembershipRebootConstants.ValidationMessages.UsernameAlreadyInUse));
                 }
