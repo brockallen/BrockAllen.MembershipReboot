@@ -33,6 +33,8 @@ namespace BrockAllen.MembershipReboot
             this.PasswordHashingIterationCount = securitySettings.PasswordHashingIterationCount;
             this.PasswordResetFrequency = securitySettings.PasswordResetFrequency;
             this.VerificationKeyLifetime = securitySettings.VerificationKeyLifetime;
+            this.CertificateIsUnique = securitySettings.CertificateIsUnique;
+            this.MobilePhoneIsUnique = securitySettings.MobilePhoneIsUnique;
 
             this.Crypto = new DefaultCrypto();
         }
@@ -52,6 +54,9 @@ namespace BrockAllen.MembershipReboot
         public int PasswordHashingIterationCount { get; set; }
         public int PasswordResetFrequency { get; set; }
         public TimeSpan VerificationKeyLifetime { get; set; }
+        public bool CertificateIsUnique { get; set; }
+        public bool MobilePhoneIsUnique { get; set; }
+
 
         internal void Validate()
         {

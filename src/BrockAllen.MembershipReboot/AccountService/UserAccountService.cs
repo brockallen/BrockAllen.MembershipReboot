@@ -422,10 +422,13 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(phone)) return false;
 
-            var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
-            if (acct2 != null)
+            if (this.Configuration.MobilePhoneIsUnique)
             {
-                return account.ID != acct2.ID;
+                var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
+                if (acct2 != null)
+                {
+                    return account.ID != acct2.ID;
+                }
             }
             return false;
         }
@@ -2976,7 +2979,7 @@ namespace BrockAllen.MembershipReboot
                 this.AddEvent(new CertificateRemovedEvent<TAccount> { Account = account, Certificate = cert });
                 account.RemoveCertificate(cert);
             }
-            Tracing.Error("[UserAccountService.RemoveCertificate] certs removed: {0}", certs.Length);
+            Tracing.Verbose("[UserAccountService.RemoveCertificate] certs removed: {0}", certs.Length);
 
             if (!account.Certificates.Any() &&
                 account.AccountTwoFactorAuthMode == TwoFactorAuthMode.Certificate)
