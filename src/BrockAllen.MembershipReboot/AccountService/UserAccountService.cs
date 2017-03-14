@@ -422,10 +422,13 @@ namespace BrockAllen.MembershipReboot
 
             if (String.IsNullOrWhiteSpace(phone)) return false;
 
-            var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
-            if (acct2 != null)
+            if (this.Configuration.MobilePhoneIsUnique)
             {
-                return account.ID != acct2.ID;
+                var acct2 = this.userRepository.GetByMobilePhone(account.Tenant, phone);
+                if (acct2 != null)
+                {
+                    return account.ID != acct2.ID;
+                }
             }
             return false;
         }
@@ -1412,7 +1415,8 @@ namespace BrockAllen.MembershipReboot
 
             Tracing.Verbose("[UserAccountService.Authenticate] cert: {0}", certificate.Thumbprint);
 
-            if (!(certificate.NotBefore < UtcNow && UtcNow < certificate.NotAfter))
+            var localNow = DateTime.Now;
+            if (!(certificate.NotBefore < localNow && localNow < certificate.NotAfter))
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- invalid certificate dates");
                 this.AddEvent(new InvalidCertificateEvent<TAccount> { Account = account, Certificate = certificate });

@@ -25,12 +25,15 @@ namespace BrockAllen.MembershipReboot
             if (evt.Account == null) throw new ArgumentNullException("account");
             if (evt.Certificate == null) throw new ArgumentNullException("certificate");
 
-            var account = evt.Account;
-            var otherAccount = userAccountService.GetByCertificate(account.Tenant, evt.Certificate.Thumbprint);
-            if (otherAccount != null && otherAccount.ID != account.ID)
+            if (userAccountService.Configuration.CertificateIsUnique)
             {
-                Tracing.Verbose("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
-                throw new ValidationException(userAccountService.GetValidationMessage("CertificateAlreadyInUse"));
+                var account = evt.Account;
+                var otherAccount = userAccountService.GetByCertificate(account.Tenant, evt.Certificate.Thumbprint);
+                if (otherAccount != null && otherAccount.ID != account.ID)
+                {
+                    Tracing.Verbose("[UserAccountValidation.CertificateThumbprintMustBeUnique] validation failed: {0}, {1}", account.Tenant, account.Username);
+                    throw new ValidationException(userAccountService.GetValidationMessage("CertificateAlreadyInUse"));
+                }
             }
         }
     }
