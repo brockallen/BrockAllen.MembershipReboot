@@ -5,6 +5,8 @@
 
 
 using System;
+using System.Collections.Generic;
+
 namespace BrockAllen.MembershipReboot
 {
     public interface ICommand
@@ -29,6 +31,16 @@ namespace BrockAllen.MembershipReboot
         public void Handle(TCommand cmd)
         {
             action(cmd);
+        }
+    }
+    class AggregateCommandBus : List<ICommandBus>, ICommandBus
+    {
+        public void Execute(ICommand evt)
+        {
+            foreach (var eb in this)
+            {
+                eb.Execute(evt);
+            }
         }
     }
 }

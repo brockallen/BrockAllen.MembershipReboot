@@ -20,6 +20,8 @@ namespace BrockAllen.MembershipReboot
         EventBusUserAccountRepository<TAccount> userRepository;
         AggregateCommandBus aggregateCommandBus;
 
+        private AggregateCommandBus aggregateCommandBus;
+
         Lazy<AggregateValidator<TAccount>> usernameValidator;
         Lazy<AggregateValidator<TAccount>> emailValidator;
         Lazy<AggregateValidator<TAccount>> passwordValidator;
@@ -144,12 +146,12 @@ namespace BrockAllen.MembershipReboot
             aggregateCommandBus.Execute(cmd);
         }
 
-        public virtual IUserAccountQuery<TAccount> Query 
+        public virtual IUserAccountQuery<TAccount> Query
         {
             get
             {
                 return this.userRepository.inner as IUserAccountQuery<TAccount>;
-            } 
+            }
         }
 
         public virtual string GetValidationMessage(string id)
@@ -179,10 +181,10 @@ namespace BrockAllen.MembershipReboot
             Tracing.Information("[UserAccountService.Update] called for account: {0}", account.ID);
 
             account.LastUpdated = UtcNow;
-            
+
             UpdateInternal(account);
         }
-        
+
         internal protected virtual void UpdateInternal(TAccount account)
         {
             if (account == null)
@@ -242,7 +244,7 @@ namespace BrockAllen.MembershipReboot
             {
                 throw new InvalidOperationException("GetByEmail can't be used when EmailIsUnique is false");
             }
-            
+
             if (!Configuration.MultiTenant)
             {
                 Tracing.Verbose("[UserAccountService.GetByEmail] applying default tenant");
@@ -670,7 +672,7 @@ namespace BrockAllen.MembershipReboot
             CloseAccount(account);
             Update(account);
         }
-        
+
         protected virtual void CloseAccount(TAccount account)
         {
             if (account == null) throw new ArgumentNullException("account");
@@ -895,7 +897,7 @@ namespace BrockAllen.MembershipReboot
             {
                 Tracing.Error("[UserAccountService.Authenticate] failed -- empty password");
             }
-            if ((!Configuration.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant)) 
+            if ((!Configuration.UsernamesUniqueAcrossTenants && String.IsNullOrWhiteSpace(tenant))
                 || String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
             {
                 failureCode = AuthenticationFailureCode.InvalidCredentials;
@@ -958,7 +960,7 @@ namespace BrockAllen.MembershipReboot
             {
                 throw new InvalidOperationException("AuthenticateWithEmail can't be used when EmailIsUnique is false");
             }
-            
+
             if (!Configuration.MultiTenant)
             {
                 Tracing.Verbose("[UserAccountService.AuthenticateWithEmail] applying default tenant");
@@ -1011,7 +1013,7 @@ namespace BrockAllen.MembershipReboot
             {
                 throw new InvalidOperationException("AuthenticateWithUsernameOrEmail can't be used when EmailIsUnique is false");
             }
-            
+
             if (!Configuration.MultiTenant)
             {
                 Tracing.Verbose("[UserAccountService.AuthenticateWithUsernameOrEmail] applying default tenant");
@@ -1543,7 +1545,7 @@ namespace BrockAllen.MembershipReboot
             {
                 throw new InvalidOperationException("ResetPassword via email can't be used when EmailIsUnique is false");
             }
-            
+
             if (!Configuration.MultiTenant)
             {
                 Tracing.Verbose("[UserAccountService.ResetPassword] applying default tenant");
@@ -1991,7 +1993,7 @@ namespace BrockAllen.MembershipReboot
 
             account.IsAccountVerified = true;
             account.Email = email;
-            
+
             ClearVerificationKey(account);
 
             this.AddEvent(new EmailVerifiedEvent<TAccount> { Account = account });
@@ -2170,7 +2172,7 @@ namespace BrockAllen.MembershipReboot
             this.AddEvent(new MobilePhoneChangedEvent<TAccount> { Account = account });
 
             Update(account);
-            
+
             Tracing.Verbose("[UserAccountService.ConfirmMobilePhoneNumberFromCode] success");
         }
 
@@ -2270,7 +2272,7 @@ namespace BrockAllen.MembershipReboot
 
             return IsVerificationKeyStale(account);
         }
-        
+
         protected virtual bool IsVerificationKeyStale(TAccount account)
         {
             if (account.VerificationKeySent == null)
@@ -2661,7 +2663,7 @@ namespace BrockAllen.MembershipReboot
                 Tracing.Error("[UserAccountService.AddClaim] failed -- null value");
                 throw new ArgumentException("value");
             }
-            
+
             var account = this.GetByID(accountID);
             if (account == null) throw new ArgumentException("Invalid AccountID", "accountID");
 
@@ -2676,7 +2678,7 @@ namespace BrockAllen.MembershipReboot
             if (!account.HasClaim(claim.Type, claim.Value))
             {
                 account.AddClaim(claim);
-                this.AddEvent(new ClaimAddedEvent<TAccount> {Account = account, Claim = claim});
+                this.AddEvent(new ClaimAddedEvent<TAccount> { Account = account, Claim = claim });
 
                 Tracing.Verbose("[UserAccountService.AddClaim] claim added");
             }
@@ -2741,7 +2743,7 @@ namespace BrockAllen.MembershipReboot
             foreach (var claim in claimsToRemove.ToArray())
             {
                 account.RemoveClaim(claim);
-                this.AddEvent(new ClaimRemovedEvent<TAccount> {Account = account, Claim = claim});
+                this.AddEvent(new ClaimRemovedEvent<TAccount> { Account = account, Claim = claim });
                 Tracing.Verbose("[UserAccountService.RemoveClaim] claim removed");
             }
         }
@@ -3094,7 +3096,7 @@ namespace BrockAllen.MembershipReboot
             ExecuteCommand(cmd);
             return cmd.MappedClaims ?? Enumerable.Empty<Claim>();
         }
-        
+
         internal protected virtual DateTime UtcNow
         {
             get
